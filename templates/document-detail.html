@@ -1,0 +1,319 @@
+<!-- document-detail.html -->
+<!-- Updated: 2023-07-30 03:00 PM -->
+<!-- Path: templates/document-detail.html -->
+
+<head>
+  <!-- Other meta tags and stylesheets -->
+  <!-- #comment: Add the Font Awesome library link here -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<div class="document-detail">
+  <div class="detail-container">
+    <div class="info-panel">
+      <<div class="navigation">
+        <a href="{{ url_for('index') }}?return_to_search=true" class="nav-button" title="Return to Search Results">
+          <i class="fas fa-search"></i>
+        </a>
+        <a href="{{ url_for('document_detail', doc_id=prev_id) if prev_id else '#' }}" class="nav-button {{ 'disabled' if not prev_id else '' }}" title="Previous Result">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+        <a href="{{ url_for('index') }}" class="nav-button" title="Home">
+          <i class="fas fa-home"></i>
+        </a>
+        <a href="{{ url_for('document_detail', doc_id=next_id) if next_id else '#' }}" class="nav-button {{ 'disabled' if not next_id else '' }}" title="Next Result">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+        <a href="{{ url_for('document_detail', doc_id=prev_file_id) if prev_file_id else '#' }}" class="nav-button {{ 'disabled' if not prev_file_id else '' }}" title="Previous File">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <a href="{{ url_for('document_detail', doc_id=next_file_id) if next_file_id else '#' }}" class="nav-button {{ 'disabled' if not next_file_id else '' }}" title="Next File">
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+  
+        <h1>{{ ocr_text.file }}</h1>
+  
+        <table class="info-table">
+          <tbody>
+            {% if summary %}
+              <tr>
+                <th>Summary</th>
+                <td>{{ summary.text }}</td>
+              </tr>
+            {% endif %}
+            <tr>
+              <th>OCR Text</th>
+              <td>{{ ocr_text.text }}</td>
+            </tr>
+            {% if named_entities %}
+              <tr>
+                <th>Named Entities</th>
+                <td>
+                  {% for entity in named_entities %}
+                    <span class="tag">{{ entity.entity }} ({{ entity.type }})</span>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endif %}
+            {% if dates %}
+              <tr>
+                <th>Dates</th>
+                <td>
+                  {% for date in dates %}
+                    <span class="tag">{{ date.date }}</span>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endif %}
+            {% if monetary_amounts %}
+              <tr>
+                <th>Monetary Amounts</th>
+                <td>
+                  {% for amount in monetary_amounts %}
+                    <span class="tag">{{ amount.amount }} ({{ amount.category }})</span>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endif %}
+            {% if relationships %}
+              <tr>
+                <th>Relationships</th>
+                <td>
+                  {% for rel in relationships %}
+                    <span class="tag">{{ rel.entity1 }} {{ rel.relationship }} {{ rel.entity2 }}</span>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endif %}
+            {% if document_metadata %}
+              <tr>
+                <th>Document Type</th>
+                <td>{{ document_metadata.document_type }}</td>
+              </tr>
+              <tr>
+                <th>Period</th>
+                <td>{{ document_metadata.period }}</td>
+              </tr>
+              <tr>
+                <th>Context</th>
+                <td>{{ document_metadata.context }}</td>
+              </tr>
+              <tr>
+                <th>Sentiment</th>
+                <td>{{ document_metadata.sentiment }}</td>
+              </tr>
+            {% endif %}
+            {% if translation %}
+              <tr>
+                <th>French Text</th>
+                <td>{{ translation.french_text }}</td>
+              </tr>
+              <tr>
+                <th>English Translation</th>
+                <td>{{ translation.english_translation }}</td>
+              </tr>
+            {% endif %}
+            {% if file_info %}
+              <tr>
+                <th>Original Filepath</th>
+                <td>{{ file_info.original_filepath }}</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="image-panel">
+        {% if file_info %}
+          <div id="imageContainer">
+            <img id="documentImage" src="{{ url_for('serve_image', filename=file_info.original_filepath) }}" alt="Document Image">
+          </div>
+          <div class="zoom-controls">
+            <button id="zoomIn">Zoom In</button>
+            <button id="zoomOut">Zoom Out</button>
+            <button id="resetZoom">Reset</button>
+          </div>
+        {% else %}
+          <div class="placeholder-image">
+            [Placeholder for Document Image]
+          </div>
+        {% endif %}
+      </div>
+    </div>
+</div>
+
+<style>
+  .document-detail {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  .detail-container {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+  }
+  .info-panel {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .image-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #f0f0f0;
+  }
+  #imageContainer {
+    max-width: 100%;
+    max-height: 80vh;
+    overflow: auto;
+    position: relative;
+  }
+  #documentImage {
+    max-width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+  .zoom-controls {
+    margin-top: 10px;
+  }
+  .nav-button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #333;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  .nav-button.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .tag {
+    display: inline-block;
+    background-color: #e0e0e0;
+    padding: 2px 5px;
+    margin: 2px;
+    border-radius: 3px;
+  }
+</style>
+<style>
+  /* #comment: Add these styles to the existing styles in document-detail.html */
+  .nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+  }
+  .nav-button:hover {
+    background-color: #0056b3;
+  }
+  .nav-button.disabled {
+    background-color: #ccc;
+    pointer-events: none;
+  }
+  .nav-button i {
+    font-size: 18px;
+  }
+  .nav-button::before {
+    content: attr(title);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    background-color: #333;
+    color: #fff;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .nav-button:hover::before {
+    opacity: 1;
+  }
+</style>
+<script>
+  let scale = 1;
+  const ZOOM_STEP = 0.1;
+  const MAX_SCALE = 3;
+  const MIN_SCALE = 0.5;
+
+  const imageContainer = document.getElementById('imageContainer');
+  const documentImage = document.getElementById('documentImage');
+  const zoomInBtn = document.getElementById('zoomIn');
+  const zoomOutBtn = document.getElementById('zoomOut');
+  const resetZoomBtn = document.getElementById('resetZoom');
+
+  function setImageTransform() {
+    documentImage.style.transform = `scale(${scale})`;
+  }
+
+  function zoomIn() {
+    if (scale < MAX_SCALE) {
+      scale += ZOOM_STEP;
+      setImageTransform();
+    }
+  }
+
+  function zoomOut() {
+    if (scale > MIN_SCALE) {
+      scale -= ZOOM_STEP;
+      setImageTransform();
+    }
+  }
+
+  function resetZoom() {
+    scale = 1;
+    setImageTransform();
+  }
+
+  zoomInBtn.addEventListener('click', zoomIn);
+  zoomOutBtn.addEventListener('click', zoomOut);
+  resetZoomBtn.addEventListener('click', resetZoom);
+
+  // Enable drag scrolling
+  let isDragging = false;
+  let startX, startY, scrollLeft, scrollTop;
+
+  imageContainer.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.pageX - imageContainer.offsetLeft;
+    startY = e.pageY - imageContainer.offsetTop;
+    scrollLeft = imageContainer.scrollLeft;
+    scrollTop = imageContainer.scrollTop;
+  });
+
+  imageContainer.addEventListener('mouseleave', () => {
+    isDragging = false;
+  });
+
+  imageContainer.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  imageContainer.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - imageContainer.offsetLeft;
+    const y = e.pageY - imageContainer.offsetTop;
+    const walkX = (x - startX) * 2;
+    const walkY = (y - startY) * 2;
+    imageContainer.scrollLeft = scrollLeft - walkX;
+    imageContainer.scrollTop = scrollTop - walkY;
+  });
+</script>

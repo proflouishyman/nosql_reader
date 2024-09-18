@@ -1,0 +1,85 @@
+<!-- File: templates/settings.html -->
+<!-- Updated: 2024-08-09 20:05 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Historical Document Reader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <style>
+        {% include 'style.css' %}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Settings</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('search_terms') }}">Search Terms</a></li>
+                <li><a href="{{ url_for('database_info') }}">Database Info</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+            </ul>
+        </nav>
+        <form method="POST">
+            <h2>Fonts</h2>
+            <label for="fonts_main">Main Font:</label>
+            <input type="text" id="fonts_main" name="fonts[main]" value="{{ config['fonts']['main'] }}"><br>
+            <label for="fonts_headers">Headers Font:</label>
+            <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config['fonts']['headers'] }}"><br>
+
+            <h2>Sizes</h2>
+            <label for="sizes_base">Base Size:</label>
+            <input type="text" id="sizes_base" name="sizes[base]" value="{{ config['sizes']['base'] }}"><br>
+            <label for="sizes_h1">H1 Size:</label>
+            <input type="text" id="sizes_h1" name="sizes[h1]" value="{{ config['sizes']['h1'] }}"><br>
+            <label for="sizes_h2">H2 Size:</label>
+            <input type="text" id="sizes_h2" name="sizes[h2]" value="{{ config['sizes']['h2'] }}"><br>
+            <label for="sizes_h3">H3 Size:</label>
+            <input type="text" id="sizes_h3" name="sizes[h3]" value="{{ config['sizes']['h3'] }}"><br>
+
+            <h2>Colors</h2>
+            <label for="colors_primary">Primary Color:</label>
+            <input type="color" id="colors_primary" name="colors[primary]" value="{{ config['colors']['primary'] }}"><br>
+            <label for="colors_secondary">Secondary Color:</label>
+            <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config['colors']['secondary'] }}"><br>
+            <label for="colors_background">Background Color:</label>
+            <input type="color" id="colors_background" name="colors[background]" value="{{ config['colors']['background'] }}"><br>
+            <label for="colors_text">Text Color:</label>
+            <input type="color" id="colors_text" name="colors[text]" value="{{ config['colors']['text'] }}"><br>
+
+            <h2>Spacing</h2>
+            <label for="spacing_small">Small Spacing:</label>
+            <input type="text" id="spacing_small" name="spacing[small]" value="{{ config['spacing']['small'] }}"><br>
+            <label for="spacing_medium">Medium Spacing:</label>
+            <input type="text" id="spacing_medium" name="spacing[medium]" value="{{ config['spacing']['medium'] }}"><br>
+            <label for="spacing_large">Large Spacing:</label>
+            <input type="text" id="spacing_large" name="spacing[large]" value="{{ config['spacing']['large'] }}"><br>
+
+            <button type="submit">Save Settings</button>
+        </form>
+    </div>
+    <script>
+        // Convert nested objects to JSON strings before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            ['fonts', 'sizes', 'colors', 'spacing'].forEach(function(key) {
+                var inputs = document.querySelectorAll(`[name^="${key}["]`);
+                var obj = {};
+                inputs.forEach(function(input) {
+                    var prop = input.name.match(/\[(.*?)\]/)[1];
+                    obj[prop] = input.value;
+                });
+                var hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = key;
+                hiddenInput.value = JSON.stringify(obj);
+                this.appendChild(hiddenInput);
+            }, this);
+            this.submit();
+        });
+    </script>
+</body>
+</html>

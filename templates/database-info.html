@@ -1,0 +1,41 @@
+<!-- File: templates/database-info.html -->
+<!-- Updated: 2024-08-06 12:40 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Information</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Database Information</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('search_terms') }}">Search Terms</a></li>
+                <li><a href="{{ url_for('database_info') }}">Database Info</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+            </ul>
+        </nav>
+        <table>
+            <thead>
+                <tr>
+                    <th>Table Name</th>
+                    <th>Number of Records</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for table in table_info %}
+                <tr>
+                    <td>{{ table.name }}</td>
+                    <td>{{ table.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
