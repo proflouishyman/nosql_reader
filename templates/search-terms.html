@@ -27,6 +27,28 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            gap: 15px;
+        }
+        nav ul li {
+            display: inline;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -40,23 +62,24 @@
                 <li><a href="{{ url_for('settings') }}">Settings</a></li>
             </ul>
         </nav>
-        <div>
+        <div style="margin-top: 20px;">
             <label for="fieldSelect">Select Field:</label>
             <select id="fieldSelect">
+                <option value="" disabled selected>Select a field</option>
                 {% for field in field_structure|dictsort %}
                     <option value="{{ field[0] }}">{{ field[0] }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div id="tableInfo">
-            <p>Number of unique terms: <span id="uniqueTerms">{{ unique_terms }}</span></p>
-            <p>Total number of records: <span id="totalRecords">{{ total_records }}</span></p>
+        <div id="tableInfo" style="margin-top: 10px;">
+            <p>Number of unique terms: <span id="uniqueTerms">0</span></p>
+            <p>Total number of records: <span id="totalRecords">0</span></p>
         </div>
         <div id="loadingIndicator">
             <div class="spinner"></div>
             <p>Loading data...</p>
         </div>
-        <table id="termsTable">
+        <table id="termsTable" class="display" style="width:100%; margin-top: 20px;">
             <thead>
                 <tr>
                     <th>Term</th>
@@ -64,60 +87,61 @@
                 </tr>
             </thead>
             <tbody>
-                {% for term in terms %}
-                <tr>
-                    <td>{{ term.term }}</td>
-                    <td>{{ term.count }}</td>
-                </tr>
-                {% endfor %}
+                <!-- Initially empty; populated via AJAX -->
             </tbody>
         </table>
     </div>
     <!-- Include jQuery and DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-    <script>
-        $(document).ready(function() {
-            var table = $('#termsTable').DataTable({
-                "pageLength": 25,
-                "order": [[ 1, "desc" ]]
-            });
+    
+<script>
+    $(document).ready(function() {
+        var table = $('#termsTable').DataTable({
+            "pageLength": 25,
+            "order": [[ 0, "asc" ]], // Order by term alphabetically
+            "columns": [
+                { "data": "term" },
+                { "data": "count", "visible": false } // Hide count if not needed
+            ]
+        });
 
-            function updateTableInfo(data) {
-                $('#uniqueTerms').text(data.unique_terms);
-                $('#totalRecords').text(data.total_records);
+        function updateTableInfo(data) {
+            $('#uniqueTerms').text(data.unique_terms);
+            $('#totalRecords').text(data.total_records);
+        }
+
+        $('#fieldSelect').on('change', function() {
+            var selectedField = $(this).val();
+            if (!selectedField) {
+                table.clear().draw();
+                updateTableInfo({ unique_terms: 0, total_records: 0 });
+                return;
             }
 
-            $('#fieldSelect').on('change', function() {
-                var selectedField = $(this).val();
-                $('#loadingIndicator').show();
+            $('#loadingIndicator').show();
 
-                $.ajax({
-                    url: '/search-terms',
-                    data: { field: selectedField },
-                    success: function(data) {
-                        if (data.error) {
-                            alert(data.error);
-                        } else {
-                            table.clear();
-                            data.terms.forEach(function(term) {
-                                table.row.add([term.term, term.count]);
-                            });
-                            table.draw();
-                            updateTableInfo(data);
-                        }
-                        $('#loadingIndicator').hide();
-                    },
-                    error: function() {
-                        alert('Error fetching data. Please try again.');
-                        $('#loadingIndicator').hide();
+            $.ajax({
+                url: '/search-terms',
+                data: { field: selectedField },
+                success: function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        table.clear();
+                        data.terms.forEach(function(term) {
+                            table.row.add({ term: term, count: null });
+                        });
+                        table.draw();
+                        updateTableInfo(data);
                     }
-                });
+                    $('#loadingIndicator').hide();
+                },
+                error: function() {
+                    alert('Error fetching data. Please try again.');
+                    $('#loadingIndicator').hide();
+                }
             });
-
-            // Trigger change event on page load to fetch initial data
-            $('#fieldSelect').trigger('change');
         });
-    </script>
-</body>
-</html>
+    });
+</script>

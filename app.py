@@ -15,7 +15,8 @@ from logging.handlers import RotatingFileHandler
 app = Flask(__name__)
 
 
-
+# Configure cache (optional, for performance enhancements)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 # Setup console logging
 console_handler = logging.StreamHandler()

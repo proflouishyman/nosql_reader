@@ -4,7 +4,16 @@
 from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response
 from functools import wraps
 from app import app, cache
-from database_setup import documents, find_document_by_id, find_documents, insert_document, update_document, delete_document, get_field_structure
+from database_setup import (
+    documents,
+    find_document_by_id,
+    find_documents,
+    insert_document,
+    update_document,
+    delete_document,
+    get_field_structure,
+    unique_terms_collection
+)
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 import math
@@ -21,6 +30,8 @@ import os
 
 # Setup file-based logging
 if not app.debug:
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
     file_handler = RotatingFileHandler('logs/app_routes.log', maxBytes=10240, backupCount=10)
     file_handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -55,7 +66,7 @@ def update_login_attempts(ip, success):
         else:
             login_attempts[ip] = (attempts + 1, datetime.now())
     else:
-        login_attempts[ip] = (1, datetime.now()) if not success else (0, datetime.now())
+        login_attempts[ip] = (0, datetime.now()) if success else (1, datetime.now())
 
 # Login required decorator
 def login_required(f):
@@ -133,7 +144,7 @@ def search():
         for doc in search_results:
             doc['_id'] = str(doc['_id'])
 
-        total_pages = math.ceil(total_count / per_page)
+        total_pages = math.ceil(total_count / per_page) if per_page else 1
 
         app.logger.debug(f"Found {total_count} documents, returning page {page} of {total_pages}")
 
@@ -163,9 +174,9 @@ def build_query(data):
         if field and search_term:
             condition = {}
             if operator == 'NOT':
-                condition[field] = {'$not': {'$regex': search_term, '$options': 'i'}}
+                condition[field] = {'$not': {'$regex': re.escape(search_term), '$options': 'i'}}
             else:
-                condition[field] = {'$regex': search_term, '$options': 'i'}
+                condition[field] = {'$regex': re.escape(search_term), '$options': 'i'}
             
             criteria_list.append((operator, condition))
             app.logger.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
@@ -213,35 +224,33 @@ def document_detail(doc_id):
         app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
 
-@app.route('/search-terms')
-# @login_required
+@app.route('/search-terms', methods=['GET'])
 def search_terms():
-    field = request.args.get('field', None)
-    if not field:
-        return jsonify({"error": "No field specified"}), 400
-
-    pipeline = [
-        {'$unwind': f'${field}'},
-        {'$group': {'_id': f'${field}', 'count': {'$sum': 1}}},
-        {'$sort': {'count': -1}}
-    ]
-
-    terms = list(documents.aggregate(pipeline))
-
-    unique_terms = len(terms)
-    total_records = documents.count_documents({})
-
-    data = {
-        'terms': [{'term': str(term['_id']), 'count': term['count']} for term in terms],
-        'unique_terms': unique_terms,
-        'total_records': total_records
-    }
-
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        field = request.args.get('field')
+        if not field:
+            return jsonify({"error": "No field specified"}), 400
+
+        unique_terms_doc = unique_terms_collection.find_one({"field": field})
+        if not unique_terms_doc:
+            return jsonify({"error": f"No terms found for field '{field}'."}), 404
+
+        terms = unique_terms_doc.get('terms', [])
+        unique_terms_count = len(terms)
+        total_records = documents.count_documents({})
+
+        data = {
+            'terms': terms,
+            'unique_terms': unique_terms_count,
+            'total_records': total_records
+        }
+
         return jsonify(data)
-
-    return render_template('search-terms.html', **data)
-
+    else:
+        field_structure = get_field_structure()
+        return render_template('search-terms.html', field_structure=field_structure)
+    
+    
 @app.route('/database-info')
 # @login_required
 def database_info():
@@ -278,18 +287,31 @@ def settings():
 
         for key in ['fonts', 'sizes', 'colors', 'spacing']:
             if key in new_config:
-                new_config[key] = json.loads(new_config[key])
+                try:
+                    new_config[key] = json.loads(new_config[key])
+                except json.JSONDecodeError:
+                    flash(f"Invalid JSON format for {key}.", 'danger')
+                    return redirect(url_for('settings'))
 
-        with open(config_path, 'w') as config_file:
-            json.dump(new_config, config_file, indent=4)
-
-        app.config['UI_CONFIG'] = new_config
-
-        flash('Settings updated successfully', 'success')
+        try:
+            with open(config_path, 'w') as config_file:
+                json.dump(new_config, config_file, indent=4)
+            app.config['UI_CONFIG'] = new_config
+            flash('Settings updated successfully', 'success')
+        except Exception as e:
+            app.logger.error(f"Error updating settings: {str(e)}")
+            flash('Failed to update settings.', 'danger')
         return redirect(url_for('settings'))
 
-    with open(config_path) as config_file:
-        config = json.load(config_file)
+    try:
+        if os.path.exists(config_path):
+            with open(config_path) as config_file:
+                config = json.load(config_file)
+        else:
+            config = {}
+    except json.JSONDecodeError:
+        config = {}
+        flash('Configuration file is corrupted. Using default settings.', 'warning')
 
     return render_template('settings.html', config=config)
 
@@ -328,6 +350,9 @@ def export_csv():
                 else:
                     value = ''
                     break
+            # Convert lists and dictionaries to JSON strings for better readability
+            if isinstance(value, (list, dict)):
+                value = json.dumps(value)
             row.append(value)
         writer.writerow(row)
 

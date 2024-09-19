@@ -1,7 +1,7 @@
 # File: database_setup.py
 # Path: railroad_documents_project/database_setup.py
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING, DESCENDING
 from bson import ObjectId
 
 # Connect to MongoDB
@@ -9,6 +9,7 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['railroad_documents']
 documents = db['documents']
 field_structure = db['field_structure']
+unique_terms_collection = db['unique_terms']  # New collection for unique terms
 
 def discover_fields(document):
     """
@@ -130,8 +131,20 @@ def delete_document(document_id):
     result = documents.delete_one({"_id": ObjectId(document_id)})
     return result.deleted_count
 
-# Create a text index for full-text search on all string fields
-documents.create_index([("$**", "text")])
+# Create indexes for performance optimization
+def create_indexes():
+    """
+    Create necessary indexes to optimize query performance.
+    """
+    # Text index for full-text search on all string fields
+    documents.create_index([("$**", "text")])
+
+    # Index for unique_terms_collection to optimize retrieval by field
+    unique_terms_collection.create_index([("field", ASCENDING)])
+
+    # Additional indexes can be created here as needed
+    # Example:
+    # documents.create_index([("specific_field", ASCENDING)])
 
 if __name__ == "__main__":
     # Recalculate the field structure based on existing documents
@@ -141,3 +154,8 @@ if __name__ == "__main__":
     for doc in all_documents:
         update_field_structure(doc)
     print("Field structure initialized.")
+
+    # Create necessary indexes
+    print("Creating indexes...")
+    create_indexes()
+    print("Indexes created.")
