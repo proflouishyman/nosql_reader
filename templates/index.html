@@ -1,14 +1,10 @@
-<!-- templates/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Historical Document Reader</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
-    <style>
-        {% include 'style.css' %}
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
@@ -27,7 +23,7 @@
             </ul>
         </nav>
 
-        <form id="searchForm" method="POST" action="{{ url_for('search') }}">
+        <form id="searchForm">
             <div id="searchFields">
                 {% for i in range(1, num_search_fields + 1) %}
                 <div class="search-field">
@@ -57,11 +53,19 @@
             <div class="spinner"></div>
         </div>
 
+        <!-- Cancel Search Button -->
+        <button id="cancelSearch" style="display: none;">Cancel Search</button>
+
         <!-- Total Results Display -->
         <div id="totalResults" class="mt-4"></div>
+
+        <!-- Results Container -->
         <div id="results" class="mt-4">
             <!-- The table will be dynamically inserted here -->
         </div>
+
+        <!-- Export to CSV Button -->
+        <button id="exportCsv" style="display: none;">Export to CSV</button>
     </div>
 
     <!-- Include jQuery -->

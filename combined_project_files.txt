@@ -1,43 +1,32 @@
 Project File Combination
-Generated on: 2024-09-19 09:24:42.799548
+Generated on: 2024-09-19 13:22:31.046188
 
-Total files: 39
+Total files: 24
 File type counts:
-  .py: 14
+  .py: 8
   .md: 1
-  .js: 2
-  .css: 2
+  .js: 1
+  .css: 1
   .html: 9
 
 File Structure:
-./
+nosql_reader/
     app.py
     generate_password.py
     models.py
     readme.md
     requirements.txt
     routes.py
-    bigfile.py
     combined_project_files.txt
     data_processing.py
     database_setup.py
     json_validator.py
-    analyze_files.py
-    count_files.py
+    json_validator_multi.py
+    config.json
+    secret_key.txt
     static/
         script.js
-        search.js
         style.css
-        search_terms/
-            ocr_text_terms.json
-            summary_terms.json
-            named_entities_terms.json
-            dates_terms.json
-            monetary_amounts_terms.json
-            relationships_terms.json
-            metadata_terms.json
-            translation_terms.json
-            file_info_terms.json
     templates/
         document-detail.html
         document-list.html
@@ -45,29 +34,41 @@ File Structure:
         index.html
         search-terms.html
         database-info.html
-        style.css
         settings.html
         base.html
         login.html
-    util/
-        random_texts.py
-        test_connect.py
-        batch_upload.py
-        batch_download.py
 
 ********************************************************************************
 
 File: app.py
 ********************************************************************************
 
+# File: app.py
+# Path: railroad_documents_project/app.py
+
 import os
+import json
 from flask import Flask
 from flask_caching import Cache
 from flask_session import Session
-import json
-from database_setup import client, db, documents
+from database_setup import client, db, documents, field_structure
+import logging
+from logging.handlers import RotatingFileHandler
+
+
 
 app = Flask(__name__)
+
+# Setup file-based logging
+if not app.debug:
+    file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+
+app.logger.setLevel(logging.DEBUG)
+
 
 # Load configuration
 config_path = os.path.join(os.path.dirname(__file__), 'config.json')
@@ -115,37 +116,30 @@ def load_config():
     with open(config_path) as config_file:
         return json.load(config_file)
 
+def get_field_structure():
+    """
+    Load the field structure from the MongoDB collection.
+    """
+    structure = field_structure.find_one({"_id": "current_structure"})
+    return structure['structure'] if structure else {}
+
 @app.context_processor
 def inject_ui_config():
     """
-    Inject the UI configuration into all templates.
+    Inject the UI configuration and field structure into all templates.
     This allows for dynamic UI customization without needing to pass the config to each template.
     """
     app.config['UI_CONFIG'] = load_config()
-    return dict(ui_config=app.config['UI_CONFIG'])
-
-# Define table options
-table_options = [
-    ('ocr_text', 'OCR Text'),
-    ('summary', 'Summary'),
-    ('named_entities', 'Named Entities'),
-    ('dates', 'Dates'),
-    ('monetary_amounts', 'Monetary Amounts'),
-    ('relationships', 'Relationships'),
-    ('metadata', 'Metadata'),
-    ('translation', 'Translation'),
-    ('file_info', 'File Info')
-]
-
-# Define operator options
-operator_options = ['AND', 'OR', 'NOT']
+    field_struct = get_field_structure()
+    return dict(ui_config=app.config['UI_CONFIG'], field_structure=field_struct)
 
 # Import routes after initializing app to avoid circular imports
 from routes import *
 
 if __name__ == '__main__':
     # Run the app
-    app.run(debug=False)
+    app.run(debug=True)
+
 
 ********************************************************************************
 
@@ -167,99 +161,101 @@ print(password_hash)
 File: models.py
 ********************************************************************************
 
-from app import db, ma
+# No longer necessary since it is NoSQL db. 
 
-class OCRText(db.Model):
-    __tablename__ = 'ocr_text'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, nullable=False)
-    text = db.Column(db.Text, nullable=False)
+# from app import db, ma
 
-    summary = db.relationship('Summary', back_populates='ocr_text', uselist=False)
-    named_entities = db.relationship('NamedEntity', back_populates='ocr_text')
-    dates = db.relationship('Date', back_populates='ocr_text')
-    monetary_amounts = db.relationship('MonetaryAmount', back_populates='ocr_text')
-    relationships = db.relationship('Relationship', back_populates='ocr_text')
-    document_metadata = db.relationship('DocumentMetadata', back_populates='ocr_text', uselist=False)
-    translation = db.relationship('Translation', back_populates='ocr_text', uselist=False)
-    file_info = db.relationship('FileInfo', back_populates='ocr_text', uselist=False)
+# class OCRText(db.Model):
+#     __tablename__ = 'ocr_text'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, nullable=False)
+#     text = db.Column(db.Text, nullable=False)
 
-class Summary(db.Model):
-    __tablename__ = 'summary'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    text = db.Column(db.Text, nullable=False)
+#     summary = db.relationship('Summary', back_populates='ocr_text', uselist=False)
+#     named_entities = db.relationship('NamedEntity', back_populates='ocr_text')
+#     dates = db.relationship('Date', back_populates='ocr_text')
+#     monetary_amounts = db.relationship('MonetaryAmount', back_populates='ocr_text')
+#     relationships = db.relationship('Relationship', back_populates='ocr_text')
+#     document_metadata = db.relationship('DocumentMetadata', back_populates='ocr_text', uselist=False)
+#     translation = db.relationship('Translation', back_populates='ocr_text', uselist=False)
+#     file_info = db.relationship('FileInfo', back_populates='ocr_text', uselist=False)
 
-    ocr_text = db.relationship('OCRText', back_populates='summary')
+# class Summary(db.Model):
+#     __tablename__ = 'summary'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     text = db.Column(db.Text, nullable=False)
 
-class NamedEntity(db.Model):
-    __tablename__ = 'named_entities'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    entity = db.Column(db.Text, nullable=False)
-    type = db.Column(db.Text, nullable=False)
+#     ocr_text = db.relationship('OCRText', back_populates='summary')
 
-    ocr_text = db.relationship('OCRText', back_populates='named_entities')
+# class NamedEntity(db.Model):
+#     __tablename__ = 'named_entities'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     entity = db.Column(db.Text, nullable=False)
+#     type = db.Column(db.Text, nullable=False)
 
-class Date(db.Model):
-    __tablename__ = 'dates'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    date = db.Column(db.Text, nullable=False)
+#     ocr_text = db.relationship('OCRText', back_populates='named_entities')
 
-    ocr_text = db.relationship('OCRText', back_populates='dates')
+# class Date(db.Model):
+#     __tablename__ = 'dates'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     date = db.Column(db.Text, nullable=False)
 
-class MonetaryAmount(db.Model):
-    __tablename__ = 'monetary_amounts'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    amount = db.Column(db.Text, nullable=False)
-    category = db.Column(db.Text, nullable=False)
+#     ocr_text = db.relationship('OCRText', back_populates='dates')
 
-    ocr_text = db.relationship('OCRText', back_populates='monetary_amounts')
+# class MonetaryAmount(db.Model):
+#     __tablename__ = 'monetary_amounts'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     amount = db.Column(db.Text, nullable=False)
+#     category = db.Column(db.Text, nullable=False)
 
-class Relationship(db.Model):
-    __tablename__ = 'relationships'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    entity1 = db.Column(db.Text, nullable=False)
-    relationship = db.Column(db.Text, nullable=False)
-    entity2 = db.Column(db.Text, nullable=False)
+#     ocr_text = db.relationship('OCRText', back_populates='monetary_amounts')
 
-    ocr_text = db.relationship('OCRText', back_populates='relationships')
+# class Relationship(db.Model):
+#     __tablename__ = 'relationships'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     entity1 = db.Column(db.Text, nullable=False)
+#     relationship = db.Column(db.Text, nullable=False)
+#     entity2 = db.Column(db.Text, nullable=False)
 
-class DocumentMetadata(db.Model):
-    __tablename__ = 'metadata'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    document_type = db.Column(db.Text, nullable=False)
-    period = db.Column(db.Text, nullable=False)
-    context = db.Column(db.Text, nullable=False)
-    sentiment = db.Column(db.Text, nullable=False)
+#     ocr_text = db.relationship('OCRText', back_populates='relationships')
 
-    ocr_text = db.relationship('OCRText', back_populates='document_metadata')
+# class DocumentMetadata(db.Model):
+#     __tablename__ = 'metadata'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     document_type = db.Column(db.Text, nullable=False)
+#     period = db.Column(db.Text, nullable=False)
+#     context = db.Column(db.Text, nullable=False)
+#     sentiment = db.Column(db.Text, nullable=False)
 
-class Translation(db.Model):
-    __tablename__ = 'translation'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    french_text = db.Column(db.Text, nullable=False)
-    english_translation = db.Column(db.Text, nullable=False)
+#     ocr_text = db.relationship('OCRText', back_populates='document_metadata')
 
-    ocr_text = db.relationship('OCRText', back_populates='translation')
+# class Translation(db.Model):
+#     __tablename__ = 'translation'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     french_text = db.Column(db.Text, nullable=False)
+#     english_translation = db.Column(db.Text, nullable=False)
 
-class FileInfo(db.Model):
-    __tablename__ = 'file_info'
-    id = db.Column(db.Text, primary_key=True)
-    file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
-    original_filepath = db.Column(db.Text, nullable=False)
+#     ocr_text = db.relationship('OCRText', back_populates='translation')
 
-    ocr_text = db.relationship('OCRText', back_populates='file_info')
+# class FileInfo(db.Model):
+#     __tablename__ = 'file_info'
+#     id = db.Column(db.Text, primary_key=True)
+#     file = db.Column(db.Text, db.ForeignKey('ocr_text.id'), nullable=False)
+#     original_filepath = db.Column(db.Text, nullable=False)
 
-# Add Marshmallow schemas if needed
-class OCRTextSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = OCRText
+#     ocr_text = db.relationship('OCRText', back_populates='file_info')
+
+# # Add Marshmallow schemas if needed
+# class OCRTextSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = OCRText
 
 
 ********************************************************************************
@@ -286,17 +282,75 @@ database_processing ingests the data
 7. mouseover wikipedia search
 
 
+Architecture:
 
+The application is built using Flask, a Python web framework.
+It uses MongoDB as the NoSQL database, accessed via the PyMongo library.
+The frontend is created using HTML, CSS, and JavaScript, with some dynamic content rendering.
+
+
+Main Components:
+
+app.py: The main Flask application file that initializes the app and includes configurations.
+routes.py: Contains all the route handlers for different endpoints.
+database_setup.py: Manages database connections and operations.
+data_processing.py: Handles the ingestion of JSON files into the MongoDB database.
+static/script.js: Contains client-side JavaScript for handling user interactions and AJAX requests.
+static/style.css: Defines the styling for the application.
+Various HTML templates in the templates folder for rendering different pages.
+
+
+Functionality:
+
+Document Search: Users can search for documents using multiple fields and operators (AND, OR, NOT).
+Pagination: Search results are paginated for better performance and user experience.
+Document Viewing: Users can view individual documents with their details and associated images.
+Database Information: Provides an overview of the database structure and field counts.
+Search Terms Analysis: Allows users to explore the frequency of terms in different fields.
+Settings: Users can customize UI settings like fonts, colors, and spacing.
+Authentication: Basic login functionality is implemented for accessing certain features.
+
+
+Data Flow:
+
+JSON files are processed and inserted into MongoDB using data_processing.py.
+The application dynamically discovers and adapts to the structure of the documents in the database.
+Search queries are constructed based on user input and executed against MongoDB.
+Results are returned to the frontend and displayed using a combination of server-side rendering and client-side JavaScript.
+
+
+Notable Features:
+
+Dynamic field structure discovery and adaptation.
+Infinite scrolling for search results.
+AJAX-based search to improve responsiveness.
+Prefetching of next page results for smoother scrolling.
+Export to CSV functionality for search results.
+Image viewing with zoom and pan capabilities for document images.
+
+
+Security Measures:
+
+Password protection for certain routes.
+CAPTCHA implementation to prevent automated login attempts.
+Session management for maintaining user state.
+
+
+
+This application provides a flexible and efficient way to search and view historical documents stored in a NoSQL database, with a focus on performance and user experience.
 
 ********************************************************************************
 
 File: routes.py
 ********************************************************************************
 
+# File: routes.py
+# Path: railroad_documents_project/routes.py
+
 from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response
 from functools import wraps
-from app import app, cache, table_options, operator_options
-from database_setup import documents, find_document_by_id, find_documents, insert_document, update_document, delete_document
+from app import app, cache
+from database_setup import documents, find_document_by_id, find_documents, insert_document, update_document, delete_document, get_field_structure
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 import math
@@ -308,10 +362,18 @@ from datetime import datetime, timedelta
 import random
 import csv
 from io import StringIO
+from logging.handlers import RotatingFileHandler
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+
+# Setup file-based logging
+if not app.debug:
+    file_handler = RotatingFileHandler('logs/app_routes.log', maxBytes=10240, backupCount=10)
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+
+app.logger.setLevel(logging.DEBUG)
 
 # Hashed password (generate this using generate_password_hash('your_actual_password'))
 ADMIN_PASSWORD_HASH = 'pbkdf2:sha256:260000$uxZ1Fkjt9WQCHwuN$ca37dfb41ebc26b19daf24885ebcd09f607cab85f92dcab13625627fd9ee902a'
@@ -352,28 +414,26 @@ def login_required(f):
 
 @app.route('/')
 def index():
+    app.logger.info('Handling request to index')
     num_search_fields = 3  # Number of search fields to display
-    return render_template('index.html',
-                           table_options=table_options,
-                           operator_options=operator_options,
-                           num_search_fields=num_search_fields)
+    return render_template('index.html', num_search_fields=num_search_fields)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         ip = request.remote_addr
-        
+
         if is_locked_out(ip):
             flash('Too many failed attempts. Please try again later.')
             return render_template('login.html')
-        
+
         # Verify CAPTCHA
         user_captcha = request.form.get('captcha')
         correct_captcha = request.form.get('captcha_answer')
         if user_captcha != correct_captcha:
             flash('Incorrect CAPTCHA')
             return redirect(url_for('login'))
-        
+
         if check_password_hash(ADMIN_PASSWORD_HASH, request.form['password']):
             session['logged_in'] = True
             update_login_attempts(ip, success=True)
@@ -384,12 +444,12 @@ def login():
             update_login_attempts(ip, success=False)
             time.sleep(2)  # Add a delay after failed attempt
             flash('Invalid password')
-    
+
     # Generate CAPTCHA for GET requests
     captcha_num1 = random.randint(1, 10)
     captcha_num2 = random.randint(1, 10)
     captcha_answer = str(captcha_num1 + captcha_num2)
-    
+
     return render_template('login.html', captcha_num1=captcha_num1, captcha_num2=captcha_num2, captcha_answer=captcha_answer)
 
 @app.route('/logout')
@@ -398,53 +458,108 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('index'))
 
-@app.route('/search', methods=['POST'])
-@login_required
+
+
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     try:
-        data = request.get_json()
-        page = int(data.get('page', 1))
-        per_page = int(data.get('per_page', 50))
-        
-        query = {}
-        for i in range(1, 4):
-            table = data.get(f'table{i}')
-            search_term = data.get(f'searchTerm{i}')
-            operator = data.get(f'operator{i}')
-            
-            if table and search_term:
-                if operator == 'NOT':
-                    query[table] = {'$not': {'$regex': search_term, '$options': 'i'}}
-                else:
-                    if table not in query:
-                        query[table] = {'$regex': search_term, '$options': 'i'}
-                    elif operator == 'AND':
-                        query[table] = {'$all': [query[table], {'$regex': search_term, '$options': 'i'}]}
-                    elif operator == 'OR':
-                        if '$or' not in query:
-                            query['$or'] = []
-                        query['$or'].append({table: {'$regex': search_term, '$options': 'i'}})
+        if request.method == 'POST':
+            # Log incoming request data
+            data = request.get_json()
+            logging.debug(f"Received POST search request: {data}")
 
-        total_count = documents.count_documents(query)
-        search_results = find_documents(query, limit=per_page).skip((page - 1) * per_page)
-        
-        documents_list = list(search_results)
-        for doc in documents_list:
-            doc['_id'] = str(doc['_id'])
+            # Extract pagination details
+            page = int(data.get('page', 1))
+            per_page = int(data.get('per_page', 50))
+            logging.debug(f"Pagination details - Page: {page}, Per Page: {per_page}")
 
-        total_pages = math.ceil(total_count / per_page)
+            # Build query based on user input
+            query = build_query(data)
+            logging.debug(f"Constructed MongoDB query: {query}")
 
-        return jsonify({
-            "documents": documents_list,
-            "total_count": total_count,
-            "current_page": page,
-            "total_pages": total_pages,
-            "per_page": per_page
-        })
+            # Query MongoDB for the matching documents
+            total_count = documents.count_documents(query)
+            search_results = documents.find(query).skip((page - 1) * per_page).limit(per_page)
+            documents_list = list(search_results)
+
+            logging.debug(f"Total matching documents: {total_count}, Returned documents: {len(documents_list)}")
+
+            # Convert ObjectId to string for each document
+            for doc in documents_list:
+                doc['_id'] = str(doc['_id'])
+
+            # Calculate total pages
+            total_pages = math.ceil(total_count / per_page)
+
+            logging.debug(f"Total pages: {total_pages}, Current page: {page}")
+
+            # Render the search results page
+            return render_template('search_results.html',
+                                   documents=documents_list,
+                                   total_count=total_count,
+                                   current_page=page,
+                                   total_pages=total_pages,
+                                   per_page=per_page)
+
+        else:
+            # For GET requests, simply render the search form
+            num_search_fields = 3
+            logging.debug(f"Rendering search page with {num_search_fields} fields")
+            return render_template('search.html', num_search_fields=num_search_fields)
 
     except Exception as e:
-        logger.error("An error occurred during search", exc_info=True)
+        logging.error(f"An error occurred during search: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal error occurred"}), 500
+
+def build_query(data):
+    """
+    Build a MongoDB query from the search criteria provided by the user.
+    """
+    query = {}
+    criteria_list = []
+
+    logging.debug(f"Building query from search data: {data}")
+
+    for i in range(1, 4):
+        field = data.get(f'field{i}')
+        search_term = data.get(f'searchTerm{i}')
+        operator = data.get(f'operator{i}')
+
+        if field and search_term:
+            condition = {}
+            if operator == 'NOT':
+                condition[field] = {'$not': {'$regex': search_term, '$options': 'i'}}
+            else:
+                condition[field] = {'$regex': search_term, '$options': 'i'}
+            
+            criteria_list.append((operator, condition))
+            logging.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
+
+    # Build the query based on operators (AND, OR, NOT)
+    if criteria_list:
+        and_conditions = []
+        or_conditions = []
+
+        for operator, condition in criteria_list:
+            if operator == 'AND' or operator == 'NOT':
+                and_conditions.append(condition)
+            elif operator == 'OR':
+                or_conditions.append(condition)
+
+        # Add AND conditions to the query
+        if and_conditions:
+            query['$and'] = and_conditions
+
+        # Add OR conditions to the query
+        if or_conditions:
+            if '$or' not in query:
+                query['$or'] = or_conditions
+            else:
+                query['$or'].extend(or_conditions)
+
+    logging.debug(f"Final query: {query}")
+    return query
+
 
 @app.route('/document/<string:doc_id>')
 @login_required
@@ -453,12 +568,12 @@ def document_detail(doc_id):
         document = find_document_by_id(doc_id)
         if not document:
             abort(404)
-        
+
         document['_id'] = str(document['_id'])
-        
+
         prev_doc = documents.find_one({'_id': {'$lt': ObjectId(doc_id)}}, sort=[('_id', -1)])
         next_doc = documents.find_one({'_id': {'$gt': ObjectId(doc_id)}}, sort=[('_id', 1)])
-        
+
         prev_id = str(prev_doc['_id']) if prev_doc else None
         next_id = str(next_doc['_id']) if next_doc else None
 
@@ -471,94 +586,121 @@ def document_detail(doc_id):
 @login_required
 def settings():
     config_path = os.path.join(os.path.dirname(__file__), 'config.json')
-    
+
     if request.method == 'POST':
         new_config = request.form.to_dict()
-        
+
         for key in ['fonts', 'sizes', 'colors', 'spacing']:
             if key in new_config:
                 new_config[key] = json.loads(new_config[key])
-        
+
         with open(config_path, 'w') as config_file:
             json.dump(new_config, config_file, indent=4)
-        
+
         app.config['UI_CONFIG'] = new_config
-        
+
         flash('Settings updated successfully', 'success')
         return redirect(url_for('settings'))
-    
+
     with open(config_path) as config_file:
         config = json.load(config_file)
-    
+
     return render_template('settings.html', config=config)
 
 @app.route('/search-terms')
 @login_required
 def search_terms():
-    table = request.args.get('table', 'named_entities')
-    
+    field = request.args.get('field', None)
+    if not field:
+        return jsonify({"error": "No field specified"}), 400
+
     pipeline = [
-        {'$unwind': f'${table}'},
-        {'$group': {'_id': f'${table}', 'count': {'$sum': 1}}},
+        {'$unwind': f'${field}'},
+        {'$group': {'_id': f'${field}', 'count': {'$sum': 1}}},
         {'$sort': {'count': -1}}
     ]
-    
+
     terms = list(documents.aggregate(pipeline))
-    
+
     unique_terms = len(terms)
     total_records = documents.count_documents({})
-    
+
     data = {
         'terms': [{'term': str(term['_id']), 'count': term['count']} for term in terms],
         'unique_terms': unique_terms,
         'total_records': total_records
     }
-    
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify(data)
-    
-    return render_template('search-terms.html', table_options=table_options, **data)
+
+    return render_template('search-terms.html', **data)
 
 @app.route('/database-info')
 @login_required
 def database_info():
+    field_struct = get_field_structure()
     collection_info = []
-    for name, _ in table_options:
-        count = documents.count_documents({name: {'$exists': True}})
-        collection_info.append({
-            'name': name,
-            'count': count
-        })
+
+    def count_documents_with_field(field_path):
+        count = documents.count_documents({field_path: {'$exists': True}})
+        return count
+
+    def traverse_structure(structure, current_path=''):
+        for field, value in structure.items():
+            path = f"{current_path}.{field}" if current_path else field
+            if isinstance(value, dict):
+                traverse_structure(value, current_path=path)
+            else:
+                count = count_documents_with_field(path)
+                collection_info.append({
+                    'name': path,
+                    'count': count
+                })
+
+    traverse_structure(field_struct)
+
     return render_template('database-info.html', collection_info=collection_info)
 
 @app.route('/export_csv', methods=['POST'])
 @login_required
 def export_csv():
     data = request.get_json()
-    query = {}
-    
-    for field in data['fields']:
-        table = field['table']
-        search_term = field['searchTerm']
-        operator = field['operator']
-        
-        if operator == 'AND':
-            query[table] = {'$regex': search_term, '$options': 'i'}
-        elif operator == 'OR':
-            if '$or' not in query:
-                query['$or'] = []
-            query['$or'].append({table: {'$regex': search_term, '$options': 'i'}})
-        elif operator == 'NOT':
-            query[table] = {'$not': {'$regex': search_term, '$options': 'i'}}
+    query = build_query(data)
 
-    results = list(find_documents(query))
+    results = documents.find(query)
 
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(['ID', 'File', 'OCR Text', 'Summary'])
+    # Get field names from field_structure
+    field_struct = get_field_structure()
+    field_names = []
+
+    def get_field_names(structure, prefix=''):
+        for key, value in structure.items():
+            if isinstance(value, dict):
+                get_field_names(value, prefix=prefix + key + '.')
+            else:
+                field_names.append(prefix + key)
+
+    get_field_names(field_struct)
+
+    writer.writerow(['ID'] + field_names)
 
     for result in results:
-        writer.writerow([str(result['_id']), result.get('file', ''), result.get('ocr_text', ''), result.get('summary', '')])
+        row = [str(result.get('_id', ''))]
+        for field in field_names:
+            # Use dot notation to get nested fields
+            keys = field.split('.')
+            value = result
+            for key in keys:
+                if isinstance(value, dict):
+                    value = value.get(key, '')
+                else:
+                    value = ''
+                    break
+            row.append(value)
+        writer.writerow(row)
 
     return Response(
         output.getvalue(),
@@ -574,89 +716,6 @@ def not_found_error(error):
 def internal_error(error):
     return render_template('error.html', message='An unexpected error has occurred'), 500
 
-********************************************************************************
-
-File: bigfile.py
-********************************************************************************
-
-import os
-import datetime
-from collections import Counter
-
-# Configuration variables
-ROOT_DIRECTORY = "."  # Current directory, change this if needed
-OUTPUT_FILE = "combined_project_files.txt"
-FILE_TYPES = [".js", ".html", ".py", ".md", ".me", ".css", ".schema"]
-SEPARATOR = "*" * 80
-
-# Exclusion variables
-EXCLUDED_DIRECTORIES = [".git"]
-EXCLUDED_FILE_TYPES = [".ini"]
-
-def get_file_statistics(root_dir):
-    total_files = 0
-    file_type_counts = Counter()
-
-    for root, dirs, files in os.walk(root_dir):
-        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRECTORIES]
-        for file in files:
-            if not any(file.endswith(ext) for ext in EXCLUDED_FILE_TYPES):
-                total_files += 1
-                file_ext = os.path.splitext(file)[1].lower()
-                if file_ext in FILE_TYPES:
-                    file_type_counts[file_ext] += 1
-
-    return total_files, file_type_counts
-
-def get_file_structure(root_dir):
-    structure = []
-    for root, dirs, files in os.walk(root_dir):
-        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRECTORIES]
-        level = root.replace(root_dir, '').count(os.sep)
-        indent = ' ' * 4 * level
-        structure.append(f'{indent}{os.path.basename(root)}/')
-        subindent = ' ' * 4 * (level + 1)
-        for file in files:
-            if not any(file.endswith(ext) for ext in EXCLUDED_FILE_TYPES):
-                structure.append(f'{subindent}{file}')
-    return '\n'.join(structure)
-
-def combine_files(root_dir, output_file, file_types):
-    total_files, file_type_counts = get_file_statistics(root_dir)
-
-    with open(output_file, 'w', encoding='utf-8') as outfile:
-        # Write header information
-        outfile.write(f"Project File Combination\n")
-        outfile.write(f"Generated on: {datetime.datetime.now()}\n\n")
-        outfile.write(f"Total files: {total_files}\n")
-        outfile.write("File type counts:\n")
-        for file_type, count in file_type_counts.items():
-            outfile.write(f"  {file_type}: {count}\n")
-        outfile.write("\nFile Structure:\n")
-        outfile.write(get_file_structure(root_dir))
-        outfile.write(f"\n\n{SEPARATOR}\n\n")
-
-        for root, dirs, files in os.walk(root_dir):
-            dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRECTORIES]
-            for file in files:
-                if any(file.endswith(ext) for ext in file_types) and not any(file.endswith(ext) for ext in EXCLUDED_FILE_TYPES):
-                    file_path = os.path.join(root, file)
-                    relative_path = os.path.relpath(file_path, root_dir)
-                    
-                    outfile.write(f"File: {relative_path}\n")
-                    outfile.write(f"{SEPARATOR}\n\n")
-                    
-                    try:
-                        with open(file_path, 'r', encoding='utf-8') as infile:
-                            outfile.write(infile.read())
-                    except Exception as e:
-                        outfile.write(f"Error reading file: {str(e)}\n")
-                    
-                    outfile.write(f"\n\n{SEPARATOR}\n\n")
-
-if __name__ == "__main__":
-    combine_files(ROOT_DIRECTORY, OUTPUT_FILE, FILE_TYPES)
-    print(f"Combined files have been written to {OUTPUT_FILE}")
 
 ********************************************************************************
 
@@ -763,7 +822,7 @@ def process_directory(directory_path):
     print(f"Time taken: {duration:.2f} seconds")
 
 if __name__ == "__main__":
-    data_directory = r'G:\My Drive\2024-2025\coding\borr\json_files'  # Change this to the path of your JSON files directory
+    data_directory = r'G:\My Drive\2024-2025\coding\rolls_txt\scratch4\lhyman6\OCR\data\borr\rolls'  # Change this to the path of your JSON files directory
     process_directory(data_directory)
 
 
@@ -922,13 +981,10 @@ if __name__ == "__main__":
 File: json_validator.py
 ********************************************************************************
 
-# 2024-08-20
-# Script to clean JSON, validate, and replace valid files with .json extension.
-# Invalid files remain as .txt. It tracks how many files were cleaned and replaced.
-
 import os
 import json
 import re
+import multiprocessing
 from tqdm import tqdm
 
 def clean_json(json_text):
@@ -974,26 +1030,31 @@ def validate_json_file(file_path):
     except Exception as e:
         return (filename, False, str(e))
 
-def validate_and_replace_json_files(source_dir):
-    file_paths = [
-        os.path.join(source_dir, f)
-        for f in os.listdir(source_dir)
-        if os.path.isfile(os.path.join(source_dir, f)) and f.lower().endswith('.txt')
-    ]
+def validate_and_replace_json_files(source_dir, num_workers):
+    # Collect all .txt file paths recursively
+    file_paths = []
+    for root, dirs, files in os.walk(source_dir):
+        for f in files:
+            if f.lower().endswith('.txt'):
+                file_paths.append(os.path.join(root, f))
     total_files = len(file_paths)
 
+    print(f"Processing {total_files} .txt files with {num_workers} worker processes...")
+
+    # Initialize counters
     cleaned_count = 0
     replaced_count = 0
     invalid_count = 0
 
-    print(f"Processing {total_files} .txt files...")
+    # Use multiprocessing Pool to process files in parallel
+    with multiprocessing.Pool(num_workers) as pool:
+        # Use imap_unordered for better performance and integrate with tqdm
+        results = []
+        for result in tqdm(pool.imap_unordered(validate_json_file, file_paths), total=total_files, desc="Validating JSON files"):
+            results.append(result)
 
-    results = []
-    for file_path in tqdm(file_paths, desc="Validating JSON files"):
-        result = validate_json_file(file_path)
-        results.append(result)
-
-        filename, is_valid, info = result
+    # Process the results
+    for filename, is_valid, info in results:
         if is_valid:
             if info:
                 cleaned_count += 1
@@ -1017,117 +1078,128 @@ def validate_and_replace_json_files(source_dir):
             print(f"{filename} is invalid or unreadable. Remains as .txt. Error: {info}")
 
 if __name__ == "__main__":
+    # Specify the source directory
     source_directory = r"G:\My Drive\2024-2025\coding\rolls_txt"
-    validate_and_replace_json_files(source_directory)
+
+    # Calculate the number of worker processes (3/4 of available CPUs)
+    num_cpus = multiprocessing.cpu_count()
+    num_workers = max(1, int(num_cpus * 0.75))
+
+    # Start the validation and replacement process
+    validate_and_replace_json_files(source_directory, num_workers)
 
 
 ********************************************************************************
 
-File: analyze_files.py
+File: json_validator_multi.py
 ********************************************************************************
 
-import json
 import os
-from collections import defaultdict, Counter
-from pprint import pprint
+import json
+import re
+import multiprocessing
+from tqdm import tqdm
 
-def read_json_file(file_path):
+def clean_json(json_text):
+    # Remove all control characters
+    json_text = re.sub(r'[\x00-\x1F\x7F]', '', json_text)
+
+    # Find the index of the first '{' and the last '}'
+    start_index = json_text.find('{')
+    end_index = json_text.rfind('}')
+
+    # Extract the clean JSON string
+    if start_index != -1 and end_index != -1:
+        clean_json_text = json_text[start_index:end_index + 1]
+        return clean_json_text
+    else:
+        raise ValueError("Invalid JSON format: Unable to find '{' or '}'.")
+
+def validate_json_file(file_path):
+    filename = os.path.basename(file_path)
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-            # The content is wrapped in ```json ```, so we need to extract the JSON part
-            json_content = content.split('```json')[1].split('```')[0]
-            return json.loads(json_content), None
+            json_content = file.read()
+
+        # Clean the JSON content before validation
+        cleaned_json_content = clean_json(json_content)
+        cleaned = cleaned_json_content != json_content
+
+        # Validate the cleaned JSON content
+        json_data = json.loads(cleaned_json_content)
+
+        # Define the new file path with .json extension
+        base_name, _ = os.path.splitext(file_path)
+        new_file_path = f"{base_name}.json"
+
+        # Write the validated and cleaned JSON to the new file
+        with open(new_file_path, 'w', encoding='utf-8') as file:
+            json.dump(json_data, file, indent=4)
+
+        # Remove the original .txt file
+        os.remove(file_path)
+
+        return (filename, True, cleaned)
     except Exception as e:
-        return None, str(e)
+        return (filename, False, str(e))
 
-def analyze_json_structure(data, prefix=''):
-    structure = defaultdict(lambda: {"types": set(), "count": 0})
-    if isinstance(data, dict):
-        for key, value in data.items():
-            new_prefix = f"{prefix}.{key}" if prefix else key
-            structure[new_prefix]["count"] += 1
-            if isinstance(value, (dict, list)):
-                sub_structure = analyze_json_structure(value, new_prefix)
-                for sub_key, sub_value in sub_structure.items():
-                    structure[sub_key]["types"].update(sub_value["types"])
-                    structure[sub_key]["count"] += sub_value["count"]
+def validate_and_replace_json_files(source_dir, num_workers):
+    # Collect all .txt file paths recursively
+    file_paths = []
+    for root, dirs, files in os.walk(source_dir):
+        for f in files:
+            if f.lower().endswith('.txt'):
+                file_paths.append(os.path.join(root, f))
+    total_files = len(file_paths)
+
+    print(f"Processing {total_files} .txt files with {num_workers} worker processes...")
+
+    # Initialize counters
+    cleaned_count = 0
+    replaced_count = 0
+    invalid_count = 0
+
+    # Use multiprocessing Pool to process files in parallel
+    with multiprocessing.Pool(num_workers) as pool:
+        # Use imap_unordered for better performance and integrate with tqdm
+        results = []
+        for result in tqdm(pool.imap_unordered(validate_json_file, file_paths), total=total_files, desc="Validating JSON files"):
+            results.append(result)
+
+    # Process the results
+    for filename, is_valid, info in results:
+        if is_valid:
+            if info:
+                cleaned_count += 1
+            replaced_count += 1
+        else:
+            invalid_count += 1
+
+    print(f"\nProcessing complete:")
+    print(f"Valid JSON files replaced with .json: {replaced_count}")
+    print(f"Files cleaned: {cleaned_count}")
+    print(f"Invalid or unreadable files remain as .txt: {invalid_count}")
+
+    print("\nDetailed results:")
+    for filename, is_valid, info in results:
+        if is_valid:
+            if info:
+                print(f"{filename} was cleaned and replaced with a .json file.")
             else:
-                structure[new_prefix]["types"].add(type(value).__name__)
-    elif isinstance(data, list):
-        for item in data:
-            sub_structure = analyze_json_structure(item, prefix)
-            for sub_key, sub_value in sub_structure.items():
-                structure[sub_key]["types"].update(sub_value["types"])
-                structure[sub_key]["count"] += sub_value["count"]
-    return structure
-
-def analyze_json_documents(directory):
-    file_count = 0
-    error_count = 0
-    structures = defaultdict(lambda: {"types": set(), "count": 0})
-    error_types = Counter()
-    
-    for filename in os.listdir(directory):
-        if filename.endswith('.txt'):
-            file_path = os.path.join(directory, filename)
-            content, error = read_json_file(file_path)
-            
-            if content is not None:
-                file_count += 1
-                file_structure = analyze_json_structure(content)
-                for key, info in file_structure.items():
-                    structures[key]["types"].update(info["types"])
-                    structures[key]["count"] += 1
-            else:
-                error_count += 1
-                error_type = type(eval(error)).__name__
-                error_types[error_type] += 1
-                print(f"Error reading file {file_path}: {error}")
-
-    return structures, file_count, error_count, error_types
-
-# Specify the directory containing your JSON files
-directory = r'G:\My Drive\2024-2025\coding\borr\rolls_txt\scratch4\lhyman6\OCR\data\borr\rolls'
-
-results, successful_files, error_files, error_types = analyze_json_documents(directory)
-
-print(f"\nAnalysis Complete")
-print(f"Successfully parsed files: {successful_files}")
-print(f"Files with errors: {error_files}")
-print("\nError types encountered:")
-for error_type, count in error_types.items():
-    print(f"  {error_type}: {count}")
-
-print("\nJSON Structure Analysis:")
-for key, info in sorted(results.items()):
-    print(f"{key}:")
-    print(f"  Types: {', '.join(info['types'])}")
-    print(f"  Present in {info['count']} out of {successful_files} successfully parsed files")
-    print(f"  Consistency: {info['count'] / successful_files * 100:.2f}%")
-    print()
-
-********************************************************************************
-
-File: count_files.py
-********************************************************************************
-
-# Script created on 2024-09-19 at 10:05 AM
-# This script recursively counts all files in a specified subdirectory and shows progress indicators.
-
-import os
-
-def count_files(directory):
-    total_files = 0
-    for root, dirs, files in os.walk(directory):
-        print(f"Traversing directory: {root}")
-        total_files += len(files)
-    return total_files
+                print(f"{filename} is valid and replaced with a .json file.")
+        else:
+            print(f"{filename} is invalid or unreadable. Remains as .txt. Error: {info}")
 
 if __name__ == "__main__":
-    directory_path = input("Enter the path of the directory: ")
-    file_count = count_files(directory_path)
-    print(f"Total number of files: {file_count}")
+    # Specify the source directory
+    source_directory = r"G:\My Drive\2024-2025\coding\rolls_txt"
+
+    # Calculate the number of worker processes (3/4 of available CPUs)
+    num_cpus = multiprocessing.cpu_count()
+    num_workers = max(1, int(num_cpus * 0.75))
+
+    # Start the validation and replacement process
+    validate_and_replace_json_files(source_directory, num_workers)
 
 
 ********************************************************************************
@@ -1136,7 +1208,6 @@ File: static\script.js
 ********************************************************************************
 
 // File: static/script.js
-// Corrected version
 
 document.addEventListener('DOMContentLoaded', function() {
     const searchForm = document.getElementById('searchForm');
@@ -1144,6 +1215,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingIndicator = document.getElementById('loadingIndicator');
     const cancelButton = document.getElementById('cancelSearch');
     const totalResultsDiv = document.getElementById('totalResults');
+
+    // Add console warnings for missing elements
+    if (!searchForm) console.warn('Search form not found');
+    if (!resultsDiv) console.warn('Results div not found');
+    if (!loadingIndicator) console.warn('Loading indicator not found');
+    if (!cancelButton) console.warn('Cancel button not found');
+    if (!totalResultsDiv) console.warn('Total results div not found');
 
     let controller;
     let page = 1;
@@ -1156,40 +1234,46 @@ document.addEventListener('DOMContentLoaded', function() {
     let prefetchedData = null; // Declare prefetchedData
 
     // Handle form submission
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Reset variables
-        page = 1;
-        hasMore = true;
-        resultsDiv.innerHTML = '';
-        totalResultsDiv.textContent = '';
-        // Get search parameters
-        const formData = new FormData(searchForm);
-        currentQuery = {
-            table1: formData.get('table1'),
-            table2: formData.get('table2'),
-            table3: formData.get('table3'),
-            searchTerm1: formData.get('searchTerm1'),
-            operator1: formData.get('operator1'),
-            searchTerm2: formData.get('searchTerm2'),
-            operator2: formData.get('operator2'),
-            searchTerm3: formData.get('searchTerm3'),
-            operator3: formData.get('operator3'),
-            // Add other search terms as needed
-        };
-        performSearch(true);
-    });
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Reset variables
+            page = 1;
+            hasMore = true;
+            if (resultsDiv) resultsDiv.innerHTML = '';
+            if (totalResultsDiv) totalResultsDiv.textContent = '';
+            
+            // Get search parameters
+            const formData = new FormData(searchForm);
+            currentQuery = {};
+            for (let i = 1; i <= 3; i++) {
+                currentQuery[`field${i}`] = formData.get(`field${i}`);
+                currentQuery[`operator${i}`] = formData.get(`operator${i}`);
+                currentQuery[`searchTerm${i}`] = formData.get(`searchTerm${i}`);
+            }
+
+            // Check if form fields have valid values before proceeding
+            if (!currentQuery['field1'] || !currentQuery['searchTerm1']) {
+                console.error('Please enter a valid search term in the first field.');
+                return;
+            }
+
+            performSearch(true);
+        });
+    }
 
     // Cancel search functionality
-    cancelButton.addEventListener('click', function() {
-        if (controller) {
-            controller.abort();
-            hideLoadingIndicator();
-            isLoading = false;
-            hasMore = false;
-            cancelButton.style.display = 'none';
-        }
-    });
+    if (cancelButton) {
+        cancelButton.addEventListener('click', function() {
+            if (controller) {
+                controller.abort();
+                hideLoadingIndicator();
+                isLoading = false;
+                hasMore = false;
+                if (cancelButton) cancelButton.style.display = 'none';
+            }
+        });
+    }
 
     // Function to fetch results
     function performSearch(isNewSearch = false) {
@@ -1202,7 +1286,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         showLoadingIndicator();
-        cancelButton.style.display = 'inline-block';
+        if (cancelButton) cancelButton.style.display = 'inline-block';
 
         // Add page and perPage to currentQuery
         currentQuery.page = page;
@@ -1222,8 +1306,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             hideLoadingIndicator();
-            cancelButton.style.display = 'none';
-            if (data.documents.length > 0) {
+            if (cancelButton) cancelButton.style.display = 'none';
+            if (data.documents && data.documents.length > 0) {
                 appendResults(data.documents);
                 totalPages = data.total_pages;
                 totalResults = data.total_count;
@@ -1237,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 hasMore = false;
-                if (isNewSearch && resultsDiv.innerHTML === '') {
+                if (isNewSearch && resultsDiv && resultsDiv.innerHTML === '') {
                     resultsDiv.innerHTML = '<p>No results found.</p>';
                 }
             }
@@ -1246,7 +1330,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             hideLoadingIndicator();
-            cancelButton.style.display = 'none';
+            if (cancelButton) cancelButton.style.display = 'none';
             isLoading = false;
             if (error.name === 'AbortError') {
                 console.log('Search was cancelled');
@@ -1254,6 +1338,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
             }
         });
+    }
+
+    function showLoadingIndicator() {
+        if (loadingIndicator && loadingIndicator.style) {
+            loadingIndicator.style.display = 'block';
+        }
+    }
+
+    function hideLoadingIndicator() {
+        if (loadingIndicator && loadingIndicator.style) {
+            loadingIndicator.style.display = 'none';
+        }
     }
 
     // Function to prefetch the next page of results
@@ -1271,7 +1367,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.documents.length > 0) {
+            if (data.documents && data.documents.length > 0) {
                 prefetchedData = data;
             } else {
                 hasMore = false;
@@ -1318,6 +1414,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to append results to the page
     function appendResults(documents) {
+        if (!resultsDiv) return;
+
         let table = document.getElementById('resultsTable');
         let tbody;
 
@@ -1351,307 +1449,39 @@ document.addEventListener('DOMContentLoaded', function() {
         documents.forEach(doc => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><a href="/document/${doc.id}">${doc.file}</a></td>
+                <td><a href="/document/${doc._id}">${doc.filename || 'No file name'}</a></td>
                 <td>${doc.summary || 'No summary available.'}</td>
             `;
             tbody.appendChild(row);
         });
     }
 
-    // Function to show loading indicator
-    function showLoadingIndicator() {
-        loadingIndicator.style.display = 'block';
-    }
-
-    // Function to hide loading indicator
-    function hideLoadingIndicator() {
-        loadingIndicator.style.display = 'none';
-    }
-
     // Function to update total results display
     function updateTotalResults() {
-        totalResultsDiv.textContent = `Total results: ${totalResults}`;
+        if (totalResultsDiv) {
+            totalResultsDiv.textContent = `Total results: ${totalResults}`;
+        }
     }
 
     // Export to CSV functionality
     const exportCsvButton = document.getElementById('exportCsv');
     if (exportCsvButton) {
         exportCsvButton.addEventListener('click', function() {
+            if (!searchForm) return;
+
             const formData = new FormData(searchForm);
             const searchData = {
                 fields: []
             };
 
             for (let i = 1; i <= 3; i++) {
-                const table = formData.get(`table${i}`);
+                const field = formData.get(`field${i}`);
                 const operator = formData.get(`operator${i}`);
                 const searchTerm = formData.get(`searchTerm${i}`);
                 
-                if (table && operator && searchTerm) {
+                if (field && operator && searchTerm) {
                     searchData.fields.push({
-                        table: table,
-                        operator: operator,
-                        searchTerm: searchTerm
-                    });
-                }
-            }
-
-            fetch('/export_csv', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(searchData)
-            })
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = 'search_results.csv';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    }
-});
-
-
-********************************************************************************
-
-File: static\search.js
-********************************************************************************
-
-document.addEventListener('DOMContentLoaded', function() {
-    const searchForm = document.getElementById('searchForm');
-    const resultsDiv = document.getElementById('results');
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const cancelButton = document.getElementById('cancelSearch');
-    const totalResultsDiv = document.getElementById('totalResults');
-
-    let controller;
-    let page = 1;
-    let totalPages = 1;
-    const perPage = 50;
-    let totalResults = 0;
-    let isLoading = false;
-    let hasMore = true;
-    let currentQuery = {};
-    let prefetchedData = null;
-
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        page = 1;
-        hasMore = true;
-        resultsDiv.innerHTML = '';
-        totalResultsDiv.textContent = '';
-        const formData = new FormData(searchForm);
-        currentQuery = {
-            table1: formData.get('table1'),
-            table2: formData.get('table2'),
-            table3: formData.get('table3'),
-            searchTerm1: formData.get('searchTerm1'),
-            operator1: formData.get('operator1'),
-            searchTerm2: formData.get('searchTerm2'),
-            operator2: formData.get('operator2'),
-            searchTerm3: formData.get('searchTerm3'),
-            operator3: formData.get('operator3'),
-        };
-        performSearch(true);
-    });
-
-    cancelButton.addEventListener('click', function() {
-        if (controller) {
-            controller.abort();
-            hideLoadingIndicator();
-            isLoading = false;
-            hasMore = false;
-            cancelButton.style.display = 'none';
-        }
-    });
-
-    function performSearch(isNewSearch = false) {
-        if (isLoading || !hasMore) return;
-        isLoading = true;
-
-        if (isNewSearch) {
-            prefetchedData = null;
-        }
-
-        showLoadingIndicator();
-        cancelButton.style.display = 'inline-block';
-
-        currentQuery.page = page;
-        currentQuery.per_page = perPage;
-
-        controller = new AbortController();
-        const signal = controller.signal;
-
-        fetch('/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(currentQuery),
-            signal: signal
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoadingIndicator();
-            cancelButton.style.display = 'none';
-            if (data.documents && data.documents.length > 0) {
-                appendResults(data.documents);
-                totalPages = data.total_pages;
-                totalResults = data.total_count;
-
-                if (page < totalPages) {
-                    page += 1;
-                    prefetchNextPage();
-                } else {
-                    hasMore = false;
-                }
-            } else {
-                hasMore = false;
-                if (isNewSearch && resultsDiv.innerHTML === '') {
-                    resultsDiv.innerHTML = '<p>No results found.</p>';
-                }
-            }
-            updateTotalResults();
-            isLoading = false;
-        })
-        .catch(error => {
-            hideLoadingIndicator();
-            cancelButton.style.display = 'none';
-            isLoading = false;
-            if (error.name === 'AbortError') {
-                console.log('Search was cancelled');
-            } else {
-                console.error('Error:', error);
-            }
-        });
-    }
-
-    function prefetchNextPage() {
-        if (prefetchedData || !hasMore) return;
-
-        const prefetchQuery = { ...currentQuery, page: page };
-
-        fetch('/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(prefetchQuery),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.documents && data.documents.length > 0) {
-                prefetchedData = data;
-            } else {
-                hasMore = false;
-            }
-        })
-        .catch(error => {
-            console.error('Error during prefetching:', error);
-        });
-    }
-
-    let debounceTimeout;
-    window.addEventListener('scroll', function() {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(function() {
-            const scrollPosition = window.innerHeight + window.scrollY;
-            const threshold = document.body.offsetHeight - 100;
-
-            if (scrollPosition >= threshold) {
-                if (prefetchedData) {
-                    appendResults(prefetchedData.documents);
-                    page += 1;
-                    totalPages = prefetchedData.total_pages;
-                    totalResults = prefetchedData.total_count;
-                    updateTotalResults();
-
-                    prefetchedData = null;
-                    if (page <= totalPages) {
-                        prefetchNextPage();
-                    } else {
-                        hasMore = false;
-                    }
-                } else {
-                    performSearch();
-                }
-            } else if (prefetchedData === null && (scrollPosition >= threshold / 2)) {
-                prefetchNextPage();
-            }
-        }, 200);
-    });
-
-    function appendResults(documents) {
-        let table = document.getElementById('resultsTable');
-        let tbody;
-
-        if (!table) {
-            table = document.createElement('table');
-            table.id = 'resultsTable';
-
-            const thead = document.createElement('thead');
-            thead.innerHTML = `
-                <tr>
-                    <th>File</th>
-                    <th>Summary</th>
-                </tr>
-            `;
-            table.appendChild(thead);
-
-            tbody = document.createElement('tbody');
-            table.appendChild(tbody);
-
-            resultsDiv.appendChild(table);
-        } else {
-            tbody = table.querySelector('tbody');
-        }
-
-        documents.forEach(doc => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><a href="/document/${doc._id}">${doc.file || 'Untitled'}</a></td>
-                <td>${doc.summary || 'No summary available.'}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function showLoadingIndicator() {
-        loadingIndicator.style.display = 'block';
-    }
-
-    function hideLoadingIndicator() {
-        loadingIndicator.style.display = 'none';
-    }
-
-    function updateTotalResults() {
-        totalResultsDiv.textContent = `Total results: ${totalResults}`;
-    }
-
-    const exportCsvButton = document.getElementById('exportCsv');
-    if (exportCsvButton) {
-        exportCsvButton.addEventListener('click', function() {
-            const formData = new FormData(searchForm);
-            const searchData = {
-                fields: []
-            };
-
-            for (let i = 1; i <= 3; i++) {
-                const table = formData.get(`table${i}`);
-                const operator = formData.get(`operator${i}`);
-                const searchTerm = formData.get(`searchTerm${i}`);
-                
-                if (table && operator && searchTerm) {
-                    searchData.fields.push({
-                        table: table,
+                        field: field,
                         operator: operator,
                         searchTerm: searchTerm
                     });
@@ -1686,33 +1516,13 @@ document.addEventListener('DOMContentLoaded', function() {
 File: static\style.css
 ********************************************************************************
 
-/* File: static/style.css */
-/* Updated: 2024-08-06 18:30 */
-
-
-
-:root {
-    --font-main: {{ ui_config['fonts']['main'] }};
-    --font-headers: {{ ui_config['fonts']['headers'] }};
-    --size-base: {{ ui_config['sizes']['base'] }};
-    --size-h1: {{ ui_config['sizes']['h1'] }};
-    --size-h2: {{ ui_config['sizes']['h2'] }};
-    --size-h3: {{ ui_config['sizes']['h3'] }};
-    --color-primary: {{ ui_config['colors']['primary'] }};
-    --color-secondary: {{ ui_config['colors']['secondary'] }};
-    --color-background: {{ ui_config['colors']['background'] }};
-    --color-text: {{ ui_config['colors']['text'] }};
-    --spacing-small: {{ ui_config['spacing']['small'] }};
-    --spacing-medium: {{ ui_config['spacing']['medium'] }};
-    --spacing-large: {{ ui_config['spacing']['large'] }};
-}
-
+/* static/style.css */
 
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     line-height: 1.6;
-    background-color:#ffffff;
+    background-color: #ffffff;
     color: #333;
     margin: 0;
     padding: 0;
@@ -1781,22 +1591,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-#searchButton {
-    display: block;
-    margin-top: 20px;
-    width: 100%;
-}
-
-#cancelSearch {
-    margin-left: 10px;
-    background-color: #dc3545;
-}
-
-#cancelSearch:hover {
-    background-color: #c82333;
-}
-
-/* Search Results */
+/* Results Table */
 #results table {
     width: 100%;
     border-collapse: collapse;
@@ -1814,7 +1609,6 @@ button:hover {
     font-weight: bold;
 }
 
-/* #comment: Added banded table styles */
 #results tbody tr:nth-child(odd) {
     background-color: #f9f9f9;
 }
@@ -1836,32 +1630,28 @@ button:hover {
     text-decoration: underline;
 }
 
-/* Pagination */
-#pagination {
-    display: flex;
-    justify-content: center;
+/* Loading Indicator */
+#loadingIndicator {
+    text-align: center;
     margin-top: 20px;
 }
 
-.page-button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    color: #007bff;
-    cursor: pointer;
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
 }
 
-.page-button:hover {
-    background-color: #e9ecef;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.page-button.current-page {
-    background-color: #007bff;
-    color: white;
-}
-
-/* Miscellaneous */
+/* Additional Styles */
 .mt-4 {
     margin-top: 1rem;
 }
@@ -1870,82 +1660,53 @@ button:hover {
     margin-left: auto;
 }
 
-.remove-field {
-    background-color: transparent;
-    color: red;
-    font-weight: bold;
-    border: none;
-    font-size: 20px;
-    padding: 0 5px;
-}
-
-.remove-field:hover {
-    background-color: transparent;
-    color: darkred;
-}
-
-#addField {
-    margin-top: 10px;
-    background-color: #17a2b8;
-}
-
-#addField:hover {
-    background-color: #138496;
-}
-
-/* Loading Indicator */
-#loadingIndicator {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Error */
+/* Error Messages */
 .error {
     color: #dc3545;
     font-weight: bold;
 }
 
-/* Updated with styles for infinite scrolling results */
-
-.result-item {
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
+/* Document Detail Styles */
+.document-detail .detail-container {
+    display: flex;
+    gap: 20px;
 }
 
-.result-item a {
-    font-size: 18px;
-    color: #007bff;
-    text-decoration: none;
+.document-detail .info-panel {
+    flex: 1;
 }
 
-.result-item a:hover {
-    text-decoration: underline;
+.document-detail .image-panel {
+    flex: 1;
+    position: relative;
 }
 
-.result-item p {
-    margin-top: 5px;
-    color: #555;
+#imageContainer {
+    overflow: auto;
+    max-width: 100%;
+    max-height: 600px;
 }
+
+#documentImage {
+    max-width: 100%;
+    max-height: 100%;
+    transform-origin: top left;
+}
+
+.zoom-controls {
+    margin-top: 10px;
+}
+
+.zoom-controls button {
+    margin-right: 5px;
+}
+
+
 
 /* Loading Indicator */
 #loadingIndicator {
     text-align: center;
-    margin: 20px 0;
+    margin-top: 20px;
 }
 
 .spinner {
@@ -1958,44 +1719,6 @@ button:hover {
     margin: 0 auto;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Styles for the results table */
-#resultsTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-#resultsTable th, #resultsTable td {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-
-#resultsTable th {
-    background-color: #f2f2f2;
-    text-align: left;
-}
-
-#resultsTable tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-#resultsTable tr:hover {
-    background-color: #e9e9e9;
-}
-
-#resultsTable a {
-    color: #007bff;
-    text-decoration: none;
-}
-
-#resultsTable a:hover {
-    text-decoration: underline;
-}
 
 ********************************************************************************
 
@@ -2012,23 +1735,23 @@ File: templates\document-detail.html
         <a href="{{ url_for('index') }}?return_to_search=true" class="nav-button" title="Return to Search Results">
           <i class="fas fa-search"></i>
         </a>
-        <a href="{{ url_for('document_detail', doc_id=prev_id) if prev_id else '#' }}" class="nav-button {{ 'disabled' if not prev_id else '' }}" title="Previous Result">
+        <a href="{{ prev_id and url_for('document_detail', doc_id=prev_id) or '#' }}" class="nav-button {{ 'disabled' if not prev_id else '' }}" title="Previous Result">
           <i class="fas fa-chevron-left"></i>
         </a>
         <a href="{{ url_for('index') }}" class="nav-button" title="Home">
           <i class="fas fa-home"></i>
         </a>
-        <a href="{{ url_for('document_detail', doc_id=next_id) if next_id else '#' }}" class="nav-button {{ 'disabled' if not next_id else '' }}" title="Next Result">
+        <a href="{{ next_id and url_for('document_detail', doc_id=next_id) or '#' }}" class="nav-button {{ 'disabled' if not next_id else '' }}" title="Next Result">
           <i class="fas fa-chevron-right"></i>
         </a>
       </div>
   
-      <h1>{{ document.get('file', 'Untitled Document') }}</h1>
+      <h1>{{ document.get('filename', 'Untitled Document') }}</h1>
 
       <table class="info-table">
         <tbody>
           {% for key, value in document.items() %}
-            {% if key != '_id' and key != 'file' %}
+            {% if key != '_id' and key != 'filename' %}
               <tr>
                 <th>{{ key|title }}</th>
                 <td>
@@ -2079,7 +1802,6 @@ File: templates\document-detail.html
 
 {% block scripts %}
 <script>
-  // Include the zoom and drag functionality script here
   let scale = 1;
   const ZOOM_STEP = 0.1;
   const MAX_SCALE = 3;
@@ -2118,7 +1840,6 @@ File: templates\document-detail.html
   zoomOutBtn.addEventListener('click', zoomOut);
   resetZoomBtn.addEventListener('click', resetZoom);
 
-  // Enable drag scrolling
   let isDragging = false;
   let startX, startY, scrollLeft, scrollTop;
 
@@ -2151,19 +1872,17 @@ File: templates\document-detail.html
 </script>
 {% endblock %}
 
+
 ********************************************************************************
 
 File: templates\document-list.html
 ********************************************************************************
 
-<!-- document-list.html -->
-<!-- Updated: 2023-07-30 06:00 PM -->
-<!-- Path: templates/document-list.html -->
+<!-- templates/document-list.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document List</title>
 </head>
 <body>
@@ -2172,7 +1891,7 @@ File: templates\document-list.html
     <ul id="documentList">
     {% for document in documents %}
         <li>
-            <a href="{{ url_for('document_detail', doc_id=document.id) }}" target="_blank" rel="noopener noreferrer" class="document-link">{{ document.file }}</a>
+            <a href="{{ url_for('document_detail', doc_id=document['_id']) }}" target="_blank" rel="noopener noreferrer" class="document-link">{{ document.get('filename', 'Untitled Document') }}</a>
         </li>
     {% endfor %}
     </ul>
@@ -2210,15 +1929,13 @@ File: templates\index.html
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Historical Document Reader</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
-    <style>
-        {% include 'style.css' %}
-    </style>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Historical Document Reader</title>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
     <div class="container">
         <h1 class="mt-4">Historical Document Reader</h1>
         <nav>
@@ -2227,40 +1944,51 @@ File: templates\index.html
                 <li><a href="{{ url_for('search_terms') }}">Search Terms</a></li>
                 <li><a href="{{ url_for('database_info') }}">Database Info</a></li>
                 <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                {% if 'logged_in' in session %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                {% endif %}
             </ul>
         </nav>
-        <form id="searchForm">
+
+        <form id="searchForm" method="POST" action="{{ url_for('search') }}">
             <div id="searchFields">
                 {% for i in range(1, num_search_fields + 1) %}
                 <div class="search-field">
-                    <select name="table{{ i }}">
-                        {% for value, label in table_options %}
-                        <option value="{{ value }}" {% if loop.first %}selected{% endif %}>{{ label }}</option>
+                    <label for="field{{ i }}">Field:</label>
+                    <select name="field{{ i }}" id="field{{ i }}">
+                        {% for field in field_structure|dictsort %}
+                            <option value="{{ field[0] }}">{{ field[0] }}</option>
                         {% endfor %}
                     </select>
-                    <select name="operator{{ i }}">
-                        {% for operator in operator_options %}
-                        <option value="{{ operator }}">{{ operator }}</option>
-                        {% endfor %}
+                    <label for="operator{{ i }}">Operator:</label>
+                    <select name="operator{{ i }}" id="operator{{ i }}">
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                        <option value="NOT">NOT</option>
                     </select>
-                    <input type="text" name="searchTerm{{ i }}" placeholder="Enter search term">
+                    <label for="searchTerm{{ i }}">Search Term:</label>
+                    <input type="text" name="searchTerm{{ i }}" id="searchTerm{{ i }}" placeholder="Enter search term">
                 </div>
                 {% endfor %}
             </div>
             <button type="submit" id="searchButton">Search</button>
-            <button type="button" id="cancelSearch" style="display: none;">Cancel Search</button>
         </form>
+
         <!-- Loading Indicator -->
         <div id="loadingIndicator" style="display: none;">
             <p>Loading... Please wait.</p>
             <div class="spinner"></div>
         </div>
+
         <!-- Total Results Display -->
         <div id="totalResults" class="mt-4"></div>
         <div id="results" class="mt-4">
             <!-- The table will be dynamically inserted here -->
         </div>
     </div>
+
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!-- Include your custom script -->
@@ -2275,16 +2003,15 @@ File: templates\search-terms.html
 ********************************************************************************
 
 <!-- File: templates/search-terms.html -->
-<!-- Updated: 2024-08-07 12:00 -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Terms</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
     <style>
         #loadingIndicator {
             display: none;
@@ -2318,17 +2045,11 @@ File: templates\search-terms.html
             </ul>
         </nav>
         <div>
-            <label for="tableSelect">Select Table:</label>
-            <select id="tableSelect">
-                <option value="ocr_text">OCR Text</option>
-                <option value="summary">Summary</option>
-                <option value="named_entities" selected>Named Entities</option>
-                <option value="dates">Dates</option>
-                <option value="monetary_amounts">Monetary Amounts</option>
-                <option value="relationships">Relationships</option>
-                <option value="metadata">Metadata</option>
-                <option value="translation">Translation</option>
-                <option value="file_info">File Info</option>
+            <label for="fieldSelect">Select Field:</label>
+            <select id="fieldSelect">
+                {% for field in field_structure|dictsort %}
+                    <option value="{{ field[0] }}">{{ field[0] }}</option>
+                {% endfor %}
             </select>
         </div>
         <div id="tableInfo">
@@ -2356,8 +2077,9 @@ File: templates\search-terms.html
             </tbody>
         </table>
     </div>
+    <!-- Include jQuery and DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
     <script>
         $(document).ready(function() {
             var table = $('#termsTable').DataTable({
@@ -2370,13 +2092,13 @@ File: templates\search-terms.html
                 $('#totalRecords').text(data.total_records);
             }
 
-            $('#tableSelect').on('change', function() {
-                var selectedTable = $(this).val();
+            $('#fieldSelect').on('change', function() {
+                var selectedField = $(this).val();
                 $('#loadingIndicator').show();
 
                 $.ajax({
                     url: '/search-terms',
-                    data: { table: selectedTable },
+                    data: { field: selectedField },
                     success: function(data) {
                         if (data.error) {
                             alert(data.error);
@@ -2398,25 +2120,23 @@ File: templates\search-terms.html
             });
 
             // Trigger change event on page load to fetch initial data
-            $('#tableSelect').trigger('change');
+            $('#fieldSelect').trigger('change');
         });
     </script>
 </body>
 </html>
+
 
 ********************************************************************************
 
 File: templates\database-info.html
 ********************************************************************************
 
-<!-- File: templates/database-info.html -->
-<!-- Updated: 2024-08-06 12:40 -->
-
+<!-- templates/database-info.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database Information</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -2434,15 +2154,15 @@ File: templates\database-info.html
         <table>
             <thead>
                 <tr>
-                    <th>Table Name</th>
+                    <th>Field Name</th>
                     <th>Number of Records</th>
                 </tr>
             </thead>
             <tbody>
-                {% for table in table_info %}
+                {% for field in collection_info %}
                 <tr>
-                    <td>{{ table.name }}</td>
-                    <td>{{ table.count }}</td>
+                    <td>{{ field.name }}</td>
+                    <td>{{ field.count }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -2451,249 +2171,6 @@ File: templates\database-info.html
 </body>
 </html>
 
-********************************************************************************
-
-File: templates\style.css
-********************************************************************************
-
-/* File: static/style.css */
-/* Updated: 2024-08-09 19:00 */
-
-:root {
-    --font-main: {{ ui_config['fonts']['main'] }};
-    --font-headers: {{ ui_config['fonts']['headers'] }};
-    --size-base: {{ ui_config['sizes']['base'] }};
-    --size-h1: {{ ui_config['sizes']['h1'] }};
-    --size-h2: {{ ui_config['sizes']['h2'] }};
-    --size-h3: {{ ui_config['sizes']['h3'] }};
-    --color-primary: {{ ui_config['colors']['primary'] }};
-    --color-secondary: {{ ui_config['colors']['secondary'] }};
-    --color-background: {{ ui_config['colors']['background'] }};
-    --color-text: {{ ui_config['colors']['text'] }};
-    --color-light-gray: {{ ui_config['colors']['lightGray'] }};
-    --color-medium-gray: {{ ui_config['colors']['mediumGray'] }};
-    --color-dark-gray: {{ ui_config['colors']['darkGray'] }};
-    --color-danger: {{ ui_config['colors']['danger'] }};
-    --color-danger-hover: {{ ui_config['colors']['dangerHover'] }};
-    --color-success: {{ ui_config['colors']['success'] }};
-    --color-success-hover: {{ ui_config['colors']['successHover'] }};
-    --spacing-small: {{ ui_config['spacing']['small'] }};
-    --spacing-medium: {{ ui_config['spacing']['medium'] }};
-    --spacing-large: {{ ui_config['spacing']['large'] }};
-    --border-radius: {{ ui_config['borderRadius'] }};
-    --transition-duration: {{ ui_config['transitionDuration'] }};
-}
-
-body {
-    font-family: var(--font-main);
-    font-size: var(--size-base);
-    line-height: 1.6;
-    background-color: var(--color-background);
-    color: var(--color-text);
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--spacing-large);
-}
-
-h1, h2, h3 {
-    font-family: var(--font-headers);
-    color: var(--color-text);
-    margin-bottom: var(--spacing-large);
-}
-
-/* Navigation */
-nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin-bottom: var(--spacing-large);
-}
-
-nav ul li {
-    display: inline;
-    margin-right: var(--spacing-small);
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: var(--color-primary);
-}
-
-nav ul li a:hover {
-    text-decoration: underline;
-}
-
-/* Search Form */
-.search-field {
-    display: flex;
-    gap: var(--spacing-small);
-    margin-bottom: var(--spacing-medium);
-    align-items: center;
-}
-
-input[type="text"], select {
-    padding: var(--spacing-small);
-    border: 1px solid var(--color-medium-gray);
-    border-radius: var(--border-radius);
-    font-size: var(--size-base);
-}
-
-button {
-    padding: var(--spacing-small) var(--spacing-large);
-    background-color: var(--color-primary);
-    color: var(--color-background);
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background-color var(--transition-duration) ease;
-    font-size: var(--size-base);
-}
-
-button:hover {
-    background-color: var(--color-secondary);
-}
-
-#searchButton {
-    display: block;
-    margin-top: var(--spacing-large);
-    width: 100%;
-}
-
-#cancelSearch {
-    margin-left: var(--spacing-small);
-    background-color: var(--color-danger);
-}
-
-#cancelSearch:hover {
-    background-color: var(--color-danger-hover);
-}
-
-/* Search Results */
-#results table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: var(--spacing-large);
-}
-
-#results th, #results td {
-    padding: var(--spacing-medium);
-    text-align: left;
-    border-bottom: 1px solid var(--color-dark-gray);
-}
-
-#results th {
-    background-color: var(--color-light-gray);
-    font-weight: bold;
-}
-
-#results tbody tr:nth-child(odd) {
-    background-color: var(--color-background);
-}
-
-#results tbody tr:nth-child(even) {
-    background-color: var(--color-light-gray);
-}
-
-#results tbody tr:hover {
-    background-color: var(--color-medium-gray);
-}
-
-#results a {
-    color: var(--color-primary);
-    text-decoration: none;
-}
-
-#results a:hover {
-    text-decoration: underline;
-}
-
-/* Pagination */
-#pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: var(--spacing-large);
-}
-
-.page-button {
-    margin: 0 var(--spacing-small);
-    padding: var(--spacing-small) var(--spacing-medium);
-    background-color: var(--color-light-gray);
-    border: 1px solid var(--color-medium-gray);
-    color: var(--color-primary);
-    cursor: pointer;
-}
-
-.page-button:hover {
-    background-color: var(--color-medium-gray);
-}
-
-.page-button.current-page {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-}
-
-/* Miscellaneous */
-.mt-4 {
-    margin-top: 1rem;
-}
-
-.ml-auto {
-    margin-left: auto;
-}
-
-.remove-field {
-    background-color: transparent;
-    color: var(--color-danger);
-    font-weight: bold;
-    border: none;
-    font-size: 20px;
-    padding: 0 var(--spacing-small);
-}
-
-.remove-field:hover {
-    background-color: transparent;
-    color: var(--color-danger-hover);
-}
-
-#addField {
-    margin-top: var(--spacing-small);
-    background-color: var(--color-success);
-}
-
-#addField:hover {
-    background-color: var(--color-success-hover);
-}
-
-/* Loading Indicator */
-#loadingIndicator {
-    text-align: center;
-    margin-top: var(--spacing-large);
-}
-
-.spinner {
-    border: 4px solid var(--color-light-gray);
-    border-top: 4px solid var(--color-primary);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Error */
-.error {
-    color: var(--color-danger);
-    font-weight: bold;
-}
 
 ********************************************************************************
 
@@ -2701,104 +2178,81 @@ File: templates\settings.html
 ********************************************************************************
 
 <!-- File: templates/settings.html -->
-<!-- Updated: 2024-08-09 20:05 -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Historical Document Reader</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
-    <style>
-        {% include 'style.css' %}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1 class="mt-4">Settings</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('search_terms') }}">Search Terms</a></li>
-                <li><a href="{{ url_for('database_info') }}">Database Info</a></li>
-                <li><a href="{{ url_for('settings') }}">Settings</a></li>
-            </ul>
-        </nav>
-        <form method="POST">
-            <h2>Fonts</h2>
-            <label for="fonts_main">Main Font:</label>
-            <input type="text" id="fonts_main" name="fonts[main]" value="{{ config['fonts']['main'] }}"><br>
-            <label for="fonts_headers">Headers Font:</label>
-            <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config['fonts']['headers'] }}"><br>
+{% extends "base.html" %}
 
-            <h2>Sizes</h2>
-            <label for="sizes_base">Base Size:</label>
-            <input type="text" id="sizes_base" name="sizes[base]" value="{{ config['sizes']['base'] }}"><br>
-            <label for="sizes_h1">H1 Size:</label>
-            <input type="text" id="sizes_h1" name="sizes[h1]" value="{{ config['sizes']['h1'] }}"><br>
-            <label for="sizes_h2">H2 Size:</label>
-            <input type="text" id="sizes_h2" name="sizes[h2]" value="{{ config['sizes']['h2'] }}"><br>
-            <label for="sizes_h3">H3 Size:</label>
-            <input type="text" id="sizes_h3" name="sizes[h3]" value="{{ config['sizes']['h3'] }}"><br>
+{% block content %}
+<div class="container">
+    <h1>Settings</h1>
+    <form method="POST">
+        <h2>Fonts</h2>
+        <label for="fonts_main">Main Font:</label>
+        <input type="text" id="fonts_main" name="fonts[main]" value="{{ config['fonts']['main'] }}"><br>
+        <label for="fonts_headers">Headers Font:</label>
+        <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config['fonts']['headers'] }}"><br>
 
-            <h2>Colors</h2>
-            <label for="colors_primary">Primary Color:</label>
-            <input type="color" id="colors_primary" name="colors[primary]" value="{{ config['colors']['primary'] }}"><br>
-            <label for="colors_secondary">Secondary Color:</label>
-            <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config['colors']['secondary'] }}"><br>
-            <label for="colors_background">Background Color:</label>
-            <input type="color" id="colors_background" name="colors[background]" value="{{ config['colors']['background'] }}"><br>
-            <label for="colors_text">Text Color:</label>
-            <input type="color" id="colors_text" name="colors[text]" value="{{ config['colors']['text'] }}"><br>
+        <h2>Sizes</h2>
+        <label for="sizes_base">Base Size:</label>
+        <input type="text" id="sizes_base" name="sizes[base]" value="{{ config['sizes']['base'] }}"><br>
+        <label for="sizes_h1">H1 Size:</label>
+        <input type="text" id="sizes_h1" name="sizes[h1]" value="{{ config['sizes']['h1'] }}"><br>
+        <label for="sizes_h2">H2 Size:</label>
+        <input type="text" id="sizes_h2" name="sizes[h2]" value="{{ config['sizes']['h2'] }}"><br>
+        <label for="sizes_h3">H3 Size:</label>
+        <input type="text" id="sizes_h3" name="sizes[h3]" value="{{ config['sizes']['h3'] }}"><br>
 
-            <h2>Spacing</h2>
-            <label for="spacing_small">Small Spacing:</label>
-            <input type="text" id="spacing_small" name="spacing[small]" value="{{ config['spacing']['small'] }}"><br>
-            <label for="spacing_medium">Medium Spacing:</label>
-            <input type="text" id="spacing_medium" name="spacing[medium]" value="{{ config['spacing']['medium'] }}"><br>
-            <label for="spacing_large">Large Spacing:</label>
-            <input type="text" id="spacing_large" name="spacing[large]" value="{{ config['spacing']['large'] }}"><br>
+        <h2>Colors</h2>
+        <label for="colors_primary">Primary Color:</label>
+        <input type="color" id="colors_primary" name="colors[primary]" value="{{ config['colors']['primary'] }}"><br>
+        <label for="colors_secondary">Secondary Color:</label>
+        <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config['colors']['secondary'] }}"><br>
+        <label for="colors_background">Background Color:</label>
+        <input type="color" id="colors_background" name="colors[background]" value="{{ config['colors']['background'] }}"><br>
+        <label for="colors_text">Text Color:</label>
+        <input type="color" id="colors_text" name="colors[text]" value="{{ config['colors']['text'] }}"><br>
 
-            <button type="submit">Save Settings</button>
-        </form>
-    </div>
-    <script>
-        // Convert nested objects to JSON strings before form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            ['fonts', 'sizes', 'colors', 'spacing'].forEach(function(key) {
-                var inputs = document.querySelectorAll(`[name^="${key}["]`);
-                var obj = {};
-                inputs.forEach(function(input) {
-                    var prop = input.name.match(/\[(.*?)\]/)[1];
-                    obj[prop] = input.value;
-                });
-                var hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = key;
-                hiddenInput.value = JSON.stringify(obj);
-                this.appendChild(hiddenInput);
-            }, this);
-            this.submit();
-        });
-    </script>
-</body>
-</html>
+        <h2>Spacing</h2>
+        <label for="spacing_small">Small Spacing:</label>
+        <input type="text" id="spacing_small" name="spacing[small]" value="{{ config['spacing']['small'] }}"><br>
+        <label for="spacing_medium">Medium Spacing:</label>
+        <input type="text" id="spacing_medium" name="spacing[medium]" value="{{ config['spacing']['medium'] }}"><br>
+        <label for="spacing_large">Large Spacing:</label>
+        <input type="text" id="spacing_large" name="spacing[large]" value="{{ config['spacing']['large'] }}"><br>
+
+        <button type="submit">Save Settings</button>
+    </form>
+</div>
+<script>
+    // Convert nested objects to JSON strings before form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        ['fonts', 'sizes', 'colors', 'spacing'].forEach(function(key) {
+            var inputs = document.querySelectorAll(`[name^="${key}\\["]`);
+            var obj = {};
+            inputs.forEach(function(input) {
+                var prop = input.name.match(/\[(.*?)\]/)[1];
+                obj[prop] = input.value;
+            });
+            var hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = key;
+            hiddenInput.value = JSON.stringify(obj);
+            this.appendChild(hiddenInput);
+        }, this);
+    });
+</script>
+{% endblock %}
+
 
 ********************************************************************************
 
 File: templates\base.html
 ********************************************************************************
 
-<!-- File: templates/base.html -->
-<!-- Updated: 2024-08-12 11:15 -->
-
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Historical Document Reader{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -2830,6 +2284,7 @@ File: templates\base.html
     {% block content %}{% endblock %}
 </body>
 </html>
+
 
 ********************************************************************************
 
@@ -2867,600 +2322,6 @@ File: templates\login.html
         <input type="submit" value="Login">
     </form>
 {% endblock %}
-
-********************************************************************************
-
-File: util\random_texts.py
-********************************************************************************
-
-# Script to randomly select and copy 50 files from one directory to another
-# Date: 2024-08-20
-
-import os
-import shutil
-import random
-
-def copy_random_files(src_dir, dest_dir, num_files):
-    """
-    Randomly selects and copies a specified number of files from the source directory to the destination directory.
-
-    Parameters:
-    - src_dir (str): Path to the source directory
-    - dest_dir (str): Path to the destination directory
-    - num_files (int): Number of files to copy
-    """
-    # Ensure the destination directory exists
-    if not os.path.exists(dest_dir):
-        os.makedirs(dest_dir)
-
-    # List all files in the source directory
-    all_files = [f for f in os.listdir(src_dir) if os.path.isfile(os.path.join(src_dir, f))]
-
-    # Check if there are enough files to select from
-    if len(all_files) < num_files:
-        raise ValueError(f"Not enough files in the source directory. Found {len(all_files)}, but need {num_files}.")
-
-    # Randomly select files
-    selected_files = random.sample(all_files, num_files)
-
-    # Copy selected files to the destination directory
-    for file_name in selected_files:
-        src_file = os.path.join(src_dir, file_name)
-        dest_file = os.path.join(dest_dir, file_name)
-        shutil.copy(src_file, dest_file)
-        print(f"Copied: {file_name}")
-
-# Example usage
-source_directory = "../texts"
-destination_directory = "../random_texts"
-number_of_files_to_copy = 50
-
-copy_random_files(source_directory, destination_directory, number_of_files_to_copy)
-
-
-********************************************************************************
-
-File: util\test_connect.py
-********************************************************************************
-
-from pymongo import MongoClient
-from pprint import pprint
-from tabulate import tabulate
-
-
-# Connect to MongoDB
-client = MongoClient('mongodb://localhost:27017/')  # Adjust the connection string as needed
-db = client['railroad_employees']  # Replace with your actual database name
-employees = db['employees']  # Replace with your actual collection name
-
-# Query to fetch a few records
-records = employees.find().limit(1)  # Adjust the limit to fetch more or fewer records
-
-# Print out the records in a structured way
-for record in records:
-    pprint({
-        'ID': record.get('_id'),
-        'Source': record.get('source'),
-        'OCR Text': record.get('ocr_text', 'N/A'),
-        'Summary': record.get('summary', 'N/A'),
-        'Personal Information': {
-            'Name': record.get('sections', [{}])[0].get('fields', [{}])[0].get('linked_information', {}).get('personal_information', {}).get('name', 'N/A'),
-            'Date of Birth': record.get('sections', [{}])[0].get('fields', [{}])[0].get('linked_information', {}).get('personal_information', {}).get('date_of_birth', 'N/A'),
-            'Social Security No.': record.get('sections', [{}])[0].get('fields', [{}])[0].get('linked_information', {}).get('personal_information', {}).get('social_security_no', 'N/A'),
-        },
-        'Employment Record': {
-            'Document Type': record.get('sections', [{}])[0].get('fields', [{}])[0].get('linked_information', {}).get('metadata', {}).get('document_type', 'N/A'),
-            'Period': record.get('sections', [{}])[0].get('fields', [{}])[0].get('linked_information', {}).get('metadata', {}).get('period', 'N/A'),
-            'Context': record.get('sections', [{}])[0].get('fields', [{}])[0].get('linked_information', {}).get('metadata', {}).get('context', 'N/A'),
-        }
-    })
-
-# Close the connection
-client.close()
-
-#Second test
-
-
-# Connect to MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['railroad_employees']
-employees = db['employees']
-
-# Recursive function to print all key-value pairs in a document
-def recursive_print(document, indent=0):
-    """Recursively prints key-value pairs in a document."""
-    for key, value in document.items():
-        # Print the key with appropriate indentation
-        print(' ' * indent + str(key) + ':', end=' ')
-        
-        if isinstance(value, dict):
-            print()  # Print a new line before going deeper
-            recursive_print(value, indent + 4)  # Recur for dictionaries
-        elif isinstance(value, list):
-            print()  # Print a new line before going deeper
-            for i, item in enumerate(value):
-                print(' ' * (indent + 4) + f'[{i}]:', end=' ')
-                if isinstance(item, dict):
-                    print()  # Print a new line before going deeper
-                    recursive_print(item, indent + 8)
-                else:
-                    print(item)
-        else:
-            print(value)  # Print the value directly if it's neither dict nor list
-
-# Query to fetch a few records
-records = employees.find().limit(1)  # Adjust the limit as needed
-
-# Print out the records recursively
-for record in records:
-    print(f'Record ID: {record.get("_id")}')
-    recursive_print(record)
-    print('-' * 40)  # Separator between records
-
-# Close the connection
-client.close()
-
-
-
-
-
-********************************************************************************
-
-File: util\batch_upload.py
-********************************************************************************
-
-import json
-import os
-from openai import OpenAI
-from tqdm import tqdm
-
-# untested
-
-# Variables
-API_KEY_FILE = "G:/My Drive/2024-2025/coding/api_key.txt"
-TEXT_DIR = "../broken_texts"  # Directory containing text files
-PROMPT_FILE = "rolls_json_prompt.txt"  # File containing the prompt
-API_URL = "https://api.openai.com/v1/chat/completions"
-BATCH_DIR = "./batch"  # Directory for batch output files
-DESCRIPTION = "JSON correction"
-VALID_TEXT_TYPES = [".txt"]  # Only process .txt files
-MAX_BATCH_SIZE_BYTES = 95 * 1024 * 1024  # slightly less than 100 MB
-MAX_BATCHES = 100  # Set the maximum number of batches to process
-JSONL_FILE_BASE = "batchinput"
-
-def read_prompt(prompt_file):
-    """Read the prompt from a file."""
-    with open(prompt_file, "r") as file:
-        return file.read().strip()
-
-def create_jsonl_entry(text_file_path, prompt, custom_id, model="gpt-4o-mini"): # DONT CHANGE MODEL NAME
-    """Create a JSONL entry for batch processing using a text file."""
-    with open(text_file_path, "r") as text_file:
-        text_content = text_file.read()
-    
-    body = {
-        "model": model,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": prompt
-                    },
-                    {
-                        "type": "text",
-                        "text": text_content
-                    }
-                ]
-            }
-        ],
-        "max_tokens": 4000  # Set max_tokens to 4000 to ensure the full response is received
-    }
-    return {
-        "custom_id": custom_id,
-        "method": "POST",
-        "url": "/v1/chat/completions",
-        "body": body
-    }, len(text_content)
-
-def get_files(text_dir):
-    """Get all files in the specified directory."""
-    return [os.path.join(text_dir, f) for f in os.listdir(text_dir)]
-
-def get_primary_basename(file_path):
-    """Return the primary base name of the file, cutting off at the first period."""
-    return file_path.split('/')[-1].split('.', 1)[0]
-
-def has_corresponding_json(file_path):
-    """Check if a corresponding JSON file exists."""
-    json_file_path = file_path.rsplit('.', 1)[0] + ".json"  # Adjusted for text-based filenames
-    return os.path.exists(json_file_path)
-
-def create_custom_id(text_path):
-    """Create a custom ID by replacing problematic characters in the text file path."""
-    return text_path.replace("/", "|").replace("\\", "|")
-
-def write_jsonl_file(entries, output_file):
-    """Write multiple JSONL entries to a file."""
-    with open(output_file, "w") as jsonl_file:
-        for entry in entries:
-            jsonl_file.write(json.dumps(entry, separators=(',', ':')) + "\n")  # Compress JSON
-
-def upload_jsonl_file(api_key, jsonl_file_path):
-    """Upload the JSONL file to OpenAI for batch processing."""
-    client = OpenAI(api_key=api_key)
-    with open(jsonl_file_path, "rb") as jsonl_file:
-        return client.files.create(
-            file=jsonl_file,  # Use the file object directly
-            purpose="batch"
-        )
-
-def create_batch(api_key, batch_input_file_id, description):
-    """Create a batch using the uploaded JSONL file ID."""
-    client = OpenAI(api_key=api_key)
-    return client.batches.create(
-        input_file_id=batch_input_file_id,
-        endpoint="/v1/chat/completions",
-        completion_window="24h",
-        metadata={
-            "description": description
-        }
-    )
-
-def serialize_batch(batch):
-    """Serialize the batch object into a JSON-serializable dictionary."""
-    return {
-        "id": batch.id,
-        "object": batch.object,
-        "endpoint": batch.endpoint,
-        "errors": str(batch.errors) if batch.errors else None,
-        "input_file_id": batch.input_file_id,
-        "completion_window": batch.completion_window,
-        "status": batch.status,
-        "output_file_id": batch.output_file_id,
-        "error_file_id": batch.error_file_id,
-        "created_at": batch.created_at,
-        "in_progress_at": batch.in_progress_at,
-        "expires_at": batch.expires_at,
-        "completed_at": batch.completed_at,
-        "failed_at": batch.failed_at,
-        "expired_at": batch.expired_at,
-        "request_counts": {
-            "total": batch.request_counts.total,
-            "completed": batch.request_counts.completed,
-            "failed": batch.request_counts.failed
-        },
-        "metadata": batch.metadata
-    }
-
-if __name__ == "__main__":
-    print("Reading API key from file...")
-    with open(API_KEY_FILE, "r") as file:
-        API_KEY = file.read().strip()
-    print("API key successfully read.")
-
-    print("Reading prompt from file...")
-    PROMPT = read_prompt(PROMPT_FILE)
-    print(f"Prompt: {PROMPT}")
-
-    print(f"Collecting files from directory: {TEXT_DIR}")
-    all_files = get_files(TEXT_DIR)
-    all_basenames = {get_primary_basename(f) for f in tqdm(all_files, desc="Processing files")}
-
-    print(f"Found {len(all_files)} files.")
-
-    # Filter to keep only text files without a corresponding .json file
-    filtered_text_files = [
-        f for f in all_files
-        if f.endswith(tuple(VALID_TEXT_TYPES)) and not has_corresponding_json(f)
-    ]
-
-    print(f"Filtered text files to {len(filtered_text_files)} for processing.")
-
-    total_files_processed = 0
-    batch_index = 0
-
-    while batch_index < MAX_BATCHES and filtered_text_files:
-        current_batch_size = 0
-        valid_batch_files = []
-        batch_entries = []
-
-        for file in tqdm(filtered_text_files, desc=f"Processing batch {batch_index + 1}"):
-            entry, text_data_size = create_jsonl_entry(file, PROMPT, create_custom_id(file))
-            if current_batch_size + text_data_size > MAX_BATCH_SIZE_BYTES:
-                break
-            valid_batch_files.append(file)
-            batch_entries.append(entry)
-            current_batch_size += text_data_size
-
-        if not valid_batch_files:
-            print("No files fit into the batch size limit. Exiting.")
-            break
-
-        jsonl_file = f"{JSONL_FILE_BASE}_batch_{batch_index + 1}.jsonl"
-        write_jsonl_file(batch_entries, jsonl_file)
-        print(f"JSONL file {jsonl_file} created and uploaded successfully.")
-
-        print("Creating batch...")
-        batch_input_file = upload_jsonl_file(API_KEY, jsonl_file)
-        batch = create_batch(API_KEY, batch_input_file.id, DESCRIPTION)
-        print("Batch created successfully. Batch details:")
-
-        batch_details = serialize_batch(batch)
-        print(json.dumps(batch_details, indent=2))
-
-        # Save the batch details as a text file in the batch directory
-        if not os.path.exists(BATCH_DIR):
-            os.makedirs(BATCH_DIR)
-        batch_file_path = os.path.join(BATCH_DIR, f"{batch.id}.txt")
-        with open(batch_file_path, "w") as batch_file:
-            batch_file.write(json.dumps(batch_details, indent=2))
-
-        print(f"Batch details saved to {batch_file_path}")
-
-        # Delete the JSONL file after upload
-        if os.path.exists(jsonl_file):
-            os.remove(jsonl_file)
-            print(f"Deleted JSONL file {jsonl_file}")
-
-        # Adjust the length of filtered_text_files to remove processed files
-        total_files_processed += len(valid_batch_files)
-        filtered_text_files = filtered_text_files[len(valid_batch_files):]
-        batch_index += 1
-
-    print(f"Total number of files processed: {total_files_processed}")
-    print(f"Total number of batches processed: {batch_index}")
-
-
-********************************************************************************
-
-File: util\batch_download.py
-********************************************************************************
-
-# batch_download.py
-# 2024-06-12
-# Script to check the status of batches, download the output files if the batches are completed,
-# extract each line from JSONL result files into individual JSON files named by custom_id,
-# and extract the "content" field from each JSON file into text files next to the original image files.
-# revised borr version August
-
-
-import os
-import json
-import time
-from openai import OpenAI
-
-
-# Variables
-API_KEY_FILE = "/data/lhyman6/api_key.txt"
-BATCH_DIR = "/data/lhyman6/OCR/scripts/borr/batch" #this must match the upload path  # You can change this to wherever you want the batch folder to be
-COMPLETED_DIR = os.path.join(BATCH_DIR, "completed")
-OUTPUT_DIR = os.path.join(BATCH_DIR, "batch_return")
-EXTRACTION_BASE_DIR = os.path.join(BATCH_DIR, "batch_json_results")  # Base output directory for individual JSON files
-RETRY_LIMIT = 45
-RETRY_DELAY = 60  # in seconds
-
-def read_api_key(api_key_file):
-    """Read the API key from a file."""
-    with open(api_key_file, "r") as file:
-        return file.read().strip()
-
-def get_batch_status(api_key, batch_id):
-    """Get the status of a batch."""
-    client = OpenAI(api_key=api_key)
-    batch = client.batches.retrieve(batch_id)
-    return batch
-
-def download_file(api_key, file_id, output_dir, filename):
-    """Download a file from OpenAI and save it to the specified directory with the given filename."""
-    client = OpenAI(api_key=api_key)
-    response = client.files.content(file_id)
-    
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    output_file_path = os.path.join(output_dir, f"{filename}.jsonl")
-    with open(output_file_path, "wb") as output_file:
-        for chunk in response.iter_bytes():
-            output_file.write(chunk)
-    
-    return output_file_path
-
-def serialize_batch(batch):
-    """Serialize the batch object into a JSON-serializable dictionary."""
-    return {
-        "id": batch.id,
-        "object": batch.object,
-        "endpoint": batch.endpoint,
-        "errors": str(batch.errors) if batch.errors else None,
-        "input_file_id": batch.input_file_id,
-        "completion_window": batch.completion_window,
-        "status": batch.status,
-        "output_file_id": batch.output_file_id,
-        "error_file_id": batch.error_file_id,
-        "created_at": batch.created_at,
-        "in_progress_at": batch.in_progress_at,
-        "expires_at": batch.expires_at,
-        "completed_at": batch.completed_at,
-        "failed_at": batch.failed_at,
-        "expired_at": batch.expired_at,
-        "request_counts": {
-            "total": batch.request_counts.total,
-            "completed": batch.request_counts.completed,
-            "failed": batch.request_counts.failed
-        },
-        "metadata": batch.metadata
-    }
-
-def read_batch_ids(batch_dir):
-    """Read batch IDs from filenames in the specified directory."""
-    batch_ids = []
-    for filename in os.listdir(batch_dir):
-        if filename.endswith(".txt"):
-            batch_id = filename.replace(".txt", "")
-            batch_ids.append(batch_id)
-    return batch_ids
-
-def extract_json_lines(result_file, output_dir):
-    """Extract each line from the result file into individual JSON files named by custom_id."""
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    with open(result_file, "r") as file:
-        for line in file:
-            data = json.loads(line)
-            custom_id = data.get("custom_id", "unknown_id")
-            output_file_path = os.path.join(output_dir, f"{custom_id}.json")
-            with open(output_file_path, "w") as output_file:
-                json.dump(data, output_file, indent=2)
-            print(f"Extracted {custom_id} to {output_file_path}")
-
-def extract_content_to_text(json_dir):
-    """Extract the 'content' field from JSON files and save as text files next to the original image files."""
-    for filename in os.listdir(json_dir):
-        if filename.endswith(".json"):
-            json_file_path = os.path.join(json_dir, filename)
-            with open(json_file_path, "r") as json_file:
-                data = json.load(json_file)
-                custom_id = data.get("custom_id", "unknown_id")
-                original_path = custom_id.replace("|", os.sep)
-                original_dir = os.path.dirname(original_path)
-                original_filename = original_path.split(os.sep)[-1]
-                
-                messages = data.get("response", {}).get("body", {}).get("choices", [])
-                content = ""
-                if messages:
-                    content = messages[0].get("message", {}).get("content", "")
-                if content:
-                    text_filename = f"{original_filename}.txt"
-                    text_file_path = os.path.join(original_dir, text_filename)
-                    with open(text_file_path, "w") as text_file:
-                        text_file.write(content)
-                    print(f"Extracted content of {custom_id} to {text_file_path}")
-
-def process_result_files(result_dir, extraction_base_dir, batch_id):
-    """Process all JSONL files in the specified directory and extract them to individual JSON files."""
-    extraction_output_dir = os.path.join(extraction_base_dir, batch_id)
-    if not os.path.exists(extraction_output_dir):
-        os.makedirs(extraction_output_dir)
-
-    for filename in os.listdir(result_dir):
-        if filename.endswith(".jsonl") and f"batch_{batch_id}" in filename:
-            result_file_path = os.path.join(result_dir, filename)
-            print(f"Processing file: {result_file_path}")
-            extract_json_lines(result_file_path, extraction_output_dir)
-            extract_content_to_text(extraction_output_dir)
-    
-    # Clean the directory where the files end up
-    clean(extraction_output_dir)
-
-def replace_escape_sequences(content):
-    """Replace escape sequences with placeholders."""
-    return content.replace('\\', '|')
-
-def process_text_files(directory):
-    """Process text files in the specified directory."""
-    for filename in os.listdir(directory):
-        if filename.endswith(".txt"):
-            file_path = os.path.join(directory, filename)
-            
-            with open(file_path, 'r', encoding='utf-8') as file:
-                lines = file.readlines()
-            
-            if lines[0].strip() == "```json":
-                lines = lines[1:]
-            
-            if lines[-1].strip() == "```":
-                lines = lines[:-1]
-            
-            # Delete everything until the first '{' in the entire content
-            content = ''.join(lines)
-            content = content[content.find('{'):]
-            lines = content.splitlines(True)  # Split the content back into lines, keeping line breaks
-            
-            # Process only the first 5 lines for replacing escape sequences
-            for i in range(min(5, len(lines))):
-                lines[i] = replace_escape_sequences(lines[i])
-            
-            # Combine the lines back to a single string
-            content = ''.join(lines)
-            
-            with open(file_path, 'w', encoding='utf-8') as file:
-                file.write(content)
-
-def clean(directory):
-    """Placeholder function for cleaning text files."""
-    process_text_files(directory)
-
-if __name__ == "__main__":
-    print("Reading API key from file...")
-    API_KEY = read_api_key(API_KEY_FILE)
-    print("API key successfully read.")
-
-    print("Reading batch IDs from filenames in the batch directory...")
-    batch_ids = read_batch_ids(BATCH_DIR)
-    print(f"Found batch IDs: {batch_ids}")
-
-    attempts = {batch_id: 0 for batch_id in batch_ids}
-
-    while batch_ids:
-        for batch_id in batch_ids[:]:  # Use a copy of the list to allow modifications
-            print(f"Checking status of batch: {batch_id}")
-
-            batch = get_batch_status(API_KEY, batch_id)
-            batch_details = serialize_batch(batch)
-            print(json.dumps(batch_details, indent=2))
-
-            if batch.status == "completed":
-                print(f"Batch {batch_id} completed successfully.")
-                if batch.output_file_id:
-                    print(f"Downloading output file {batch.output_file_id}...")
-                    output_file_path = download_file(API_KEY, batch.output_file_id, OUTPUT_DIR, f"batch_{batch_id}")
-                    print(f"Output file downloaded to {output_file_path}")
-                    
-                    # Move the corresponding .txt file to the completed directory
-                    if not os.path.exists(COMPLETED_DIR):
-                        os.makedirs(COMPLETED_DIR)
-                    
-                    batch_txt_file = os.path.join(BATCH_DIR, f"{batch_id}.txt")
-                    completed_txt_file = os.path.join(COMPLETED_DIR, f"{batch_id}.txt")
-                    if os.path.exists(batch_txt_file):
-                        os.rename(batch_txt_file, completed_txt_file)
-                        print(f"Moved batch file {batch_txt_file} to {completed_txt_file}")
-                    
-                    # Extract JSON lines to individual files and content to text files next to the original image files
-                    process_result_files(OUTPUT_DIR, EXTRACTION_BASE_DIR, batch_id)
-
-                # Remove the completed batch from the list
-                batch_ids.remove(batch_id)
-                del attempts[batch_id]
-
-            elif batch.status == "failed":
-                print(f"Batch {batch_id} failed.")
-                batch_ids.remove(batch_id)
-                del attempts[batch_id]
-
-            elif batch.status == "expired":
-                print(f"Batch {batch_id} expired.")
-                batch_ids.remove(batch_id)
-                del attempts[batch_id]
-
-            else:
-                print(f"Batch {batch_id} is in status: {batch.status}")
-                if attempts[batch_id] >= RETRY_LIMIT:
-                    print(f"Reached maximum retry limit for batch {batch_id}. Exiting.")
-                    batch_ids.remove(batch_id)
-                    del attempts[batch_id]
-                else:
-                    attempts[batch_id] += 1
-
-        if batch_ids:
-            print(f"Waiting for {RETRY_DELAY} seconds before next check...")
-            time.sleep(RETRY_DELAY)
-    
-   
-
 
 ********************************************************************************
 

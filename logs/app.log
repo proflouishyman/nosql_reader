@@ -1,0 +1,69 @@
+2024-09-19 10:46:21,750 - app - INFO - Handling request to index
+2024-09-19 10:46:21,750 - app - INFO - Handling request to index
+2024-09-19 10:57:12,232 - app - INFO - Handling request to index
+2024-09-19 10:57:12,232 - app - INFO - Handling request to index
+2024-09-19 13:08:00,404 - app - INFO - Handling request to index
+2024-09-19 13:08:00,404 - app - INFO - Handling request to index
+2024-09-19 13:18:22,303 - app - INFO - Handling request to index
+2024-09-19 13:18:22,303 - app - INFO - Handling request to index
+2024-09-19 13:21:27,215 - app - INFO - Handling request to index
+2024-09-19 13:21:27,215 - app - INFO - Handling request to index
+2024-09-19 13:21:48,106 - app - INFO - Handling request to index
+2024-09-19 13:21:48,106 - app - INFO - Handling request to index
+2024-09-19 13:23:29,587 - app - INFO - Handling request to index
+2024-09-19 13:23:29,587 - app - INFO - Handling request to index
+2024-09-19 13:37:47,503 - app - INFO - Handling request to index
+2024-09-19 13:37:47,503 - app - INFO - Handling request to index
+2024-09-19 13:37:53,094 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'david', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:37:53,094 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'david', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:37:53,095 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'david', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:37:53,095 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'david', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:37:53,097 - app - DEBUG - Processed field ocr_text with search term 'david' and operator 'AND'
+2024-09-19 13:37:53,097 - app - DEBUG - Processed field ocr_text with search term 'david' and operator 'AND'
+2024-09-19 13:37:53,098 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'david', '$options': 'i'}}]}
+2024-09-19 13:37:53,098 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'david', '$options': 'i'}}]}
+2024-09-19 13:37:53,099 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'david', '$options': 'i'}}]}
+2024-09-19 13:37:53,099 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'david', '$options': 'i'}}]}
+2024-09-19 13:37:53,127 - app - DEBUG - Found 43 documents, returning page 1 of 1
+2024-09-19 13:37:53,127 - app - DEBUG - Found 43 documents, returning page 1 of 1
+2024-09-19 13:38:09,092 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'water', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:09,092 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'water', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:09,094 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'water', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:09,094 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'water', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:09,096 - app - DEBUG - Processed field ocr_text with search term 'water' and operator 'AND'
+2024-09-19 13:38:09,096 - app - DEBUG - Processed field ocr_text with search term 'water' and operator 'AND'
+2024-09-19 13:38:09,098 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'water', '$options': 'i'}}]}
+2024-09-19 13:38:09,098 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'water', '$options': 'i'}}]}
+2024-09-19 13:38:09,099 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'water', '$options': 'i'}}]}
+2024-09-19 13:38:09,099 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'water', '$options': 'i'}}]}
+2024-09-19 13:38:09,114 - app - DEBUG - Found 22 documents, returning page 1 of 1
+2024-09-19 13:38:09,114 - app - DEBUG - Found 22 documents, returning page 1 of 1
+2024-09-19 13:38:12,395 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:12,395 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:12,398 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:12,398 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:38:12,399 - app - DEBUG - Processed field ocr_text with search term 'john' and operator 'AND'
+2024-09-19 13:38:12,399 - app - DEBUG - Processed field ocr_text with search term 'john' and operator 'AND'
+2024-09-19 13:38:12,400 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,400 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,402 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,402 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,416 - app - DEBUG - Found 447 documents, returning page 1 of 9
+2024-09-19 13:38:12,416 - app - DEBUG - Found 447 documents, returning page 1 of 9
+2024-09-19 13:38:12,517 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 2, 'per_page': 50}
+2024-09-19 13:38:12,517 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 2, 'per_page': 50}
+2024-09-19 13:38:12,520 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 2, 'per_page': 50}
+2024-09-19 13:38:12,520 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 2, 'per_page': 50}
+2024-09-19 13:38:12,523 - app - DEBUG - Processed field ocr_text with search term 'john' and operator 'AND'
+2024-09-19 13:38:12,523 - app - DEBUG - Processed field ocr_text with search term 'john' and operator 'AND'
+2024-09-19 13:38:12,525 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,525 - app - DEBUG - Final query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,527 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,527 - app - DEBUG - Constructed MongoDB query: {'$and': [{'ocr_text': {'$regex': 'john', '$options': 'i'}}]}
+2024-09-19 13:38:12,542 - app - DEBUG - Found 447 documents, returning page 2 of 9
+2024-09-19 13:38:12,542 - app - DEBUG - Found 447 documents, returning page 2 of 9
+2024-09-19 13:38:18,812 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 3, 'per_page': 50}
+2024-09-19 13:38:18,812 - app - DEBUG - Received search request: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 3, 'per_page': 50}
+2024-09-19 13:38:18,814 - app - DEBUG - Building query from search data: {'field1': 'ocr_text', 'operator1': 'AND', 'searchTerm1': 'john', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 3, 'per_page': 50}
+2024-09-19 13:38:18,977 - app - DEBUG - Processed field ocr_text with search term 'john' and operator 'AND'
+2024-09-19 13:38:18,977 - app - DEBUG - Processed field ocr_text with search term 'john' and operator 'AND'

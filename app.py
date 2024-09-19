@@ -14,13 +14,25 @@ from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
-# Setup file-based logging
-if not app.debug:
-    file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
-    file_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-    app.logger.addHandler(file_handler)
+
+
+
+# Setup console logging
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+
+# Add the console handler to the app's logger
+app.logger.addHandler(console_handler)
+
+# # Setup file-based logging
+# if not app.debug:
+#     file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+#     file_handler.setLevel(logging.DEBUG)
+#     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#     file_handler.setFormatter(formatter)
+#     app.logger.addHandler(file_handler)
 
 app.logger.setLevel(logging.DEBUG)
 

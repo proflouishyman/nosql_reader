@@ -1,5 +1,5 @@
 # File: routes.py
-# Path: railroad_documents_project/routes.py
+# Path: routes.py
 
 from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response
 from functools import wraps
@@ -17,7 +17,7 @@ import random
 import csv
 from io import StringIO
 from logging.handlers import RotatingFileHandler
-
+import os
 
 # Setup file-based logging
 if not app.debug:
@@ -67,10 +67,12 @@ def login_required(f):
     return decorated_function
 
 @app.route('/')
+@login_required
 def index():
     app.logger.info('Handling request to index')
     num_search_fields = 3  # Number of search fields to display
-    return render_template('index.html', num_search_fields=num_search_fields)
+    field_structure = get_field_structure()
+    return render_template('index.html', num_search_fields=num_search_fields, field_structure=field_structure)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -112,67 +114,46 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('index'))
 
-
-
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search', methods=['POST'])
+@login_required
 def search():
     try:
-        if request.method == 'POST':
-            # Log incoming request data
-            data = request.get_json()
-            logging.debug(f"Received POST search request: {data}")
+        data = request.get_json()
+        app.logger.debug(f"Received search request: {data}")
 
-            # Extract pagination details
-            page = int(data.get('page', 1))
-            per_page = int(data.get('per_page', 50))
-            logging.debug(f"Pagination details - Page: {page}, Per Page: {per_page}")
+        page = int(data.get('page', 1))
+        per_page = int(data.get('per_page', 50))
 
-            # Build query based on user input
-            query = build_query(data)
-            logging.debug(f"Constructed MongoDB query: {query}")
+        query = build_query(data)
+        app.logger.debug(f"Constructed MongoDB query: {query}")
 
-            # Query MongoDB for the matching documents
-            total_count = documents.count_documents(query)
-            search_results = documents.find(query).skip((page - 1) * per_page).limit(per_page)
-            documents_list = list(search_results)
+        total_count = documents.count_documents(query)
+        search_results = list(documents.find(query).skip((page - 1) * per_page).limit(per_page))
 
-            logging.debug(f"Total matching documents: {total_count}, Returned documents: {len(documents_list)}")
+        for doc in search_results:
+            doc['_id'] = str(doc['_id'])
 
-            # Convert ObjectId to string for each document
-            for doc in documents_list:
-                doc['_id'] = str(doc['_id'])
+        total_pages = math.ceil(total_count / per_page)
 
-            # Calculate total pages
-            total_pages = math.ceil(total_count / per_page)
+        app.logger.debug(f"Found {total_count} documents, returning page {page} of {total_pages}")
 
-            logging.debug(f"Total pages: {total_pages}, Current page: {page}")
-
-            # Render the search results page
-            return render_template('search_results.html',
-                                   documents=documents_list,
-                                   total_count=total_count,
-                                   current_page=page,
-                                   total_pages=total_pages,
-                                   per_page=per_page)
-
-        else:
-            # For GET requests, simply render the search form
-            num_search_fields = 3
-            logging.debug(f"Rendering search page with {num_search_fields} fields")
-            return render_template('search.html', num_search_fields=num_search_fields)
+        return jsonify({
+            "documents": search_results,
+            "total_count": total_count,
+            "current_page": page,
+            "total_pages": total_pages,
+            "per_page": per_page
+        })
 
     except Exception as e:
-        logging.error(f"An error occurred during search: {str(e)}", exc_info=True)
+        app.logger.error(f"An error occurred during search: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal error occurred"}), 500
 
 def build_query(data):
-    """
-    Build a MongoDB query from the search criteria provided by the user.
-    """
     query = {}
     criteria_list = []
 
-    logging.debug(f"Building query from search data: {data}")
+    app.logger.debug(f"Building query from search data: {data}")
 
     for i in range(1, 4):
         field = data.get(f'field{i}')
@@ -187,9 +168,8 @@ def build_query(data):
                 condition[field] = {'$regex': search_term, '$options': 'i'}
             
             criteria_list.append((operator, condition))
-            logging.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
+            app.logger.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
 
-    # Build the query based on operators (AND, OR, NOT)
     if criteria_list:
         and_conditions = []
         or_conditions = []
@@ -200,20 +180,17 @@ def build_query(data):
             elif operator == 'OR':
                 or_conditions.append(condition)
 
-        # Add AND conditions to the query
         if and_conditions:
             query['$and'] = and_conditions
 
-        # Add OR conditions to the query
         if or_conditions:
             if '$or' not in query:
                 query['$or'] = or_conditions
             else:
                 query['$or'].extend(or_conditions)
 
-    logging.debug(f"Final query: {query}")
+    app.logger.debug(f"Final query: {query}")
     return query
-
 
 @app.route('/document/<string:doc_id>')
 @login_required
@@ -233,33 +210,8 @@ def document_detail(doc_id):
 
         return render_template('document-detail.html', document=document, prev_id=prev_id, next_id=next_id)
     except Exception as e:
-        logger.error(f"Error in document_detail: {str(e)}")
+        app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
-
-@app.route('/settings', methods=['GET', 'POST'])
-@login_required
-def settings():
-    config_path = os.path.join(os.path.dirname(__file__), 'config.json')
-
-    if request.method == 'POST':
-        new_config = request.form.to_dict()
-
-        for key in ['fonts', 'sizes', 'colors', 'spacing']:
-            if key in new_config:
-                new_config[key] = json.loads(new_config[key])
-
-        with open(config_path, 'w') as config_file:
-            json.dump(new_config, config_file, indent=4)
-
-        app.config['UI_CONFIG'] = new_config
-
-        flash('Settings updated successfully', 'success')
-        return redirect(url_for('settings'))
-
-    with open(config_path) as config_file:
-        config = json.load(config_file)
-
-    return render_template('settings.html', config=config)
 
 @app.route('/search-terms')
 @login_required
@@ -316,6 +268,31 @@ def database_info():
 
     return render_template('database-info.html', collection_info=collection_info)
 
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+
+    if request.method == 'POST':
+        new_config = request.form.to_dict()
+
+        for key in ['fonts', 'sizes', 'colors', 'spacing']:
+            if key in new_config:
+                new_config[key] = json.loads(new_config[key])
+
+        with open(config_path, 'w') as config_file:
+            json.dump(new_config, config_file, indent=4)
+
+        app.config['UI_CONFIG'] = new_config
+
+        flash('Settings updated successfully', 'success')
+        return redirect(url_for('settings'))
+
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+
+    return render_template('settings.html', config=config)
+
 @app.route('/export_csv', methods=['POST'])
 @login_required
 def export_csv():
@@ -326,7 +303,6 @@ def export_csv():
 
     output = StringIO()
     writer = csv.writer(output)
-    # Get field names from field_structure
     field_struct = get_field_structure()
     field_names = []
 
@@ -344,7 +320,6 @@ def export_csv():
     for result in results:
         row = [str(result.get('_id', ''))]
         for field in field_names:
-            # Use dot notation to get nested fields
             keys = field.split('.')
             value = result
             for key in keys:
