@@ -67,7 +67,7 @@ def login_required(f):
     return decorated_function
 
 @app.route('/')
-@login_required
+# @login_required
 def index():
     app.logger.info('Handling request to index')
     num_search_fields = 3  # Number of search fields to display
@@ -115,7 +115,7 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/search', methods=['POST'])
-@login_required
+# @login_required
 def search():
     try:
         data = request.get_json()
@@ -193,7 +193,7 @@ def build_query(data):
     return query
 
 @app.route('/document/<string:doc_id>')
-@login_required
+# @login_required
 def document_detail(doc_id):
     try:
         document = find_document_by_id(doc_id)
@@ -214,7 +214,7 @@ def document_detail(doc_id):
         abort(500)
 
 @app.route('/search-terms')
-@login_required
+# @login_required
 def search_terms():
     field = request.args.get('field', None)
     if not field:
@@ -243,7 +243,7 @@ def search_terms():
     return render_template('search-terms.html', **data)
 
 @app.route('/database-info')
-@login_required
+# @login_required
 def database_info():
     field_struct = get_field_structure()
     collection_info = []
@@ -269,7 +269,7 @@ def database_info():
     return render_template('database-info.html', collection_info=collection_info)
 
 @app.route('/settings', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def settings():
     config_path = os.path.join(os.path.dirname(__file__), 'config.json')
 
@@ -294,7 +294,7 @@ def settings():
     return render_template('settings.html', config=config)
 
 @app.route('/export_csv', methods=['POST'])
-@login_required
+# @login_required
 def export_csv():
     data = request.get_json()
     query = build_query(data)
