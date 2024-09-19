@@ -1,9 +1,12 @@
+# File: app.py
+# Path: railroad_documents_project/app.py
+
 import os
+import json
 from flask import Flask
 from flask_caching import Cache
 from flask_session import Session
-import json
-from database_setup import client, db, documents
+from database_setup import client, db, documents, field_structure
 
 app = Flask(__name__)
 
@@ -53,30 +56,22 @@ def load_config():
     with open(config_path) as config_file:
         return json.load(config_file)
 
+def get_field_structure():
+    """
+    Load the field structure from the MongoDB collection.
+    """
+    structure = field_structure.find_one({"_id": "current_structure"})
+    return structure['structure'] if structure else {}
+
 @app.context_processor
 def inject_ui_config():
     """
-    Inject the UI configuration into all templates.
+    Inject the UI configuration and field structure into all templates.
     This allows for dynamic UI customization without needing to pass the config to each template.
     """
     app.config['UI_CONFIG'] = load_config()
-    return dict(ui_config=app.config['UI_CONFIG'])
-
-# Define table options
-table_options = [
-    ('ocr_text', 'OCR Text'),
-    ('summary', 'Summary'),
-    ('named_entities', 'Named Entities'),
-    ('dates', 'Dates'),
-    ('monetary_amounts', 'Monetary Amounts'),
-    ('relationships', 'Relationships'),
-    ('metadata', 'Metadata'),
-    ('translation', 'Translation'),
-    ('file_info', 'File Info')
-]
-
-# Define operator options
-operator_options = ['AND', 'OR', 'NOT']
+    field_struct = get_field_structure()
+    return dict(ui_config=app.config['UI_CONFIG'], field_structure=field_struct)
 
 # Import routes after initializing app to avoid circular imports
 from routes import *

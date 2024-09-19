@@ -1,11 +1,8 @@
-<!-- document-list.html -->
-<!-- Updated: 2023-07-30 06:00 PM -->
-<!-- Path: templates/document-list.html -->
+<!-- templates/document-list.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document List</title>
 </head>
 <body>
@@ -14,7 +11,7 @@
     <ul id="documentList">
     {% for document in documents %}
         <li>
-            <a href="{{ url_for('document_detail', doc_id=document.id) }}" target="_blank" rel="noopener noreferrer" class="document-link">{{ document.file }}</a>
+            <a href="{{ url_for('document_detail', doc_id=document['_id']) }}" target="_blank" rel="noopener noreferrer" class="document-link">{{ document.get('filename', 'Untitled Document') }}</a>
         </li>
     {% endfor %}
     </ul>

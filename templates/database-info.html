@@ -1,11 +1,8 @@
-<!-- File: templates/database-info.html -->
-<!-- Updated: 2024-08-06 12:40 -->
-
+<!-- templates/database-info.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database Information</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -23,15 +20,15 @@
         <table>
             <thead>
                 <tr>
-                    <th>Table Name</th>
+                    <th>Field Name</th>
                     <th>Number of Records</th>
                 </tr>
             </thead>
             <tbody>
-                {% for table in table_info %}
+                {% for field in collection_info %}
                 <tr>
-                    <td>{{ table.name }}</td>
-                    <td>{{ table.count }}</td>
+                    <td>{{ field.name }}</td>
+                    <td>{{ field.count }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

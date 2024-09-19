@@ -98,5 +98,5 @@ def process_directory(directory_path):
     print(f"Time taken: {duration:.2f} seconds")
 
 if __name__ == "__main__":
-    data_directory = r'G:\My Drive\2024-2025\coding\borr\json_files'  # Change this to the path of your JSON files directory
+    data_directory = r'G:\My Drive\2024-2025\coding\rolls_txt\scratch4\lhyman6\OCR\data\borr\rolls'  # Change this to the path of your JSON files directory
     process_directory(data_directory)

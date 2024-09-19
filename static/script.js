@@ -1,5 +1,4 @@
 // File: static/script.js
-// Corrected version
 
 document.addEventListener('DOMContentLoaded', function() {
     const searchForm = document.getElementById('searchForm');
@@ -28,18 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
         totalResultsDiv.textContent = '';
         // Get search parameters
         const formData = new FormData(searchForm);
-        currentQuery = {
-            table1: formData.get('table1'),
-            table2: formData.get('table2'),
-            table3: formData.get('table3'),
-            searchTerm1: formData.get('searchTerm1'),
-            operator1: formData.get('operator1'),
-            searchTerm2: formData.get('searchTerm2'),
-            operator2: formData.get('operator2'),
-            searchTerm3: formData.get('searchTerm3'),
-            operator3: formData.get('operator3'),
-            // Add other search terms as needed
-        };
+        currentQuery = {};
+        for (let i = 1; i <= 3; i++) {
+            currentQuery[`field${i}`] = formData.get(`field${i}`);
+            currentQuery[`operator${i}`] = formData.get(`operator${i}`);
+            currentQuery[`searchTerm${i}`] = formData.get(`searchTerm${i}`);
+        }
         performSearch(true);
     });
 
@@ -214,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         documents.forEach(doc => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><a href="/document/${doc.id}">${doc.file}</a></td>
+                <td><a href="/document/${doc._id}">${doc.filename || 'No file name'}</a></td>
                 <td>${doc.summary || 'No summary available.'}</td>
             `;
             tbody.appendChild(row);
@@ -246,13 +239,13 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             for (let i = 1; i <= 3; i++) {
-                const table = formData.get(`table${i}`);
+                const field = formData.get(`field${i}`);
                 const operator = formData.get(`operator${i}`);
                 const searchTerm = formData.get(`searchTerm${i}`);
                 
-                if (table && operator && searchTerm) {
+                if (field && operator && searchTerm) {
                     searchData.fields.push({
-                        table: table,
+                        field: field,
                         operator: operator,
                         searchTerm: searchTerm
                     });
