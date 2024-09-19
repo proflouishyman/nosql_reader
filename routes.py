@@ -28,16 +28,6 @@ from io import StringIO
 from logging.handlers import RotatingFileHandler
 import os
 
-# Setup file-based logging
-if not app.debug:
-    if not os.path.exists('logs'):
-        os.makedirs('logs')
-    file_handler = RotatingFileHandler('logs/app_routes.log', maxBytes=10240, backupCount=10)
-    file_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-    app.logger.addHandler(file_handler)
-
 app.logger.setLevel(logging.DEBUG)
 
 # Hashed password (generate this using generate_password_hash('your_actual_password'))
@@ -224,33 +214,57 @@ def document_detail(doc_id):
         app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
 
+
+
 @app.route('/search-terms', methods=['GET'])
+# @login_required
 def search_terms():
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Handle AJAX request
         field = request.args.get('field')
+        app.logger.debug(f"AJAX request for field: {field}")
         if not field:
             return jsonify({"error": "No field specified"}), 400
 
+        # Fetch unique terms for the specified field from unique_terms_collection
         unique_terms_doc = unique_terms_collection.find_one({"field": field})
         if not unique_terms_doc:
-            return jsonify({"error": f"No terms found for field '{field}'."}), 404
+            app.logger.debug(f"No terms found for field '{field}'.")
+            return jsonify({
+                "words": [],
+                "phrases": [],
+                "unique_words": 0,
+                "unique_phrases": 0,
+                "total_records": documents.count_documents({}),
+                "message": f"No terms found for field '{field}'."
+            }), 200  # Changed status to 200
 
-        terms = unique_terms_doc.get('terms', [])
-        unique_terms_count = len(terms)
+        words = unique_terms_doc.get('words', {})
+        phrases = unique_terms_doc.get('phrases', {})
+        unique_words_count = len(words)
+        unique_phrases_count = len(phrases)
         total_records = documents.count_documents({})
 
+        # Convert words and phrases to lists of dictionaries
+        words_list = [{'word': word, 'count': count} for word, count in sorted(words.items())]
+        phrases_list = [{'phrase': phrase, 'count': count} for phrase, count in sorted(phrases.items())]
+
         data = {
-            'terms': terms,
-            'unique_terms': unique_terms_count,
+            'words': words_list,
+            'phrases': phrases_list,
+            'unique_words': unique_words_count,
+            'unique_phrases': unique_phrases_count,
             'total_records': total_records
         }
 
         return jsonify(data)
     else:
+        # Render the HTML template
         field_structure = get_field_structure()
         return render_template('search-terms.html', field_structure=field_structure)
+
     
-    
+
 @app.route('/database-info')
 # @login_required
 def database_info():

@@ -56,21 +56,29 @@ def merge_structures(existing, new):
 def update_field_structure(document):
     """
     Update the field structure based on a new document.
+    Performs an upsert to avoid duplicate key errors.
     
     :param document: The new document to analyze
     """
     new_structure = discover_fields(document)
+    merged_structure = {}
+
+    # Attempt to retrieve the existing structure
     existing_structure = field_structure.find_one({"_id": "current_structure"})
     
     if existing_structure:
+        # Merge the new structure with the existing one
         merged_structure = merge_structures(existing_structure['structure'], new_structure)
-        field_structure.update_one(
-            {"_id": "current_structure"},
-            {"$set": {"structure": merged_structure}},
-            upsert=True
-        )
     else:
-        field_structure.insert_one({"_id": "current_structure", "structure": new_structure})
+        # If no existing structure, use the new structure
+        merged_structure = new_structure
+
+    # Perform an upsert operation to update or insert the structure
+    field_structure.update_one(
+        {"_id": "current_structure"},
+        {"$set": {"structure": merged_structure}},
+        upsert=True
+    )
 
 def get_field_structure():
     """
