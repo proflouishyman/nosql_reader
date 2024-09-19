@@ -1,10 +1,9 @@
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
 from flask_caching import Cache
 from flask_session import Session
 import json
+from database_setup import client, db, documents
 
 app = Flask(__name__)
 
@@ -19,27 +18,6 @@ app.config['UI_CONFIG'] = config
 # Print out the template folder path for debugging
 print(f"Template folder path: {app.template_folder}")
 
-# Database Configuration
-if os.getenv('GAE_ENV', '').startswith('standard'):
-    # Production configuration for Google App Engine
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        'mysql+pymysql://{user}:{password}@/{database}?unix_socket=/cloudsql/{connection_name}'
-        .format(
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            database=os.getenv('DB_NAME'),
-            connection_name=os.getenv('CLOUDSQL_CONNECTION_NAME')
-        )
-    )
-else:
-    # Local development configuration
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(base_dir, 'create_db', 'mcd_index_updated.db')
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-
-# SQLAlchemy configuration
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 # Session configuration
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False
@@ -52,7 +30,6 @@ def get_secret_key():
         with open(secret_file, 'r') as f:
             return f.read().strip()
     else:
-        # If the file doesn't exist, generate a random key and save it
         import secrets
         generated_key = secrets.token_hex(16)
         with open(secret_file, 'w') as f:
@@ -61,9 +38,8 @@ def get_secret_key():
 
 # Set the secret key
 app.secret_key = get_secret_key()
+
 # Initialize extensions
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 cache.init_app(app)
 Session(app)
@@ -86,18 +62,25 @@ def inject_ui_config():
     app.config['UI_CONFIG'] = load_config()
     return dict(ui_config=app.config['UI_CONFIG'])
 
-# Import routes after initializing db to avoid circular imports
+# Define table options
+table_options = [
+    ('ocr_text', 'OCR Text'),
+    ('summary', 'Summary'),
+    ('named_entities', 'Named Entities'),
+    ('dates', 'Dates'),
+    ('monetary_amounts', 'Monetary Amounts'),
+    ('relationships', 'Relationships'),
+    ('metadata', 'Metadata'),
+    ('translation', 'Translation'),
+    ('file_info', 'File Info')
+]
+
+# Define operator options
+operator_options = ['AND', 'OR', 'NOT']
+
+# Import routes after initializing app to avoid circular imports
 from routes import *
 
 if __name__ == '__main__':
-    with app.app_context():
-        # Check if the database file exists and create it if it doesn't
-        if not os.path.exists(db_path):
-            print(f"Database file not found at {db_path}")
-            print("Creating new database file...")
-            db.create_all()
-        else:
-            print(f"Database file found at {db_path}")
-    
     # Run the app
     app.run(debug=False)
