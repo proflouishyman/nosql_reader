@@ -1,5 +1,45 @@
 {% extends "base.html" %}
 
+{% macro render_json(key, value) %}
+  <div class="info-section">
+    <h2>{{ key|title }}</h2>
+    {{ render_value(value) }}
+  </div>
+{% endmacro %}
+
+{% macro render_value(value) %}
+  {% if value is mapping %}
+    <table class="info-table">
+      {% for subkey, subvalue in value.items() %}
+        <tr>
+          <th>{{ subkey|title }}</th>
+          <td>
+            {{ render_value(subvalue) }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% elif value is iterable and value is not string %}
+    <ul class="info-list">
+      {% for item in value %}
+        <li>
+          {% if item is mapping %}
+            <div class="nested-mapping">
+              {% for itemkey, itemvalue in item.items() %}
+                <strong>{{ itemkey|title }}:</strong> {{ render_value(itemvalue) }}<br>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ item }}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    {{ value if value is not none else 'N/A' }}
+  {% endif %}
+{% endmacro %}
+
 {% block content %}
 <div class="document-detail">
   <div class="detail-container">
@@ -21,36 +61,13 @@
   
       <h1>{{ document.get('filename', 'Untitled Document') }}</h1>
 
-      <table class="info-table">
-        <tbody>
-          {% for key, value in document.items() %}
-            {% if key != '_id' and key != 'filename' %}
-              <tr>
-                <th>{{ key|title }}</th>
-                <td>
-                  {% if value is mapping %}
-                    {% for subkey, subvalue in value.items() %}
-                      <strong>{{ subkey }}:</strong> {{ subvalue }}<br>
-                    {% endfor %}
-                  {% elif value is iterable and value is not string %}
-                    {% for item in value %}
-                      {% if item is mapping %}
-                        {% for subkey, subvalue in item.items() %}
-                          <strong>{{ subkey }}:</strong> {{ subvalue }}<br>
-                        {% endfor %}
-                      {% else %}
-                        {{ item }}<br>
-                      {% endif %}
-                    {% endfor %}
-                  {% else %}
-                    {{ value }}
-                  {% endif %}
-                </td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="info-container">
+        {% for key, value in document.items() %}
+          {% if key != '_id' and key != 'filename' %}
+            {{ render_json(key, value) }}
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
 
     <div class="image-panel">

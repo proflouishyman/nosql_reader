@@ -55,3 +55,13 @@
 2024-09-19 13:41:34,406 - app - DEBUG - Final query: {'$and': [{'filename': {'$regex': '23', '$options': 'i'}}]}
 2024-09-19 13:41:34,406 - app - DEBUG - Constructed MongoDB query: {'$and': [{'filename': {'$regex': '23', '$options': 'i'}}]}
 2024-09-19 13:41:34,416 - app - DEBUG - Found 363 documents, returning page 2 of 8
+2024-09-19 13:44:25,303 - app - INFO - Handling request to index
+2024-09-19 13:44:28,770 - app - DEBUG - Received search request: {'field1': 'filename', 'operator1': 'AND', 'searchTerm1': '23', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:44:28,771 - app - DEBUG - Building query from search data: {'field1': 'filename', 'operator1': 'AND', 'searchTerm1': '23', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 1, 'per_page': 50}
+2024-09-19 13:44:28,772 - app - DEBUG - Processed field filename with search term '23' and operator 'AND'
+2024-09-19 13:44:28,773 - app - DEBUG - Final query: {'$and': [{'filename': {'$regex': '23', '$options': 'i'}}]}
+2024-09-19 13:44:28,774 - app - DEBUG - Constructed MongoDB query: {'$and': [{'filename': {'$regex': '23', '$options': 'i'}}]}
+2024-09-19 13:44:28,791 - app - DEBUG - Found 363 documents, returning page 1 of 8
+2024-09-19 13:44:28,929 - app - DEBUG - Received search request: {'field1': 'filename', 'operator1': 'AND', 'searchTerm1': '23', 'field2': 'filename', 'operator2': 'AND', 'searchTerm2': '', 'field3': 'filename', 'operator3': 'AND', 'searchTerm3': '', 'page': 2, 'per_page': 50}
+2024-09-19 13:44:28,957 - app - DEBUG - Processed field filename with search term '23' and operator 'AND'
+2024-09-19 13:44:28,964 - app - DEBUG - Final query: {'$and': [{'filename': {'$regex': '23', '$options': 'i'}}]}

@@ -1,5 +1,5 @@
 Project File Combination
-Generated on: 2024-09-19 13:22:31.046188
+Generated on: 2024-09-19 13:45:04.329333
 
 Total files: 24
 File type counts:
@@ -59,13 +59,25 @@ from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
-# Setup file-based logging
-if not app.debug:
-    file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
-    file_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-    app.logger.addHandler(file_handler)
+
+
+
+# Setup console logging
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+
+# Add the console handler to the app's logger
+app.logger.addHandler(console_handler)
+
+# # Setup file-based logging
+# if not app.debug:
+#     file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+#     file_handler.setLevel(logging.DEBUG)
+#     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#     file_handler.setFormatter(formatter)
+#     app.logger.addHandler(file_handler)
 
 app.logger.setLevel(logging.DEBUG)
 
@@ -345,7 +357,7 @@ File: routes.py
 ********************************************************************************
 
 # File: routes.py
-# Path: railroad_documents_project/routes.py
+# Path: routes.py
 
 from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response
 from functools import wraps
@@ -363,7 +375,7 @@ import random
 import csv
 from io import StringIO
 from logging.handlers import RotatingFileHandler
-
+import os
 
 # Setup file-based logging
 if not app.debug:
@@ -413,10 +425,12 @@ def login_required(f):
     return decorated_function
 
 @app.route('/')
+# @login_required
 def index():
     app.logger.info('Handling request to index')
     num_search_fields = 3  # Number of search fields to display
-    return render_template('index.html', num_search_fields=num_search_fields)
+    field_structure = get_field_structure()
+    return render_template('index.html', num_search_fields=num_search_fields, field_structure=field_structure)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -458,67 +472,46 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('index'))
 
-
-
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search', methods=['POST'])
+# @login_required
 def search():
     try:
-        if request.method == 'POST':
-            # Log incoming request data
-            data = request.get_json()
-            logging.debug(f"Received POST search request: {data}")
+        data = request.get_json()
+        app.logger.debug(f"Received search request: {data}")
 
-            # Extract pagination details
-            page = int(data.get('page', 1))
-            per_page = int(data.get('per_page', 50))
-            logging.debug(f"Pagination details - Page: {page}, Per Page: {per_page}")
+        page = int(data.get('page', 1))
+        per_page = int(data.get('per_page', 50))
 
-            # Build query based on user input
-            query = build_query(data)
-            logging.debug(f"Constructed MongoDB query: {query}")
+        query = build_query(data)
+        app.logger.debug(f"Constructed MongoDB query: {query}")
 
-            # Query MongoDB for the matching documents
-            total_count = documents.count_documents(query)
-            search_results = documents.find(query).skip((page - 1) * per_page).limit(per_page)
-            documents_list = list(search_results)
+        total_count = documents.count_documents(query)
+        search_results = list(documents.find(query).skip((page - 1) * per_page).limit(per_page))
 
-            logging.debug(f"Total matching documents: {total_count}, Returned documents: {len(documents_list)}")
+        for doc in search_results:
+            doc['_id'] = str(doc['_id'])
 
-            # Convert ObjectId to string for each document
-            for doc in documents_list:
-                doc['_id'] = str(doc['_id'])
+        total_pages = math.ceil(total_count / per_page)
 
-            # Calculate total pages
-            total_pages = math.ceil(total_count / per_page)
+        app.logger.debug(f"Found {total_count} documents, returning page {page} of {total_pages}")
 
-            logging.debug(f"Total pages: {total_pages}, Current page: {page}")
-
-            # Render the search results page
-            return render_template('search_results.html',
-                                   documents=documents_list,
-                                   total_count=total_count,
-                                   current_page=page,
-                                   total_pages=total_pages,
-                                   per_page=per_page)
-
-        else:
-            # For GET requests, simply render the search form
-            num_search_fields = 3
-            logging.debug(f"Rendering search page with {num_search_fields} fields")
-            return render_template('search.html', num_search_fields=num_search_fields)
+        return jsonify({
+            "documents": search_results,
+            "total_count": total_count,
+            "current_page": page,
+            "total_pages": total_pages,
+            "per_page": per_page
+        })
 
     except Exception as e:
-        logging.error(f"An error occurred during search: {str(e)}", exc_info=True)
+        app.logger.error(f"An error occurred during search: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal error occurred"}), 500
 
 def build_query(data):
-    """
-    Build a MongoDB query from the search criteria provided by the user.
-    """
     query = {}
     criteria_list = []
 
-    logging.debug(f"Building query from search data: {data}")
+    app.logger.debug(f"Building query from search data: {data}")
 
     for i in range(1, 4):
         field = data.get(f'field{i}')
@@ -533,9 +526,8 @@ def build_query(data):
                 condition[field] = {'$regex': search_term, '$options': 'i'}
             
             criteria_list.append((operator, condition))
-            logging.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
+            app.logger.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
 
-    # Build the query based on operators (AND, OR, NOT)
     if criteria_list:
         and_conditions = []
         or_conditions = []
@@ -546,23 +538,20 @@ def build_query(data):
             elif operator == 'OR':
                 or_conditions.append(condition)
 
-        # Add AND conditions to the query
         if and_conditions:
             query['$and'] = and_conditions
 
-        # Add OR conditions to the query
         if or_conditions:
             if '$or' not in query:
                 query['$or'] = or_conditions
             else:
                 query['$or'].extend(or_conditions)
 
-    logging.debug(f"Final query: {query}")
+    app.logger.debug(f"Final query: {query}")
     return query
 
-
 @app.route('/document/<string:doc_id>')
-@login_required
+# @login_required
 def document_detail(doc_id):
     try:
         document = find_document_by_id(doc_id)
@@ -579,36 +568,11 @@ def document_detail(doc_id):
 
         return render_template('document-detail.html', document=document, prev_id=prev_id, next_id=next_id)
     except Exception as e:
-        logger.error(f"Error in document_detail: {str(e)}")
+        app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
 
-@app.route('/settings', methods=['GET', 'POST'])
-@login_required
-def settings():
-    config_path = os.path.join(os.path.dirname(__file__), 'config.json')
-
-    if request.method == 'POST':
-        new_config = request.form.to_dict()
-
-        for key in ['fonts', 'sizes', 'colors', 'spacing']:
-            if key in new_config:
-                new_config[key] = json.loads(new_config[key])
-
-        with open(config_path, 'w') as config_file:
-            json.dump(new_config, config_file, indent=4)
-
-        app.config['UI_CONFIG'] = new_config
-
-        flash('Settings updated successfully', 'success')
-        return redirect(url_for('settings'))
-
-    with open(config_path) as config_file:
-        config = json.load(config_file)
-
-    return render_template('settings.html', config=config)
-
 @app.route('/search-terms')
-@login_required
+# @login_required
 def search_terms():
     field = request.args.get('field', None)
     if not field:
@@ -637,7 +601,7 @@ def search_terms():
     return render_template('search-terms.html', **data)
 
 @app.route('/database-info')
-@login_required
+# @login_required
 def database_info():
     field_struct = get_field_structure()
     collection_info = []
@@ -662,8 +626,33 @@ def database_info():
 
     return render_template('database-info.html', collection_info=collection_info)
 
+@app.route('/settings', methods=['GET', 'POST'])
+# @login_required
+def settings():
+    config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+
+    if request.method == 'POST':
+        new_config = request.form.to_dict()
+
+        for key in ['fonts', 'sizes', 'colors', 'spacing']:
+            if key in new_config:
+                new_config[key] = json.loads(new_config[key])
+
+        with open(config_path, 'w') as config_file:
+            json.dump(new_config, config_file, indent=4)
+
+        app.config['UI_CONFIG'] = new_config
+
+        flash('Settings updated successfully', 'success')
+        return redirect(url_for('settings'))
+
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+
+    return render_template('settings.html', config=config)
+
 @app.route('/export_csv', methods=['POST'])
-@login_required
+# @login_required
 def export_csv():
     data = request.get_json()
     query = build_query(data)
@@ -672,7 +661,6 @@ def export_csv():
 
     output = StringIO()
     writer = csv.writer(output)
-    # Get field names from field_structure
     field_struct = get_field_structure()
     field_names = []
 
@@ -690,7 +678,6 @@ def export_csv():
     for result in results:
         row = [str(result.get('_id', ''))]
         for field in field_names:
-            # Use dot notation to get nested fields
             keys = field.split('.')
             value = result
             for key in keys:
@@ -715,7 +702,6 @@ def not_found_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     return render_template('error.html', message='An unexpected error has occurred'), 500
-
 
 ********************************************************************************
 
@@ -1925,17 +1911,15 @@ File: templates\error.html
 File: templates\index.html
 ********************************************************************************
 
-<!-- templates/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Historical Document Reader</title>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
+<head>
+    <meta charset="UTF-8">
+    <title>Historical Document Reader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
     <div class="container">
         <h1 class="mt-4">Historical Document Reader</h1>
         <nav>
@@ -1952,7 +1936,7 @@ File: templates\index.html
             </ul>
         </nav>
 
-        <form id="searchForm" method="POST" action="{{ url_for('search') }}">
+        <form id="searchForm">
             <div id="searchFields">
                 {% for i in range(1, num_search_fields + 1) %}
                 <div class="search-field">
@@ -1982,11 +1966,19 @@ File: templates\index.html
             <div class="spinner"></div>
         </div>
 
+        <!-- Cancel Search Button -->
+        <button id="cancelSearch" style="display: none;">Cancel Search</button>
+
         <!-- Total Results Display -->
         <div id="totalResults" class="mt-4"></div>
+
+        <!-- Results Container -->
         <div id="results" class="mt-4">
             <!-- The table will be dynamically inserted here -->
         </div>
+
+        <!-- Export to CSV Button -->
+        <button id="exportCsv" style="display: none;">Export to CSV</button>
     </div>
 
     <!-- Include jQuery -->
@@ -1995,7 +1987,6 @@ File: templates\index.html
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
-
 
 ********************************************************************************
 

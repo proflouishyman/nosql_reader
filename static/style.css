@@ -200,3 +200,35 @@ button:hover {
     animation: spin 1s linear infinite;
     margin: 0 auto;
 }
+
+.info-section {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.info-table, .nested-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-table th, .info-table td,
+.nested-table th, .nested-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.info-table th, .nested-table th {
+    background-color: #f2f2f2;
+}
+
+.nested-list, .info-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.nested-list li, .info-list li {
+    margin-bottom: 10px;
+}
