@@ -3,13 +3,13 @@ import datetime
 from collections import Counter
 
 # Configuration variables
-ROOT_DIRECTORY = "."  # Current directory, change this if needed
-OUTPUT_FILE = "combined_project_files.txt"
+ROOT_DIRECTORY = r"G:\My Drive\2024-2025\coding\nosql_reader" 
+OUTPUT_FILE = r"G:\My Drive\2024-2025\coding\nosql_reader/combined_project_files.txt"
 FILE_TYPES = [".js", ".html", ".py", ".md", ".me", ".css", ".schema"]
 SEPARATOR = "*" * 80
 
 # Exclusion variables
-EXCLUDED_DIRECTORIES = [".git"]
+EXCLUDED_DIRECTORIES = [".git", "util", "logs", "flask_session", "__pycache__"]
 EXCLUDED_FILE_TYPES = [".ini"]
 
 def get_file_statistics(root_dir):

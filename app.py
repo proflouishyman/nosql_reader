@@ -7,8 +7,23 @@ from flask import Flask
 from flask_caching import Cache
 from flask_session import Session
 from database_setup import client, db, documents, field_structure
+import logging
+from logging.handlers import RotatingFileHandler
+
+
 
 app = Flask(__name__)
+
+# Setup file-based logging
+if not app.debug:
+    file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+
+app.logger.setLevel(logging.DEBUG)
+
 
 # Load configuration
 config_path = os.path.join(os.path.dirname(__file__), 'config.json')
@@ -78,4 +93,4 @@ from routes import *
 
 if __name__ == '__main__':
     # Run the app
-    app.run(debug=False)
+    app.run(debug=True)

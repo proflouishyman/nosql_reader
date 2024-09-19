@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelButton = document.getElementById('cancelSearch');
     const totalResultsDiv = document.getElementById('totalResults');
 
+    // Add console warnings for missing elements
+    if (!searchForm) console.warn('Search form not found');
+    if (!resultsDiv) console.warn('Results div not found');
+    if (!loadingIndicator) console.warn('Loading indicator not found');
+    if (!cancelButton) console.warn('Cancel button not found');
+    if (!totalResultsDiv) console.warn('Total results div not found');
+
     let controller;
     let page = 1;
     let totalPages = 1;
@@ -18,34 +25,46 @@ document.addEventListener('DOMContentLoaded', function() {
     let prefetchedData = null; // Declare prefetchedData
 
     // Handle form submission
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Reset variables
-        page = 1;
-        hasMore = true;
-        resultsDiv.innerHTML = '';
-        totalResultsDiv.textContent = '';
-        // Get search parameters
-        const formData = new FormData(searchForm);
-        currentQuery = {};
-        for (let i = 1; i <= 3; i++) {
-            currentQuery[`field${i}`] = formData.get(`field${i}`);
-            currentQuery[`operator${i}`] = formData.get(`operator${i}`);
-            currentQuery[`searchTerm${i}`] = formData.get(`searchTerm${i}`);
-        }
-        performSearch(true);
-    });
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Reset variables
+            page = 1;
+            hasMore = true;
+            if (resultsDiv) resultsDiv.innerHTML = '';
+            if (totalResultsDiv) totalResultsDiv.textContent = '';
+            
+            // Get search parameters
+            const formData = new FormData(searchForm);
+            currentQuery = {};
+            for (let i = 1; i <= 3; i++) {
+                currentQuery[`field${i}`] = formData.get(`field${i}`);
+                currentQuery[`operator${i}`] = formData.get(`operator${i}`);
+                currentQuery[`searchTerm${i}`] = formData.get(`searchTerm${i}`);
+            }
+
+            // Check if form fields have valid values before proceeding
+            if (!currentQuery['field1'] || !currentQuery['searchTerm1']) {
+                console.error('Please enter a valid search term in the first field.');
+                return;
+            }
+
+            performSearch(true);
+        });
+    }
 
     // Cancel search functionality
-    cancelButton.addEventListener('click', function() {
-        if (controller) {
-            controller.abort();
-            hideLoadingIndicator();
-            isLoading = false;
-            hasMore = false;
-            cancelButton.style.display = 'none';
-        }
-    });
+    if (cancelButton) {
+        cancelButton.addEventListener('click', function() {
+            if (controller) {
+                controller.abort();
+                hideLoadingIndicator();
+                isLoading = false;
+                hasMore = false;
+                if (cancelButton) cancelButton.style.display = 'none';
+            }
+        });
+    }
 
     // Function to fetch results
     function performSearch(isNewSearch = false) {
@@ -58,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         showLoadingIndicator();
-        cancelButton.style.display = 'inline-block';
+        if (cancelButton) cancelButton.style.display = 'inline-block';
 
         // Add page and perPage to currentQuery
         currentQuery.page = page;
@@ -78,8 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             hideLoadingIndicator();
-            cancelButton.style.display = 'none';
-            if (data.documents.length > 0) {
+            if (cancelButton) cancelButton.style.display = 'none';
+            if (data.documents && data.documents.length > 0) {
                 appendResults(data.documents);
                 totalPages = data.total_pages;
                 totalResults = data.total_count;
@@ -93,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 hasMore = false;
-                if (isNewSearch && resultsDiv.innerHTML === '') {
+                if (isNewSearch && resultsDiv && resultsDiv.innerHTML === '') {
                     resultsDiv.innerHTML = '<p>No results found.</p>';
                 }
             }
@@ -102,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             hideLoadingIndicator();
-            cancelButton.style.display = 'none';
+            if (cancelButton) cancelButton.style.display = 'none';
             isLoading = false;
             if (error.name === 'AbortError') {
                 console.log('Search was cancelled');
@@ -110,6 +129,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
             }
         });
+    }
+
+    function showLoadingIndicator() {
+        if (loadingIndicator && loadingIndicator.style) {
+            loadingIndicator.style.display = 'block';
+        }
+    }
+
+    function hideLoadingIndicator() {
+        if (loadingIndicator && loadingIndicator.style) {
+            loadingIndicator.style.display = 'none';
+        }
     }
 
     // Function to prefetch the next page of results
@@ -127,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.documents.length > 0) {
+            if (data.documents && data.documents.length > 0) {
                 prefetchedData = data;
             } else {
                 hasMore = false;
@@ -174,6 +205,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to append results to the page
     function appendResults(documents) {
+        if (!resultsDiv) return;
+
         let table = document.getElementById('resultsTable');
         let tbody;
 
@@ -214,25 +247,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to show loading indicator
-    function showLoadingIndicator() {
-        loadingIndicator.style.display = 'block';
-    }
-
-    // Function to hide loading indicator
-    function hideLoadingIndicator() {
-        loadingIndicator.style.display = 'none';
-    }
-
     // Function to update total results display
     function updateTotalResults() {
-        totalResultsDiv.textContent = `Total results: ${totalResults}`;
+        if (totalResultsDiv) {
+            totalResultsDiv.textContent = `Total results: ${totalResults}`;
+        }
     }
 
     // Export to CSV functionality
     const exportCsvButton = document.getElementById('exportCsv');
     if (exportCsvButton) {
         exportCsvButton.addEventListener('click', function() {
+            if (!searchForm) return;
+
             const formData = new FormData(searchForm);
             const searchData = {
                 fields: []

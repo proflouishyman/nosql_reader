@@ -16,10 +16,18 @@ from datetime import datetime, timedelta
 import random
 import csv
 from io import StringIO
+from logging.handlers import RotatingFileHandler
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+
+# Setup file-based logging
+if not app.debug:
+    file_handler = RotatingFileHandler('logs/app_routes.log', maxBytes=10240, backupCount=10)
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+
+app.logger.setLevel(logging.DEBUG)
 
 # Hashed password (generate this using generate_password_hash('your_actual_password'))
 ADMIN_PASSWORD_HASH = 'pbkdf2:sha256:260000$uxZ1Fkjt9WQCHwuN$ca37dfb41ebc26b19daf24885ebcd09f607cab85f92dcab13625627fd9ee902a'
@@ -60,6 +68,7 @@ def login_required(f):
 
 @app.route('/')
 def index():
+    app.logger.info('Handling request to index')
     num_search_fields = 3  # Number of search fields to display
     return render_template('index.html', num_search_fields=num_search_fields)
 
@@ -103,37 +112,57 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('index'))
 
+
+
 @app.route('/search', methods=['GET', 'POST'])
-@login_required
 def search():
     try:
         if request.method == 'POST':
-            data = request.form.to_dict()
+            # Log incoming request data
+            data = request.get_json()
+            logging.debug(f"Received POST search request: {data}")
+
+            # Extract pagination details
             page = int(data.get('page', 1))
             per_page = int(data.get('per_page', 50))
+            logging.debug(f"Pagination details - Page: {page}, Per Page: {per_page}")
 
+            # Build query based on user input
             query = build_query(data)
+            logging.debug(f"Constructed MongoDB query: {query}")
 
+            # Query MongoDB for the matching documents
             total_count = documents.count_documents(query)
             search_results = documents.find(query).skip((page - 1) * per_page).limit(per_page)
-
             documents_list = list(search_results)
+
+            logging.debug(f"Total matching documents: {total_count}, Returned documents: {len(documents_list)}")
+
+            # Convert ObjectId to string for each document
             for doc in documents_list:
                 doc['_id'] = str(doc['_id'])
 
+            # Calculate total pages
             total_pages = math.ceil(total_count / per_page)
 
+            logging.debug(f"Total pages: {total_pages}, Current page: {page}")
+
+            # Render the search results page
             return render_template('search_results.html',
                                    documents=documents_list,
                                    total_count=total_count,
                                    current_page=page,
                                    total_pages=total_pages,
                                    per_page=per_page)
+
         else:
+            # For GET requests, simply render the search form
             num_search_fields = 3
+            logging.debug(f"Rendering search page with {num_search_fields} fields")
             return render_template('search.html', num_search_fields=num_search_fields)
+
     except Exception as e:
-        logger.error("An error occurred during search", exc_info=True)
+        logging.error(f"An error occurred during search: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal error occurred"}), 500
 
 def build_query(data):
@@ -142,6 +171,8 @@ def build_query(data):
     """
     query = {}
     criteria_list = []
+
+    logging.debug(f"Building query from search data: {data}")
 
     for i in range(1, 4):
         field = data.get(f'field{i}')
@@ -154,28 +185,35 @@ def build_query(data):
                 condition[field] = {'$not': {'$regex': search_term, '$options': 'i'}}
             else:
                 condition[field] = {'$regex': search_term, '$options': 'i'}
-
+            
             criteria_list.append((operator, condition))
+            logging.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
 
-    # Build the query based on operators
+    # Build the query based on operators (AND, OR, NOT)
     if criteria_list:
-        query_list = []
+        and_conditions = []
+        or_conditions = []
+
         for operator, condition in criteria_list:
-            if operator == 'AND':
-                query_list.append(condition)
+            if operator == 'AND' or operator == 'NOT':
+                and_conditions.append(condition)
             elif operator == 'OR':
-                if '$or' not in query:
-                    query['$or'] = []
-                query['$or'].append(condition)
-            elif operator == 'NOT':
-                query_list.append(condition)
-            else:  # Default to AND
-                query_list.append(condition)
+                or_conditions.append(condition)
 
-        if query_list:
-            query['$and'] = query_list
+        # Add AND conditions to the query
+        if and_conditions:
+            query['$and'] = and_conditions
 
+        # Add OR conditions to the query
+        if or_conditions:
+            if '$or' not in query:
+                query['$or'] = or_conditions
+            else:
+                query['$or'].extend(or_conditions)
+
+    logging.debug(f"Final query: {query}")
     return query
+
 
 @app.route('/document/<string:doc_id>')
 @login_required
