@@ -1,75 +1,246 @@
 # Historical Document Reader
 
+## Description
+The Historical Document Reader is a Flask-based web application designed to manage, search, and display historical documents stored in a MongoDB database. It provides an intuitive interface for researchers and historians to access and analyze digitized historical records.
 
-Organize data ingestion from 
-database_setup      creates the db
-json_validator      checks texts for inclusion
-database_processing ingests the data
+## Features
 
+### Document Management
+- Data ingestion from JSON files
+- Dynamic field structure discovery and adaptation
+- Storage of documents in MongoDB
 
-##Needed FEatures
+### Search Functionality
+- Advanced search with multiple fields and logical operators (AND, OR, NOT)
+- Infinite scrolling for search results
+- AJAX-based search for improved responsiveness
+- Prefetching of next page results for smoother scrolling
 
-2. Ability to mark documents for followup
-3. Highlighting of search terms in produced text [attempted to code but difficult]
-4. Preloading of next document somehow
-5.
-6. 
-7. mouseover wikipedia search
+### Document Viewing
+- Detailed view of individual documents
+- Image viewing with zoom and pan capabilities for document images
+- Navigation between documents in search results
 
+### Data Analysis
+- Search terms analysis with word and phrase frequency
+- Database structure information display
 
-Architecture:
+### User Interface
+- Customizable UI settings (fonts, colors, spacing)
+- Responsive design for various screen sizes
 
-The application is built using Flask, a Python web framework.
-It uses MongoDB as the NoSQL database, accessed via the PyMongo library.
-The frontend is created using HTML, CSS, and JavaScript, with some dynamic content rendering.
+### Data Export
+- Export search results to CSV
 
+### Security
+- Basic authentication system
+- CAPTCHA implementation to prevent automated login attempts
 
-Main Components:
+### Additional Features
+- Error handling and user feedback
+- Logging system for debugging and monitoring
 
-app.py: The main Flask application file that initializes the app and includes configurations.
-routes.py: Contains all the route handlers for different endpoints.
-database_setup.py: Manages database connections and operations.
-data_processing.py: Handles the ingestion of JSON files into the MongoDB database.
-static/script.js: Contains client-side JavaScript for handling user interactions and AJAX requests.
-static/style.css: Defines the styling for the application.
-Various HTML templates in the templates folder for rendering different pages.
+## File Structure
+```
+historical_document_reader/
+│
+├── app.py
+├── routes.py
+├── models.py
+├── database_setup.py
+├── data_processing.py
+├── json_validator.py
+├── json_validator_multi.py
+├── generate_password.py
+├── requirements.txt
+├── config.json
+├── secret_key.txt
+├── README.md
+│
+├── static/
+│   ├── script.js
+│   └── style.css
+│
+└── templates/
+    ├── base.html
+    ├── index.html
+    ├── document-detail.html
+    ├── document-list.html
+    ├── search-terms.html
+    ├── database-info.html
+    ├── settings.html
+    ├── login.html
+    └── error.html
+```
 
+## Installation and Setup
 
-Functionality:
+1. Clone the repository:
+   ```
+   git clone https://github.com/your-username/historical-document-reader.git
+   ```
 
-Document Search: Users can search for documents using multiple fields and operators (AND, OR, NOT).
-Pagination: Search results are paginated for better performance and user experience.
-Document Viewing: Users can view individual documents with their details and associated images.
-Database Information: Provides an overview of the database structure and field counts.
-Search Terms Analysis: Allows users to explore the frequency of terms in different fields.
-Settings: Users can customize UI settings like fonts, colors, and spacing.
-Authentication: Basic login functionality is implemented for accessing certain features.
+2. Navigate to the project directory:
+   ```
+   cd historical-document-reader
+   ```
 
+3. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-Data Flow:
+4. Set up MongoDB:
+   - Install MongoDB if you haven't already.
+   - Start the MongoDB service.
+   - Update the connection string in `database_setup.py` if necessary:
+     ```python
+     client = MongoClient('mongodb://localhost:27017/')
+     ```
 
-JSON files are processed and inserted into MongoDB using data_processing.py.
-The application dynamically discovers and adapts to the structure of the documents in the database.
-Search queries are constructed based on user input and executed against MongoDB.
-Results are returned to the frontend and displayed using a combination of server-side rendering and client-side JavaScript.
+5. Initialize the database structure:
+   ```
+   python database_setup.py
+   ```
+   This script will create necessary indexes and initialize the field structure.
 
+6. Prepare your JSON data:
+   - Ensure your historical document data is in JSON format.
+   - If your data is in .txt files, use the JSON validator to convert and validate them:
+     ```
+     python json_validator.py
+     ```
+   - This script will process .txt files in the specified directory, convert them to valid JSON, and save them with a .json extension.
 
-Notable Features:
+7. Ingest data into the database:
+   - Update the `data_directory` path in `data_processing.py` to point to your JSON files:
+     ```python
+     data_directory = r'path/to/your/json/files'
+     ```
+   - Run the data processing script:
+     ```
+     python data_processing.py
+     ```
+   - This script will read the JSON files, insert them into the MongoDB database, update the field structure, and compute unique terms for search functionality.
 
-Dynamic field structure discovery and adaptation.
-Infinite scrolling for search results.
-AJAX-based search to improve responsiveness.
-Prefetching of next page results for smoother scrolling.
-Export to CSV functionality for search results.
-Image viewing with zoom and pan capabilities for document images.
+8. Generate a password for admin access (optional):
+   ```
+   python generate_password.py
+   ```
+   - This will generate a hashed password. Copy the output and update the `ADMIN_PASSWORD_HASH` in `routes.py`.
 
+9. Run the application:
+   ```
+   python app.py
+   ```
 
-Security Measures:
+## Usage
 
-Password protection for certain routes.
-CAPTCHA implementation to prevent automated login attempts.
-Session management for maintaining user state.
+1. Access the application through a web browser at `http://localhost:5000`.
 
+2. If you set up admin access, log in using the password you generated.
 
+3. Use the search interface to find documents:
+   - Select fields from the dropdown menus.
+   - Choose operators (AND, OR, NOT) to combine search criteria.
+   - Enter search terms and click "Search".
 
-This application provides a flexible and efficient way to search and view historical documents stored in a NoSQL database, with a focus on performance and user experience.
+4. View search results:
+   - Click on a document title to view its details.
+   - Use infinite scrolling to load more results.
+
+5. Analyze search terms:
+   - Navigate to the "Search Terms" page.
+   - Select a field to see word and phrase frequencies.
+
+6. View database information:
+   - Go to the "Database Info" page to see the structure and record counts.
+
+7. Customize the interface:
+   - Use the "Settings" page to adjust fonts, colors, and spacing.
+
+8. Export results:
+   - Use the "Export to CSV" button to download search results.
+
+## Maintenance and Updates
+
+- To add new documents, place their JSON files in the data directory and run `data_processing.py` again.
+- If the structure of your documents changes, the system will automatically adapt when you process new files.
+- Regularly backup your MongoDB database to prevent data loss.
+
+## Troubleshooting
+
+- If you encounter issues with data processing, check the JSON format of your files and ensure they are valid.
+- For database connection issues, verify your MongoDB service is running and the connection string is correct.
+- Check the application logs for any error messages or unexpected behavior.
+
+## Python Files Description
+
+Here's a breakdown of the main Python files in the project and their functions:
+
+### `app.py`
+- Main application file
+- Initializes the Flask app and configures it
+- Sets up caching, logging, and session management
+- Loads the UI configuration
+- Defines context processors for injecting data into templates
+
+### `routes.py`
+- Contains all the route handlers for different endpoints
+- Implements the main functionality of the web application:
+  - Search
+  - Document viewing
+  - Database information display
+  - Search terms analysis
+  - User authentication
+  - Settings management
+  - CSV export
+
+### `database_setup.py`
+- Establishes connection to MongoDB
+- Defines functions for CRUD operations on documents
+- Implements dynamic field structure discovery and updates
+- Creates necessary indexes for performance optimization
+
+### `data_processing.py`
+- Handles the ingestion of JSON files into the MongoDB database
+- Processes documents to extract and store unique terms
+- Updates the field structure based on ingested documents
+- Implements multiprocessing for faster data ingestion
+
+### `json_validator.py`
+- Validates and cleans JSON files
+- Converts .txt files to proper JSON format
+- Implements multiprocessing for efficient file processing
+
+### `json_validator_multi.py`
+- Similar to `json_validator.py` but optimized for handling multiple files
+- Uses multiprocessing to speed up the validation and conversion process
+
+### `generate_password.py`
+- Utility script to generate a hashed password for admin access
+- Uses Werkzeug's password hashing function
+
+### `models.py`
+- This file is currently not in use as the project uses a NoSQL database
+- Kept for potential future use if SQL models are needed
+
+## Contributing
+
+Contributions to the Historical Document Reader are welcome. Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them with descriptive commit messages.
+4. Push your changes to your fork.
+5. Submit a pull request to the main repository.
+
+## License
+
+[Insert your chosen license here]
+
+## Contact
+
+[Your Name or Organization]
+[Contact Information]
+
