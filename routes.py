@@ -1,7 +1,7 @@
 # File: routes.py
 # Path: routes.py
 
-from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response
+from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response, send_file
 from functools import wraps
 from app import app, cache
 from database_setup import (
@@ -329,52 +329,59 @@ def settings():
 
     return render_template('settings.html', config=config)
 
-@app.route('/export_csv', methods=['POST'])
-# @login_required
-def export_csv():
-    data = request.get_json()
-    query = build_query(data)
 
-    results = documents.find(query)
 
-    output = StringIO()
-    writer = csv.writer(output)
-    field_struct = get_field_structure()
-    field_names = []
+# consider streaming if it ends up being thousands of documents
+@app.route('/export_selected_csv', methods=['POST'])
+#@login_required
+def export_selected_csv():
+    try:
+        data = request.get_json()
+        document_ids = data.get('document_ids', [])
+        if not document_ids:
+            return jsonify({"error": "No document IDs provided"}), 400
 
-    def get_field_names(structure, prefix=''):
-        for key, value in structure.items():
-            if isinstance(value, dict):
-                get_field_names(value, prefix=prefix + key + '.')
-            else:
-                field_names.append(prefix + key)
+        # Convert string IDs to ObjectIds, handle invalid IDs
+        valid_ids = []
+        for doc_id in document_ids:
+            try:
+                valid_ids.append(ObjectId(doc_id))
+            except Exception as e:
+                app.logger.warning(f"Invalid document ID: {doc_id}")
 
-    get_field_names(field_struct)
+        if not valid_ids:
+            return jsonify({"error": "No valid document IDs provided"}), 400
 
-    writer.writerow(['ID'] + field_names)
+        # Check if any documents exist with the provided IDs
+        count = documents.count_documents({"_id": {"$in": valid_ids}})
+        if count == 0:
+            return jsonify({"error": "No documents found for the provided IDs."}), 404
 
-    for result in results:
-        row = [str(result.get('_id', ''))]
-        for field in field_names:
-            keys = field.split('.')
-            value = result
-            for key in keys:
-                if isinstance(value, dict):
-                    value = value.get(key, '')
-                else:
-                    value = ''
-                    break
-            # Convert lists and dictionaries to JSON strings for better readability
-            if isinstance(value, (list, dict)):
-                value = json.dumps(value)
-            row.append(value)
-        writer.writerow(row)
+        # Retrieve the documents
+        documents_cursor = documents.find({"_id": {"$in": valid_ids}})
 
-    return Response(
-        output.getvalue(),
-        mimetype="text/csv",
-        headers={"Content-disposition": "attachment; filename=search_results.csv"}
-    )
+        # Create CSV
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['filename', 'OCR', 'original_json'])  # Header row
+
+        for doc in documents_cursor:
+            filename = doc.get('filename', 'N/A')
+            ocr = doc.get('summary', 'N/A')  # Adjust field as necessary
+            original_json = json.dumps(doc, default=str)  # Convert ObjectId to string if necessary
+            writer.writerow([filename, ocr, original_json])
+
+        # Prepare CSV for download
+        output.seek(0)
+        return Response(
+            output.getvalue(),
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=selected_documents.csv'}
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error exporting selected CSV: {str(e)}", exc_info=True)
+        return jsonify({"error": "An internal error occurred"}), 500
 
 @app.errorhandler(404)
 def not_found_error(error):

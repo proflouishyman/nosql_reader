@@ -1,3 +1,4 @@
+<!-- File: templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,6 +30,7 @@
                 <div class="search-field">
                     <label for="field{{ i }}">Field:</label>
                     <select name="field{{ i }}" id="field{{ i }}">
+                        <option value="" disabled selected>Select a field</option>
                         {% for field in field_structure|dictsort %}
                             <option value="{{ field[0] }}">{{ field[0] }}</option>
                         {% endfor %}
@@ -49,8 +51,8 @@
 
         <!-- Loading Indicator -->
         <div id="loadingIndicator" style="display: none;">
-            <p>Loading... Please wait.</p>
             <div class="spinner"></div>
+            <p>Loading... Please wait.</p>
         </div>
 
         <!-- Cancel Search Button -->
@@ -64,8 +66,8 @@
             <!-- The table will be dynamically inserted here -->
         </div>
 
-        <!-- Export to CSV Button -->
-        <button id="exportCsv" style="display: none;">Export to CSV</button>
+        <!-- Export Selected to CSV Button -->
+        <button id="exportSelectedCsv" style="display: none; margin-top: 10px;">Export Selected to CSV</button>
     </div>
 
     <!-- Include jQuery -->
