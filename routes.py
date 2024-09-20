@@ -27,6 +27,7 @@ import csv
 from io import StringIO
 from logging.handlers import RotatingFileHandler
 import os
+import uuid
 
 app.logger.setLevel(logging.DEBUG)
 
@@ -136,9 +137,16 @@ def search():
 
         total_pages = math.ceil(total_count / per_page) if per_page else 1
 
-        app.logger.debug(f"Found {total_count} documents, returning page {page} of {total_pages}")
+        # Generate unique search ID
+        search_id = str(uuid.uuid4())
+        # Store the ordered list of document IDs
+        ordered_ids = [doc['_id'] for doc in search_results]
+        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)  # Expires in 1 hour
+
+        app.logger.debug(f"Search ID: {search_id}, Found {total_count} documents.")
 
         return jsonify({
+            "search_id": search_id,
             "documents": search_results,
             "total_count": total_count,
             "current_page": page,
@@ -196,6 +204,11 @@ def build_query(data):
 @app.route('/document/<string:doc_id>')
 # @login_required
 def document_detail(doc_id):
+    search_id = request.args.get('search_id')
+    if not search_id:
+        flash('Missing search context.')
+        return redirect(url_for('index'))
+
     try:
         document = find_document_by_id(doc_id)
         if not document:
@@ -203,18 +216,42 @@ def document_detail(doc_id):
 
         document['_id'] = str(document['_id'])
 
-        prev_doc = documents.find_one({'_id': {'$lt': ObjectId(doc_id)}}, sort=[('_id', -1)])
-        next_doc = documents.find_one({'_id': {'$gt': ObjectId(doc_id)}}, sort=[('_id', 1)])
+        # Retrieve the ordered list from cache
+        ordered_ids = cache.get(f'search_{search_id}')
+        if not ordered_ids:
+            flash('Search context expired. Please perform the search again.')
+            return redirect(url_for('index'))
 
-        prev_id = str(prev_doc['_id']) if prev_doc else None
-        next_id = str(next_doc['_id']) if next_doc else None
+        try:
+            current_index = ordered_ids.index(doc_id)
+        except ValueError:
+            flash('Document not found in the current search results.')
+            return redirect(url_for('index'))
 
-        return render_template('document-detail.html', document=document, prev_id=prev_id, next_id=next_id)
+        # Determine previous and next IDs based on the search order
+        prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
+        next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
+
+        return render_template(
+            'document-detail.html',
+            document=document,
+            prev_id=prev_id,
+            next_id=next_id,
+            search_id=search_id
+        )
     except Exception as e:
         app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
 
 
+@app.route('/images/<path:filename>')
+# @login_required
+def serve_image(filename):
+    image_path = os.path.join(app.root_path, 'static', 'images', filename)
+    if os.path.exists(image_path):
+        return send_file(image_path)
+    else:
+        abort(404)
 
 @app.route('/search-terms', methods=['GET'])
 # @login_required

@@ -1,5 +1,3 @@
-// File: static/script.js
-
 document.addEventListener('DOMContentLoaded', function() {
     // ===============================
     // Initialization
@@ -32,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Selection Management
     let selectedDocuments = new Set();
+
+    // Variable to store current search_id
+    let searchId = null;
 
     // ===============================
     // Utility Functions
@@ -120,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hasMore = true;
         if (resultsDiv) resultsDiv.innerHTML = '';
         if (totalResultsDiv) totalResultsDiv.textContent = '';
+        searchId = null;  // Reset search_id for new search
     }
 
     /**
@@ -258,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (isNewSearch) {
             prefetchedData = null;
+            searchId = null;  // Reset search_id for new search
         }
 
         showLoadingIndicator();
@@ -283,6 +286,11 @@ document.addEventListener('DOMContentLoaded', function() {
             hideLoadingIndicator();
             if (cancelButton) cancelButton.style.display = 'none';
             if (data.documents && data.documents.length > 0) {
+                // Store search_id if it's a new search
+                if (isNewSearch) {
+                    searchId = data.search_id;
+                }
+
                 appendResults(data.documents);
                 totalPages = data.total_pages;
                 totalResults = data.total_count;
@@ -358,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><input type="checkbox" class="select-document" data-doc-id="${doc._id}" /></td>
-                <td><a href="/document/${doc._id}">${doc.filename || 'No file name'}</a></td>
+                <td><a href="/document/${doc._id}?search_id=${searchId}">${doc.filename || 'No file name'}</a></td>
                 <td>${doc.summary || 'No summary available.'}</td>
             `;
             // If the document is already selected, check the box

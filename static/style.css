@@ -1,5 +1,6 @@
 /* static/style.css */
 
+/* Base Styles */
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
@@ -26,21 +27,30 @@ h1, h2, h3 {
 nav ul {
     list-style-type: none;
     padding: 0;
+    display: flex;
+    gap: 15px;
     margin-bottom: 20px;
 }
 
 nav ul li {
     display: inline;
-    margin-right: 10px;
 }
 
 nav ul li a {
     text-decoration: none;
     color: #007bff;
+    font-weight: bold;
 }
 
 nav ul li a:hover {
     text-decoration: underline;
+}
+
+/* Flash Messages */
+.flashes {
+    list-style-type: none;
+    padding: 0;
+    color: red;
 }
 
 /* Search Form */
@@ -71,6 +81,30 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* Navigation Buttons */
+.nav-button {
+    display: inline-block;
+    padding: 8px 12px;
+    margin-right: 5px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    text-align: center;
+}
+
+.nav-button:hover {
+    background-color: #0056b3;
+}
+
+.nav-button.disabled {
+    background-color: #6c757d;
+    pointer-events: none;
+    cursor: default;
 }
 
 /* Results Table */
@@ -183,24 +217,6 @@ button:hover {
     margin-right: 5px;
 }
 
-
-
-/* Loading Indicator */
-#loadingIndicator {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
 .info-section {
     margin-bottom: 20px;
     border: 1px solid #e0e0e0;
@@ -232,62 +248,3 @@ button:hover {
 .nested-list li, .info-list li {
     margin-bottom: 10px;
 }
-
-
-/* File: static/style.css */
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-nav ul {
-    list-style-type: none;
-    padding: 0;
-    display: flex;
-    gap: 15px;
-}
-
-nav ul li {
-    display: inline;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: #3498db;
-    font-weight: bold;
-}
-
-nav ul li a:hover {
-    text-decoration: underline;
-}
-
-.flashes {
-    list-style-type: none;
-    padding: 0;
-    color: red;
-}
-
-form div {
-    margin-bottom: 15px;
-}
-
-button {
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #2980b9;
-}
-
