@@ -1,5 +1,23 @@
 # Historical Document Reader
 
+
+to do
+1 convertsetup process to a part of settings or a new page. it shoukd be able to add to thr db
+2. create login splash page
+3. restore picture functionality. allow the creation of a root drive with recusive search and momentum search
+4. address weirdness of base file and index html. it is unseemly 
+5. reorganize routes py
+6. add cross referencing of named entities
+7. restore adding export from list
+8. add Select all for export
+9. clean file description to remove extension in title. 
+10. create a way to do a search and then add that result to thr db. 
+11. backup and restore database
+12. remove blank fields from json expansion
+13. color code sections of json expansion
+
+
+
 ## Description
 The Historical Document Reader is a Flask-based web application designed to manage, search, and display historical documents stored in a MongoDB database. It provides an intuitive interface for researchers and historians to access and analyze digitized historical records.
 
