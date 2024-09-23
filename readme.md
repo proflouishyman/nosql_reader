@@ -1,8 +1,14 @@
 # Historical Document Reader
 
 
-cd ~/Desktop/coding/nosql_reader
+# put all data in data subdirectory
 
+cd ~/Desktop/coding/nosql_reader
+source .dbenv/bin/activate
+
+# SETUP
+You need to setup MongoDB
+https://thelinuxforum.com/articles/912-how-to-install-mongodb-on-ubuntu-24-04
 
 to do
 1 convertsetup process to a part of settings or a new page. it shoukd be able to add to thr db

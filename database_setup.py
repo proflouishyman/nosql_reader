@@ -1,169 +1,213 @@
 # File: database_setup.py
 # Path: railroad_documents_project/database_setup.py
 
+import sys
+import logging
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from bson import ObjectId
 
-# Connect to MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['railroad_documents']
-documents = db['documents']
-field_structure = db['field_structure']
-unique_terms_collection = db['unique_terms']  # New collection for unique terms
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def discover_fields(document):
-    """
-    Recursively discover fields in a document.
-    
-    :param document: The document to analyze
-    :return: A dictionary representing the field structure
-    """
-    structure = {}
-    for key, value in document.items():
-        if isinstance(value, dict):
-            structure[key] = discover_fields(value)
-        elif isinstance(value, list):
-            if value:
-                if isinstance(value[0], dict):
-                    structure[key] = [discover_fields(value[0])]
-                else:
-                    structure[key] = [type(value[0]).__name__]
-            else:
-                structure[key] = []
+def is_mongodb_running():
+    try:
+        client = MongoClient('mongodb://localhost:27017', serverSelectionTimeoutMS=1000)
+        client.server_info()
+        return True
+    except Exception:
+        return False
+
+def check_mongodb():
+    if not is_mongodb_running():
+        logging.error("MongoDB is not running. Please start it before running this script.")
+        print("\nTo start MongoDB:")
+        if sys.platform.startswith('win'):
+            print("1. Open a new Command Prompt as Administrator")
+            print("2. Run the following command:")
+            print("   net start MongoDB")
+        elif sys.platform.startswith('darwin'):
+            print("1. Open a Terminal")
+            print("2. Run the following command:")
+            print("   brew services start mongodb-community")
+        elif sys.platform.startswith('linux'):
+            print("1. Open a Terminal")
+            print("2. Run one of the following commands based on your system:")
+            print("   sudo systemctl start mongod")
+            print("   sudo service mongod start")
         else:
-            structure[key] = type(value).__name__
-    return structure
-
-def merge_structures(existing, new):
-    """
-    Merge two field structures.
-    
-    :param existing: The existing field structure
-    :param new: The new field structure to merge
-    :return: The merged field structure
-    """
-    for key, value in new.items():
-        if key not in existing:
-            existing[key] = value
-        elif isinstance(value, dict) and isinstance(existing[key], dict):
-            merge_structures(existing[key], value)
-        elif isinstance(value, list) and isinstance(existing[key], list):
-            if value and existing[key]:
-                if isinstance(value[0], dict) and isinstance(existing[key][0], dict):
-                    merge_structures(existing[key][0], value[0])
-    return existing
-
-def update_field_structure(document):
-    """
-    Update the field structure based on a new document.
-    Performs an upsert to avoid duplicate key errors.
-    
-    :param document: The new document to analyze
-    """
-    new_structure = discover_fields(document)
-    merged_structure = {}
-
-    # Attempt to retrieve the existing structure
-    existing_structure = field_structure.find_one({"_id": "current_structure"})
-    
-    if existing_structure:
-        # Merge the new structure with the existing one
-        merged_structure = merge_structures(existing_structure['structure'], new_structure)
+            print("Please refer to MongoDB documentation for instructions on starting MongoDB on your operating system.")
+        sys.exit(1)
     else:
-        # If no existing structure, use the new structure
-        merged_structure = new_structure
+        logging.info("MongoDB is running.")
 
-    # Perform an upsert operation to update or insert the structure
-    field_structure.update_one(
-        {"_id": "current_structure"},
-        {"$set": {"structure": merged_structure}},
-        upsert=True
-    )
+class DatabaseSetup:
+    def __init__(self):
+        check_mongodb()
+        self.client = MongoClient('mongodb://localhost:27017/')
+        self.db = self.client['railroad_documents']
+        self.documents = self.db['documents']
+        self.field_structure = self.db['field_structure']
+        self.unique_terms_collection = self.db['unique_terms']
 
-def get_field_structure():
-    """
-    Get the current field structure.
-    
-    :return: The current field structure
-    """
-    structure = field_structure.find_one({"_id": "current_structure"})
-    return structure['structure'] if structure else {}
+    def discover_fields(self, document):
+        """
+        Recursively discover fields in a document.
+        
+        :param document: The document to analyze
+        :return: A dictionary representing the field structure
+        """
+        structure = {}
+        for key, value in document.items():
+            if isinstance(value, dict):
+                structure[key] = self.discover_fields(value)
+            elif isinstance(value, list):
+                if value:
+                    if isinstance(value[0], dict):
+                        structure[key] = [self.discover_fields(value[0])]
+                    else:
+                        structure[key] = [type(value[0]).__name__]
+                else:
+                    structure[key] = []
+            else:
+                structure[key] = type(value).__name__
+        return structure
 
-def insert_document(document_data):
-    """
-    Insert a new document into the database.
-    
-    :param document_data: A dictionary containing the document's information
-    :return: The ObjectId of the inserted document
-    """
-    result = documents.insert_one(document_data)
-    return result.inserted_id
+    def merge_structures(self, existing, new):
+        """
+        Merge two field structures.
+        
+        :param existing: The existing field structure
+        :param new: The new field structure to merge
+        :return: The merged field structure
+        """
+        for key, value in new.items():
+            if key not in existing:
+                existing[key] = value
+            elif isinstance(value, dict) and isinstance(existing[key], dict):
+                self.merge_structures(existing[key], value)
+            elif isinstance(value, list) and isinstance(existing[key], list):
+                if value and existing[key]:
+                    if isinstance(value[0], dict) and isinstance(existing[key][0], dict):
+                        self.merge_structures(existing[key][0], value[0])
+        return existing
 
-def find_document_by_id(document_id):
-    """
-    Find a document by its ObjectId.
-    
-    :param document_id: The ObjectId of the document
-    :return: The document, or None if not found
-    """
-    return documents.find_one({"_id": ObjectId(document_id)})
+    def update_field_structure(self, document):
+        """
+        Update the field structure based on a new document.
+        Performs an upsert to avoid duplicate key errors.
+        
+        :param document: The new document to analyze
+        """
+        new_structure = self.discover_fields(document)
+        merged_structure = {}
 
-def find_documents(query, limit=10):
-    """
-    Find documents based on a query.
-    
-    :param query: A dictionary containing the search criteria
-    :param limit: Maximum number of results to return (default 10)
-    :return: A cursor containing the matching documents
-    """
-    return documents.find(query).limit(limit)
+        # Attempt to retrieve the existing structure
+        existing_structure = self.field_structure.find_one({"_id": "current_structure"})
+        
+        if existing_structure:
+            # Merge the new structure with the existing one
+            merged_structure = self.merge_structures(existing_structure['structure'], new_structure)
+        else:
+            # If no existing structure, use the new structure
+            merged_structure = new_structure
 
-def update_document(document_id, update_data):
-    """
-    Update a document's information.
-    
-    :param document_id: The ObjectId of the document to update
-    :param update_data: A dictionary containing the fields to update
-    :return: The result of the update operation
-    """
-    result = documents.update_one({"_id": ObjectId(document_id)}, {"$set": update_data})
-    return result.modified_count
+        # Perform an upsert operation to update or insert the structure
+        self.field_structure.update_one(
+            {"_id": "current_structure"},
+            {"$set": {"structure": merged_structure}},
+            upsert=True
+        )
 
-def delete_document(document_id):
-    """
-    Delete a document from the database.
-    
-    :param document_id: The ObjectId of the document to delete
-    :return: The result of the delete operation
-    """
-    result = documents.delete_one({"_id": ObjectId(document_id)})
-    return result.deleted_count
+    def get_field_structure(self):
+        """
+        Get the current field structure.
+        
+        :return: The current field structure
+        """
+        structure = self.field_structure.find_one({"_id": "current_structure"})
+        return structure['structure'] if structure else {}
 
-# Create indexes for performance optimization
-def create_indexes():
-    """
-    Create necessary indexes to optimize query performance.
-    """
-    # Text index for full-text search on all string fields
-    documents.create_index([("$**", "text")])
+    def insert_document(self, document_data):
+        """
+        Insert a new document into the database.
+        
+        :param document_data: A dictionary containing the document's information
+        :return: The ObjectId of the inserted document
+        """
+        result = self.documents.insert_one(document_data)
+        return result.inserted_id
 
-    # Index for unique_terms_collection to optimize retrieval by field
-    unique_terms_collection.create_index([("field", ASCENDING)])
+    def find_document_by_id(self, document_id):
+        """
+        Find a document by its ObjectId.
+        
+        :param document_id: The ObjectId of the document
+        :return: The document, or None if not found
+        """
+        return self.documents.find_one({"_id": ObjectId(document_id)})
 
-    # Additional indexes can be created here as needed
-    # Example:
-    # documents.create_index([("specific_field", ASCENDING)])
+    def find_documents(self, query, limit=10):
+        """
+        Find documents based on a query.
+        
+        :param query: A dictionary containing the search criteria
+        :param limit: Maximum number of results to return (default 10)
+        :return: A cursor containing the matching documents
+        """
+        return self.documents.find(query).limit(limit)
+
+    def update_document(self, document_id, update_data):
+        """
+        Update a document's information.
+        
+        :param document_id: The ObjectId of the document to update
+        :param update_data: A dictionary containing the fields to update
+        :return: The result of the update operation
+        """
+        result = self.documents.update_one({"_id": ObjectId(document_id)}, {"$set": update_data})
+        return result.modified_count
+
+    def delete_document(self, document_id):
+        """
+        Delete a document from the database.
+        
+        :param document_id: The ObjectId of the document to delete
+        :return: The result of the delete operation
+        """
+        result = self.documents.delete_one({"_id": ObjectId(document_id)})
+        return result.deleted_count
+
+    def create_indexes(self):
+        """
+        Create necessary indexes to optimize query performance.
+        """
+        # Text index for full-text search on all string fields
+        self.documents.create_index([("$**", "text")])
+
+        # Index for unique_terms_collection to optimize retrieval by field
+        self.unique_terms_collection.create_index([("field", ASCENDING)])
+
+        # Additional indexes can be created here as needed
+        # Example:
+        # self.documents.create_index([("specific_field", ASCENDING)])
+
+# Global instance of DatabaseSetup
+db_setup = DatabaseSetup()
+
+def init_database():
+    """
+    Initialize the database structure and indexes.
+    """
+    logging.info("Initializing field structure...")
+    db_setup.field_structure.delete_many({})  # Clear existing field structure
+    all_documents = db_setup.documents.find()
+    for doc in all_documents:
+        db_setup.update_field_structure(doc)
+    logging.info("Field structure initialized.")
+
+    logging.info("Creating indexes...")
+    db_setup.create_indexes()
+    logging.info("Indexes created.")
 
 if __name__ == "__main__":
-    # Recalculate the field structure based on existing documents
-    print("Initializing field structure...")
-    field_structure.delete_many({})  # Clear existing field structure
-    all_documents = documents.find()
-    for doc in all_documents:
-        update_field_structure(doc)
-    print("Field structure initialized.")
-
-    # Create necessary indexes
-    print("Creating indexes...")
-    create_indexes()
-    print("Indexes created.")
+    init_database()
