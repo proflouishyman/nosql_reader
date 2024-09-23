@@ -1,0 +1,6 @@
+.dbenv/
+__pycache__/
+logs/
+flask_session/
+secret_key.txt
+
