@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def is_mongodb_running():
     try:
+        # Connect using authenticated credentials
         client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
         client.server_info()
         return True
@@ -42,6 +43,7 @@ def check_mongodb():
 class DatabaseSetup:
     def __init__(self):
         check_mongodb()
+        # Connect to MongoDB with authentication
         self.client = MongoClient('mongodb://admin:secret@localhost:27017/')
         self.db = self.client['railroad_documents']
         self.documents = self.db['documents']
@@ -192,6 +194,23 @@ class DatabaseSetup:
 
 # Global instance of DatabaseSetup
 db_setup = DatabaseSetup()
+
+# Expose necessary variables and methods for import in app.py and other scripts
+client = db_setup.client
+db = db_setup.db
+documents = db_setup.documents
+field_structure = db_setup.field_structure
+unique_terms_collection = db_setup.unique_terms_collection
+
+# Expose methods for other scripts
+insert_document = db_setup.insert_document
+find_document_by_id = db_setup.find_document_by_id
+find_documents = db_setup.find_documents
+update_field_structure = db_setup.update_field_structure
+get_field_structure = db_setup.get_field_structure
+update_document = db_setup.update_document
+delete_document = db_setup.delete_document
+create_indexes = db_setup.create_indexes
 
 def init_database():
     """

@@ -1,3 +1,6 @@
+# File: data_processing.py
+# Path: railroad_documents_project/data_processing.py
+
 import os
 import json
 import re
@@ -14,42 +17,103 @@ from tqdm import tqdm
 import time
 from pymongo import MongoClient
 import logging
+import argparse
 
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# =======================
+# Logging Configuration
+# =======================
 
-# Global variables
+# Create a custom logger
+logger = logging.getLogger('DataProcessingLogger')
+logger.setLevel(logging.INFO)
+
+# Create handlers
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler('data_processing.log')
+file_handler.setLevel(logging.ERROR)
+
+# Create formatters and add them to handlers
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+# Add handlers to the logger
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
+# =======================
+# Global Variables
+# =======================
+
 root_directory = None
+
+# =======================
+# Database Initialization
+# =======================
 
 def init_db():
     """Initialize a new MongoDB connection for each process."""
     global documents
-    client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
-    db = client['railroad_documents']
-    documents = db['documents']
+    try:
+        client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
+        db = client['railroad_documents']
+        documents = db['documents']
+    except Exception as e:
+        logger.error(f"Failed to initialize database connection: {e}")
+        raise e
+
+# =======================
+# Utility Functions
+# =======================
 
 def calculate_file_hash(file_path):
     """Calculate SHA256 hash of a file."""
     sha256_hash = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for byte_block in iter(lambda: f.read(4096), b""):
-            sha256_hash.update(byte_block)
-    return sha256_hash.hexdigest()
+    try:
+        with open(file_path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        return sha256_hash.hexdigest()
+    except Exception as e:
+        logger.error(f"Error calculating hash for {file_path}: {e}")
+        return None
 
 def is_file_ingested(file_path, file_hash):
     """Check if a file has already been ingested based on its path and hash."""
-    return documents.find_one({
-        'file_path': file_path,
-        'file_hash': file_hash
-    }) is not None
+    if not file_hash:
+        return False
+    try:
+        return documents.find_one({
+            'file_path': file_path,
+            'file_hash': file_hash
+        }) is not None
+    except Exception as e:
+        logger.error(f"Error checking ingestion status for {file_path}: {e}")
+        return False
 
 def clean_json(json_text):
     """Remove control characters and extract valid JSON content."""
+    # Remove control characters except for common escape sequences
     json_text = re.sub(r'[\x00-\x1F\x7F]', '', json_text)
     start_index = json_text.find('{')
     end_index = json_text.rfind('}')
     if start_index != -1 and end_index != -1:
-        return json_text[start_index:end_index + 1]
+        json_substring = json_text[start_index:end_index + 1]
+        try:
+            # Attempt to load JSON normally
+            json.loads(json_substring)
+            return json_substring
+        except json.JSONDecodeError:
+            # Attempt to fix common escape issues
+            try:
+                fixed_json = json_substring.encode('utf-8').decode('unicode_escape', 'ignore')
+                # Validate fixed JSON
+                json.loads(fixed_json)
+                return fixed_json
+            except json.JSONDecodeError:
+                raise ValueError("Invalid JSON format after cleaning.")
     raise ValueError("Invalid JSON format: Unable to find '{' or '}'.")
 
 def load_and_validate_json_file(file_path):
@@ -66,9 +130,11 @@ def load_and_validate_json_file(file_path):
         json_data['file_hash'] = calculate_file_hash(file_path)
         return json_data, None
     except json.JSONDecodeError as e:
-        return None, f"Error decoding JSON in {filename}: {str(e)}"
+        error_msg = f"Error decoding JSON in {filename}: {str(e)}"
+        return None, error_msg
     except Exception as e:
-        return None, f"Error processing file {filename}: {str(e)}"
+        error_msg = f"Error processing file {filename}: {str(e)}"
+        return None, error_msg
 
 def collect_unique_terms(json_data):
     """Collect unique words and phrases from the JSON data."""
@@ -118,35 +184,45 @@ def save_unique_terms(unique_terms_dict):
         unique_terms_collection.delete_many({})
         if unique_terms_documents:
             unique_terms_collection.insert_many(unique_terms_documents)
-        logging.info("Unique terms updated in the database.")
+        logger.info("Unique terms updated in the database.")
     except Exception as e:
-        logging.error(f"Error saving unique terms: {e}")
+        logger.error(f"Error saving unique terms: {e}")
+
+# =======================
+# Processing Functions
+# =======================
 
 def process_file(args):
     """Process a single file: load it, validate JSON, update field structure, and collect unique words and phrases."""
     file_path, results_dict = args
     filename = os.path.basename(file_path)
-    logging.debug(f"Processing file: {filename}")
+    logger.debug(f"Processing file: {filename}")
     
-    file_hash = calculate_file_hash(file_path)
-    if is_file_ingested(file_path, file_hash):
-        logging.debug(f"File already ingested: {filename}")
-        results_dict['skipped'].append(file_path)
-        return None
-    
-    json_data, error = load_and_validate_json_file(file_path)
-    if json_data:
-        try:
-            update_field_structure(json_data)
-            insert_document(json_data)
-            logging.debug(f"Processed and inserted document: {filename}")
-            results_dict['processed'].append(file_path)
-            return collect_unique_terms(json_data)
-        except Exception as e:
-            error = f"Error processing {filename}: {str(e)}"
-    
-    if error:
-        logging.error(error)
+    try:
+        file_hash = calculate_file_hash(file_path)
+        if is_file_ingested(file_path, file_hash):
+            logger.debug(f"File already ingested: {filename}")
+            results_dict['skipped'].append(file_path)
+            return None
+        
+        json_data, error = load_and_validate_json_file(file_path)
+        if json_data:
+            try:
+                update_field_structure(json_data)
+                insert_document(json_data)
+                logger.debug(f"Processed and inserted document: {filename}")
+                results_dict['processed'].append(file_path)
+                return collect_unique_terms(json_data)
+            except Exception as e:
+                error = f"Error processing {filename}: {str(e)}"
+        
+        if error:
+            logger.error(error)
+            results_dict['failed'].append((file_path, error))
+        
+    except Exception as e:
+        error = f"Unexpected error processing {filename}: {str(e)}"
+        logger.error(error)
         results_dict['failed'].append((file_path, error))
     
     return None
@@ -170,7 +246,10 @@ def process_directory(directory_path):
     total = len(files)
     final_unique = {}
 
-    logging.info(f"Found {total} files to process.")
+    logger.info(f"Found {total} files to process.")
+
+    batch_size = 1000  # Adjust based on system capabilities
+    num_batches = (total // batch_size) + (1 if total % batch_size != 0 else 0)
 
     with Manager() as manager:
         results_dict = manager.dict()
@@ -178,29 +257,41 @@ def process_directory(directory_path):
         results_dict['failed'] = manager.list()
         results_dict['skipped'] = manager.list()
 
-        with Pool(processes=cpu_count(), initializer=init_db) as pool:
-            for result in tqdm(pool.imap(process_file, [(f, results_dict) for f in files]), total=total, desc="Processing files"):
-                if result:
-                    merge_unique_terms(final_unique, result)
-
+        with tqdm(total=total, desc="Processing files") as pbar:
+            for batch_num in range(num_batches):
+                start_idx = batch_num * batch_size
+                end_idx = min(start_idx + batch_size, total)
+                batch_files = files[start_idx:end_idx]
+                logger.info(f"Processing batch {batch_num + 1}/{num_batches} with {len(batch_files)} files.")
+                
+                with Pool(processes=min(cpu_count() - 1, 8), initializer=init_db) as pool:
+                    for result in pool.imap(process_file, [(f, results_dict) for f in batch_files]):
+                        if result:
+                            merge_unique_terms(final_unique, result)
+                        pbar.update(1)
+    
     save_unique_terms(final_unique)
     
-    logging.info("\nProcessing Summary:")
-    logging.info(f"Total files found: {total}")
-    logging.info(f"Successfully processed: {len(results_dict['processed'])}")
-    logging.info(f"Skipped (already ingested): {len(results_dict['skipped'])}")
-    logging.info(f"Failed to process: {len(results_dict['failed'])}")
+    logger.info("\nProcessing Summary:")
+    logger.info(f"Total files found: {total}")
+    logger.info(f"Successfully processed: {len(results_dict['processed'])}")
+    logger.info(f"Skipped (already ingested): {len(results_dict['skipped'])}")
+    logger.info(f"Failed to process: {len(results_dict['failed'])}")
     
     if results_dict['failed']:
-        logging.info("\nFailed files:")
+        logger.info("\nFailed files:")
         for file_path, error in results_dict['failed']:
-            logging.error(f"- {file_path}: {error}")
+            logger.error(f"- {file_path}: {error}")
 
     duration = time.time() - start_time
-    logging.info(f"\nTotal processing time: {duration:.2f} seconds.")
+    logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
+
+# =======================
+# Main Execution
+# =======================
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process and validate JSON files for the railroad documents database.")
+    parser = argparse.ArgumentParser(description="Process and validate JSON and TXT files for the railroad documents database.")
     parser.add_argument("data_directory", nargs='?', default='data',
                         help="Path to the root directory containing JSON and/or text files to process (default: './data')")
     args = parser.parse_args()
@@ -212,14 +303,14 @@ if __name__ == "__main__":
     data_directory = os.path.abspath(os.path.join(script_dir, args.data_directory))
     
     if not os.path.exists(data_directory):
-        logging.error(f"Error: The specified directory does not exist: {data_directory}")
-        logging.info(f"Creating directory: {data_directory}")
+        logger.error(f"Error: The specified directory does not exist: {data_directory}")
+        logger.info(f"Creating directory: {data_directory}")
         try:
             os.makedirs(data_directory)
-            logging.info(f"Directory created successfully: {data_directory}")
+            logger.info(f"Directory created successfully: {data_directory}")
         except Exception as e:
-            logging.error(f"Failed to create directory: {e}")
+            logger.error(f"Failed to create directory: {e}")
             exit(1)
     
-    logging.info(f"Processing directory: {data_directory}")
+    logger.info(f"Processing directory: {data_directory}")
     process_directory(data_directory)
