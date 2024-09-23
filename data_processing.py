@@ -24,7 +24,7 @@ root_directory = None
 def init_db():
     """Initialize a new MongoDB connection for each process."""
     global documents
-    client = MongoClient('mongodb://localhost:27017/')
+    client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
     db = client['railroad_documents']
     documents = db['documents']
 

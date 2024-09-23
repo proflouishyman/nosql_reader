@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def is_mongodb_running():
     try:
-        client = MongoClient('mongodb://localhost:27017', serverSelectionTimeoutMS=1000)
+        client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
         client.server_info()
         return True
     except Exception:
@@ -31,9 +31,8 @@ def check_mongodb():
             print("   brew services start mongodb-community")
         elif sys.platform.startswith('linux'):
             print("1. Open a Terminal")
-            print("2. Run one of the following commands based on your system:")
-            print("   sudo systemctl start mongod")
-            print("   sudo service mongod start")
+            print("2. Run the following command to start the MongoDB Docker container:")
+            print("   sudo docker compose up -d")
         else:
             print("Please refer to MongoDB documentation for instructions on starting MongoDB on your operating system.")
         sys.exit(1)
@@ -43,7 +42,7 @@ def check_mongodb():
 class DatabaseSetup:
     def __init__(self):
         check_mongodb()
-        self.client = MongoClient('mongodb://localhost:27017/')
+        self.client = MongoClient('mongodb://admin:secret@localhost:27017/')
         self.db = self.client['railroad_documents']
         self.documents = self.db['documents']
         self.field_structure = self.db['field_structure']
