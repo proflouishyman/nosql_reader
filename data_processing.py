@@ -1,21 +1,13 @@
-# File: data_processing.py
-# Path: railroad_documents_project/data_processing.py
+# data_processing.py
 
 import os
 import json
 import re
 import hashlib
-from database_setup import (
-    insert_document,
-    update_field_structure,
-    unique_terms_collection,
-    documents,
-    field_structure
-)
+from database_setup import insert_document, update_field_structure, get_db
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
 import time
-from pymongo import MongoClient
 import logging
 import argparse
 from collections import Counter
@@ -26,26 +18,14 @@ from collections import Counter
 
 # Create a custom logger
 logger = logging.getLogger('DataProcessingLogger')
-logger.setLevel(logging.ERROR)  # Capture all levels
+logger.setLevel(logging.INFO)  # Adjust logging level as needed
 
 # Create handlers
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.ERROR)
+console_handler.setLevel(logging.INFO)
 
 file_handler = logging.FileHandler('data_processing.log')
 file_handler.setLevel(logging.ERROR)
-
-# Create a custom filter to exclude ERROR and above from console
-class MaxLevelFilter(logging.Filter):
-    def __init__(self, maximum):
-        super().__init__()
-        self.maximum = maximum
-
-    def filter(self, record):
-        return record.levelno <= self.maximum
-
-# Apply filter to console handler
-console_handler.addFilter(MaxLevelFilter(logging.WARNING))
 
 # Create formatters and add them to handlers
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -61,22 +41,7 @@ logger.addHandler(file_handler)
 # =======================
 
 root_directory = None
-
-# =======================
-# Database Initialization
-# =======================
-
-def init_db():
-    """Initialize a new MongoDB connection for each process."""
-    global documents, unique_terms_collection
-    try:
-        client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
-        db = client['railroad_documents']
-        documents = db['documents']
-        unique_terms_collection = db['unique_terms']
-    except Exception as e:
-        logger.error(f"Failed to initialize database connection: {e}")
-        raise e
+db = None  # Will be initialized in each process
 
 # =======================
 # Utility Functions
@@ -94,11 +59,12 @@ def calculate_file_hash(file_path):
         logger.error(f"Error calculating hash for {file_path}: {e}")
         return None
 
-def is_file_ingested(file_path, file_hash):
+def is_file_ingested(db, file_path, file_hash):
     """Check if a file has already been ingested based on its path and hash."""
     if not file_hash:
         return False
     try:
+        documents = db['documents']
         return documents.find_one({
             'file_path': file_path,
             'file_hash': file_hash
@@ -109,22 +75,25 @@ def is_file_ingested(file_path, file_hash):
 
 def clean_json(json_text):
     """Remove control characters and extract valid JSON content."""
+    # Remove control characters
     json_text = re.sub(r'[\x00-\x1F\x7F]', '', json_text)
+    # Attempt to find the first and last curly braces
     start_index = json_text.find('{')
     end_index = json_text.rfind('}')
-    if start_index != -1 and end_index != -1:
+    if start_index != -1 and end_index != -1 and end_index > start_index:
         json_substring = json_text[start_index:end_index + 1]
         try:
             json.loads(json_substring)
             return json_substring
         except json.JSONDecodeError:
+            # Try to fix common JSON issues
             try:
                 fixed_json = json_substring.encode('utf-8').decode('unicode_escape', 'ignore')
                 json.loads(fixed_json)
                 return fixed_json
             except json.JSONDecodeError:
                 raise ValueError("Invalid JSON format after cleaning.")
-    raise ValueError("Invalid JSON format: Unable to find '{' or '}'.")
+    raise ValueError("Invalid JSON format: Unable to find valid JSON object.")
 
 def load_and_validate_json_file(file_path):
     """Load a JSON file, validate its content, and return it as a dictionary."""
@@ -177,8 +146,9 @@ def merge_unique_terms(main_dict, new_dict):
         main_dict[field]['words'].update(terms['words'])
         main_dict[field]['phrases'].update(terms['phrases'])
 
-def save_unique_terms(unique_terms_dict):
+def save_unique_terms(db, unique_terms_dict):
     """Save the unique terms to the database in a flattened structure."""
+    unique_terms_collection = db['unique_terms']
     unique_terms_documents = []
     for field, terms in unique_terms_dict.items():
         for word, count in terms['words'].items():
@@ -224,9 +194,20 @@ def save_unique_terms_to_file(unique_terms_dict, filename='unique_terms.pkl'):
 # Processing Functions
 # =======================
 
+def init_db():
+    """Initialize a new MongoDB connection for each process."""
+    global db
+    try:
+        db = get_db()
+    except Exception as e:
+        logger.error(f"Failed to initialize database connection: {e}")
+        raise e
+
 def process_file(file_path):
     """Process a single file and return the result."""
-    init_db()  # Initialize database connection for this process
+    # Initialize database connection for this process
+    if db is None:
+        init_db()
     filename = os.path.basename(file_path)
     logger.debug(f"Processing file: {filename}")
     result = {'processed': [], 'failed': [], 'skipped': []}
@@ -234,7 +215,7 @@ def process_file(file_path):
 
     try:
         file_hash = calculate_file_hash(file_path)
-        if is_file_ingested(file_path, file_hash):
+        if is_file_ingested(db, file_path, file_hash):
             logger.debug(f"File already ingested: {filename}")
             result['skipped'].append(file_path)
             return result, unique_terms
@@ -242,8 +223,8 @@ def process_file(file_path):
         json_data, error = load_and_validate_json_file(file_path)
         if json_data:
             try:
-                update_field_structure(json_data)
-                insert_document(json_data)
+                update_field_structure(db, json_data)
+                insert_document(db, json_data)
                 logger.debug(f"Processed and inserted document: {filename}")
                 result['processed'].append(file_path)
                 unique_terms = collect_unique_terms(json_data)
@@ -316,7 +297,10 @@ def process_directory(directory_path):
                         merge_unique_terms(final_unique, unique_terms)
                     pbar.update(1)
 
-    save_unique_terms(final_unique)
+    # Initialize database connection to save unique terms
+    if db is None:
+        init_db()
+    save_unique_terms(db, final_unique)
     save_unique_terms_to_file(final_unique)
 
     logger.info("\nProcessing Summary:")
@@ -360,4 +344,5 @@ if __name__ == "__main__":
             exit(1)
 
     logger.info(f"Processing directory: {data_directory}")
+    print("Don't Forget To Turn On Your Fan!")
     process_directory(data_directory)
