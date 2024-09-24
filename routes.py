@@ -204,9 +204,31 @@ def build_query(data):
     app.logger.debug(f"Final query: {query}")
     return query
 
+
+
 @app.route('/document/<string:doc_id>')
-# @login_required
 def document_detail(doc_id):
+    # Hard-coded SHOW_EMPTY variable
+    SHOW_EMPTY = False  # Set to True to show empty fields, False to hide them
+
+    # Function to clean the document data
+    def clean_data(data):
+        empty_values = [None, '', 'N/A', 'null', [], {}, 'None']
+        if isinstance(data, dict):
+            return {
+                k: clean_data(v)
+                for k, v in data.items()
+                if v not in empty_values and clean_data(v) not in empty_values
+            }
+        elif isinstance(data, list):
+            return [
+                clean_data(item)
+                for item in data
+                if item not in empty_values and clean_data(item) not in empty_values
+            ]
+        else:
+            return data
+
     search_id = request.args.get('search_id')
     if not search_id:
         flash('Missing search context.')
@@ -218,7 +240,13 @@ def document_detail(doc_id):
         if not document:
             abort(404, description="Document not found.")
 
-        document['_id'] = str(document['_id'])
+        # Decide whether to clean the document based on SHOW_EMPTY
+        if SHOW_EMPTY:
+            cleaned_document = document
+        else:
+            # Clean the document to remove empty fields
+            cleaned_document = clean_data(document)
+        cleaned_document['_id'] = str(cleaned_document.get('_id', ''))
 
         # Retrieve the ordered list from cache
         ordered_ids = cache.get(f'search_{search_id}')
@@ -236,18 +264,14 @@ def document_detail(doc_id):
         prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
         next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
 
-       
-        # Use the relative_path field from the document
-        relative_path = document.get('relative_path', '')
+        # Use the relative_path field from the cleaned document
+        relative_path = cleaned_document.get('relative_path', '')
         if relative_path.endswith('.json'):
             image_path = relative_path[:-5]  # Removes the '.json' extension
         else:
             image_path = relative_path
 
-        # Remove 'archives' from the path if it's already included in relative_path
-        # If 'archives' is not included, you can keep this line commented
-        # image_path = image_path.lstrip('archives/')
-
+        # Adjust the image path if necessary
         absolute_image_path = os.path.join(app.root_path, 'archives', image_path)
         image_exists = os.path.isfile(absolute_image_path)
 
@@ -256,7 +280,7 @@ def document_detail(doc_id):
 
         return render_template(
             'document-detail.html',
-            document=document,
+            document=cleaned_document,
             prev_id=prev_id,
             next_id=next_id,
             search_id=search_id,
@@ -267,6 +291,8 @@ def document_detail(doc_id):
     except Exception as e:
         app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
+
+
 
 
 @app.route('/images/<path:filename>')
