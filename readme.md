@@ -17,6 +17,12 @@ sudo docker pull mongo:4.4
 client = MongoClient('mongodb://admin:secret@localhost:27017/')
 
 to do
+0 shift other pc to docker
+0.1 create flag for list of hidden fields
+-searchable fields
+-result fields
+implement the pictures
+
 1 convertsetup process to a part of settings or a new page. it shoukd be able to add to thr db
 2. create login splash page
 3. restore picture functionality. allow the creation of a root drive with recusive search and momentum search
