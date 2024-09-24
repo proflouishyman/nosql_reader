@@ -1,18 +1,17 @@
-# File: routes.py
-# Path: routes.py
-
-from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response, send_file
+from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response, send_file, send_from_directory
 from functools import wraps
 from app import app, cache
 from database_setup import (
-    documents,
-    find_document_by_id,
-    find_documents,
+    get_client,
+    get_db,
+    get_collections,
     insert_document,
     update_document,
     delete_document,
     get_field_structure,
-    unique_terms_collection
+    find_document_by_id,
+    update_field_structure,
+    save_unique_terms
 )
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -25,7 +24,6 @@ from datetime import datetime, timedelta
 import random
 import csv
 from io import StringIO
-from logging.handlers import RotatingFileHandler
 import os
 import uuid
 
@@ -73,7 +71,8 @@ def login_required(f):
 def index():
     app.logger.info('Handling request to index')
     num_search_fields = 3  # Number of search fields to display
-    field_structure = get_field_structure()
+    client = get_client()
+    field_structure = get_field_structure(client)
     return render_template('index.html', num_search_fields=num_search_fields, field_structure=field_structure)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -129,6 +128,9 @@ def search():
         query = build_query(data)
         app.logger.debug(f"Constructed MongoDB query: {query}")
 
+        client = get_client()
+        db = get_db(client)
+        documents, _, _ = get_collections(db)
         total_count = documents.count_documents(query)
         search_results = list(documents.find(query).skip((page - 1) * per_page).limit(per_page))
 
@@ -210,7 +212,8 @@ def document_detail(doc_id):
         return redirect(url_for('index'))
 
     try:
-        document = find_document_by_id(doc_id)
+        client = get_client()
+        document = find_document_by_id(client, doc_id)
         if not document:
             abort(404)
 
@@ -243,13 +246,12 @@ def document_detail(doc_id):
         app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
 
-
 @app.route('/images/<path:filename>')
 # @login_required
 def serve_image(filename):
-    image_path = os.path.join(app.root_path, 'static', 'images', filename)
-    if os.path.exists(image_path):
-        return send_file(image_path)
+    data_dir = os.path.join(app.root_path, 'archives')
+    if os.path.isfile(os.path.join(data_dir, filename)):
+        return send_from_directory(data_dir, filename)
     else:
         abort(404)
 
@@ -263,6 +265,9 @@ def search_terms():
         if not field:
             return jsonify({"error": "No field specified"}), 400
 
+        client = get_client()
+        db = get_db(client)
+        documents, unique_terms_collection, _ = get_collections(db)
         # Fetch unique terms for the specified field from unique_terms_collection
         unique_terms_doc = unique_terms_collection.find_one({"field": field})
         if not unique_terms_doc:
@@ -296,16 +301,17 @@ def search_terms():
 
         return jsonify(data)
     else:
-        # Render the HTML template
-        field_structure = get_field_structure()
+        client = get_client()
+        field_structure = get_field_structure(client)
         return render_template('search-terms.html', field_structure=field_structure)
-
-    
 
 @app.route('/database-info')
 # @login_required
 def database_info():
-    field_struct = get_field_structure()
+    client = get_client()
+    db = get_db(client)
+    field_structure = get_field_structure(client)
+    documents, _, _ = get_collections(db)
     collection_info = []
 
     def count_documents_with_field(field_path):
@@ -324,7 +330,7 @@ def database_info():
                     'count': count
                 })
 
-    traverse_structure(field_struct)
+    traverse_structure(field_structure)
 
     return render_template('database-info.html', collection_info=collection_info)
 
@@ -366,11 +372,9 @@ def settings():
 
     return render_template('settings.html', config=config)
 
-
-
-# consider streaming if it ends up being thousands of documents
+# Consider streaming if it ends up being thousands of documents
 @app.route('/export_selected_csv', methods=['POST'])
-#@login_required
+# @login_required
 def export_selected_csv():
     try:
         data = request.get_json()
@@ -389,6 +393,9 @@ def export_selected_csv():
         if not valid_ids:
             return jsonify({"error": "No valid document IDs provided"}), 400
 
+        client = get_client()
+        db = get_db(client)
+        documents, _, _ = get_collections(db)
         # Check if any documents exist with the provided IDs
         count = documents.count_documents({"_id": {"$in": valid_ids}})
         if count == 0:

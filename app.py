@@ -6,14 +6,11 @@ import json
 from flask import Flask
 from flask_caching import Cache
 from flask_session import Session
-from database_setup import client, db, documents, field_structure
+from database_setup import get_client, get_db, get_collections, get_field_structure
 import logging
 from logging.handlers import RotatingFileHandler
 
-
-
 app = Flask(__name__)
-
 
 # Configure cache (optional, for performance enhancements)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -36,7 +33,6 @@ app.logger.addHandler(console_handler)
 #     app.logger.addHandler(file_handler)
 
 app.logger.setLevel(logging.DEBUG)
-
 
 # Load configuration
 config_path = os.path.join(os.path.dirname(__file__), 'config.json')
@@ -84,13 +80,6 @@ def load_config():
     with open(config_path) as config_file:
         return json.load(config_file)
 
-def get_field_structure():
-    """
-    Load the field structure from the MongoDB collection.
-    """
-    structure = field_structure.find_one({"_id": "current_structure"})
-    return structure['structure'] if structure else {}
-
 @app.context_processor
 def inject_ui_config():
     """
@@ -98,7 +87,8 @@ def inject_ui_config():
     This allows for dynamic UI customization without needing to pass the config to each template.
     """
     app.config['UI_CONFIG'] = load_config()
-    field_struct = get_field_structure()
+    client = get_client()
+    field_struct = get_field_structure(client)
     return dict(ui_config=app.config['UI_CONFIG'], field_structure=field_struct)
 
 # Import routes after initializing app to avoid circular imports

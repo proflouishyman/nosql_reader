@@ -1,29 +1,23 @@
-# database_setup.py
-
 from pymongo import MongoClient
+from bson import ObjectId
 import logging
 
 # =======================
 # Logging Configuration
 # =======================
-
-# Create a custom logger
 logger = logging.getLogger('DatabaseSetupLogger')
-logger.setLevel(logging.INFO)  # Set to INFO to capture all levels
+logger.setLevel(logging.INFO)
 
 # Create handlers
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
-
 file_handler = logging.FileHandler('database_setup.log')
 file_handler.setLevel(logging.DEBUG)
 
-# Create formatters and add them to handlers
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)
 
-# Add handlers to the logger
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
@@ -31,27 +25,31 @@ logger.addHandler(file_handler)
 # Database Functions
 # =======================
 
-def get_db():
-    """Initialize and return a new MongoDB connection."""
+def get_client():
+    """Initialize and return a new MongoDB client."""
     try:
         client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
-        db = client['railroad_documents']
         logger.info("Successfully connected to MongoDB.")
-        return db
+        return client
     except Exception as e:
         logger.error(f"Failed to connect to MongoDB: {e}")
         raise e
+
+def get_db(client):
+    """Return the database instance."""
+    return client['railroad_documents']
 
 def get_collections(db):
     """Return the collections used in the application."""
     documents = db['documents']
     unique_terms_collection = db['unique_terms']
-    field_structure = db['field_structure']
+    field_structure_collection = db['field_structure']
     logger.info("Accessed collections from the database.")
-    return documents, unique_terms_collection, field_structure
+    return documents, unique_terms_collection, field_structure_collection
 
-def insert_document(db, document):
+def insert_document(client, document):
     """Insert a document into the 'documents' collection."""
+    db = get_db(client)
     try:
         documents = db['documents']
         documents.insert_one(document)
@@ -60,14 +58,39 @@ def insert_document(db, document):
         logger.error(f"Error inserting document: {e}")
         raise e
 
-def update_field_structure(db, json_data):
+def update_document(client, document_id, update_data):
+    """
+    Update a document's information.
+    :param client: MongoDB client
+    :param document_id: The ObjectId of the document to update
+    :param update_data: A dictionary containing the fields to update
+    :return: The result of the update operation
+    """
+    db = get_db(client)
+    documents = db['documents']
+    result = documents.update_one({"_id": ObjectId(document_id)}, {"$set": update_data})
+    return result.modified_count
+
+def delete_document(client, document_id):
+    """
+    Delete a document from the database.
+    :param client: MongoDB client
+    :param document_id: The ObjectId of the document to delete
+    :return: The result of the delete operation
+    """
+    db = get_db(client)
+    documents = db['documents']
+    result = documents.delete_one({"_id": ObjectId(document_id)})
+    return result.deleted_count
+
+def update_field_structure(client, json_data):
     """Update the field structure in the 'field_structure' collection based on json_data."""
+    db = get_db(client)
     try:
         field_structure = db['field_structure']
-        # Flatten the JSON data to get all fields
+
         def flatten_json(y):
             out = {}
-
             def flatten(x, name=''):
                 if isinstance(x, dict):
                     for a in x:
@@ -84,7 +107,6 @@ def update_field_structure(db, json_data):
 
         flat_json = flatten_json(json_data)
 
-        # Update the field_structure collection
         for field, field_type in flat_json.items():
             field_structure.update_one(
                 {'field': field},
@@ -96,10 +118,11 @@ def update_field_structure(db, json_data):
         logger.error(f"Error updating field structure: {e}")
         raise e
 
-def is_file_ingested(db, file_path, file_hash):
+def is_file_ingested(client, file_path, file_hash):
     """Check if a file has already been ingested based on its path and hash."""
     if not file_hash:
         return False
+    db = get_db(client)
     try:
         documents = db['documents']
         ingested = documents.find_one({
@@ -112,10 +135,12 @@ def is_file_ingested(db, file_path, file_hash):
         logger.error(f"Error checking ingestion status for {file_path}: {e}")
         return False
 
-def save_unique_terms(db, unique_terms_dict):
+def save_unique_terms(client, unique_terms_dict):
     """Save the unique terms to the database in a flattened structure."""
+    db = get_db(client)
     unique_terms_collection = db['unique_terms']
     unique_terms_documents = []
+    
     for field, terms in unique_terms_dict.items():
         for word, count in terms['words'].items():
             if count >= 2:
@@ -133,6 +158,7 @@ def save_unique_terms(db, unique_terms_dict):
                     "count": count,
                     "type": "phrase"
                 })
+
     try:
         unique_terms_collection.delete_many({})
         if unique_terms_documents:
@@ -144,12 +170,38 @@ def save_unique_terms(db, unique_terms_dict):
     except Exception as e:
         logger.error(f"Error saving unique terms: {e}")
 
+def find_document_by_id(client, document_id):
+    """
+    Find a document by its ObjectId.
+    :param client: MongoDB client
+    :param document_id: The ObjectId of the document
+    :return: The document, or None if not found
+    """
+    db = get_db(client)
+    documents = db['documents']
+    try:
+        return documents.find_one({"_id": ObjectId(document_id)})
+    except Exception as e:
+        logger.error(f"Error finding document by ID: {e}")
+        return None
+
+def get_field_structure(client):
+    """
+    Get the current field structure.
+    :param client: MongoDB client
+    :return: The current field structure
+    """
+    db = get_db(client)
+    field_structure_collection = db['field_structure']
+    structure = field_structure_collection.find_one({"_id": "current_structure"})
+    return structure['structure'] if structure else {}
+
+
 # =======================
 # Main Execution (Optional)
 # =======================
-
 if __name__ == "__main__":
-    # If you want to run this file directly for testing purposes
-    db = get_db()
-    documents, unique_terms_collection, field_structure = get_collections(db)
+    client = get_client()  # Get the MongoDB client
+    db = get_db(client)    # Get the database
+    documents, unique_terms_collection, field_structure_collection = get_collections(db)
     logger.info("Database setup module executed directly.")
