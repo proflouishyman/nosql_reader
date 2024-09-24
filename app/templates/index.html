@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Historical Document Reader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Historical Document Reader</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('search_terms') }}">Search Terms</a></li>
+                <li><a href="{{ url_for('database_info') }}">Database Info</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                {% if 'logged_in' in session %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <form id="searchForm">
+            <div id="searchFields">
+                {% for i in range(1, num_search_fields + 1) %}
+                <div class="search-field">
+                    <label for="field{{ i }}">Field:</label>
+                    <select name="field{{ i }}" id="field{{ i }}">
+                        <option value="" disabled selected>Select a field</option>
+                        {% for field in field_structure|dictsort %}
+                            <option value="{{ field[0] }}">{{ field[0] }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="operator{{ i }}">Operator:</label>
+                    <select name="operator{{ i }}" id="operator{{ i }}">
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                        <option value="NOT">NOT</option>
+                    </select>
+                    <label for="searchTerm{{ i }}">Search Term:</label>
+                    <input type="text" name="searchTerm{{ i }}" id="searchTerm{{ i }}" placeholder="Enter search term">
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" id="searchButton">Search</button>
+            <!-- Export Selected to CSV Button -->
+            <button id="exportSelectedCsv" style="display: none; margin-top: 10px;">Export Selected to CSV</button>
+        </form>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading... Please wait.</p>
+        </div>
+
+        <!-- Cancel Search Button -->
+        <button id="cancelSearch" style="display: none;">Cancel Search</button>
+
+        <!-- Total Results Display -->
+        <div id="totalResults" class="mt-4"></div>
+
+        <!-- Results Container -->
+        <div id="results" class="mt-4">
+            <!-- The table will be dynamically inserted here -->
+        </div>
+
+        
+    </div>
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Include your custom script -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

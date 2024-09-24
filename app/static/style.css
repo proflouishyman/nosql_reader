@@ -1,0 +1,250 @@
+/* static/style.css */
+
+/* Base Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #ffffff;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Navigation */
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Flash Messages */
+.flashes {
+    list-style-type: none;
+    padding: 0;
+    color: red;
+}
+
+/* Search Form */
+.search-field {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+input[type="text"], select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Navigation Buttons */
+.nav-button {
+    display: inline-block;
+    padding: 8px 12px;
+    margin-right: 5px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    text-align: center;
+}
+
+.nav-button:hover {
+    background-color: #0056b3;
+}
+
+.nav-button.disabled {
+    background-color: #6c757d;
+    pointer-events: none;
+    cursor: default;
+}
+
+/* Results Table */
+#results table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#results th, #results td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#results th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+#results tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+#results tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+#results tbody tr:hover {
+    background-color: #eaeaea;
+}
+
+#results a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#results a:hover {
+    text-decoration: underline;
+}
+
+/* Loading Indicator */
+#loadingIndicator {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Additional Styles */
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+
+/* Error Messages */
+.error {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Document Detail Styles */
+.document-detail .detail-container {
+    display: flex;
+    gap: 20px;
+}
+
+.document-detail .info-panel {
+    flex: 1;
+}
+
+.document-detail .image-panel {
+    flex: 1;
+    position: relative;
+}
+
+#imageContainer {
+    overflow: auto;
+    max-width: 100%;
+    max-height: 600px;
+}
+
+#documentImage {
+    max-width: 100%;
+    max-height: 100%;
+    transform-origin: top left;
+}
+
+.zoom-controls {
+    margin-top: 10px;
+}
+
+.zoom-controls button {
+    margin-right: 5px;
+}
+
+.info-section {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.info-table, .nested-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-table th, .info-table td,
+.nested-table th, .nested-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.info-table th, .nested-table th {
+    background-color: #f2f2f2;
+}
+
+.nested-list, .info-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.nested-list li, .info-list li {
+    margin-bottom: 10px;
+}
