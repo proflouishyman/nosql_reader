@@ -73,7 +73,7 @@
     <div class="image-panel">
       {% if image_exists %}
         <div id="imageContainer">
-          <img id="documentImage" src="{{ url_for('serve_image', filename=image_path) }}" alt="Document Image">
+          <img id="documentImage" src="{{ url_for('serve_image', filename=image_path | urlencode) }}" alt="Document Image">
         </div>
         <div class="zoom-controls">
           <button id="zoomIn">Zoom In</button>
@@ -82,7 +82,7 @@
         </div>
       {% else %}
         <div class="placeholder-image">
-          [Placeholder for Document Image]
+          <p>Image not found: {{ image_path }}</p>
         </div>
       {% endif %}
     </div>

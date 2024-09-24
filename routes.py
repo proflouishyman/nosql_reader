@@ -26,6 +26,7 @@ import csv
 from io import StringIO
 import os
 import uuid
+from urllib.parse import unquote
 
 app.logger.setLevel(logging.DEBUG)
 
@@ -235,16 +236,23 @@ def document_detail(doc_id):
         prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
         next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
 
-        # Derive the .jpg filename by removing the '.json' suffix
-        filename = document.get('filename', '')
-        if filename.endswith('.json'):
-            image_filename = filename[:-5]  # Removes the last 5 characters: '.json'
+       
+        # Use the relative_path field from the document
+        relative_path = document.get('relative_path', '')
+        if relative_path.endswith('.json'):
+            image_path = relative_path[:-5]  # Removes the '.json' extension
         else:
-            image_filename = filename
+            image_path = relative_path
 
-        image_path = os.path.join('archives', image_filename)
-        absolute_image_path = os.path.join(app.root_path, 'archives', image_filename)
+        # Remove 'archives' from the path if it's already included in relative_path
+        # If 'archives' is not included, you can keep this line commented
+        # image_path = image_path.lstrip('archives/')
+
+        absolute_image_path = os.path.join(app.root_path, 'archives', image_path)
         image_exists = os.path.isfile(absolute_image_path)
+
+        app.logger.debug(f"Image path: {image_path}")
+        app.logger.debug(f"Absolute image path: {absolute_image_path}")
 
         return render_template(
             'document-detail.html',
@@ -253,7 +261,8 @@ def document_detail(doc_id):
             next_id=next_id,
             search_id=search_id,
             image_exists=image_exists,
-            image_path=image_path
+            image_path=image_path,
+            absolute_image_path=absolute_image_path  # Pass this for debugging
         )
     except Exception as e:
         app.logger.error(f"Error in document_detail: {str(e)}")
@@ -263,10 +272,17 @@ def document_detail(doc_id):
 @app.route('/images/<path:filename>')
 # @login_required
 def serve_image(filename):
+    # Decode the filename to handle spaces and special characters
+    filename = unquote(filename)
     data_dir = os.path.join(app.root_path, 'archives')
-    if os.path.isfile(os.path.join(data_dir, filename)):
-        return send_from_directory(data_dir, filename)
+    full_path = os.path.join(data_dir, filename)
+
+    if os.path.isfile(full_path):
+        # Determine the directory and file for send_from_directory
+        directory, file = os.path.split(full_path)
+        return send_from_directory(directory, file)
     else:
+        app.logger.error(f"Image not found: {full_path}")
         abort(404)
 
 @app.route('/search-terms', methods=['GET'])
