@@ -215,7 +215,7 @@ def document_detail(doc_id):
         client = get_client()
         document = find_document_by_id(client, doc_id)
         if not document:
-            abort(404)
+            abort(404, description="Document not found.")
 
         document['_id'] = str(document['_id'])
 
@@ -235,16 +235,30 @@ def document_detail(doc_id):
         prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
         next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
 
+        # Derive the .jpg filename by removing the '.json' suffix
+        filename = document.get('filename', '')
+        if filename.endswith('.json'):
+            image_filename = filename[:-5]  # Removes the last 5 characters: '.json'
+        else:
+            image_filename = filename
+
+        image_path = os.path.join('archives', image_filename)
+        absolute_image_path = os.path.join(app.root_path, 'archives', image_filename)
+        image_exists = os.path.isfile(absolute_image_path)
+
         return render_template(
             'document-detail.html',
             document=document,
             prev_id=prev_id,
             next_id=next_id,
-            search_id=search_id
+            search_id=search_id,
+            image_exists=image_exists,
+            image_path=image_path
         )
     except Exception as e:
         app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
+
 
 @app.route('/images/<path:filename>')
 # @login_required

@@ -71,9 +71,7 @@
     </div>
 
     <div class="image-panel">
-      {% set image_filename = document.get('filename', '').replace('.json', '.jpg') %}
-      {% set image_path = 'data/' + image_filename %}
-      {% if image_filename %}
+      {% if image_exists %}
         <div id="imageContainer">
           <img id="documentImage" src="{{ url_for('serve_image', filename=image_path) }}" alt="Document Image">
         </div>
