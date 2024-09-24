@@ -71,7 +71,7 @@ DOCKER_COMPOSE_FILE="docker-compose.yml"
 if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
     echo "Creating $DOCKER_COMPOSE_FILE..."
 
-    cat <<EOF > $DOCKER_COMPOSE_FILE
+    cat <<EOF > "$DOCKER_COMPOSE_FILE"
 services:
   mongodb:
     image: mongo:4.4

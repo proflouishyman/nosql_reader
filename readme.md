@@ -12,7 +12,9 @@ https://thelinuxforum.com/articles/912-how-to-install-mongodb-on-ubuntu-24-04
 
 Using Docker
 DOCKER:
-sudo docker pull mongo:4.4
+Run run_docker.sh and it should install
+if there are problems, install dos2unix and then convert the file.
+everything runs better in WSL
 
 client = MongoClient('mongodb://admin:secret@localhost:27017/')
 

@@ -9,7 +9,7 @@ FILE_TYPES = [".js", ".html", ".py", ".md", ".me", ".css", ".schema"]
 SEPARATOR = "*" * 80
 
 # Exclusion variables
-EXCLUDED_DIRECTORIES = [".git", "util", "logs", "flask_session", "__pycache__", ".dbenv"]
+EXCLUDED_DIRECTORIES = [".git", "util", "logs", "flask_session", "__pycache__", ".dbenv", "dbenv", "data"]
 EXCLUDED_FILE_TYPES = [".ini"]
 
 def get_file_statistics(root_dir):
