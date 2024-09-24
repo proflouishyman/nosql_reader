@@ -5,6 +5,9 @@ import multiprocessing
 from tqdm import tqdm
 
 def clean_json(json_text):
+    """
+    Cleans the JSON text by removing control characters and extracting the valid JSON portion.
+    """
     # Remove all control characters
     json_text = re.sub(r'[\x00-\x1F\x7F]', '', json_text)
 
@@ -20,6 +23,10 @@ def clean_json(json_text):
         raise ValueError("Invalid JSON format: Unable to find '{' or '}'.")
 
 def validate_json_file(file_path):
+    """
+    Validates and cleans a single JSON file.
+    Converts valid .txt files to .json and renames invalid ones to .bad.
+    """
     filename = os.path.basename(file_path)
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -45,27 +52,44 @@ def validate_json_file(file_path):
 
         return (filename, True, cleaned)
     except Exception as e:
-        return (filename, False, str(e))
+        # Rename the original .txt file by appending .bad
+        bad_file_path = f"{file_path}.bad"
+        try:
+            os.rename(file_path, bad_file_path)
+        except Exception as rename_error:
+            return (filename, False, f"Failed to rename to .bad. Original error: {e}; Rename error: {rename_error}")
+        return (filename, False, f"File renamed to .bad due to invalid JSON. Error: {e}")
 
 def validate_and_replace_json_files(source_dir, num_workers):
+    """
+    Traverses the source directory recursively to find and process all .txt files.
+    Utilizes multiprocessing for parallel processing.
+    """
     # Collect all .txt file paths recursively
     file_paths = []
-    for root, dirs, files in os.walk(source_dir):
+    print(f"🔍 Starting to walk through the source directory: {source_dir}\n")
+    for root, dirs, files in os.walk(source_dir, followlinks=True):
+        print(f"📂 Accessing directory: {root}")
         for f in files:
             if f.lower().endswith('.txt'):
-                file_paths.append(os.path.join(root, f))
+                full_path = os.path.join(root, f)
+                file_paths.append(full_path)
+                print(f"📄 Found .txt file: {full_path}")
     total_files = len(file_paths)
 
-    print(f"Processing {total_files} .txt files with {num_workers} worker processes...")
+    print(f"\n📊 Processing {total_files} .txt files with {num_workers} worker processes...\n")
 
     # Initialize counters
     cleaned_count = 0
     replaced_count = 0
     invalid_count = 0
 
+    if total_files == 0:
+        print("🚫 No .txt files found. Exiting the script.")
+        return
+
     # Use multiprocessing Pool to process files in parallel
     with multiprocessing.Pool(num_workers) as pool:
-        # Use imap_unordered for better performance and integrate with tqdm
         results = []
         for result in tqdm(pool.imap_unordered(validate_json_file, file_paths), total=total_files, desc="Validating JSON files"):
             results.append(result)
@@ -79,24 +103,24 @@ def validate_and_replace_json_files(source_dir, num_workers):
         else:
             invalid_count += 1
 
-    print(f"\nProcessing complete:")
-    print(f"Valid JSON files replaced with .json: {replaced_count}")
-    print(f"Files cleaned: {cleaned_count}")
-    print(f"Invalid or unreadable files remain as .txt: {invalid_count}")
+    print(f"\n✅ Processing complete:")
+    print(f"✔️  Valid JSON files replaced with .json: {replaced_count}")
+    print(f"🧹 Files cleaned: {cleaned_count}")
+    print(f"❌ Invalid or unreadable files renamed to .bad: {invalid_count}")
 
-    print("\nDetailed results:")
+    print("\n📋 Detailed results:")
     for filename, is_valid, info in results:
         if is_valid:
             if info:
-                print(f"{filename} was cleaned and replaced with a .json file.")
+                print(f"✅ {filename} was cleaned and replaced with a .json file.")
             else:
-                print(f"{filename} is valid and replaced with a .json file.")
+                print(f"✅ {filename} is valid and replaced with a .json file.")
         else:
-            print(f"{filename} is invalid or unreadable. Remains as .txt. Error: {info}")
+            print(f"❌ {filename} was invalid and renamed to .bad. Error: {info}")
 
 if __name__ == "__main__":
     # Specify the source directory
-    source_directory = r"G:\My Drive\2024-2025\coding\rolls_txt"
+    source_directory = "/home/lhyman/coding/nosql_reader/archives"
 
     # Calculate the number of worker processes (3/4 of available CPUs)
     num_cpus = multiprocessing.cpu_count()

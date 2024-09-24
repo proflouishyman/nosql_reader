@@ -109,21 +109,17 @@ def is_file_ingested(file_path, file_hash):
 
 def clean_json(json_text):
     """Remove control characters and extract valid JSON content."""
-    # Remove control characters except for common escape sequences
     json_text = re.sub(r'[\x00-\x1F\x7F]', '', json_text)
     start_index = json_text.find('{')
     end_index = json_text.rfind('}')
     if start_index != -1 and end_index != -1:
         json_substring = json_text[start_index:end_index + 1]
         try:
-            # Attempt to load JSON normally
             json.loads(json_substring)
             return json_substring
         except json.JSONDecodeError:
-            # Attempt to fix common escape issues
             try:
                 fixed_json = json_substring.encode('utf-8').decode('unicode_escape', 'ignore')
-                # Validate fixed JSON
                 json.loads(fixed_json)
                 return fixed_json
             except json.JSONDecodeError:
@@ -205,7 +201,6 @@ def save_unique_terms(unique_terms_dict):
         unique_terms_collection.delete_many({})
         if unique_terms_documents:
             unique_terms_collection.insert_many(unique_terms_documents)
-            # Create indexes for faster querying
             unique_terms_collection.create_index([("term", 1)])
             unique_terms_collection.create_index([("field", 1)])
             unique_terms_collection.create_index([("type", 1)])
@@ -231,6 +226,7 @@ def save_unique_terms_to_file(unique_terms_dict, filename='unique_terms.pkl'):
 
 def process_file(file_path):
     """Process a single file and return the result."""
+    init_db()  # Initialize database connection for this process
     filename = os.path.basename(file_path)
     logger.debug(f"Processing file: {filename}")
     result = {'processed': [], 'failed': [], 'skipped': []}
@@ -343,8 +339,8 @@ def process_directory(directory_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process and validate JSON and TXT files for the railroad documents database.")
-    parser.add_argument("data_directory", nargs='?', default='data',
-                        help="Path to the root directory containing JSON and/or text files to process (default: './data')")
+    parser.add_argument("data_directory", nargs='?', default='archives',
+                        help="Path to the root directory containing JSON and/or text files to process (default: './archives')")
     args = parser.parse_args()
 
     # Get the absolute path of the script's directory

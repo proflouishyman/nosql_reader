@@ -5,3 +5,5 @@ flask_session/
 secret_key.txt
 data/
 data_processing.log
+archives/
+data/

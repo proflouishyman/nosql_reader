@@ -216,6 +216,10 @@ def init_database():
     """
     Initialize the database structure and indexes.
     """
+    logging.info("Dropping existing database...")
+    db_setup.client.drop_database('railroad_documents')  # Drop the entire database
+    logging.info("Existing database dropped.")
+
     logging.info("Initializing field structure...")
     db_setup.field_structure.delete_many({})  # Clear existing field structure
     all_documents = db_setup.documents.find()
