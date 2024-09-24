@@ -27,7 +27,7 @@ implement the pictures
 
 1 convertsetup process to a part of settings or a new page. it shoukd be able to add to thr db
 2. create login splash page
-3. restore picture functionality. allow the creation of a root drive with recusive search and momentum search
+
 4. address weirdness of base file and index html. it is unseemly 
 5. reorganize routes py
 6. add cross referencing of named entities

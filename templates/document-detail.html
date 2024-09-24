@@ -40,6 +40,37 @@
   {% endif %}
 {% endmacro %}
 
+{% block styles %}
+<style>
+  #imageContainer {
+    width: 100%;
+    height: 600px; /* Adjust this height as needed */
+    overflow: auto;
+    cursor: grab;
+    position: relative;
+  }
+
+  #imageContainer.active {
+    cursor: grabbing;
+  }
+
+  #documentImage {
+    display: block;
+    transform-origin: center; /* Ensure scaling and rotation around center */
+  }
+
+  .zoom-controls {
+    margin-top: 10px;
+  }
+
+  .zoom-controls button {
+    margin-right: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="document-detail">
   <div class="detail-container">
@@ -76,6 +107,8 @@
           <img id="documentImage" src="{{ url_for('serve_image', filename=image_path | urlencode) }}" alt="Document Image">
         </div>
         <div class="zoom-controls">
+          <button id="rotateLeft">Rotate Left</button>
+          <button id="rotateRight">Rotate Right</button>
           <button id="zoomIn">Zoom In</button>
           <button id="zoomOut">Zoom Out</button>
           <button id="resetZoom">Reset</button>
@@ -92,72 +125,94 @@
 
 {% block scripts %}
 <script>
-  let scale = 1;
-  const ZOOM_STEP = 0.1;
-  const MAX_SCALE = 3;
-  const MIN_SCALE = 0.5;
+  document.addEventListener('DOMContentLoaded', () => {
+    let scale = 1;
+    let rotation = 0; // Initialize rotation angle
+    const ZOOM_STEP = 0.1;
+    const MAX_SCALE = 3;
+    const MIN_SCALE = 0.5;
 
-  const imageContainer = document.getElementById('imageContainer');
-  const documentImage = document.getElementById('documentImage');
-  const zoomInBtn = document.getElementById('zoomIn');
-  const zoomOutBtn = document.getElementById('zoomOut');
-  const resetZoomBtn = document.getElementById('resetZoom');
+    const imageContainer = document.getElementById('imageContainer');
+    const documentImage = document.getElementById('documentImage');
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const resetZoomBtn = document.getElementById('resetZoom');
+    const rotateLeftBtn = document.getElementById('rotateLeft');
+    const rotateRightBtn = document.getElementById('rotateRight');
 
-  function setImageTransform() {
-    documentImage.style.transform = `scale(${scale})`;
-  }
+    function setImageTransform() {
+      documentImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+    }
 
-  function zoomIn() {
-    if (scale < MAX_SCALE) {
-      scale += ZOOM_STEP;
+    function zoomIn() {
+      if (scale < MAX_SCALE) {
+        scale += ZOOM_STEP;
+        setImageTransform();
+      }
+    }
+
+    function zoomOut() {
+      if (scale > MIN_SCALE) {
+        scale -= ZOOM_STEP;
+        setImageTransform();
+      }
+    }
+
+    function resetZoom() {
+      scale = 1;
+      rotation = 0; // Reset rotation
       setImageTransform();
     }
-  }
 
-  function zoomOut() {
-    if (scale > MIN_SCALE) {
-      scale -= ZOOM_STEP;
+    function rotateLeft() {
+      rotation -= 90; // Rotate left by 90 degrees
       setImageTransform();
     }
-  }
 
-  function resetZoom() {
-    scale = 1;
-    setImageTransform();
-  }
+    function rotateRight() {
+      rotation += 90; // Rotate right by 90 degrees
+      setImageTransform();
+    }
 
-  zoomInBtn.addEventListener('click', zoomIn);
-  zoomOutBtn.addEventListener('click', zoomOut);
-  resetZoomBtn.addEventListener('click', resetZoom);
+    zoomInBtn.addEventListener('click', zoomIn);
+    zoomOutBtn.addEventListener('click', zoomOut);
+    resetZoomBtn.addEventListener('click', resetZoom);
+    rotateLeftBtn.addEventListener('click', rotateLeft);
+    rotateRightBtn.addEventListener('click', rotateRight);
 
-  let isDragging = false;
-  let startX, startY, scrollLeft, scrollTop;
+    // Dragging functionality
+    let isDragging = false;
+    let startX, startY, scrollLeft, scrollTop;
 
-  imageContainer.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.pageX - imageContainer.offsetLeft;
-    startY = e.pageY - imageContainer.offsetTop;
-    scrollLeft = imageContainer.scrollLeft;
-    scrollTop = imageContainer.scrollTop;
-  });
+    imageContainer.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      imageContainer.classList.add('active');
+      startX = e.pageX - imageContainer.offsetLeft;
+      startY = e.pageY - imageContainer.offsetTop;
+      scrollLeft = imageContainer.scrollLeft;
+      scrollTop = imageContainer.scrollTop;
+    });
 
-  imageContainer.addEventListener('mouseleave', () => {
-    isDragging = false;
-  });
+    imageContainer.addEventListener('mouseleave', () => {
+      isDragging = false;
+      imageContainer.classList.remove('active');
+    });
 
-  imageContainer.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
+    imageContainer.addEventListener('mouseup', () => {
+      isDragging = false;
+      imageContainer.classList.remove('active');
+    });
 
-  imageContainer.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - imageContainer.offsetLeft;
-    const y = e.pageY - imageContainer.offsetTop;
-    const walkX = (x - startX) * 2;
-    const walkY = (y - startY) * 2;
-    imageContainer.scrollLeft = scrollLeft - walkX;
-    imageContainer.scrollTop = scrollTop - walkY;
+    imageContainer.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - imageContainer.offsetLeft;
+      const y = e.pageY - imageContainer.offsetTop;
+      const walkX = x - startX;
+      const walkY = y - startY;
+      imageContainer.scrollLeft = scrollLeft - walkX;
+      imageContainer.scrollTop = scrollTop - walkY;
+    });
   });
 </script>
 {% endblock %}
