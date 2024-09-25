@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from bson import ObjectId
 import logging
+import os
 
 # =======================
 # Logging Configuration
@@ -25,10 +26,34 @@ logger.addHandler(file_handler)
 # Database Functions
 # =======================
 
-def get_client():
+def initialize_database(client):
+    db = get_db(client)
+    # Create collections if they don't exist
+    for collection_name in ['documents', 'unique_terms', 'field_structure']:
+        if collection_name not in db.list_collection_names():
+            db.create_collection(collection_name)
+            logger.info(f"Created collection: {collection_name}")
+    
+    # Create necessary indexes
+    documents = db['documents']
+    documents.create_index([("file_path", 1), ("file_hash", 1)], unique=True)
+    
+    unique_terms = db['unique_terms']
+    unique_terms.create_index([("term", 1)])
+    unique_terms.create_index([("field", 1)])
+    unique_terms.create_index([("type", 1)])
+    
+    field_structure = db['field_structure']
+    field_structure.create_index([("field", 1)], unique=True)
+    
+    logger.info("Database initialized with required collections and indexes.")
+
+
+def get_client(): #changed for containerization
     """Initialize and return a new MongoDB client."""
     try:
-        client = MongoClient('mongodb://admin:secret@localhost:27017', serverSelectionTimeoutMS=1000)
+        mongo_uri = os.environ.get('MONGO_URI', 'mongodb://admin:secret@mongodb:27017/')
+        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
         logger.info("Successfully connected to MongoDB.")
         return client
     except Exception as e:
@@ -202,6 +227,8 @@ def get_field_structure(client):
 # =======================
 if __name__ == "__main__":
     client = get_client()  # Get the MongoDB client
+    initialize_database(client) #recent suggestion. lets see how it shifts db behavior
+    logger.info("Database setup module executed directly.")
     db = get_db(client)    # Get the database
     documents, unique_terms_collection, field_structure_collection = get_collections(db)
     logger.info("Database setup module executed directly.")

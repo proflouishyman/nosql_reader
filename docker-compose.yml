@@ -1,11 +1,78 @@
+
+
 services:
   mongodb:
-    image: mongo:4.4
+    image: mongo:6.0  # Specific MongoDB version for consistency
     container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - ./data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
+      # Environment variables sourced from the .env file
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db  # Persist MongoDB data
+      - ./mongo-init/:/docker-entrypoint-initdb.d/  # MongoDB initialization scripts
+    ports:
+      - "27017:27017"  # Expose MongoDB port
+    healthcheck:
+      # Updated health check using mongosh with authentication
+      test: [
+        "CMD",
+        "mongosh",
+        "--username",
+        "${MONGO_INITDB_ROOT_USERNAME}",
+        "--password",
+        "${MONGO_INITDB_ROOT_PASSWORD}",
+        "--authenticationDatabase",
+        "admin",
+        "--eval",
+        "db.adminCommand('ping')"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network  # Connect to custom network
+
+  app:
+    build: .
+    container_name: flask_app
+    ports:
+      - "5000:5000"  # Expose Flask app port
+    environment:
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+      FLASK_APP: app.py
+      FLASK_ENV: ${FLASK_ENV}
+      FLASK_DEBUG: ${FLASK_DEBUG}
+      SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - ./app:/app  # Mount application code
+      - app_data:/app/archives  # Persist application data
+    depends_on:
+      mongodb:
+        condition: service_healthy  # Ensure MongoDB is healthy before starting the app
+    entrypoint: ["/entrypoint.sh"]  # Entrypoint script for initialization
+    command: ["flask", "run", "--host=0.0.0.0"]  # Command to start Flask app
+    networks:
+      - app_network  # Connect to custom network
+
+    # Optional: Define resource limits to prevent container from overusing resources
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "1.0"
+    #       memory: "512M"
+    #     reservations:
+    #       cpus: "0.5"
+    #       memory: "256M"
+
+volumes:
+  mongodb_data:
+  app_data:
+
+networks:
+  app_network:
+    driver: bridge
+
+# Note:
+# - Ensure you have a .env file in your project root with the necessary variables.
+# - Add .env to your .gitignore to prevent committing sensitive information.

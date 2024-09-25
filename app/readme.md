@@ -43,6 +43,24 @@ https://github.com/proflouishyman/nosql_reader
 
 ## File Structure
 
+railroad_documents_project/
+├── app/
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── routes.py
+│   ├── config.json
+│   ├── secret_key.txt (optional if using env variables)
+│   └── ... (other application files)
+├── mongo-init/
+│   └── init_script.js (if any initialization scripts)
+├── entrypoint.sh
+├── Dockerfile
+├── docker-compose.yml
+├── .env
+├── .dockerignore
+└── README.md
+
+
 ```
 historical_document_reader/
 │

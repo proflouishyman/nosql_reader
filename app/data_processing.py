@@ -4,7 +4,7 @@ import os
 import json
 import re
 import hashlib
-from database_setup import insert_document, update_field_structure, get_db
+from database_setup import insert_document, update_field_structure, get_db, is_file_ingested
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
 import time
@@ -59,19 +59,7 @@ def calculate_file_hash(file_path):
         logger.error(f"Error calculating hash for {file_path}: {e}")
         return None
 
-def is_file_ingested(db, file_path, file_hash):
-    """Check if a file has already been ingested based on its path and hash."""
-    if not file_hash:
-        return False
-    try:
-        documents = db['documents']
-        return documents.find_one({
-            'file_path': file_path,
-            'file_hash': file_hash
-        }) is not None
-    except Exception as e:
-        logger.error(f"Error checking ingestion status for {file_path}: {e}")
-        return False
+
 
 def clean_json(json_text):
     """Remove control characters and extract valid JSON content."""
@@ -198,7 +186,8 @@ def init_db():
     """Initialize a new MongoDB connection for each process."""
     global db
     try:
-        db = get_db()
+        client = get_client()
+        db = get_db(client)
     except Exception as e:
         logger.error(f"Failed to initialize database connection: {e}")
         raise e
@@ -323,15 +312,11 @@ def process_directory(directory_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process and validate JSON and TXT files for the railroad documents database.")
-    parser.add_argument("data_directory", nargs='?', default='archives',
-                        help="Path to the root directory containing JSON and/or text files to process (default: './archives')")
+    parser.add_argument("data_directory", nargs='?', default='/app/archives',
+                        help="Path to the root directory containing JSON and/or text files to process (default: '/app/archives')")
     args = parser.parse_args()
 
-    # Get the absolute path of the script's directory
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Construct the data directory path
-    data_directory = os.path.abspath(os.path.join(script_dir, args.data_directory))
+    data_directory = args.data_directory
 
     if not os.path.exists(data_directory):
         logger.error(f"Error: The specified directory does not exist: {data_directory}")

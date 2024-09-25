@@ -12,8 +12,7 @@ from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
-# Configure cache (optional, for performance enhancements)
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
 
 # Setup console logging
 console_handler = logging.StreamHandler()
@@ -36,8 +35,18 @@ app.logger.setLevel(logging.DEBUG)
 
 # Load configuration
 config_path = os.path.join(os.path.dirname(__file__), 'config.json')
-with open(config_path) as config_file:
-    config = json.load(config_file)
+
+try:
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+    app.config['UI_CONFIG'] = config
+except FileNotFoundError:
+    app.logger.error(f"Configuration file not found at {config_path}.")
+    config = {}
+except json.JSONDecodeError as e:
+    app.logger.error(f"Error decoding JSON from {config_path}: {e}")
+    config = {}
+
 
 # Add config to app config
 app.config['UI_CONFIG'] = config
@@ -95,5 +104,5 @@ def inject_ui_config():
 from routes import *
 
 if __name__ == '__main__':
-    # Run the app
-    app.run(debug=True)
+    debug_mode = os.environ.get('FLASK_DEBUG', '0') == '1'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
