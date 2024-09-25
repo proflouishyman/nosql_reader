@@ -1,8 +1,3 @@
-2024-09-25 21:23:35,728 - INFO - Successfully connected to MongoDB.
-2024-09-25 21:23:35,739 - INFO - Database initialized with required collections and indexes.
-2024-09-25 21:23:35,739 - INFO - Database setup module executed directly.
-2024-09-25 21:23:35,739 - INFO - Accessed collections from the database.
-2024-09-25 21:23:35,739 - INFO - Database setup module executed directly.
 2024-09-25 21:23:36,327 - INFO - Processing directory: /app/archives
 2024-09-25 21:23:36,327 - INFO - Found 0 files to process.
 2024-09-25 21:23:36,337 - INFO - Successfully connected to MongoDB.

@@ -20,6 +20,8 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 
+
+
 # Set environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=development

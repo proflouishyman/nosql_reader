@@ -6,25 +6,45 @@ import os
 # =======================
 # Logging Configuration
 # =======================
+# Create a logger
 logger = logging.getLogger('DatabaseSetupLogger')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)  # Set to DEBUG for detailed logs
 
 # Create handlers
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-file_handler = logging.FileHandler('database_setup.log')
-file_handler.setLevel(logging.DEBUG)
+console_handler.setLevel(logging.WARNING)  # Show only warnings and above in console
 
+file_handler = logging.FileHandler('database_setup.log')
+file_handler.setLevel(logging.DEBUG)  # Capture all debug and higher level logs in file
+
+# Create formatter
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+# Set formatter for handlers
 console_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)
 
+# Add handlers to the logger
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 # =======================
 # Database Functions
 # =======================
+
+
+def get_client(): #changed for containerization
+    """Initialize and return a new MongoDB client."""
+    try:
+        mongo_uri = os.environ.get('MONGO_URI')
+        if not mongo_uri:
+            raise ValueError("MONGO_URI environment variable not set")
+        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
+        logger.info("Successfully connected to MongoDB.")
+        return client
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        raise e
 
 def initialize_database(client):
     db = get_db(client)
@@ -49,16 +69,6 @@ def initialize_database(client):
     logger.info("Database initialized with required collections and indexes.")
 
 
-def get_client(): #changed for containerization
-    """Initialize and return a new MongoDB client."""
-    try:
-        mongo_uri = os.environ.get('MONGO_URI', 'mongodb://admin:secret@mongodb:27017/')
-        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
-        logger.info("Successfully connected to MongoDB.")
-        return client
-    except Exception as e:
-        logger.error(f"Failed to connect to MongoDB: {e}")
-        raise e
 
 def get_db(client):
     """Return the database instance."""

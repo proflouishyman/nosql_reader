@@ -1,20 +1,17 @@
 
-
 services:
   mongodb:
-    image: mongo:6.0  # Specific MongoDB version for consistency
+    image: mongo:6.0
     container_name: mongodb
     environment:
-      # Environment variables sourced from the .env file
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - mongodb_data:/data/db  # Persist MongoDB data
-      - ./mongo-init/:/docker-entrypoint-initdb.d/  # MongoDB initialization scripts
+      - mongodb_data:/data/db
+      - ./mongo-init/:/docker-entrypoint-initdb.d/
     ports:
-      - "27017:27017"  # Expose MongoDB port
+      - "27017:27017"
     healthcheck:
-      # Updated health check using mongosh with authentication
       test: [
         "CMD",
         "mongosh",
@@ -31,13 +28,40 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - app_network  # Connect to custom network
+      - app_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  setup:
+    image: python:3.9-slim
+    container_name: setup
+    # depends_on:
+    #   mongodb:
+    #     condition: service_healthy
+    environment:
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+      SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: >
+      sh -c "pip install -r requirements.txt && python test_mongo_connection.py && python database_setup.py && python data_processing.py"
+    networks:
+      - app_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   app:
     build: .
     container_name: flask_app
     ports:
-      - "5000:5000"  # Expose Flask app port
+      - "5000:5000"
     environment:
       MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
       FLASK_APP: app.py
@@ -45,25 +69,45 @@ services:
       FLASK_DEBUG: ${FLASK_DEBUG}
       SECRET_KEY: ${SECRET_KEY}
     volumes:
-      - ./app:/app  # Mount application code
-      - app_data:/app/archives  # Persist application data
+      - ./app:/app
+      - app_data:/app/archives
     depends_on:
+      setup:
+        condition: service_completed_successfully
       mongodb:
-        condition: service_healthy  # Ensure MongoDB is healthy before starting the app
-    entrypoint: ["/entrypoint.sh"]  # Entrypoint script for initialization
-    command: ["flask", "run", "--host=0.0.0.0"]  # Command to start Flask app
+        condition: service_healthy
     networks:
-      - app_network  # Connect to custom network
+      - app_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-    # Optional: Define resource limits to prevent container from overusing resources
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: "1.0"
-    #       memory: "512M"
-    #     reservations:
-    #       cpus: "0.5"
-    #       memory: "256M"
+
+
+  mongo_test:
+    image: python:3.9-slim
+    container_name: mongo_test
+    environment:
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: sh -c "pip install -r requirements.txt && python test_mongo_connection.py"
+    # depends_on:
+    #   mongodb:
+    #     condition: service_healthy
+    networks:
+      - app_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+
 
 volumes:
   mongodb_data:
@@ -73,6 +117,6 @@ networks:
   app_network:
     driver: bridge
 
-# Note:
+# Notes:
 # - Ensure you have a .env file in your project root with the necessary variables.
 # - Add .env to your .gitignore to prevent committing sensitive information.
