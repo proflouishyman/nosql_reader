@@ -19,6 +19,25 @@ https://github.com/proflouishyman/nosql_reader
 
 ## To Do
 
+
+
+you need to find the files
+2024-09-25 21:23:36,327 - INFO - Processing directory: /app/archives
+2024-09-25 21:23:36,327 - INFO - Found 0 files to process.
+2024-09-25 21:23:36,337 - INFO - Successfully connected to MongoDB.
+2024-09-25 21:23:36,347 - INFO - Unique terms updated in the database.
+2024-09-25 21:23:36,347 - INFO - Unique terms saved to file: unique_terms.pkl
+2024-09-25 21:23:36,348 - INFO - 
+Processing Summary:
+2024-09-25 21:23:36,348 - INFO - Total files found: 0
+2024-09-25 21:23:36,348 - INFO - Successfully processed: 0
+2024-09-25 21:23:36,348 - INFO - Skipped (already ingested): 0
+2024-09-25 21:23:36,348 - INFO - Failed to process: 0
+2024-09-25 21:23:36,348 - INFO - 
+Total processing time: 0.02 seconds.
+
+
+
 0. Shift other PC to Docker
 0.1. Create flag for list of hidden fields
 1. Convert setup process to a part of settings or a new page. It should be able to add to the DB

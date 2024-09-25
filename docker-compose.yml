@@ -38,14 +38,15 @@ services:
   setup:
     image: python:3.9-slim
     container_name: setup
-    # depends_on:
-    #   mongodb:
-    #     condition: service_healthy
+    depends_on:
+      mongodb:
+        condition: service_healthy
     environment:
       MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
       SECRET_KEY: ${SECRET_KEY}
     volumes:
       - ./app:/app
+      - ./archives:/app/archives  # Correctly map your data directory
     working_dir: /app
     command: >
       sh -c "pip install -r requirements.txt && python test_mongo_connection.py && python database_setup.py && python data_processing.py"
@@ -57,54 +58,54 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  app:
-    build: .
-    container_name: flask_app
-    ports:
-      - "5000:5000"
-    environment:
-      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
-      FLASK_APP: app.py
-      FLASK_ENV: ${FLASK_ENV}
-      FLASK_DEBUG: ${FLASK_DEBUG}
-      SECRET_KEY: ${SECRET_KEY}
-    volumes:
-      - ./app:/app
-      - app_data:/app/archives
-    depends_on:
-      setup:
-        condition: service_completed_successfully
-      mongodb:
-        condition: service_healthy
-    networks:
-      - app_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  # app:
+  #   build: .
+  #   container_name: flask_app
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+  #     FLASK_APP: app.py
+  #     FLASK_ENV: ${FLASK_ENV}
+  #     FLASK_DEBUG: ${FLASK_DEBUG}
+  #     SECRET_KEY: ${SECRET_KEY}
+  #   volumes:
+  #     - ./app:/app
+  #     - app_data:/app/archives
+  #   depends_on:
+  #     setup:
+  #       condition: service_completed_successfully
+  #     mongodb:
+  #       condition: service_healthy
+  #   networks:
+  #     - app_network
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
 
 
 
-  mongo_test:
-    image: python:3.9-slim
-    container_name: mongo_test
-    environment:
-      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: sh -c "pip install -r requirements.txt && python test_mongo_connection.py"
-    # depends_on:
-    #   mongodb:
-    #     condition: service_healthy
-    networks:
-      - app_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  # mongo_test:
+  #   image: python:3.9-slim
+  #   container_name: mongo_test
+  #   environment:
+  #     MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+  #   volumes:
+  #     - .:/app
+  #   working_dir: /app
+  #   command: sh -c "pip install -r requirements.txt && python test_mongo_connection.py"
+  #   depends_on:
+  #     mongodb:
+  #       condition: service_healthy
+  #   networks:
+  #     - app_network
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
 
 
 
