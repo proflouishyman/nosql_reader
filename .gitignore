@@ -7,3 +7,4 @@ data/
 data_processing.log
 archives/
 data/
+*.log

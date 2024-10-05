@@ -1,12 +1,21 @@
 # data_processing.py
-from pymongo import MongoClient
+
 import os
 import json
 import re
 import hashlib
-from database_setup import insert_document, update_field_structure, get_db, is_file_ingested
+from database_setup import (
+    insert_document,
+    update_field_structure,
+    get_db,
+    is_file_ingested,
+    get_client,
+    save_unique_terms,
+)
+from dotenv import load_dotenv
 
-
+# Load environment variables from .env file
+load_dotenv()
 
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
@@ -14,32 +23,35 @@ import time
 import logging
 import argparse
 from collections import Counter
+import pickle
 
 # =======================
 # Logging Configuration
 # =======================
 
 # Create a logger
-logger = logging.getLogger('DatabaseSetupLogger')
+logger = logging.getLogger('DataProcessingLogger')
 logger.setLevel(logging.DEBUG)  # Set to DEBUG for detailed logs
 
-# Create handlers
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.WARNING)  # Show only warnings and above in console
+# Check if handlers are already added
+if not logger.handlers:
+    # Create handlers
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.WARNING)  # Show only warnings and above in console
 
-file_handler = logging.FileHandler('database_processing.log')
-file_handler.setLevel(logging.DEBUG)  # Capture all debug and higher level logs in file
+    file_handler = logging.FileHandler('database_processing.log', mode='a')
+    file_handler.setLevel(logging.DEBUG)  # Capture all debug and higher level logs in file
 
-# Create formatter
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
-# Set formatter for handlers
-console_handler.setFormatter(formatter)
-file_handler.setFormatter(formatter)
+    # Set formatter for handlers
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
 
-# Add handlers to the logger
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
+    # Add handlers to the logger
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
 
 # =======================
 # Global Variables
@@ -52,20 +64,6 @@ db = None  # Will be initialized in each process
 # Utility Functions
 # =======================
 
-def get_client(): #changed for containerization
-    """Initialize and return a new MongoDB client."""
-    try:
-        mongo_uri = os.environ.get('MONGO_URI')
-        if not mongo_uri:
-            raise ValueError("MONGO_URI environment variable not set")
-        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
-        logger.info("Successfully connected to MongoDB.")
-        return client
-    except Exception as e:
-        logger.error(f"Failed to connect to MongoDB: {e}")
-        raise e
-
-
 def calculate_file_hash(file_path):
     """Calculate SHA256 hash of a file."""
     sha256_hash = hashlib.sha256()
@@ -77,8 +75,6 @@ def calculate_file_hash(file_path):
     except Exception as e:
         logger.error(f"Error calculating hash for {file_path}: {e}")
         return None
-
-
 
 def clean_json(json_text):
     """Remove control characters and extract valid JSON content."""
@@ -153,41 +149,6 @@ def merge_unique_terms(main_dict, new_dict):
         main_dict[field]['words'].update(terms['words'])
         main_dict[field]['phrases'].update(terms['phrases'])
 
-def save_unique_terms(db, unique_terms_dict):
-    """Save the unique terms to the database in a flattened structure."""
-    unique_terms_collection = db['unique_terms']
-    unique_terms_documents = []
-    for field, terms in unique_terms_dict.items():
-        for word, count in terms['words'].items():
-            if count >= 2:
-                unique_terms_documents.append({
-                    "term": word,
-                    "field": field,
-                    "count": count,
-                    "type": "word"
-                })
-        for phrase, count in terms['phrases'].items():
-            if count >= 2:
-                unique_terms_documents.append({
-                    "term": phrase,
-                    "field": field,
-                    "count": count,
-                    "type": "phrase"
-                })
-    try:
-        unique_terms_collection.delete_many({})
-        if unique_terms_documents:
-            unique_terms_collection.insert_many(unique_terms_documents)
-            unique_terms_collection.create_index([("term", 1)])
-            unique_terms_collection.create_index([("field", 1)])
-            unique_terms_collection.create_index([("type", 1)])
-        logger.info("Unique terms updated in the database.")
-    except Exception as e:
-        logger.error(f"Error saving unique terms: {e}")
-
-# Optionally, save unique terms to a file for faster loading
-import pickle
-
 def save_unique_terms_to_file(unique_terms_dict, filename='unique_terms.pkl'):
     """Serialize and save unique terms to a file."""
     try:
@@ -207,8 +168,9 @@ def init_db():
     try:
         client = get_client()
         db = get_db(client)
+        logger.debug("Database connection initialized.")
     except Exception as e:
-        logger.error(f"Failed to initialize database connection: {e}")
+        logger.exception("Failed to initialize database connection")
         raise e
 
 def process_file(file_path):
@@ -223,7 +185,7 @@ def process_file(file_path):
 
     try:
         file_hash = calculate_file_hash(file_path)
-        if is_file_ingested(db, file_path, file_hash):
+        if is_file_ingested(db, file_hash):
             logger.debug(f"File already ingested: {filename}")
             result['skipped'].append(file_path)
             return result, unique_terms
@@ -237,18 +199,16 @@ def process_file(file_path):
                 result['processed'].append(file_path)
                 unique_terms = collect_unique_terms(json_data)
             except Exception as e:
-                error = f"Error processing {filename}: {str(e)}"
-                logger.error(error)
-                result['failed'].append((file_path, error))
+                logger.exception(f"Error processing {filename}")
+                result['failed'].append((file_path, str(e)))
         else:
             if error:
                 logger.error(error)
                 result['failed'].append((file_path, error))
 
     except Exception as e:
-        error = f"Unexpected error processing {filename}: {str(e)}"
-        logger.error(error)
-        result['failed'].append((file_path, error))
+        logger.exception(f"Unexpected error processing {filename}")
+        result['failed'].append((file_path, str(e)))
 
     return result, unique_terms
 
@@ -272,6 +232,10 @@ def process_directory(directory_path):
     final_unique = {}
 
     logger.info(f"Found {total} files to process.")
+
+    if total == 0:
+        logger.warning("No files found to process. Exiting.")
+        return
 
     batch_size = 1000  # Adjust based on system capabilities
     num_batches = (total // batch_size) + (1 if total % batch_size != 0 else 0)
@@ -330,6 +294,8 @@ def process_directory(directory_path):
 # =======================
 
 if __name__ == "__main__":
+    print("Starting data_processing.py")
+    logger.info("Starting data_processing.py")
     parser = argparse.ArgumentParser(description="Process and validate JSON and TXT files for the railroad documents database.")
     parser.add_argument("data_directory", nargs='?', default='/app/archives',
                         help="Path to the root directory containing JSON and/or text files to process (default: '/app/archives')")
@@ -344,7 +310,7 @@ if __name__ == "__main__":
             os.makedirs(data_directory)
             logger.info(f"Directory created successfully: {data_directory}")
         except Exception as e:
-            logger.error(f"Failed to create directory: {e}")
+            logger.exception("Failed to create directory")
             exit(1)
 
     logger.info(f"Processing directory: {data_directory}")

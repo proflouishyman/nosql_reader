@@ -19,7 +19,8 @@ https://github.com/proflouishyman/nosql_reader
 
 ## To Do
 
-
+to access the shell
+docker-compose run setup /bin/bash
 
 you need to find the files
 2024-09-25 21:23:36,327 - INFO - Processing directory: /app/archives

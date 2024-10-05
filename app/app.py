@@ -6,7 +6,20 @@ import json
 from flask import Flask
 from flask_caching import Cache
 from flask_session import Session
-from database_setup import get_client, get_db, get_collections, get_field_structure
+from database_setup import (
+    get_client,
+    get_db,
+    get_collections,
+    insert_document,
+    update_document,
+    delete_document,
+    get_field_structure,
+    find_document_by_id,
+    update_field_structure,
+    save_unique_terms
+)
+
+
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -97,7 +110,8 @@ def inject_ui_config():
     """
     app.config['UI_CONFIG'] = load_config()
     client = get_client()
-    field_struct = get_field_structure(client)
+    db = get_db(client)
+    field_struct = get_field_structure(db)
     return dict(ui_config=app.config['UI_CONFIG'], field_structure=field_struct)
 
 # Import routes after initializing app to avoid circular imports

@@ -73,7 +73,8 @@ def index():
     app.logger.info('Handling request to index')
     num_search_fields = 3  # Number of search fields to display
     client = get_client()
-    field_structure = get_field_structure(client)
+    db = get_db(client)
+    field_structure = get_field_structure(db)
     return render_template('index.html', num_search_fields=num_search_fields, field_structure=field_structure)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -204,8 +205,6 @@ def build_query(data):
     app.logger.debug(f"Final query: {query}")
     return query
 
-
-
 @app.route('/document/<string:doc_id>')
 def document_detail(doc_id):
     # Hard-coded SHOW_EMPTY variable
@@ -236,7 +235,8 @@ def document_detail(doc_id):
 
     try:
         client = get_client()
-        document = find_document_by_id(client, doc_id)
+        db = get_db(client)
+        document = find_document_by_id(db, doc_id)
         if not document:
             abort(404, description="Document not found.")
 
@@ -292,9 +292,6 @@ def document_detail(doc_id):
         app.logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
 
-
-
-
 @app.route('/images/<path:filename>')
 # @login_required
 def serve_image(filename):
@@ -325,8 +322,8 @@ def search_terms():
         db = get_db(client)
         documents, unique_terms_collection, _ = get_collections(db)
         # Fetch unique terms for the specified field from unique_terms_collection
-        unique_terms_doc = unique_terms_collection.find_one({"field": field})
-        if not unique_terms_doc:
+        unique_terms_cursor = unique_terms_collection.find({"field": field})
+        if not unique_terms_cursor:
             app.logger.debug(f"No terms found for field '{field}'.")
             return jsonify({
                 "words": [],
@@ -337,8 +334,17 @@ def search_terms():
                 "message": f"No terms found for field '{field}'."
             }), 200  # Changed status to 200
 
-        words = unique_terms_doc.get('words', {})
-        phrases = unique_terms_doc.get('phrases', {})
+        words = {}
+        phrases = {}
+        for term_doc in unique_terms_cursor:
+            term = term_doc.get('term')
+            count = term_doc.get('count', 0)
+            term_type = term_doc.get('type')
+            if term_type == 'word':
+                words[term] = count
+            elif term_type == 'phrase':
+                phrases[term] = count
+
         unique_words_count = len(words)
         unique_phrases_count = len(phrases)
         total_records = documents.count_documents({})
@@ -358,7 +364,8 @@ def search_terms():
         return jsonify(data)
     else:
         client = get_client()
-        field_structure = get_field_structure(client)
+        db = get_db(client)
+        field_structure = get_field_structure(db)
         return render_template('search-terms.html', field_structure=field_structure)
 
 @app.route('/database-info')
@@ -366,7 +373,7 @@ def search_terms():
 def database_info():
     client = get_client()
     db = get_db(client)
-    field_structure = get_field_structure(client)
+    field_structure = get_field_structure(db)
     documents, _, _ = get_collections(db)
     collection_info = []
 

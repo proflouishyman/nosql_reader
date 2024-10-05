@@ -1,7 +1,13 @@
+# database_setup.py
+
 from pymongo import MongoClient
 from bson import ObjectId
 import logging
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # =======================
 # Logging Configuration
@@ -32,19 +38,24 @@ logger.addHandler(file_handler)
 # Database Functions
 # =======================
 
-
-def get_client(): #changed for containerization
+def get_client():
     """Initialize and return a new MongoDB client."""
     try:
         mongo_uri = os.environ.get('MONGO_URI')
         if not mongo_uri:
             raise ValueError("MONGO_URI environment variable not set")
         client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
+        # Test connection
+        client.admin.command('ping')
         logger.info("Successfully connected to MongoDB.")
         return client
     except Exception as e:
         logger.error(f"Failed to connect to MongoDB: {e}")
         raise e
+
+def get_db(client):
+    """Return the database instance."""
+    return client['railroad_documents']
 
 def initialize_database(client):
     db = get_db(client)
@@ -56,7 +67,9 @@ def initialize_database(client):
     
     # Create necessary indexes
     documents = db['documents']
-    documents.create_index([("file_path", 1), ("file_hash", 1)], unique=True)
+    existing_indexes = documents.index_information()
+    if 'file_hash_1' not in existing_indexes:
+        documents.create_index([("file_hash", 1)], unique=True)
     
     unique_terms = db['unique_terms']
     unique_terms.create_index([("term", 1)])
@@ -68,23 +81,8 @@ def initialize_database(client):
     
     logger.info("Database initialized with required collections and indexes.")
 
-
-
-def get_db(client):
-    """Return the database instance."""
-    return client['railroad_documents']
-
-def get_collections(db):
-    """Return the collections used in the application."""
-    documents = db['documents']
-    unique_terms_collection = db['unique_terms']
-    field_structure_collection = db['field_structure']
-    logger.info("Accessed collections from the database.")
-    return documents, unique_terms_collection, field_structure_collection
-
-def insert_document(client, document):
+def insert_document(db, document):
     """Insert a document into the 'documents' collection."""
-    db = get_db(client)
     try:
         documents = db['documents']
         documents.insert_one(document)
@@ -93,34 +91,8 @@ def insert_document(client, document):
         logger.error(f"Error inserting document: {e}")
         raise e
 
-def update_document(client, document_id, update_data):
-    """
-    Update a document's information.
-    :param client: MongoDB client
-    :param document_id: The ObjectId of the document to update
-    :param update_data: A dictionary containing the fields to update
-    :return: The result of the update operation
-    """
-    db = get_db(client)
-    documents = db['documents']
-    result = documents.update_one({"_id": ObjectId(document_id)}, {"$set": update_data})
-    return result.modified_count
-
-def delete_document(client, document_id):
-    """
-    Delete a document from the database.
-    :param client: MongoDB client
-    :param document_id: The ObjectId of the document to delete
-    :return: The result of the delete operation
-    """
-    db = get_db(client)
-    documents = db['documents']
-    result = documents.delete_one({"_id": ObjectId(document_id)})
-    return result.deleted_count
-
-def update_field_structure(client, json_data):
+def update_field_structure(db, json_data):
     """Update the field structure in the 'field_structure' collection based on json_data."""
-    db = get_db(client)
     try:
         field_structure = db['field_structure']
 
@@ -153,26 +125,21 @@ def update_field_structure(client, json_data):
         logger.error(f"Error updating field structure: {e}")
         raise e
 
-def is_file_ingested(client, file_path, file_hash):
-    """Check if a file has already been ingested based on its path and hash."""
+def is_file_ingested(db, file_hash):
+    """Check if a file has already been ingested based on its hash."""
     if not file_hash:
         return False
-    db = get_db(client)
     try:
         documents = db['documents']
-        ingested = documents.find_one({
-            'file_path': file_path,
-            'file_hash': file_hash
-        }) is not None
-        logger.debug(f"File ingestion check for {file_path}: {ingested}")
+        ingested = documents.find_one({'file_hash': file_hash}) is not None
+        logger.debug(f"File ingestion check for hash {file_hash}: {ingested}")
         return ingested
     except Exception as e:
-        logger.error(f"Error checking ingestion status for {file_path}: {e}")
+        logger.error(f"Error checking ingestion status for hash {file_hash}: {e}")
         return False
 
-def save_unique_terms(client, unique_terms_dict):
+def save_unique_terms(db, unique_terms_dict):
     """Save the unique terms to the database in a flattened structure."""
-    db = get_db(client)
     unique_terms_collection = db['unique_terms']
     unique_terms_documents = []
     
@@ -204,41 +171,103 @@ def save_unique_terms(client, unique_terms_dict):
         logger.info("Saved unique terms to the database.")
     except Exception as e:
         logger.error(f"Error saving unique terms: {e}")
+        raise e
+# In database_setup.py
 
-def find_document_by_id(client, document_id):
+def update_document(db, document_id, update_data):
+    """
+    Update a document's information.
+    :param db: Database instance
+    :param document_id: The ObjectId of the document to update
+    :param update_data: A dictionary containing the fields to update
+    :return: The number of documents modified
+    """
+    try:
+        documents = db['documents']
+        result = documents.update_one({"_id": ObjectId(document_id)}, {"$set": update_data})
+        if result.matched_count == 0:
+            logger.warning(f"No document found with _id: {document_id}")
+        else:
+            logger.info(f"Updated document with _id: {document_id}")
+        return result.modified_count
+    except Exception as e:
+        logger.error(f"Error updating document {document_id}: {e}")
+        raise e
+
+def delete_document(db, document_id):
+    """
+    Delete a document from the database.
+    :param db: Database instance
+    :param document_id: The ObjectId of the document to delete
+    :return: The number of documents deleted
+    """
+    try:
+        documents = db['documents']
+        result = documents.delete_one({"_id": ObjectId(document_id)})
+        if result.deleted_count == 0:
+            logger.warning(f"No document found with _id: {document_id}")
+        else:
+            logger.info(f"Deleted document with _id: {document_id}")
+        return result.deleted_count
+    except Exception as e:
+        logger.error(f"Error deleting document {document_id}: {e}")
+        raise e
+def get_field_structure(db):
+    """
+    Get the current field structure.
+    :param db: Database instance
+    :return: The current field structure as a dictionary
+    """
+    try:
+        field_structure_collection = db['field_structure']
+        field_structure_doc = field_structure_collection.find_one({})
+        if field_structure_doc:
+            # Remove '_id' if present
+            field_structure_doc.pop('_id', None)
+            logger.info("Retrieved field structure from the database.")
+            return field_structure_doc
+        else:
+            logger.warning("No field structure document found.")
+            return {}
+    except Exception as e:
+        logger.error(f"Error retrieving field structure: {e}")
+        raise e
+
+def find_document_by_id(db, document_id):
     """
     Find a document by its ObjectId.
-    :param client: MongoDB client
+    :param db: Database instance
     :param document_id: The ObjectId of the document
     :return: The document, or None if not found
     """
-    db = get_db(client)
-    documents = db['documents']
     try:
-        return documents.find_one({"_id": ObjectId(document_id)})
+        documents = db['documents']
+        document = documents.find_one({"_id": ObjectId(document_id)})
+        if document:
+            logger.info(f"Found document with _id: {document_id}")
+            return document
+        else:
+            logger.warning(f"No document found with _id: {document_id}")
+            return None
     except Exception as e:
-        logger.error(f"Error finding document by ID: {e}")
-        return None
+        logger.error(f"Error finding document {document_id}: {e}")
+        raise e
 
-def get_field_structure(client):
-    """
-    Get the current field structure.
-    :param client: MongoDB client
-    :return: The current field structure
-    """
-    db = get_db(client)
-    field_structure_collection = db['field_structure']
-    structure = field_structure_collection.find_one({"_id": "current_structure"})
-    return structure['structure'] if structure else {}
-
+def get_collections(db):
+    """Retrieve and return references to the required collections."""
+    try:
+        documents = db['documents']
+        unique_terms_collection = db['unique_terms']
+        field_structure_collection = db['field_structure']
+        return documents, unique_terms_collection, field_structure_collection
+    except Exception as e:
+        logger.error(f"Error getting collections: {e}")
+        raise
 
 # =======================
 # Main Execution (Optional)
 # =======================
 if __name__ == "__main__":
     client = get_client()  # Get the MongoDB client
-    initialize_database(client) #recent suggestion. lets see how it shifts db behavior
-    logger.info("Database setup module executed directly.")
-    db = get_db(client)    # Get the database
-    documents, unique_terms_collection, field_structure_collection = get_collections(db)
+    initialize_database(client)  # Initialize the database
     logger.info("Database setup module executed directly.")

@@ -58,32 +58,36 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # app:
-  #   build: .
-  #   container_name: flask_app
-  #   ports:
-  #     - "5000:5000"
-  #   environment:
-  #     MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
-  #     FLASK_APP: app.py
-  #     FLASK_ENV: ${FLASK_ENV}
-  #     FLASK_DEBUG: ${FLASK_DEBUG}
-  #     SECRET_KEY: ${SECRET_KEY}
-  #   volumes:
-  #     - ./app:/app
-  #     - app_data:/app/archives
-  #   depends_on:
-  #     setup:
-  #       condition: service_completed_successfully
-  #     mongodb:
-  #       condition: service_healthy
-  #   networks:
-  #     - app_network
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "10m"
-  #       max-file: "3"
+  app:
+    image: python:3.9-slim
+    container_name: flask_app
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+      FLASK_APP: app.py
+      FLASK_ENV: ${FLASK_ENV}
+      FLASK_DEBUG: ${FLASK_DEBUG}
+      SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - ./app:/app
+      - app_data:/app/archives
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      mongodb:
+        condition: service_healthy
+    working_dir: /app
+    command: >
+      sh -c "pip install -r requirements.txt && python app.py"
+    networks:
+      - app_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 
 
 
