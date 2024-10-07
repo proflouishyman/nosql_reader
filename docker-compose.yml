@@ -4,8 +4,9 @@ services:
     image: mongo:6.0
     container_name: mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      
     volumes:
       - mongodb_data:/data/db
       - ./mongo-init/:/docker-entrypoint-initdb.d/
@@ -16,9 +17,9 @@ services:
         "CMD",
         "mongosh",
         "--username",
-        "${MONGO_INITDB_ROOT_USERNAME}",
+        "admin",
         "--password",
-        "${MONGO_INITDB_ROOT_PASSWORD}",
+        "secret",
         "--authenticationDatabase",
         "admin",
         "--eval",
@@ -42,14 +43,14 @@ services:
       mongodb:
         condition: service_healthy
     environment:
-      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin"
       SECRET_KEY: ${SECRET_KEY}
     volumes:
       - ./app:/app
       - ./archives:/app/archives  # Correctly map your data directory
     working_dir: /app
     command: >
-      sh -c "pip install -r requirements.txt && python test_mongo_connection.py && python database_setup.py && python data_processing.py"
+      sh -c "pip install -r requirements.txt && python database_setup.py && python data_processing.py"
     networks:
       - app_network
     logging:
@@ -64,7 +65,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin" #admin needs to be at the end
       FLASK_APP: app.py
       FLASK_ENV: ${FLASK_ENV}
       FLASK_DEBUG: ${FLASK_DEBUG}
