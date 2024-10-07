@@ -22,6 +22,8 @@ https://github.com/proflouishyman/nosql_reader
 to access the shell
 docker-compose run setup /bin/bash
 
+ok. the container works again. 
+
 you need to find the files
 2024-09-25 21:23:36,327 - INFO - Processing directory: /app/archives
 2024-09-25 21:23:36,327 - INFO - Found 0 files to process.
