@@ -64,6 +64,14 @@ Total processing time: 0.02 seconds.
 	RDApp-630550Fox014.jpg.json	This document is a correspondence from the Office of General Claim Agent of The Baltimore and Ohio Railroad Company, dated December 8, 1920. It refers to a bill from The Peoples Hospital for services rendered to E. L. Fox, a train rider who was injured at Cuyahoga Falls, Ohio, on October 31, 1920. The bill is being sent to Mr. W. J. Dudley, Superintendent of the Relief Department, for voucher processing. The document indicates that Mr. Fox was a member of the Relief Department at the time of his injury. Additionally, there is a note referencing a letter related to this bill dated 16th of December, 1920.
 	RDApp-630550Fox062.jpg.json	This document is a telegram from the Baltimore and Ohio Railroad Company to the Superintendent of City Hospital in Akron, Ohio, dated August 5th, 1921. It refers to a bill concerning an individual named E. L. Fox and requests further communication regarding the matter.
 
+
+##Notes on how to
+1. Inside the util folder is delete_db.py which needs to be run from inside a container in order to delete the database. You will need to delete the database if you change the setup or structure.
+   a. docker exec -it flask_app /bin/bash
+   b. util/delete_db.py
+
+
+
 ## File Structure
 
 railroad_documents_project/

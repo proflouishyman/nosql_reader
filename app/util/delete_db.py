@@ -1,17 +1,25 @@
+# drop_db.py
 from pymongo import MongoClient
-import os
 from dotenv import load_dotenv
+import os
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Connect to MongoDB
-mongo_uri = os.environ.get('MONGO_URI')
-client = MongoClient(mongo_uri)
+# Get MongoDB connection details from environment variables
+MONGODB_URI = os.getenv("MONGODB_URI")  # Ensure you have this set in your .env file
+DATABASE_NAME = "railroad_documents"      # Replace with the name of the database you want to delete
 
-# Specify the database name
-db_name = 'railroad_documents'
+def drop_database():
+    """Drop the specified MongoDB database."""
+    try:
+        # Connect to the MongoDB server
+        client = MongoClient(MONGODB_URI)
+        # Drop the database
+        client.drop_database(DATABASE_NAME)
+        print(f"Database '{DATABASE_NAME}' dropped successfully.")
+    except Exception as e:
+        print(f"Error dropping database '{DATABASE_NAME}': {e}")
 
-# Drop the database
-client.drop_database(db_name)
-print(f'Deleted database: {db_name}')
+if __name__ == "__main__":
+    drop_database()

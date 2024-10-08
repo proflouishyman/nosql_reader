@@ -1,7 +1,8 @@
 # File: routes.py
 # Path: routes.py
 
-from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response, send_file
+from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response, send_file, Flask
+from chunk_utils import save_unique_terms, retrieve_unique_terms
 from functools import wraps
 from app import app, cache
 from database_setup import (
@@ -260,6 +261,8 @@ def serve_image(filename):
 
 @app.route('/search-terms', methods=['GET'])
 def search_terms():
+    db = get_db()  # Initialize your database connection
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # Handle AJAX request
         field = request.args.get('field')
@@ -267,9 +270,9 @@ def search_terms():
         if not field:
             return jsonify({"error": "No field specified"}), 400
 
-        # Fetch unique terms from the database
-        unique_terms_doc = unique_terms_collection.find_one({"_id": "unique_terms_document"})
-        if not unique_terms_doc:
+        # Fetch unique terms from the database using the utility function
+        unique_terms_dict = retrieve_unique_terms(db)
+        if not unique_terms_dict:
             app.logger.debug("No unique terms found.")
             return jsonify({
                 "words": [],
@@ -280,7 +283,6 @@ def search_terms():
                 "message": "No unique terms found."
             }), 200
 
-        unique_terms_dict = unique_terms_doc.get('terms', {})
         field_terms = unique_terms_dict.get(field, {'words': {}, 'phrases': {}})
 
         words = field_terms.get('words', {})
@@ -306,6 +308,7 @@ def search_terms():
         # Render the HTML template
         field_structure = get_field_structure(db)  # Pass 'db' here
         return render_template('search-terms.html', field_structure=field_structure)
+
 
     
 

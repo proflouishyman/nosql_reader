@@ -177,24 +177,50 @@ def is_file_ingested(db, file_hash):
         logger.error(f"Error checking ingestion status for hash {file_hash}: {e}")
         return False
 
-def save_unique_terms(db, unique_terms_dict):
+# In database_setup.py
+
+def save_unique_terms(db, unique_terms_dict, max_chunk_size=1500000):  # 1.5 MB per chunk
     """
-    Save the unique terms dictionary to the database as a single document.
+    Save the unique terms dictionary to the database as multiple documents if it exceeds max size.
     :param db: Database instance
     :param unique_terms_dict: The dictionary containing unique terms
+    :param max_chunk_size: The maximum size for each chunk in bytes
     """
     unique_terms_collection = db['unique_terms']
-    try:
-        # Save the unique terms as a single document
+    
+    # Split the unique_terms_dict into chunks
+    current_chunk = {}
+    current_size = 0
+    chunk_index = 0
+
+    for key, value in unique_terms_dict.items():
+        # Calculate the size of the new addition
+        new_size = len(key) + len(str(value))  # Estimate size based on key and value lengths
+        if current_size + new_size > max_chunk_size:
+            # Save the current chunk to the database
+            unique_terms_collection.replace_one(
+                {"_id": f"unique_terms_chunk_{chunk_index}"},
+                {"terms": current_chunk},
+                upsert=True
+            )
+            chunk_index += 1
+            current_chunk = {}
+            current_size = 0
+        
+        # Add the new term to the current chunk
+        current_chunk[key] = value
+        current_size += new_size
+
+    # Save any remaining terms in the last chunk
+    if current_chunk:
         unique_terms_collection.replace_one(
-            {"_id": "unique_terms_document"},
-            {"terms": unique_terms_dict},
+            {"_id": f"unique_terms_chunk_{chunk_index}"},
+            {"terms": current_chunk},
             upsert=True
         )
-        logger.info("Unique terms updated in the database.")
-    except Exception as e:
-        logger.error(f"Error saving unique terms: {e}")
-        raise e
+
+    logger.info("Unique terms saved to the database in chunks.")
+
 
 
 
