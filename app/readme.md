@@ -23,6 +23,7 @@ to access the shell
 docker-compose run setup /bin/bash
 
 ok. the container works again. 
+need to restore functionality
 
 you need to find the files
 2024-09-25 21:23:36,327 - INFO - Processing directory: /app/archives
