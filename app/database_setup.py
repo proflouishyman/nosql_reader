@@ -94,40 +94,75 @@ def insert_document(db, document):
     except Exception as e:
         logger.error(f"Error inserting document: {e}")
         raise e
+# In database_setup.py
 
-def update_field_structure(db, json_data):
-    """Update the field structure in the 'field_structure' collection based on json_data."""
-    try:
-        field_structure = db['field_structure']
-
-        def flatten_json(y):
-            out = {}
-            def flatten(x, name=''):
-                if isinstance(x, dict):
-                    for a in x:
-                        flatten(x[a], f'{name}{a}.')
-                elif isinstance(x, list):
-                    i = 0
-                    for a in x:
-                        flatten(a, f'{name}{i}.')
-                        i += 1
+def discover_fields(document):
+    """
+    Recursively discover fields in a document.
+    :param document: The document to analyze
+    :return: A dictionary representing the field structure
+    """
+    structure = {}
+    for key, value in document.items():
+        if isinstance(value, dict):
+            structure[key] = discover_fields(value)
+        elif isinstance(value, list):
+            if value:
+                if isinstance(value[0], dict):
+                    structure[key] = [discover_fields(value[0])]
                 else:
-                    out[name[:-1]] = type(x).__name__
-            flatten(y)
-            return out
+                    structure[key] = [type(value[0]).__name__]
+            else:
+                structure[key] = []
+        else:
+            structure[key] = type(value).__name__
+    return structure
 
-        flat_json = flatten_json(json_data)
+def merge_structures(existing, new):
+    """
+    Merge two field structures.
+    :param existing: The existing field structure
+    :param new: The new field structure to merge
+    :return: The merged field structure
+    """
+    for key, value in new.items():
+        if key not in existing:
+            existing[key] = value
+        elif isinstance(value, dict) and isinstance(existing[key], dict):
+            merge_structures(existing[key], value)
+        elif isinstance(value, list) and isinstance(existing[key], list):
+            if value and existing[key]:
+                if isinstance(value[0], dict) and isinstance(existing[key][0], dict):
+                    merge_structures(existing[key][0], value[0])
+    return existing
 
-        for field, field_type in flat_json.items():
-            field_structure.update_one(
-                {'field': field},
-                {'$addToSet': {'types': field_type}},
-                upsert=True
-            )
-        logger.info("Updated field structure based on JSON data.")
-    except Exception as e:
-        logger.error(f"Error updating field structure: {e}")
-        raise e
+def update_field_structure(db, document):
+    """
+    Update the field structure based on a new document.
+    :param db: Database instance
+    :param document: The new document to analyze
+    """
+    field_structure_collection = db['field_structure']
+    new_structure = discover_fields(document)
+    merged_structure = {}
+
+    # Attempt to retrieve the existing structure
+    existing_structure = field_structure_collection.find_one({"_id": "current_structure"})
+
+    if existing_structure:
+        # Merge the new structure with the existing one
+        merged_structure = merge_structures(existing_structure['structure'], new_structure)
+    else:
+        # If no existing structure, use the new structure
+        merged_structure = new_structure
+
+    # Perform an upsert operation to update or insert the structure
+    field_structure_collection.update_one(
+        {"_id": "current_structure"},
+        {"$set": {"structure": merged_structure}},
+        upsert=True
+    )
+
 
 def is_file_ingested(db, file_hash):
     """Check if a file has already been ingested based on its hash."""
@@ -143,40 +178,25 @@ def is_file_ingested(db, file_hash):
         return False
 
 def save_unique_terms(db, unique_terms_dict):
-    """Save the unique terms to the database in a flattened structure."""
+    """
+    Save the unique terms dictionary to the database as a single document.
+    :param db: Database instance
+    :param unique_terms_dict: The dictionary containing unique terms
+    """
     unique_terms_collection = db['unique_terms']
-    unique_terms_documents = []
-    
-    for field, terms in unique_terms_dict.items():
-        for word, count in terms['words'].items():
-            if count >= 2:
-                unique_terms_documents.append({
-                    "term": word,
-                    "field": field,
-                    "count": count,
-                    "type": "word"
-                })
-        for phrase, count in terms['phrases'].items():
-            if count >= 2:
-                unique_terms_documents.append({
-                    "term": phrase,
-                    "field": field,
-                    "count": count,
-                    "type": "phrase"
-                })
-
     try:
-        unique_terms_collection.delete_many({})
-        if unique_terms_documents:
-            unique_terms_collection.insert_many(unique_terms_documents)
-            unique_terms_collection.create_index([("term", 1)])
-            unique_terms_collection.create_index([("field", 1)])
-            unique_terms_collection.create_index([("type", 1)])
-        logger.info("Saved unique terms to the database.")
+        # Save the unique terms as a single document
+        unique_terms_collection.replace_one(
+            {"_id": "unique_terms_document"},
+            {"terms": unique_terms_dict},
+            upsert=True
+        )
+        logger.info("Unique terms updated in the database.")
     except Exception as e:
         logger.error(f"Error saving unique terms: {e}")
         raise e
-# In database_setup.py
+
+
 
 def update_document(db, document_id, update_data):
     """
@@ -216,26 +236,17 @@ def delete_document(db, document_id):
     except Exception as e:
         logger.error(f"Error deleting document {document_id}: {e}")
         raise e
+    
 def get_field_structure(db):
     """
     Get the current field structure.
     :param db: Database instance
-    :return: The current field structure as a dictionary
+    :return: The current field structure
     """
-    try:
-        field_structure_collection = db['field_structure']
-        field_structure_doc = field_structure_collection.find_one({})
-        if field_structure_doc:
-            # Remove '_id' if present
-            field_structure_doc.pop('_id', None)
-            logger.info("Retrieved field structure from the database.")
-            return field_structure_doc
-        else:
-            logger.warning("No field structure document found.")
-            return {}
-    except Exception as e:
-        logger.error(f"Error retrieving field structure: {e}")
-        raise e
+    field_structure_collection = db['field_structure']
+    structure = field_structure_collection.find_one({"_id": "current_structure"})
+    return structure['structure'] if structure else {}
+
 
 def find_document_by_id(db, document_id):
     """

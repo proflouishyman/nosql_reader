@@ -30,6 +30,7 @@ import uuid
 
 app.logger.setLevel(logging.DEBUG)
 
+
 # Initialize database connection and collections
 client = get_client()
 db = get_db(client)
@@ -258,7 +259,6 @@ def serve_image(filename):
         abort(404)
 
 @app.route('/search-terms', methods=['GET'])
-# @login_required
 def search_terms():
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # Handle AJAX request
@@ -267,21 +267,24 @@ def search_terms():
         if not field:
             return jsonify({"error": "No field specified"}), 400
 
-        # Fetch unique terms for the specified field from unique_terms_collection
-        unique_terms_doc = unique_terms_collection.find_one({"field": field})
+        # Fetch unique terms from the database
+        unique_terms_doc = unique_terms_collection.find_one({"_id": "unique_terms_document"})
         if not unique_terms_doc:
-            app.logger.debug(f"No terms found for field '{field}'.")
+            app.logger.debug("No unique terms found.")
             return jsonify({
                 "words": [],
                 "phrases": [],
                 "unique_words": 0,
                 "unique_phrases": 0,
                 "total_records": documents.count_documents({}),
-                "message": f"No terms found for field '{field}'."
-            }), 200  # Changed status to 200
+                "message": "No unique terms found."
+            }), 200
 
-        words = unique_terms_doc.get('words', {})
-        phrases = unique_terms_doc.get('phrases', {})
+        unique_terms_dict = unique_terms_doc.get('terms', {})
+        field_terms = unique_terms_dict.get(field, {'words': {}, 'phrases': {}})
+
+        words = field_terms.get('words', {})
+        phrases = field_terms.get('phrases', {})
         unique_words_count = len(words)
         unique_phrases_count = len(phrases)
         total_records = documents.count_documents({})

@@ -172,9 +172,12 @@ def init_db():
     except Exception as e:
         logger.exception("Failed to initialize database connection")
         raise e
+    
 
 def process_file(file_path):
-    """Process a single file and return the result."""
+    """
+    Process a single file and return the result.
+    """
     # Initialize database connection for this process
     if db is None:
         init_db()
@@ -193,8 +196,8 @@ def process_file(file_path):
         json_data, error = load_and_validate_json_file(file_path)
         if json_data:
             try:
-                update_field_structure(db, json_data)
-                insert_document(db, json_data)
+                update_field_structure(db, json_data)  # Pass 'db' here
+                insert_document(db, json_data)         # Pass 'db' here
                 logger.debug(f"Processed and inserted document: {filename}")
                 result['processed'].append(file_path)
                 unique_terms = collect_unique_terms(json_data)
@@ -211,6 +214,7 @@ def process_file(file_path):
         result['failed'].append((file_path, str(e)))
 
     return result, unique_terms
+
 
 def get_all_files(directory):
     """Recursively get all JSON and TXT files in the given directory and its subdirectories."""
@@ -272,8 +276,8 @@ def process_directory(directory_path):
     # Initialize database connection to save unique terms
     if db is None:
         init_db()
-    save_unique_terms(db, final_unique)
-    save_unique_terms_to_file(final_unique)
+    save_unique_terms(db, final_unique)  # Pass 'db' here
+
 
     logger.info("\nProcessing Summary:")
     logger.info(f"Total files found: {total}")
