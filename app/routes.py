@@ -274,6 +274,7 @@ def serve_image(filename):
     if os.path.exists(image_path):
         return send_file(image_path)
     else:
+        print(filename)
         abort(404)
 
 

@@ -71,6 +71,11 @@ Total processing time: 0.02 seconds.
    b. util/delete_db.py
 
 
+##NOTES
+
+Tried to optimize the search terms but something is off. i need to look and see what is actually in teh records to make sure they are being put together correctly. i should look back at old code
+
+Also, need to fix images. soemthing is wrong where the pages arent printing >Image not found: {{ image_path }}</p  if it is not found. 
 
 ## File Structure
 
