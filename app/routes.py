@@ -258,10 +258,31 @@ def serve_image(filename):
         return send_file(image_path)
     else:
         abort(404)
+# Precompute and save unique terms if they don't exist
+def precompute_unique_terms(db):
+    unique_terms = retrieve_unique_terms(db)  # This would pull from your MongoDB
+    # Save to JSON file
+    with open('unique_terms.json', 'w') as f:
+        json.dump(unique_terms, f)
+    print("Precomputed unique terms saved to unique_terms.json.")
 
 @app.route('/search-terms', methods=['GET'])
 def search_terms():
-    db = get_db()  # Initialize your database connection
+    client = get_client()  # Initialize your MongoDB client
+    db = get_db(client)    # Pass the client to get_db()
+
+    # Define the path to the JSON file
+    json_file_path = 'unique_terms.json'
+
+    # Check if the JSON file exists
+    if os.path.exists(json_file_path):
+        with open(json_file_path, 'r') as f:
+            unique_terms_dict = json.load(f)
+    else:
+        # If the JSON file does not exist, compute and save unique terms
+        precompute_unique_terms(db)
+        with open(json_file_path, 'r') as f:
+            unique_terms_dict = json.load(f)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # Handle AJAX request
@@ -270,29 +291,17 @@ def search_terms():
         if not field:
             return jsonify({"error": "No field specified"}), 400
 
-        # Fetch unique terms from the database using the utility function
-        unique_terms_dict = retrieve_unique_terms(db)
-        if not unique_terms_dict:
-            app.logger.debug("No unique terms found.")
-            return jsonify({
-                "words": [],
-                "phrases": [],
-                "unique_words": 0,
-                "unique_phrases": 0,
-                "total_records": documents.count_documents({}),
-                "message": "No unique terms found."
-            }), 200
-
+        # Fetch terms for the specified field
         field_terms = unique_terms_dict.get(field, {'words': {}, 'phrases': {}})
 
         words = field_terms.get('words', {})
         phrases = field_terms.get('phrases', {})
         unique_words_count = len(words)
         unique_phrases_count = len(phrases)
-        total_records = documents.count_documents({})
+        total_records = 100  # Adjust this if needed
 
         # Convert words and phrases to lists of dictionaries
-        words_list = [{'word': word, 'count': count} for word, count in sorted(words.items())]
+        words_list = [{'word': word, 'count': count} for word, count in sorted(words.items(), key=lambda x: x[1], reverse=True)]
         phrases_list = [{'phrase': phrase, 'count': count} for phrase, count in sorted(phrases.items())]
 
         data = {
@@ -306,8 +315,7 @@ def search_terms():
         return jsonify(data)
     else:
         # Render the HTML template
-        field_structure = get_field_structure(db)  # Pass 'db' here
-        return render_template('search-terms.html', field_structure=field_structure)
+        return render_template('search-terms.html')
 
 
     
