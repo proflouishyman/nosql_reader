@@ -1,6 +1,6 @@
 # database_setup.py
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING, DESCENDING, UpdateOne
 from bson import ObjectId
 import logging
 import os
@@ -42,7 +42,7 @@ def get_client():
     """Initialize and return a new MongoDB client."""
     try:
         print("this is the main sequence")
-        mongo_uri = os.environ.get('MONGO_URI') # this SHOULD read from .env file but it doesnt not.
+        mongo_uri = os.environ.get('MONGO_URI') # this SHOULD read from .env file but sometimes does not.
         #mongo_uri= "mongodb://admin:secret@mongodb:27017/admin" # this is correct and needs the /admin for the administrative db. REMOVE before prduction
         print(mongo_uri)
 
@@ -61,6 +61,20 @@ def get_db(client):
     """Return the database instance."""
     return client['railroad_documents']
 
+
+def clean_unique_terms_collection(db):
+    """Remove documents with null term, field, or type."""
+    result = db['unique_terms'].delete_many({
+        "$or": [
+            {"term": None},
+            {"field": None},
+            {"type": None}
+        ]
+    })
+    logger.info(f"Removed {result.deleted_count} documents with null term, field, or type.")
+
+
+
 def initialize_database(client):
     db = get_db(client)
     # Create collections if they don't exist
@@ -69,21 +83,40 @@ def initialize_database(client):
             db.create_collection(collection_name)
             logger.info(f"Created collection: {collection_name}")
     
+  
+    # Clean unique_terms collection
+    clean_unique_terms_collection(db)
+
+
     # Create necessary indexes
     documents = db['documents']
     existing_indexes = documents.index_information()
     if 'file_hash_1' not in existing_indexes:
         documents.create_index([("file_hash", 1)], unique=True)
+        logger.info("Created unique index on 'file_hash' in 'documents' collection.")
     
     unique_terms = db['unique_terms']
-    unique_terms.create_index([("term", 1)])
-    unique_terms.create_index([("field", 1)])
-    unique_terms.create_index([("type", 1)])
+    # Unique compound index on term, field, and type
+    unique_terms.create_index(
+        [("term", ASCENDING), ("field", ASCENDING), ("type", ASCENDING)],
+        unique=True,
+        name="unique_term_field_type"
+    )
+    logger.info("Created unique compound index on 'term', 'field', and 'type' in 'unique_terms' collection.")
+    
+    # Compound index on field, type, and frequency for efficient sorting
+    unique_terms.create_index(
+        [("field", ASCENDING), ("type", ASCENDING), ("frequency", DESCENDING)],
+        name="field_type_frequency_idx"
+    )
+    logger.info("Created compound index on 'field', 'type', and 'frequency' in 'unique_terms' collection.")
     
     field_structure = db['field_structure']
     field_structure.create_index([("field", 1)], unique=True)
+    logger.info("Created unique index on 'field' in 'field_structure' collection.")
     
     logger.info("Database initialized with required collections and indexes.")
+
 
 def insert_document(db, document):
     """Insert a document into the 'documents' collection."""
@@ -94,8 +127,8 @@ def insert_document(db, document):
     except Exception as e:
         logger.error(f"Error inserting document: {e}")
         raise e
-# In database_setup.py
-
+    
+    
 def discover_fields(document):
     """
     Recursively discover fields in a document.
@@ -179,47 +212,45 @@ def is_file_ingested(db, file_hash):
 
 # In database_setup.py
 
-def save_unique_terms(db, unique_terms_dict, max_chunk_size=1500000):  # 1.5 MB per chunk
+def save_unique_terms(db, unique_terms_counter):
     """
-    Save the unique terms dictionary to the database as multiple documents if it exceeds max size.
+    Save the unique terms counter to the database as individual documents.
     :param db: Database instance
-    :param unique_terms_dict: The dictionary containing unique terms
-    :param max_chunk_size: The maximum size for each chunk in bytes
+    :param unique_terms_counter: Nested dictionary {field: {type: Counter()}}
     """
     unique_terms_collection = db['unique_terms']
     
-    # Split the unique_terms_dict into chunks
-    current_chunk = {}
-    current_size = 0
-    chunk_index = 0
-
-    for key, value in unique_terms_dict.items():
-        # Calculate the size of the new addition
-        new_size = len(key) + len(str(value))  # Estimate size based on key and value lengths
-        if current_size + new_size > max_chunk_size:
-            # Save the current chunk to the database
-            unique_terms_collection.replace_one(
-                {"_id": f"unique_terms_chunk_{chunk_index}"},
-                {"terms": current_chunk},
-                upsert=True
-            )
-            chunk_index += 1
-            current_chunk = {}
-            current_size = 0
-        
-        # Add the new term to the current chunk
-        current_chunk[key] = value
-        current_size += new_size
-
-    # Save any remaining terms in the last chunk
-    if current_chunk:
-        unique_terms_collection.replace_one(
-            {"_id": f"unique_terms_chunk_{chunk_index}"},
-            {"terms": current_chunk},
-            upsert=True
-        )
-
-    logger.info("Unique terms saved to the database in chunks.")
+    # Prepare bulk operations
+    operations = []
+    for field, types in unique_terms_counter.items():
+        if not field:
+            logger.warning("Encountered a null or empty field. Skipping.")
+            continue
+        for term_type, counter in types.items():
+            if not term_type:
+                logger.warning("Encountered a null or empty type. Skipping.")
+                continue
+            for term, freq in counter.items():
+                if not term:
+                    logger.warning("Encountered a null or empty term. Skipping.")
+                    continue
+                operations.append(
+                    pymongo.UpdateOne(
+                        {"term": term, "field": field, "type": term_type},
+                        {"$set": {"frequency": freq}},
+                        upsert=True
+                    )
+                )
+    
+    if operations:
+        try:
+            result = unique_terms_collection.bulk_write(operations, ordered=False)
+            logger.info(f"Bulk upserted {result.upserted_count + result.modified_count} unique terms.")
+        except Exception as e:
+            logger.error(f"Error bulk upserting unique terms: {e}")
+            raise e
+    else:
+        logger.warning("No unique terms to upsert.")
 
 
 

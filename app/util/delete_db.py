@@ -13,6 +13,7 @@ DATABASE_NAME = "railroad_documents"      # Replace with the name of the databas
 def drop_database():
     """Drop the specified MongoDB database."""
     try:
+        print("Connecting to db")
         # Connect to the MongoDB server
         client = MongoClient(MONGODB_URI)
         # Drop the database

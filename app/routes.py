@@ -28,9 +28,27 @@ from io import StringIO
 from logging.handlers import RotatingFileHandler
 import os
 import uuid
+import pymongo
 
-app.logger.setLevel(logging.DEBUG)
+# Create a logger instance
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
+# Define a log format
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Create a console handler (optional)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# Create a file handler to log to routes.log
+log_file_path = os.path.join(os.path.dirname(__file__), 'routes.log')
+file_handler = logging.FileHandler(log_file_path)
+file_handler.setLevel(logging.DEBUG)  # Set the level for the file handler
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 # Initialize database connection and collections
 client = get_client()
@@ -127,13 +145,13 @@ def logout():
 def search():
     try:
         data = request.get_json()
-        app.logger.debug(f"Received search request: {data}")
+        logger.debug(f"Received search request: {data}")
 
         page = int(data.get('page', 1))
         per_page = int(data.get('per_page', 50))
 
         query = build_query(data)
-        app.logger.debug(f"Constructed MongoDB query: {query}")
+        logger.debug(f"Constructed MongoDB query: {query}")
 
         total_count = documents.count_documents(query)
         search_results = list(documents.find(query).skip((page - 1) * per_page).limit(per_page))
@@ -149,7 +167,7 @@ def search():
         ordered_ids = [doc['_id'] for doc in search_results]
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)  # Expires in 1 hour
 
-        app.logger.debug(f"Search ID: {search_id}, Found {total_count} documents.")
+        logger.debug(f"Search ID: {search_id}, Found {total_count} documents.")
 
         return jsonify({
             "search_id": search_id,
@@ -161,14 +179,14 @@ def search():
         })
 
     except Exception as e:
-        app.logger.error(f"An error occurred during search: {str(e)}", exc_info=True)
+        logger.error(f"An error occurred during search: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal error occurred"}), 500
 
 def build_query(data):
     query = {}
     criteria_list = []
 
-    app.logger.debug(f"Building query from search data: {data}")
+    logger.debug(f"Building query from search data: {data}")
 
     for i in range(1, 4):
         field = data.get(f'field{i}')
@@ -183,7 +201,7 @@ def build_query(data):
                 condition[field] = {'$regex': re.escape(search_term), '$options': 'i'}
             
             criteria_list.append((operator, condition))
-            app.logger.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
+            logger.debug(f"Processed field {field} with search term '{search_term}' and operator '{operator}'")
 
     if criteria_list:
         and_conditions = []
@@ -204,7 +222,7 @@ def build_query(data):
             else:
                 query['$or'].extend(or_conditions)
 
-    app.logger.debug(f"Final query: {query}")
+    logger.debug(f"Final query: {query}")
     return query
 
 @app.route('/document/<string:doc_id>')
@@ -246,9 +264,8 @@ def document_detail(doc_id):
             search_id=search_id
         )
     except Exception as e:
-        app.logger.error(f"Error in document_detail: {str(e)}")
+        logger.error(f"Error in document_detail: {str(e)}")
         abort(500)
-
 
 @app.route('/images/<path:filename>')
 # @login_required
@@ -258,67 +275,94 @@ def serve_image(filename):
         return send_file(image_path)
     else:
         abort(404)
-# Precompute and save unique terms if they don't exist
-def precompute_unique_terms(db):
-    unique_terms = retrieve_unique_terms(db)  # This would pull from your MongoDB
-    # Save to JSON file
-    with open('unique_terms.json', 'w') as f:
-        json.dump(unique_terms, f)
-    print("Precomputed unique terms saved to unique_terms.json.")
+
+
+def get_top_unique_terms(db, field, term_type, limit=1000, skip=0):
+    """
+    Retrieve top unique terms sorted by frequency in descending order with pagination.
+    :param db: Database instance
+    :param field: The field to filter terms by (e.g., 'title', 'description')
+    :param term_type: The type of term ('word' or 'phrase')
+    :param limit: Number of top terms to retrieve
+    :param skip: Number of records to skip for pagination
+    :return: List of dictionaries with term and count
+    """
+    unique_terms_collection = db['unique_terms']
+    
+    try:
+        query = {"field": field, "type": term_type}
+        start_time = time.time()
+        cursor = unique_terms_collection.find(query, {"_id": 0, "term": 1, "frequency": 1}) \
+                                         .sort("frequency", pymongo.DESCENDING) \
+                                         .skip(skip) \
+                                         .limit(limit)
+        terms_list = []
+        for doc in cursor:
+            key = 'word' if term_type == 'word' else 'phrase'
+            terms_list.append({key: doc['term'], 'count': doc['frequency']})
+        
+        duration = time.time() - start_time
+        logger.info(f"Retrieved top {len(terms_list)} {term_type}s in {duration:.4f} seconds for field '{field}'.")
+        
+        return terms_list
+    except Exception as e:
+        logger.error(f"Error retrieving unique terms: {e}")
+        return []
+
+def get_unique_terms_count(db, field, term_type):
+    """
+    Get the count of unique terms for a specific field and type.
+    :param db: Database instance
+    :param field: The field to filter terms by
+    :param term_type: The type of term ('word' or 'phrase')
+    :return: Integer count of unique terms
+    """
+    unique_terms_collection = db['unique_terms']
+    
+    try:
+        count = unique_terms_collection.count_documents({"field": field, "type": term_type})
+        logger.info(f"Counted {count} unique {term_type}s for field '{field}'.")
+        return count
+    except Exception as e:
+        logger.error(f"Error counting unique terms: {e}")
+        return 0
 
 @app.route('/search-terms', methods=['GET'])
 def search_terms():
     client = get_client()  # Initialize your MongoDB client
-    db = get_db(client)    # Pass the client to get_db()
-
-    # Define the path to the JSON file
-    json_file_path = 'unique_terms.json'
-
-    # Check if the JSON file exists
-    if os.path.exists(json_file_path):
-        with open(json_file_path, 'r') as f:
-            unique_terms_dict = json.load(f)
-    else:
-        # If the JSON file does not exist, compute and save unique terms
-        precompute_unique_terms(db)
-        with open(json_file_path, 'r') as f:
-            unique_terms_dict = json.load(f)
+    db = get_db(client)    # Get the database instance
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # Handle AJAX request
         field = request.args.get('field')
-        app.logger.debug(f"AJAX request for field: {field}")
         if not field:
             return jsonify({"error": "No field specified"}), 400
 
-        # Fetch terms for the specified field
-        field_terms = unique_terms_dict.get(field, {'words': {}, 'phrases': {}})
+        logger.debug(f"AJAX request for field: {field}")  # Using logger here
+        
+        # Define term types
+        term_types = ['word', 'phrase']
+        data = {}
+        total_records = 0
 
-        words = field_terms.get('words', {})
-        phrases = field_terms.get('phrases', {})
-        unique_words_count = len(words)
-        unique_phrases_count = len(phrases)
-        total_records = 100  # Adjust this if needed
+        for term_type in term_types:
+            page = int(request.args.get('page', 1))
+            per_page = int(request.args.get('per_page', 100))
+            skip = (page - 1) * per_page
+            terms = get_top_unique_terms(db, field, term_type, limit=per_page, skip=skip)
+            data[term_type + 's'] = terms
+            count = get_unique_terms_count(db, field, term_type)
+            data['unique_' + term_type + 's'] = count
+            total_records += count
 
-        # Convert words and phrases to lists of dictionaries
-        words_list = [{'word': word, 'count': count} for word, count in sorted(words.items(), key=lambda x: x[1], reverse=True)]
-        phrases_list = [{'phrase': phrase, 'count': count} for phrase, count in sorted(phrases.items())]
-
-        data = {
-            'words': words_list,
-            'phrases': phrases_list,
-            'unique_words': unique_words_count,
-            'unique_phrases': unique_phrases_count,
-            'total_records': total_records
-        }
+        data['total_records'] = total_records
 
         return jsonify(data)
     else:
         # Render the HTML template
-        return render_template('search-terms.html')
-
-
-    
+        field_structure = get_field_structure(db)
+        unique_fields = []  # Define if necessary
+        return render_template('search-terms.html', field_structure=field_structure, unique_fields=unique_fields)
 
 @app.route('/database-info')
 # @login_required
@@ -368,7 +412,7 @@ def settings():
             app.config['UI_CONFIG'] = new_config
             flash('Settings updated successfully', 'success')
         except Exception as e:
-            app.logger.error(f"Error updating settings: {str(e)}")
+            logger.error(f"Error updating settings: {str(e)}")
             flash('Failed to update settings.', 'danger')
         return redirect(url_for('settings'))
 
@@ -384,9 +428,7 @@ def settings():
 
     return render_template('settings.html', config=config)
 
-
-
-# consider streaming if it ends up being thousands of documents
+# Consider streaming if it ends up being thousands of documents
 @app.route('/export_selected_csv', methods=['POST'])
 # @login_required
 def export_selected_csv():
@@ -402,7 +444,7 @@ def export_selected_csv():
             try:
                 valid_ids.append(ObjectId(doc_id))
             except Exception as e:
-                app.logger.warning(f"Invalid document ID: {doc_id}")
+                logger.warning(f"Invalid document ID: {doc_id}")
 
         if not valid_ids:
             return jsonify({"error": "No valid document IDs provided"}), 400
@@ -435,7 +477,7 @@ def export_selected_csv():
         )
 
     except Exception as e:
-        app.logger.error(f"Error exporting selected CSV: {str(e)}", exc_info=True)
+        logger.error(f"Error exporting selected CSV: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal error occurred"}), 500
 
 @app.errorhandler(404)

@@ -13,9 +13,7 @@ from database_setup import (
     save_unique_terms,
 )
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+from pymongo import UpdateOne
 
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
@@ -23,33 +21,25 @@ import time
 import logging
 import argparse
 from collections import Counter
-import pickle
+import pymongo
 
 # =======================
 # Logging Configuration
 # =======================
-
-# Create a logger
 logger = logging.getLogger('DataProcessingLogger')
-logger.setLevel(logging.DEBUG)  # Set to DEBUG for detailed logs
+logger.setLevel(logging.DEBUG)
 
-# Check if handlers are already added
 if not logger.handlers:
-    # Create handlers
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.WARNING)  # Show only warnings and above in console
+    console_handler.setLevel(logging.WARNING)
 
     file_handler = logging.FileHandler('database_processing.log', mode='a')
-    file_handler.setLevel(logging.DEBUG)  # Capture all debug and higher level logs in file
+    file_handler.setLevel(logging.DEBUG)
 
-    # Create formatter
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
-    # Set formatter for handlers
     console_handler.setFormatter(formatter)
     file_handler.setFormatter(formatter)
 
-    # Add handlers to the logger
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
 
@@ -119,44 +109,39 @@ def load_and_validate_json_file(file_path):
         return None, error_msg
 
 def collect_unique_terms(json_data):
-    """Collect unique words and phrases from the JSON data."""
+    """Collect unique words and phrases from the JSON data categorized by field and type."""
     unique_terms = {}
     for field, value in json_data.items():
         if isinstance(value, str):
             words = re.findall(r'\w+', value.lower())
             phrases = [' '.join(pair) for pair in zip(words, words[1:])]
-            unique_terms.setdefault(field, {'words': Counter(), 'phrases': Counter()})
-            unique_terms[field]['words'].update(words)
-            unique_terms[field]['phrases'].update(phrases)
+            unique_terms.setdefault(field, {'word': Counter(), 'phrase': Counter()})
+            unique_terms[field]['word'].update(words)
+            unique_terms[field]['phrase'].update(phrases)
         elif isinstance(value, list):
             for item in value:
                 if isinstance(item, str):
                     words = re.findall(r'\w+', item.lower())
                     phrases = [' '.join(pair) for pair in zip(words, words[1:])]
-                    unique_terms.setdefault(field, {'words': Counter(), 'phrases': Counter()})
-                    unique_terms[field]['words'].update(words)
-                    unique_terms[field]['phrases'].update(phrases)
+                    unique_terms.setdefault(field, {'word': Counter(), 'phrase': Counter()})
+                    unique_terms[field]['word'].update(words)
+                    unique_terms[field]['phrase'].update(phrases)
     return unique_terms
 
-def merge_unique_terms(main_dict, new_dict):
-    """Merge two unique terms dictionaries."""
-    for field, terms in new_dict.items():
-        if field not in main_dict:
-            main_dict[field] = {'words': Counter(), 'phrases': Counter()}
-        if not isinstance(terms.get('words'), Counter) or not isinstance(terms.get('phrases'), Counter):
-            logger.error(f"Expected 'words' and 'phrases' to be Counters in field '{field}', got {type(terms.get('words'))} and {type(terms.get('phrases'))}.")
-            continue
-        main_dict[field]['words'].update(terms['words'])
-        main_dict[field]['phrases'].update(terms['phrases'])
 
-def save_unique_terms_to_file(unique_terms_dict, filename='unique_terms.pkl'):
-    """Serialize and save unique terms to a file."""
-    try:
-        with open(filename, 'wb') as f:
-            pickle.dump(unique_terms_dict, f)
-        logger.info(f"Unique terms saved to file: {filename}")
-    except Exception as e:
-        logger.error(f"Error saving unique terms to file: {e}")
+def merge_unique_terms(main_counter, new_counter):
+    """Merge two unique terms dictionaries."""
+    for field, types in new_counter.items():
+        if not field:
+            logger.warning("Encountered a null or empty field during merge. Skipping.") #there is a lot of redundant code to make sure no redundants slip through
+            continue
+        for term_type, counter in types.items():
+            if not term_type:
+                logger.warning("Encountered a null or empty type during merge. Skipping.")
+                continue
+            main_counter.setdefault(field, {'word': Counter(), 'phrase': Counter()})
+            main_counter[field][term_type].update(counter)
+
 
 # =======================
 # Processing Functions
@@ -172,7 +157,6 @@ def init_db():
     except Exception as e:
         logger.exception("Failed to initialize database connection")
         raise e
-    
 
 def process_file(file_path):
     """
@@ -278,7 +262,6 @@ def process_directory(directory_path):
         init_db()
     save_unique_terms(db, final_unique)  # Pass 'db' here
 
-
     logger.info("\nProcessing Summary:")
     logger.info(f"Total files found: {total}")
     logger.info(f"Successfully processed: {len(results_dict['processed'])}")
@@ -292,31 +275,3 @@ def process_directory(directory_path):
 
     duration = time.time() - start_time
     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
-
-# =======================
-# Main Execution
-# =======================
-
-if __name__ == "__main__":
-    print("Starting data_processing.py")
-    logger.info("Starting data_processing.py")
-    parser = argparse.ArgumentParser(description="Process and validate JSON and TXT files for the railroad documents database.")
-    parser.add_argument("data_directory", nargs='?', default='/app/archives',
-                        help="Path to the root directory containing JSON and/or text files to process (default: '/app/archives')")
-    args = parser.parse_args()
-
-    data_directory = args.data_directory
-
-    if not os.path.exists(data_directory):
-        logger.error(f"Error: The specified directory does not exist: {data_directory}")
-        logger.info(f"Creating directory: {data_directory}")
-        try:
-            os.makedirs(data_directory)
-            logger.info(f"Directory created successfully: {data_directory}")
-        except Exception as e:
-            logger.exception("Failed to create directory")
-            exit(1)
-
-    logger.info(f"Processing directory: {data_directory}")
-    print("Don't Forget To Turn On Your Fan!")
-    process_directory(data_directory)
