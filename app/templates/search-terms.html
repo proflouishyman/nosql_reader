@@ -1,4 +1,4 @@
-<!-- File: templates/search-terms.html -->
+<!-- templates/search-terms.html -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,6 +9,7 @@
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
     <style>
+        /* Spinner Styles */
         #loadingIndicator {
             display: none;
             text-align: center;
@@ -27,6 +28,8 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Container and Navigation Styles */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -58,6 +61,26 @@
             margin-top: 20px;
             font-weight: bold;
             text-align: center;
+        }
+
+        /* Pagination Controls Styles */
+        .pagination-controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination-controls button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+        }
+        .pagination-controls button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -122,19 +145,29 @@
                 </tbody>
             </table>
         </div>
+        <!-- Pagination Controls -->
+        <div class="pagination-controls">
+            <button id="prevPage" disabled>Previous</button>
+            <span>Page <span id="currentPage">1</span></span>
+            <button id="nextPage">Next</button>
+        </div>
     </div>
     <!-- Include jQuery and DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize DataTables
             var wordsTable = $('#wordsTable').DataTable({
                 "pageLength": 25,
                 "order": [[ 0, "asc" ]],
                 "columns": [
                     { "data": "word" },
                     { "data": "count" }
-                ]
+                ],
+                "paging": false,
+                "info": false,
+                "searching": false
             });
 
             var phrasesTable = $('#phrasesTable').DataTable({
@@ -143,70 +176,110 @@
                 "columns": [
                     { "data": "phrase" },
                     { "data": "count" }
-                ]
+                ],
+                "paging": false,
+                "info": false,
+                "searching": false
             });
 
+            // Function to update table information
             function updateTableInfo(data) {
                 $('#uniqueWords').text(data.unique_words);
                 $('#uniquePhrases').text(data.unique_phrases);
                 $('#totalRecords').text(data.total_records);
             }
 
+            // Pagination variables
+            var currentPage = 1;
+            var perPage = 100;
+            var selectedField = '';
+
+            // Function to fetch data from the backend
+            function fetchData(page) {
+                $('#loadingIndicator').show();
+                $('#noDataMessage').hide();
+
+                $.ajax({
+                    url: '/search-terms',
+                    method: 'GET',
+                    data: { 
+                        field: selectedField, 
+                        page: page, 
+                        per_page: perPage 
+                    },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(data) {
+                        if (data.words.length === 0 && data.phrases.length === 0) {
+                            $('#noDataMessage').text('No data available for the selected field.').show();
+                        } else {
+                            $('#noDataMessage').hide();
+                        }
+
+                        // Update the words table
+                        wordsTable.clear();
+                        data.words.forEach(function(item) {
+                            wordsTable.row.add(item);
+                        });
+                        wordsTable.draw();
+
+                        // Update the phrases table
+                        phrasesTable.clear();
+                        data.phrases.forEach(function(item) {
+                            phrasesTable.row.add(item);
+                        });
+                        phrasesTable.draw();
+
+                        // Update table info
+                        updateTableInfo({
+                            unique_words: data.unique_words,
+                            unique_phrases: data.unique_phrases,
+                            total_records: data.total_records
+                        });
+
+                        // Update pagination controls
+                        $('#currentPage').text(page);
+                        $('#prevPage').prop('disabled', page === 1);
+                        $('#nextPage').prop('disabled', data.words.length < perPage && data.phrases.length < perPage);
+
+                        $('#loadingIndicator').hide();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error fetching data: ' + error);
+                        $('#loadingIndicator').hide();
+                    }
+                });
+            }
+
+            // Event listener for field selection
             $('#fieldSelect').on('change', function() {
-                var selectedField = $(this).val();
+                selectedField = $(this).val();
+                currentPage = 1;
                 if (!selectedField) {
                     wordsTable.clear().draw();
                     phrasesTable.clear().draw();
                     updateTableInfo({ unique_words: 0, unique_phrases: 0, total_records: 0 });
                     $('#noDataMessage').hide();
+                    $('#currentPage').text(currentPage);
+                    $('#prevPage').prop('disabled', true);
+                    $('#nextPage').prop('disabled', true);
                     return;
                 }
+                fetchData(currentPage);
+            });
 
-                $('#loadingIndicator').show();
-                $('#noDataMessage').hide();
-                $('#wordsTableContainer').show();
-                $('#phrasesTableContainer').show();
+            // Event listeners for pagination buttons
+            $('#prevPage').on('click', function() {
+                if (currentPage > 1) {
+                    currentPage -= 1;
+                    fetchData(currentPage);
+                }
+            });
 
-                $.ajax({
-                    url: '/search-terms',
-                    data: { field: selectedField },
-                    success: function(data) {
-                        // Check if both words and phrases are empty
-                        if (data.words.length === 0 && data.phrases.length === 0) {
-                            // Hide the tables
-                            $('.section').hide();
-                            // Show the no data message
-                            $('#noDataMessage').text(data.message || 'No data available for this field.').show();
-                        } else {
-                            // Show the tables in case they were hidden
-                            $('.section').show();
-                            // Hide the no data message
-                            $('#noDataMessage').hide();
-
-                            // Populate words table
-                            wordsTable.clear();
-                            data.words.forEach(function(word) {
-                                wordsTable.row.add({ word: word.word, count: word.count });
-                            });
-                            wordsTable.draw();
-
-                            // Populate phrases table
-                            phrasesTable.clear();
-                            data.phrases.forEach(function(phrase) {
-                                phrasesTable.row.add({ phrase: phrase.phrase, count: phrase.count });
-                            });
-                            phrasesTable.draw();
-                        }
-
-                        // Update table info
-                        updateTableInfo(data);
-                        $('#loadingIndicator').hide();
-                    },
-                    error: function() {
-                        alert('Error fetching data. Please try again.');
-                        $('#loadingIndicator').hide();
-                    }
-                });
+            $('#nextPage').on('click', function() {
+                currentPage += 1;
+                fetchData(currentPage);
             });
         });
     </script>
