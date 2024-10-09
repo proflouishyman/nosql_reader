@@ -224,7 +224,6 @@ def build_query(data):
 
     logger.debug(f"Final query: {query}")
     return query
-
 @app.route('/document/<string:doc_id>')
 # @login_required
 def document_detail(doc_id):
@@ -256,15 +255,28 @@ def document_detail(doc_id):
         prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
         next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
 
+        # Get the image path and check if the image exists
+        image_path = document.get('image_path')  # Ensure this key exists in your document
+        full_image_path = os.path.join(app.root_path, 'static', 'images', image_path)
+        
+        # Log the paths and request details
+        logger.debug(f"Document ID: {doc_id}, Image path: {image_path}, Full image path: {full_image_path}")
+        image_exists = os.path.exists(full_image_path)
+
+        if not image_exists:
+            logger.warning(f"Image not found at: {full_image_path}")
+
         return render_template(
             'document-detail.html',
             document=document,
             prev_id=prev_id,
             next_id=next_id,
-            search_id=search_id
+            search_id=search_id,
+            image_path=image_path,  # Pass the image path to the template
+            image_exists=image_exists  # Pass the image_exists flag
         )
     except Exception as e:
-        logger.error(f"Error in document_detail: {str(e)}")
+        logger.error(f"Error in document_detail: {str(e)}", exc_info=True)
         abort(500)
 
 @app.route('/images/<path:filename>')
