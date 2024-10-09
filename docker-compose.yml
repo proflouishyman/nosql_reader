@@ -72,7 +72,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
     volumes:
       - ./app:/app
-      - app_data:/app/archives
+      - ./archives:/app/archives
     depends_on:
       setup:
         condition: service_completed_successfully
@@ -117,7 +117,8 @@ services:
 
 volumes:
   mongodb_data:
-  app_data:
+  
+  
 
 networks:
   app_network:

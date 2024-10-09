@@ -224,6 +224,7 @@ def build_query(data):
 
     logger.debug(f"Final query: {query}")
     return query
+
 @app.route('/document/<string:doc_id>')
 # @login_required
 def document_detail(doc_id):
@@ -233,11 +234,15 @@ def document_detail(doc_id):
         return redirect(url_for('index'))
 
     try:
-        document = find_document_by_id(db, doc_id)  # Pass 'db' here
+        # Fetch the document by ID
+        document = find_document_by_id(db, doc_id)
         if not document:
             abort(404)
 
         document['_id'] = str(document['_id'])
+
+        # Log the document information for debugging
+        logger.debug(f"Retrieved document for ID {doc_id}: {document}")
 
         # Retrieve the ordered list from cache
         ordered_ids = cache.get(f'search_{search_id}')
@@ -255,29 +260,42 @@ def document_detail(doc_id):
         prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
         next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
 
-        # Get the image path and check if the image exists
-        image_path = document.get('image_path')  # Ensure this key exists in your document
-        full_image_path = os.path.join(app.root_path, 'static', 'images', image_path)
-        
-        # Log the paths and request details
-        logger.debug(f"Document ID: {doc_id}, Image path: {image_path}, Full image path: {full_image_path}")
-        image_exists = os.path.exists(full_image_path)
+        # Get the relative path from the document
+        relative_path = document.get('relative_path')  # This should contain the relative path to the JSON file
 
-        if not image_exists:
-            logger.warning(f"Image not found at: {full_image_path}")
+        if relative_path:
+            # Prepend './' to the relative path to create the image path
+            image_path = './' + relative_path.replace('.json', '')  # Remove .json extension
+            logger.debug(f"Document ID: {doc_id}, Image path: {image_path}")
 
+            # Check if the image file exists
+            image_exists = os.path.exists(image_path)
+
+            if not image_exists:
+                logger.warning(f"Image not found at: {image_path}")
+        else:
+            # Log an error if relative_path is None or not found
+            logger.error(f"Error: No relative_path found for document ID: {doc_id}. Document content: {document}")
+            image_exists = False  # No image to display
+            image_path = None  # No image path to pass
+
+        # Render the template with all required variables
         return render_template(
             'document-detail.html',
             document=document,
             prev_id=prev_id,
             next_id=next_id,
             search_id=search_id,
-            image_path=image_path,  # Pass the image path to the template
-            image_exists=image_exists  # Pass the image_exists flag
+            image_path=image_path,  # Pass the constructed image path
+            image_exists=image_exists  # Pass the flag indicating if the image exists
         )
     except Exception as e:
         logger.error(f"Error in document_detail: {str(e)}", exc_info=True)
         abort(500)
+
+
+
+
 
 @app.route('/images/<path:filename>')
 # @login_required
