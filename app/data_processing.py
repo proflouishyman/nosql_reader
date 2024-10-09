@@ -210,8 +210,85 @@ def get_all_files(directory):
             if file.lower().endswith(('.json', '.txt')):
                 file_list.append(os.path.join(root, file))
     return file_list
+
+
+
+# #multiprocessing version below
+# def process_directory(directory_path):
+#     """Process all files in a directory and its subdirectories using multiprocessing."""
+#     global root_directory
+#     root_directory = directory_path
+
+#     start_time = time.time()
+#     files = get_all_files(directory_path)
+#     total = len(files)
+#     final_unique = {}
+
+#     logger.info(f"Found {total} files to process.")
+
+#     if total == 0:
+#         logger.warning("No files found to process. Exiting.")
+#         return
+
+#     batch_size = 1000  # Adjust based on system capabilities
+#     num_batches = (total // batch_size) + (1 if total % batch_size != 0 else 0)
+
+#     # Initialize results_dict in the main process
+#     results_dict = {
+#         'processed': [],
+#         'failed': [],
+#         'skipped': []
+#     }
+
+#     with tqdm(total=total, desc="Processing files") as pbar:
+#         for batch_num in range(num_batches):
+#             start_idx = batch_num * batch_size
+#             end_idx = min(start_idx + batch_size, total)
+#             batch_files = files[start_idx:end_idx]
+#             logger.info(f"Processing batch {batch_num + 1}/{num_batches} with {len(batch_files)} files.")
+
+#             with Pool(processes=min(cpu_count(), 8), initializer=init_db) as pool:
+#                 for res in pool.imap_unordered(process_file, batch_files):
+#                     if not isinstance(res, tuple) or len(res) != 2:
+#                         logger.error(f"Unexpected result format: {res}")
+#                         continue
+#                     result, unique_terms = res
+#                     for key in ['processed', 'failed', 'skipped']:
+#                         if not isinstance(result[key], list):
+#                             logger.error(f"Expected result[{key}] to be a list, got {type(result[key])} instead.")
+#                             continue
+#                         results_dict[key].extend(result[key])
+#                     if unique_terms:
+#                         merge_unique_terms(final_unique, unique_terms)
+#                         logger.debug(f"Merged unique terms: {unique_terms}")
+#                     pbar.update(1)
+
+#     # Initialize database connection to save unique terms
+#     if db is None:
+#         init_db()
+#         logger.debug("Initialized main process database connection.")
+
+#     logger.debug(f"Final aggregated unique terms: {final_unique}")
+#     save_unique_terms(db, final_unique)  # Pass 'db' here
+
+#     logger.info("\nProcessing Summary:")
+#     logger.info(f"Total files found: {total}")
+#     logger.info(f"Successfully processed: {len(results_dict['processed'])}")
+#     logger.info(f"Skipped (already ingested): {len(results_dict['skipped'])}")
+#     logger.info(f"Failed to process: {len(results_dict['failed'])}")
+
+#     if results_dict['failed']:
+#         logger.info("\nFailed files:")
+#         for file_path, error in results_dict['failed']:
+#             logger.error(f"- {file_path}: {error}")
+
+#     duration = time.time() - start_time
+#     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
+
+
+#sequential version below
 def process_directory(directory_path):
-    """Process all files in a directory and its subdirectories using multiprocessing."""
+    """Process all files in a directory and its subdirectories sequentially for debugging."""
     global root_directory
     root_directory = directory_path
 
@@ -226,9 +303,6 @@ def process_directory(directory_path):
         logger.warning("No files found to process. Exiting.")
         return
 
-    batch_size = 1000  # Adjust based on system capabilities
-    num_batches = (total // batch_size) + (1 if total % batch_size != 0 else 0)
-
     # Initialize results_dict in the main process
     results_dict = {
         'processed': [],
@@ -237,27 +311,14 @@ def process_directory(directory_path):
     }
 
     with tqdm(total=total, desc="Processing files") as pbar:
-        for batch_num in range(num_batches):
-            start_idx = batch_num * batch_size
-            end_idx = min(start_idx + batch_size, total)
-            batch_files = files[start_idx:end_idx]
-            logger.info(f"Processing batch {batch_num + 1}/{num_batches} with {len(batch_files)} files.")
-
-            with Pool(processes=min(cpu_count(), 8), initializer=init_db) as pool:
-                for res in pool.imap_unordered(process_file, batch_files):
-                    if not isinstance(res, tuple) or len(res) != 2:
-                        logger.error(f"Unexpected result format: {res}")
-                        continue
-                    result, unique_terms = res
-                    for key in ['processed', 'failed', 'skipped']:
-                        if not isinstance(result[key], list):
-                            logger.error(f"Expected result[{key}] to be a list, got {type(result[key])} instead.")
-                            continue
-                        results_dict[key].extend(result[key])
-                    if unique_terms:
-                        merge_unique_terms(final_unique, unique_terms)
-                        logger.debug(f"Merged unique terms: {unique_terms}")
-                    pbar.update(1)
+        for idx, file_path in enumerate(files, 1):
+            result, unique_terms = process_file(file_path)
+            for key in ['processed', 'failed', 'skipped']:
+                results_dict[key].extend(result.get(key, []))
+            if unique_terms:
+                merge_unique_terms(final_unique, unique_terms)
+                logger.debug(f"Merged unique terms: {unique_terms}")
+            pbar.update(1)
 
     # Initialize database connection to save unique terms
     if db is None:
@@ -280,6 +341,7 @@ def process_directory(directory_path):
 
     duration = time.time() - start_time
     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
+
 
 
 
