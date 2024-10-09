@@ -48,6 +48,7 @@ if not logger.handlers:
 # =======================
 
 root_directory = None
+
 db = None  # Will be initialized in each process
 
 # =======================
@@ -157,7 +158,6 @@ def init_db():
     except Exception as e:
         logger.exception("Failed to initialize database connection")
         raise e
-
 def process_file(file_path):
     """
     Process a single file and return the result.
@@ -185,6 +185,7 @@ def process_file(file_path):
                 logger.debug(f"Processed and inserted document: {filename}")
                 result['processed'].append(file_path)
                 unique_terms = collect_unique_terms(json_data)
+                logger.debug(f"Collected unique terms for {filename}: {unique_terms}")
             except Exception as e:
                 logger.exception(f"Error processing {filename}")
                 result['failed'].append((file_path, str(e)))
@@ -200,6 +201,7 @@ def process_file(file_path):
     return result, unique_terms
 
 
+
 def get_all_files(directory):
     """Recursively get all JSON and TXT files in the given directory and its subdirectories."""
     file_list = []
@@ -208,7 +210,6 @@ def get_all_files(directory):
             if file.lower().endswith(('.json', '.txt')):
                 file_list.append(os.path.join(root, file))
     return file_list
-
 def process_directory(directory_path):
     """Process all files in a directory and its subdirectories using multiprocessing."""
     global root_directory
@@ -255,11 +256,15 @@ def process_directory(directory_path):
                         results_dict[key].extend(result[key])
                     if unique_terms:
                         merge_unique_terms(final_unique, unique_terms)
+                        logger.debug(f"Merged unique terms: {unique_terms}")
                     pbar.update(1)
 
     # Initialize database connection to save unique terms
     if db is None:
         init_db()
+        logger.debug("Initialized main process database connection.")
+
+    logger.debug(f"Final aggregated unique terms: {final_unique}")
     save_unique_terms(db, final_unique)  # Pass 'db' here
 
     logger.info("\nProcessing Summary:")
@@ -275,3 +280,33 @@ def process_directory(directory_path):
 
     duration = time.time() - start_time
     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
+
+
+
+# =======================
+# Main Execution
+# =======================
+
+if __name__ == "__main__":
+    print("Starting data_processing.py")
+    logger.info("Starting data_processing.py")
+    parser = argparse.ArgumentParser(description="Process and validate JSON and TXT files for the railroad documents database.")
+    parser.add_argument("data_directory", nargs='?', default='/app/archives',
+                        help="Path to the root directory containing JSON and/or text files to process (default: '/app/archives')")
+    args = parser.parse_args()
+
+    data_directory = args.data_directory
+
+    if not os.path.exists(data_directory):
+        logger.error(f"Error: The specified directory does not exist: {data_directory}")
+        logger.info(f"Creating directory: {data_directory}")
+        try:
+            os.makedirs(data_directory)
+            logger.info(f"Directory created successfully: {data_directory}")
+        except Exception as e:
+            logger.exception("Failed to create directory")
+            exit(1)
+
+    logger.info(f"Processing directory: {data_directory}")
+    print("Don't Forget To Turn On Your Fan!")
+    process_directory(data_directory)

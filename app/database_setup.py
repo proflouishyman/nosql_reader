@@ -211,7 +211,6 @@ def is_file_ingested(db, file_hash):
         return False
 
 # In database_setup.py
-
 def save_unique_terms(db, unique_terms_counter):
     """
     Save the unique terms counter to the database as individual documents.
@@ -219,6 +218,9 @@ def save_unique_terms(db, unique_terms_counter):
     :param unique_terms_counter: Nested dictionary {field: {type: Counter()}}
     """
     unique_terms_collection = db['unique_terms']
+    
+    # Log the unique_terms_counter content
+    logger.debug(f"Unique terms counter before saving: {unique_terms_counter}")
     
     # Prepare bulk operations
     operations = []
@@ -242,6 +244,8 @@ def save_unique_terms(db, unique_terms_counter):
                     )
                 )
     
+    logger.debug(f"Prepared {len(operations)} bulk operations for unique_terms.")
+    
     if operations:
         try:
             result = unique_terms_collection.bulk_write(operations, ordered=False)
@@ -251,6 +255,7 @@ def save_unique_terms(db, unique_terms_counter):
             raise e
     else:
         logger.warning("No unique terms to upsert.")
+
 
 
 
