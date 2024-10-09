@@ -228,6 +228,32 @@ def build_query(data):
 @app.route('/document/<string:doc_id>')
 # @login_required
 def document_detail(doc_id):
+    
+    
+    # Hard-coded SHOW_EMPTY variable
+    SHOW_EMPTY = False  # Set to True to show empty fields, False to hide them
+
+    # Function to clean the document data
+    def clean_data(data):
+        empty_values = [None, '', 'N/A', 'null', [], {}, 'None']
+        if isinstance(data, dict):
+            return {
+                k: clean_data(v)
+                for k, v in data.items()
+                if v not in empty_values and clean_data(v) not in empty_values
+            }
+        elif isinstance(data, list):
+            return [
+                clean_data(item)
+                for item in data
+                if item not in empty_values and clean_data(item) not in empty_values
+            ]
+        else:
+            return data
+    
+    
+    
+    
     search_id = request.args.get('search_id')
     if not search_id:
         flash('Missing search context.')
@@ -243,6 +269,23 @@ def document_detail(doc_id):
 
         # Log the document information for debugging
         logger.debug(f"Retrieved document for ID {doc_id}: {document}")
+
+
+        # Decide whether to clean the document based on SHOW_EMPTY
+        if SHOW_EMPTY:
+            document = document
+        else:
+            # Clean the document to remove empty fields
+            document = clean_data(document)
+        
+
+
+
+
+
+
+
+
 
         # Retrieve the ordered list from cache
         ordered_ids = cache.get(f'search_{search_id}')
