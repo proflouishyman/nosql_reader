@@ -264,20 +264,21 @@ def document_detail(doc_id):
         relative_path = document.get('relative_path')  # This should contain the relative path to the JSON file
 
         if relative_path:
-            # Prepend './' to the relative path to create the image path
-            image_path = './' + relative_path.replace('.json', '')  # Remove .json extension
+            # Construct the image path by removing the '.json' extension
+            image_path = relative_path.replace('.json', '')  # 'rolls/rolls/tray_1_roll_5_page3303_img1.png'
             logger.debug(f"Document ID: {doc_id}, Image path: {image_path}")
 
             # Check if the image file exists
-            image_exists = os.path.exists(image_path)
+            absolute_image_path = os.path.join('/app/archives', image_path)
+            image_exists = os.path.exists(absolute_image_path)
 
             if not image_exists:
-                logger.warning(f"Image not found at: {image_path}")
+                logger.warning(f"Image not found at: {absolute_image_path}")
         else:
             # Log an error if relative_path is None or not found
             logger.error(f"Error: No relative_path found for document ID: {doc_id}. Document content: {document}")
-            image_exists = False  # No image to display
-            image_path = None  # No image path to pass
+            image_exists = False
+            image_path = None
 
         # Render the template with all required variables
         return render_template(
@@ -298,13 +299,13 @@ def document_detail(doc_id):
 
 
 @app.route('/images/<path:filename>')
-# @login_required
 def serve_image(filename):
-    image_path = os.path.join(app.root_path, 'static', 'images', filename)
+    image_path = os.path.join('/app/archives', filename)
+    logger.debug(f"Serving image from: {image_path}")
     if os.path.exists(image_path):
         return send_file(image_path)
     else:
-        print(filename)
+        logger.warning(f"Image not found at: {image_path}")
         abort(404)
 
 
