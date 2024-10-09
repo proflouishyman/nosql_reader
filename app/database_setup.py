@@ -5,6 +5,8 @@ from bson import ObjectId
 import logging
 import os
 from dotenv import load_dotenv
+import pymongo
+from pymongo import UpdateOne
 
 # Load environment variables from .env file
 load_dotenv()
@@ -209,8 +211,6 @@ def is_file_ingested(db, file_hash):
     except Exception as e:
         logger.error(f"Error checking ingestion status for hash {file_hash}: {e}")
         return False
-
-# In database_setup.py
 def save_unique_terms(db, unique_terms_counter):
     """
     Save the unique terms counter to the database as individual documents.
@@ -255,6 +255,7 @@ def save_unique_terms(db, unique_terms_counter):
             raise e
     else:
         logger.warning("No unique terms to upsert.")
+
 
 
 

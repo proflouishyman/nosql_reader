@@ -10,7 +10,6 @@ from database_setup import (
     get_db,
     is_file_ingested,
     get_client,
-    save_unique_terms,
 )
 from dotenv import load_dotenv
 from pymongo import UpdateOne
@@ -48,7 +47,6 @@ if not logger.handlers:
 # =======================
 
 root_directory = None
-
 db = None  # Will be initialized in each process
 
 # =======================
@@ -109,41 +107,6 @@ def load_and_validate_json_file(file_path):
         error_msg = f"Error processing file {filename}: {str(e)}"
         return None, error_msg
 
-def collect_unique_terms(json_data):
-    """Collect unique words and phrases from the JSON data categorized by field and type."""
-    unique_terms = {}
-    for field, value in json_data.items():
-        if isinstance(value, str):
-            words = re.findall(r'\w+', value.lower())
-            phrases = [' '.join(pair) for pair in zip(words, words[1:])]
-            unique_terms.setdefault(field, {'word': Counter(), 'phrase': Counter()})
-            unique_terms[field]['word'].update(words)
-            unique_terms[field]['phrase'].update(phrases)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, str):
-                    words = re.findall(r'\w+', item.lower())
-                    phrases = [' '.join(pair) for pair in zip(words, words[1:])]
-                    unique_terms.setdefault(field, {'word': Counter(), 'phrase': Counter()})
-                    unique_terms[field]['word'].update(words)
-                    unique_terms[field]['phrase'].update(phrases)
-    return unique_terms
-
-
-def merge_unique_terms(main_counter, new_counter):
-    """Merge two unique terms dictionaries."""
-    for field, types in new_counter.items():
-        if not field:
-            logger.warning("Encountered a null or empty field during merge. Skipping.") #there is a lot of redundant code to make sure no redundants slip through
-            continue
-        for term_type, counter in types.items():
-            if not term_type:
-                logger.warning("Encountered a null or empty type during merge. Skipping.")
-                continue
-            main_counter.setdefault(field, {'word': Counter(), 'phrase': Counter()})
-            main_counter[field][term_type].update(counter)
-
-
 # =======================
 # Processing Functions
 # =======================
@@ -158,6 +121,7 @@ def init_db():
     except Exception as e:
         logger.exception("Failed to initialize database connection")
         raise e
+
 def process_file(file_path):
     """
     Process a single file and return the result.
@@ -168,14 +132,13 @@ def process_file(file_path):
     filename = os.path.basename(file_path)
     logger.debug(f"Processing file: {filename}")
     result = {'processed': [], 'failed': [], 'skipped': []}
-    unique_terms = None
 
     try:
         file_hash = calculate_file_hash(file_path)
         if is_file_ingested(db, file_hash):
             logger.debug(f"File already ingested: {filename}")
             result['skipped'].append(file_path)
-            return result, unique_terms
+            return result, None
 
         json_data, error = load_and_validate_json_file(file_path)
         if json_data:
@@ -184,8 +147,6 @@ def process_file(file_path):
                 insert_document(db, json_data)         # Pass 'db' here
                 logger.debug(f"Processed and inserted document: {filename}")
                 result['processed'].append(file_path)
-                unique_terms = collect_unique_terms(json_data)
-                logger.debug(f"Collected unique terms for {filename}: {unique_terms}")
             except Exception as e:
                 logger.exception(f"Error processing {filename}")
                 result['failed'].append((file_path, str(e)))
@@ -198,9 +159,7 @@ def process_file(file_path):
         logger.exception(f"Unexpected error processing {filename}")
         result['failed'].append((file_path, str(e)))
 
-    return result, unique_terms
-
-
+    return result, None
 
 def get_all_files(directory):
     """Recursively get all JSON and TXT files in the given directory and its subdirectories."""
@@ -209,84 +168,12 @@ def get_all_files(directory):
         for file in files:
             if file.lower().endswith(('.json', '.txt')):
                 file_list.append(os.path.join(root, file))
+                logger.debug(f"Found file: {os.path.join(root, file)}")
     return file_list
 
-
-
-# #multiprocessing version below
-# def process_directory(directory_path):
-#     """Process all files in a directory and its subdirectories using multiprocessing."""
-#     global root_directory
-#     root_directory = directory_path
-
-#     start_time = time.time()
-#     files = get_all_files(directory_path)
-#     total = len(files)
-#     final_unique = {}
-
-#     logger.info(f"Found {total} files to process.")
-
-#     if total == 0:
-#         logger.warning("No files found to process. Exiting.")
-#         return
-
-#     batch_size = 1000  # Adjust based on system capabilities
-#     num_batches = (total // batch_size) + (1 if total % batch_size != 0 else 0)
-
-#     # Initialize results_dict in the main process
-#     results_dict = {
-#         'processed': [],
-#         'failed': [],
-#         'skipped': []
-#     }
-
-#     with tqdm(total=total, desc="Processing files") as pbar:
-#         for batch_num in range(num_batches):
-#             start_idx = batch_num * batch_size
-#             end_idx = min(start_idx + batch_size, total)
-#             batch_files = files[start_idx:end_idx]
-#             logger.info(f"Processing batch {batch_num + 1}/{num_batches} with {len(batch_files)} files.")
-
-#             with Pool(processes=min(cpu_count(), 8), initializer=init_db) as pool:
-#                 for res in pool.imap_unordered(process_file, batch_files):
-#                     if not isinstance(res, tuple) or len(res) != 2:
-#                         logger.error(f"Unexpected result format: {res}")
-#                         continue
-#                     result, unique_terms = res
-#                     for key in ['processed', 'failed', 'skipped']:
-#                         if not isinstance(result[key], list):
-#                             logger.error(f"Expected result[{key}] to be a list, got {type(result[key])} instead.")
-#                             continue
-#                         results_dict[key].extend(result[key])
-#                     if unique_terms:
-#                         merge_unique_terms(final_unique, unique_terms)
-#                         logger.debug(f"Merged unique terms: {unique_terms}")
-#                     pbar.update(1)
-
-#     # Initialize database connection to save unique terms
-#     if db is None:
-#         init_db()
-#         logger.debug("Initialized main process database connection.")
-
-#     logger.debug(f"Final aggregated unique terms: {final_unique}")
-#     save_unique_terms(db, final_unique)  # Pass 'db' here
-
-#     logger.info("\nProcessing Summary:")
-#     logger.info(f"Total files found: {total}")
-#     logger.info(f"Successfully processed: {len(results_dict['processed'])}")
-#     logger.info(f"Skipped (already ingested): {len(results_dict['skipped'])}")
-#     logger.info(f"Failed to process: {len(results_dict['failed'])}")
-
-#     if results_dict['failed']:
-#         logger.info("\nFailed files:")
-#         for file_path, error in results_dict['failed']:
-#             logger.error(f"- {file_path}: {error}")
-
-#     duration = time.time() - start_time
-#     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
-
-
-#sequential version below
+# =======================
+# Sequential Processing
+# =======================
 def process_directory(directory_path):
     """Process all files in a directory and its subdirectories sequentially for debugging."""
     global root_directory
@@ -295,7 +182,6 @@ def process_directory(directory_path):
     start_time = time.time()
     files = get_all_files(directory_path)
     total = len(files)
-    final_unique = {}
 
     logger.info(f"Found {total} files to process.")
 
@@ -312,21 +198,15 @@ def process_directory(directory_path):
 
     with tqdm(total=total, desc="Processing files") as pbar:
         for idx, file_path in enumerate(files, 1):
-            result, unique_terms = process_file(file_path)
+            result, _ = process_file(file_path)
             for key in ['processed', 'failed', 'skipped']:
                 results_dict[key].extend(result.get(key, []))
-            if unique_terms:
-                merge_unique_terms(final_unique, unique_terms)
-                logger.debug(f"Merged unique terms: {unique_terms}")
             pbar.update(1)
 
-    # Initialize database connection to save unique terms
+    # Initialize database connection (if not already)
     if db is None:
         init_db()
         logger.debug("Initialized main process database connection.")
-
-    logger.debug(f"Final aggregated unique terms: {final_unique}")
-    save_unique_terms(db, final_unique)  # Pass 'db' here
 
     logger.info("\nProcessing Summary:")
     logger.info(f"Total files found: {total}")
@@ -342,13 +222,9 @@ def process_directory(directory_path):
     duration = time.time() - start_time
     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
 
-
-
-
 # =======================
 # Main Execution
 # =======================
-
 if __name__ == "__main__":
     print("Starting data_processing.py")
     logger.info("Starting data_processing.py")
@@ -356,9 +232,9 @@ if __name__ == "__main__":
     parser.add_argument("data_directory", nargs='?', default='/app/archives',
                         help="Path to the root directory containing JSON and/or text files to process (default: '/app/archives')")
     args = parser.parse_args()
-
+    
     data_directory = args.data_directory
-
+    print(data_directory)
     if not os.path.exists(data_directory):
         logger.error(f"Error: The specified directory does not exist: {data_directory}")
         logger.info(f"Creating directory: {data_directory}")

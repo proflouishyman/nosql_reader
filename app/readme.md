@@ -23,6 +23,15 @@ to access the shell
 docker compose exec -it flask_app /bin/bash
 
 
+for mongodb
+docker compose exec -it mongodb /bin/bash
+mongosh mongodb://admin:secret@localhost:27017/admin
+
+
+
+
+
+
 
 
 
