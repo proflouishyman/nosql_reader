@@ -12,8 +12,41 @@ mongosh mongodb://admin:secret@localhost:27017/admin
 
 
 
-└── archives/
-    └── [Your archival files go here]
+PRIORITIES
+6. Add cross-referencing of named entities
+
+named entity, reprocessing, and fuzzy matching
+
+1. reprocess and add NER to documents, priomed for fuzzy matching
+2. clik to mfuzzy match and open new document
+
+
+            spacey? spacey vs AI
+            how to reconcile different named entities?
+
+            first entry or something?
+
+            toponyms
+
+            forced to see something not looking for
+
+            fuzzy matching
+
+            click on that and open a new tab and show all the files
+
+
+            head injury, missing pictures
+
+            remove blur
+
+            add contrast
+
+
+            llama 3.
+
+
+
+
 
 
 
@@ -25,13 +58,13 @@ mongosh mongodb://admin:secret@localhost:27017/admin
 
 4. Address weirdness of base file and index.html. It is unseemly 
 
-6. Add cross-referencing of named entities
+
 7. Restore adding export from list
 8. Add "Select all" for export
 9. Clean file description to remove extension in title
 10. Create a way to do a search and then add that result to the DB
 11. Backup and restore database
-12. Remove blank fields from JSON expansion
+
 13. Color code sections of JSON expansion
 14. Need to implement a sort for the file results, so that this is in order: 	File	Summary
 	RDApp-630550Fox053.jpg.json	The document contains a handwritten signature of an individual named M. Johnson, along with the year 1919.

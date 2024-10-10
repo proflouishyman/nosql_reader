@@ -85,7 +85,6 @@
 
   .zoom-controls button,
   .adjustment-controls button {
-    margin-right: 5px;
     padding: 8px 12px;
     font-size: 14px;
   }
@@ -94,9 +93,36 @@
     margin-right: 10px;
   }
 
-  .adjustment-controls input[type="range"] {
-    vertical-align: middle;
-    margin-right: 10px;
+  .adjustment-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    align-items: center;
+  }
+
+  .adjustment-controls .control-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .adjustment-controls .control-group label {
+    flex: 1;
+  }
+
+  .adjustment-controls .control-group input[type="range"] {
+    flex: 2;
+  }
+
+  .adjustment-controls .buttons-group {
+    grid-column: span 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  /* Optional: Style for better tooltip visibility */
+  input[type="range"] {
+    position: relative;
   }
 </style>
 {% endblock %}
@@ -144,28 +170,69 @@
           <button id="resetZoom">Reset</button>
         </div>
         <div class="adjustment-controls">
-          <label for="brightnessRange">Brightness:</label>
-          <input type="range" id="brightnessRange" min="0.5" max="1.5" step="0.1" value="1">
-          <label for="contrastRange">Contrast:</label>
-          <input type="range" id="contrastRange" min="0.5" max="2" step="0.1" value="1">
-          <label for="saturationRange">Saturation:</label>
-          <input type="range" id="saturationRange" min="0" max="3" step="0.1" value="1">
-          <label for="hueRange">Hue Rotation:</label>
-          <input type="range" id="hueRange" min="0" max="360" step="10" value="0">
-          <label for="blurRange">Blur:</label>
-          <input type="range" id="blurRange" min="0" max="10" step="1" value="0">
-          <button id="sharpenBtn">Sharpen</button>
-          <button id="grayscaleBtn">Grayscale</button>
-          <button id="sepiaBtn">Sepia</button>
-          <button id="invertBtn">Invert Colors</button>
-          <button id="flipHorizontalBtn">Flip Horizontal</button>
-          <button id="flipVerticalBtn">Flip Vertical</button>
-          <button id="resetAllBtn">Reset All</button>
+          <div class="control-group">
+            <label for="brightnessRange">Brightness:</label>
+            <input type="range" id="brightnessRange" min="0.5" max="1.5" step="0.1" value="1" title="1">
+          </div>
+          
+          <div class="control-group">
+            <label for="contrastRange">Contrast:</label>
+            <input type="range" id="contrastRange" min="0.5" max="2" step="0.1" value="1" title="1">
+          </div>
+          
+          <div class="control-group">
+            <label for="saturationRange">Saturation:</label>
+            <input type="range" id="saturationRange" min="0" max="3" step="0.1" value="1" title="1">
+          </div>
+          
+          <div class="control-group">
+            <label for="hueRange">Hue Rotation:</label>
+            <input type="range" id="hueRange" min="0" max="360" step="10" value="0" title="0">
+          </div>
+          
+          <div class="control-group">
+            <label for="sharpenRange">Sharpen:</label>
+            <input type="range" id="sharpenRange" min="0" max="5" step="0.1" value="0" title="0">
+          </div>
+          
+          <div class="control-group">
+            <label for="thresholdRange">Threshold:</label>
+            <input type="range" id="thresholdRange" min="0" max="255" step="1" value="128" title="128">
+          </div>
+          
+          <div class="buttons-group">
+            <button id="grayscaleBtn">Grayscale</button>
+            <button id="sepiaBtn">Sepia</button>
+            <button id="invertBtn">Invert Colors</button>
+            <button id="flipHorizontalBtn">Flip Horizontal</button>
+            <button id="flipVerticalBtn">Flip Vertical</button>
+            <button id="resetAllBtn">Reset All</button>
+          </div>
         </div>
-        <!-- Include SVG filter definitions for sharpening -->
+        <!-- SVG Filters -->
         <svg width="0" height="0">
+          <!-- Sharpen Filter -->
           <filter id="sharpen">
-            <feConvolveMatrix order="3" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0"></feConvolveMatrix>
+            <feConvolveMatrix in="SourceGraphic" order="3" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0" />
+          </filter>
+          
+          <!-- Threshold Filter -->
+          <filter id="threshold">
+            <feComponentTransfer>
+              <feFuncR type="linear" slope="1" intercept="0"/>
+              <feFuncG type="linear" slope="1" intercept="0"/>
+              <feFuncB type="linear" slope="1" intercept="0"/>
+            </feComponentTransfer>
+            <feColorMatrix type="matrix" values="
+              1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 1 0" />
+            <feComponentTransfer>
+              <feFuncR type="discrete" tableValues="0 1"/>
+              <feFuncG type="discrete" tableValues="0 1"/>
+              <feFuncB type="discrete" tableValues="0 1"/>
+            </feComponentTransfer>
           </filter>
         </svg>
       {% else %}
@@ -188,13 +255,15 @@
     const MAX_SCALE = 3;
     const MIN_SCALE = 0.5;
 
-    // Variables for filters
+    // Filter Controls
     const brightnessRange = document.getElementById('brightnessRange');
     const contrastRange = document.getElementById('contrastRange');
     const saturationRange = document.getElementById('saturationRange');
     const hueRange = document.getElementById('hueRange');
-    const blurRange = document.getElementById('blurRange');
-    const sharpenBtn = document.getElementById('sharpenBtn');
+    const sharpenRange = document.getElementById('sharpenRange');
+    const thresholdRange = document.getElementById('thresholdRange');
+
+    // Buttons
     const grayscaleBtn = document.getElementById('grayscaleBtn');
     const sepiaBtn = document.getElementById('sepiaBtn');
     const invertBtn = document.getElementById('invertBtn');
@@ -202,21 +271,22 @@
     const flipVerticalBtn = document.getElementById('flipVerticalBtn');
     const resetAllBtn = document.getElementById('resetAllBtn');
 
-    let isSharpened = false;
+    // Image Elements
+    const imageContainer = document.getElementById('imageContainer');
+    const documentImage = document.getElementById('documentImage');
+
+    // SVG Filters
+    const sharpenFilter = document.getElementById('sharpen');
+    const thresholdFilter = document.getElementById('threshold');
+
+    // State Variables
     let isGrayscale = false;
     let isSepia = false;
     let isInverted = false;
     let isFlippedHorizontal = false;
     let isFlippedVertical = false;
 
-    const imageContainer = document.getElementById('imageContainer');
-    const documentImage = document.getElementById('documentImage');
-    const zoomInBtn = document.getElementById('zoomIn');
-    const zoomOutBtn = document.getElementById('zoomOut');
-    const resetZoomBtn = document.getElementById('resetZoom');
-    const rotateLeftBtn = document.getElementById('rotateLeft');
-    const rotateRightBtn = document.getElementById('rotateRight');
-
+    // Transform Functions
     function setImageTransform() {
       let transforms = [];
 
@@ -227,55 +297,137 @@
       transforms.push(`rotate(${rotation}deg)`);
 
       // Flipping
-      const flipScaleX = isFlippedHorizontal ? -1 : 1;
-      const flipScaleY = isFlippedVertical ? -1 : 1;
-      transforms.push(`scale(${flipScaleX}, ${flipScaleY})`);
+      const flipX = isFlippedHorizontal ? -1 : 1;
+      const flipY = isFlippedVertical ? -1 : 1;
+      transforms.push(`scale(${flipX}, ${flipY})`);
 
       documentImage.style.transform = transforms.join(' ');
     }
 
+    // Filter Update Function
     function updateFilters() {
       let filters = [];
 
-      // Brightness
+      // Basic Filters
       const brightnessValue = brightnessRange.value;
-      filters.push(`brightness(${brightnessValue})`);
-
-      // Contrast
       const contrastValue = contrastRange.value;
-      filters.push(`contrast(${contrastValue})`);
-
-      // Saturation
       const saturationValue = saturationRange.value;
-      filters.push(`saturate(${saturationValue})`);
-
-      // Hue Rotation
       const hueValue = hueRange.value;
+      const sharpenValue = parseFloat(sharpenRange.value);
+      const thresholdValue = parseInt(thresholdRange.value, 10);
+
+      // Update title attributes
+      brightnessRange.title = brightnessValue;
+      contrastRange.title = contrastValue;
+      saturationRange.title = saturationValue;
+      hueRange.title = hueValue;
+      sharpenRange.title = sharpenValue;
+      thresholdRange.title = thresholdValue;
+
+      filters.push(`brightness(${brightnessValue})`);
+      filters.push(`contrast(${contrastValue})`);
+      filters.push(`saturate(${saturationValue})`);
       filters.push(`hue-rotate(${hueValue}deg)`);
 
-      // Blur
-      const blurValue = blurRange.value;
-      filters.push(`blur(${blurValue}px)`);
+      // Sharpen
+      if (sharpenValue > 0) {
+        const newCenter = 5 + (sharpenValue * 2);
+        sharpenFilter.setAttribute('kernelMatrix', `0 -1 0 -1 ${newCenter} -1 0 -1 0`);
+        filters.push('url(#sharpen)');
+      } else {
+        sharpenFilter.setAttribute('kernelMatrix', '0 0 0 0 1 0 0 0 0');
+      }
 
-      // Grayscale and Sepia
+      // Threshold
+      if (thresholdValue !== 128) { // Default value
+        const normalized = thresholdValue / 255;
+        thresholdFilter.querySelectorAll('feFuncR, feFuncG, feFuncB').forEach(func => {
+          func.setAttribute('slope', '1');
+          func.setAttribute('intercept', normalized < 0.5 ? '-1' : '0');
+        });
+        filters.push('url(#threshold)');
+      }
+
+      // Grayscale
       if (isGrayscale) {
-        filters.push(`grayscale(1)`);
-      } else if (isSepia) {
-        filters.push(`sepia(1)`);
+        filters.push('grayscale(1)');
+      }
+
+      // Sepia
+      if (isSepia) {
+        filters.push('sepia(1)');
       }
 
       // Invert
       if (isInverted) {
-        filters.push(`invert(1)`);
+        filters.push('invert(1)');
       }
 
-      // Apply Sharpen Filter if enabled
-      if (isSharpened) {
-        documentImage.style.filter = filters.join(' ') + ' url(#sharpen)';
-      } else {
-        documentImage.style.filter = filters.join(' ');
-      }
+      documentImage.style.filter = filters.join(' ');
     }
+
+    // Event Listeners for Sliders
+    [brightnessRange, contrastRange, saturationRange, hueRange, sharpenRange, thresholdRange].forEach(slider => {
+      slider.addEventListener('input', updateFilters);
+    });
+
+    // Button Event Listeners
+    grayscaleBtn.addEventListener('click', () => {
+      isGrayscale = !isGrayscale;
+      if (isGrayscale) isSepia = false;
+      sepiaBtn.textContent = isGrayscale ? 'Sepia' : 'Sepia';
+      updateFilters();
+    });
+
+    sepiaBtn.addEventListener('click', () => {
+      isSepia = !isSepia;
+      if (isSepia) isGrayscale = false;
+      grayscaleBtn.textContent = isSepia ? 'Grayscale' : 'Grayscale';
+      updateFilters();
+    });
+
+    invertBtn.addEventListener('click', () => {
+      isInverted = !isInverted;
+      updateFilters();
+    });
+
+    flipHorizontalBtn.addEventListener('click', () => {
+      isFlippedHorizontal = !isFlippedHorizontal;
+      setImageTransform();
+    });
+
+    flipVerticalBtn.addEventListener('click', () => {
+      isFlippedVertical = !isFlippedVertical;
+      setImageTransform();
+    });
+
+    resetAllBtn.addEventListener('click', () => {
+      // Reset transforms
+      scale = 1;
+      rotation = 0;
+      isFlippedHorizontal = false;
+      isFlippedVertical = false;
+      setImageTransform();
+
+      // Reset filters
+      brightnessRange.value = 1;
+      contrastRange.value = 1;
+      saturationRange.value = 1;
+      hueRange.value = 0;
+      sharpenRange.value = 0;
+      thresholdRange.value = 128;
+      isGrayscale = false;
+      isSepia = false;
+      isInverted = false;
+      updateFilters();
+    });
+
+    // Zoom and Rotate Functions
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const resetZoomBtn = document.getElementById('resetZoom');
+    const rotateLeftBtn = document.getElementById('rotateLeft');
+    const rotateRightBtn = document.getElementById('rotateRight');
 
     function zoomIn() {
       if (scale < MAX_SCALE) {
@@ -313,71 +465,7 @@
     rotateLeftBtn.addEventListener('click', rotateLeft);
     rotateRightBtn.addEventListener('click', rotateRight);
 
-    // Event listeners for filters
-    brightnessRange.addEventListener('input', updateFilters);
-    contrastRange.addEventListener('input', updateFilters);
-    saturationRange.addEventListener('input', updateFilters);
-    hueRange.addEventListener('input', updateFilters);
-    blurRange.addEventListener('input', updateFilters);
-
-    sharpenBtn.addEventListener('click', () => {
-      isSharpened = !isSharpened;
-      updateFilters();
-      sharpenBtn.textContent = isSharpened ? 'Unsharpen' : 'Sharpen';
-    });
-
-    grayscaleBtn.addEventListener('click', () => {
-      isGrayscale = !isGrayscale;
-      isSepia = false;
-      updateFilters();
-    });
-
-    sepiaBtn.addEventListener('click', () => {
-      isSepia = !isSepia;
-      isGrayscale = false;
-      updateFilters();
-    });
-
-    invertBtn.addEventListener('click', () => {
-      isInverted = !isInverted;
-      updateFilters();
-    });
-
-    flipHorizontalBtn.addEventListener('click', () => {
-      isFlippedHorizontal = !isFlippedHorizontal;
-      setImageTransform();
-    });
-
-    flipVerticalBtn.addEventListener('click', () => {
-      isFlippedVertical = !isFlippedVertical;
-      setImageTransform();
-    });
-
-    resetAllBtn.addEventListener('click', () => {
-      // Reset transformations
-      scale = 1;
-      rotation = 0;
-      isFlippedHorizontal = false;
-      isFlippedVertical = false;
-      setImageTransform();
-
-      // Reset filters
-      brightnessRange.value = 1;
-      contrastRange.value = 1;
-      saturationRange.value = 1;
-      hueRange.value = 0;
-      blurRange.value = 0;
-      isSharpened = false;
-      isGrayscale = false;
-      isSepia = false;
-      isInverted = false;
-      updateFilters();
-
-      // Reset button texts
-      sharpenBtn.textContent = 'Sharpen';
-    });
-
-    // Dragging functionality
+    // Dragging Functionality
     let isDragging = false;
     let startX, startY, scrollLeft, scrollTop;
 
@@ -410,6 +498,9 @@
       imageContainer.scrollLeft = scrollLeft - walkX;
       imageContainer.scrollTop = scrollTop - walkY;
     });
+
+    // Initial Filter Setup
+    updateFilters();
   });
 </script>
 {% endblock %}

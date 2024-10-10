@@ -1,7 +1,6 @@
 # generate_unique_terms.py
 
 import os
-import json
 import re
 import logging
 from collections import Counter
@@ -93,9 +92,14 @@ def generate_unique_terms(db):
     """Generate unique terms from documents and populate the unique_terms collection."""
     documents_collection, unique_terms_collection = get_collections(db)
     
-    cursor = documents_collection.find({}, {'_id': 0})  # Exclude _id for efficiency
+    # Filter: Only process documents that haven't been processed yet
+    cursor = documents_collection.find(
+        {"unique_terms_processed": {"$ne": True}},
+        {'_id': 0}  # Exclude _id for efficiency
+    )
     
     aggregated_unique = {}
+    processed_count = 0
     
     logger.info("Starting unique terms generation.")
     
@@ -105,8 +109,16 @@ def generate_unique_terms(db):
             if field not in aggregated_unique:
                 aggregated_unique[field] = {'word': Counter(), 'phrase': Counter()}
             merge_counters(aggregated_unique[field], terms)
+        
+        # Mark the document as processed
+        documents_collection.update_one(
+            {"_id": doc.get('_id')},
+            {"$set": {"unique_terms_processed": True}}
+        )
+        processed_count += 1
     
     logger.debug(f"Aggregated unique terms: {aggregated_unique}")
+    logger.info(f"Processed {processed_count} documents.")
     
     # Prepare bulk operations
     operations = []
@@ -138,7 +150,6 @@ def generate_unique_terms(db):
 # =======================
 # Main Execution
 # =======================
-
 if __name__ == "__main__":
     try:
         client = get_client()
