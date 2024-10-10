@@ -10,6 +10,7 @@ import openai
 from tqdm import tqdm
 import spacy
 from rapidfuzz import process, fuzz
+import torch
 
 # Load environment variables from .env file
 load_dotenv()
@@ -167,6 +168,7 @@ def fuzzy_match(term, reference_terms, threshold=90):
 # =======================
 # Main Processing Function
 # =======================
+
 # Updated link_entities function with extended entity types
 def link_entities(db, nlp, enable_llm=False, fuzzy_threshold=90, batch_size=1000):
     """
@@ -275,7 +277,8 @@ def link_entities(db, nlp, enable_llm=False, fuzzy_threshold=90, batch_size=1000
     
     logger.info("Entity linking process completed.")
 
-# process_batch function updated to include entity validation with spaCy
+
+
 def process_batch(batch, existing_linked_terms, nlp, enable_llm, fuzzy_threshold, linked_entities_collection):
     """
     Process a batch of terms for entity linking.
@@ -303,7 +306,7 @@ def process_batch(batch, existing_linked_terms, nlp, enable_llm, fuzzy_threshold
         
         # If still not found, perform fuzzy matching
         if not wikidata_id:
-            fuzzy_match_term = fuzzy_match(term, existing_linked_terms, threshold=fuzzy_threshold)
+            fuzzy_match_term = fuzzy_match(term, existing_linked_terms, threshold=fuzzy_threshold)  # Use fuzzy_threshold variable
             if fuzzy_match_term:
                 # Fetch the corresponding Wikidata ID for the matched term
                 matched_entity = linked_entities_collection.find_one({"term": fuzzy_match_term.lower()})
@@ -331,10 +334,10 @@ def process_batch(batch, existing_linked_terms, nlp, enable_llm, fuzzy_threshold
         })
     return results
 
+
 # =======================
 # Main Execution
 # =======================
-
 # Sample usage within the main execution block
 if __name__ == "__main__":
     try:
@@ -363,3 +366,4 @@ if __name__ == "__main__":
         
     except Exception as e:
         logger.error(f"An error occurred during entity linking: {e}", exc_info=True)
+

@@ -1,3 +1,4 @@
+version: '3.8'
 
 services:
   mongodb:
@@ -6,7 +7,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: secret
-      
     volumes:
       - mongodb_data:/data/db
       - ./mongo-init/:/docker-entrypoint-initdb.d/
@@ -37,11 +37,10 @@ services:
         max-file: "3"
 
   setup:
-    image: python:3.9-slim
+    image: python:3.10-slim  # Updated Python version to 3.10
     container_name: setup
     depends_on:
-      mongodb:
-        condition: service_healthy
+      - mongodb
     environment:
       MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin"
       SECRET_KEY: ${SECRET_KEY}
@@ -50,8 +49,14 @@ services:
       - ./archives:/app/archives  # Correctly map your data directory
     working_dir: /app
     command: >
-      sh -c "pip install -r requirements.txt && python database_setup.py && python data_processing.py && python generate_unique_terms.py && && python -m spacy download en_core_web_lg && python -m spacy download en_core_web_trf && python entity_linking.py"configs:
-      
+      sh -c "pip install --upgrade pip && \
+             pip install -r requirements.txt && \
+             python database_setup.py && \
+             python data_processing.py && \
+             python generate_unique_terms.py && \
+             python -m spacy download en_core_web_lg && \
+             python -m spacy download en_core_web_trf && \
+             python entity_linking.py"
     networks:
       - app_network
     logging:
@@ -61,7 +66,7 @@ services:
         max-file: "3"
 
   app:
-    image: python:3.9-slim
+    image: python:3.10-slim  # Updated Python version to 3.10
     container_name: flask_app
     ports:
       - "5000:5000"
@@ -75,13 +80,13 @@ services:
       - ./app:/app
       - ./archives:/app/archives
     depends_on:
-      setup:
-        condition: service_completed_successfully
-      mongodb:
-        condition: service_healthy
+      - setup
+      - mongodb
     working_dir: /app
     command: >
-      sh -c "pip install -r requirements.txt && python app.py"
+      sh -c "pip install --upgrade pip && \
+             pip install -r requirements.txt && \
+             python app.py"
     networks:
       - app_network
     logging:
@@ -90,21 +95,17 @@ services:
         max-size: "10m"
         max-file: "3"
 
-
-
-
   # mongo_test:
-  #   image: python:3.9-slim
+  #   image: python:3.10-slim  # Updated Python version to 3.10
   #   container_name: mongo_test
   #   environment:
   #     MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
   #   volumes:
   #     - .:/app
   #   working_dir: /app
-  #   command: sh -c "pip install -r requirements.txt && python test_mongo_connection.py"
+  #   command: sh -c "pip install --upgrade pip && pip install -r requirements.txt && python test_mongo_connection.py"
   #   depends_on:
-  #     mongodb:
-  #       condition: service_healthy
+  #     - mongodb
   #   networks:
   #     - app_network
   #   logging:
@@ -113,13 +114,8 @@ services:
   #       max-size: "10m"
   #       max-file: "3"
 
-
-
-
 volumes:
   mongodb_data:
-  
-  
 
 networks:
   app_network:
