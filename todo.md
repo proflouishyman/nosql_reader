@@ -42,7 +42,9 @@ named entity, reprocessing, and fuzzy matching
             add contrast
 
 
-            llama 3.
+            llama 3.1
+
+            move documents name to .env file
 
 
 

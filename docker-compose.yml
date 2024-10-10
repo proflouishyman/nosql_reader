@@ -50,7 +50,8 @@ services:
       - ./archives:/app/archives  # Correctly map your data directory
     working_dir: /app
     command: >
-      sh -c "pip install -r requirements.txt && python database_setup.py && python data_processing.py && python generate_unique_terms.py"
+      sh -c "pip install -r requirements.txt && python database_setup.py && python data_processing.py && python generate_unique_terms.py && && python -m spacy download en_core_web_lg && python -m spacy download en_core_web_trf && python entity_linking.py"configs:
+      
     networks:
       - app_network
     logging:
