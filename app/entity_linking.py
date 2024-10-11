@@ -11,7 +11,7 @@ from tqdm import tqdm
 import spacy
 from rapidfuzz import process, fuzz
 import torch
-import json  # For parsing JSON strings from .env
+import json
 import multiprocessing
 
 # Load environment variables from .env file
@@ -86,6 +86,14 @@ def initialize_spacy():
     except Exception as e:
         logger.error(f"Error loading spaCy model: {e}")
         raise e
+
+# Global variable for spaCy model in worker processes
+nlp = None
+
+def initialize_worker():
+    """Initialize spaCy model in worker processes."""
+    global nlp
+    nlp = initialize_spacy()
 
 # =======================
 # Utility Functions
@@ -187,7 +195,9 @@ def process_documents_batch(args):
     Process a batch of documents to extract entities.
     """
     batch_docs, fields_to_process, valid_entity_labels = args
-    nlp = initialize_spacy()
+    global nlp
+    if nlp is None:
+        nlp = initialize_spacy()
     batch_aggregated_entities = defaultdict(lambda: {'frequency': 0, 'document_ids': set()})
     processed_doc_ids = []
 
@@ -199,11 +209,9 @@ def process_documents_batch(args):
             if not text:
                 continue
 
-            # **Add this check to handle text being a list**
             if isinstance(text, list):
                 text = ' '.join(text)
             elif not isinstance(text, str):
-                # Skip if text is neither a string nor a list
                 continue
 
             spacy_doc = nlp(text)
@@ -223,7 +231,6 @@ def process_documents_batch(args):
             processed_doc_ids.append(doc_id)
 
     return batch_aggregated_entities, processed_doc_ids
-
 
 def link_entities(db, fields_to_process, enable_llm=False, fuzzy_threshold=90, batch_size=1000, use_multiprocessing=False):
     """
@@ -248,11 +255,14 @@ def link_entities(db, fields_to_process, enable_llm=False, fuzzy_threshold=90, b
     linked_count = 0
 
     # Modify the query to fetch only unprocessed documents
+    query = {"$or": [{"entities_processed": {"$exists": False}}, {"entities_processed": False}]}
     cursor = documents_collection.find(
-        {"$or": [{"entities_processed": {"$exists": False}}, {"entities_processed": False}]},
+        query,
         {'_id': 1, **{field: 1 for field in fields_to_process}}
     )
-    total_documents = cursor.count()
+
+    # Use count_documents() instead of cursor.count()
+    total_documents = documents_collection.count_documents(query)
     logger.info(f"Total unprocessed documents to process: {total_documents}")
 
     if total_documents == 0:
@@ -269,7 +279,7 @@ def link_entities(db, fields_to_process, enable_llm=False, fuzzy_threshold=90, b
         # Prepare data for multiprocessing
         batch_args = [(batch, fields_to_process, valid_entity_labels) for batch in batches]
 
-        with multiprocessing.Pool() as pool:
+        with multiprocessing.Pool(initializer=initialize_worker) as pool:
             results = tqdm(pool.imap_unordered(process_documents_batch, batch_args), total=total_batches, desc="Processing batches")
             for batch_result in results:
                 batch_aggregated_entities, processed_doc_ids = batch_result
@@ -286,7 +296,8 @@ def link_entities(db, fields_to_process, enable_llm=False, fuzzy_threshold=90, b
                 processed_count += len(processed_doc_ids)
     else:
         logger.info("Multiprocessing is DISABLED.")
-        nlp = initialize_spacy()
+        global nlp
+        nlp = initialize_spacy()  # Initialize spaCy once here
         batches = chunkify(cursor, batch_size)
         for batch_docs in tqdm(batches, desc="Processing batches"):
             batch_aggregated_entities, processed_doc_ids = process_documents_batch((batch_docs, fields_to_process, valid_entity_labels))
