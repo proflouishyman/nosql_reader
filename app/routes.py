@@ -2,7 +2,6 @@
 # Path: routes.py
 
 from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response, send_file, Flask
-from chunk_utils import save_unique_terms, retrieve_unique_terms
 from functools import wraps
 from app import app, cache
 from database_setup import (

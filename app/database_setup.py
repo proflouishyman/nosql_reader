@@ -347,5 +347,6 @@ def get_collections(db):
 # =======================
 if __name__ == "__main__":
     client = get_client()  # Get the MongoDB client
+    db = get_db(client)
     initialize_database(client)  # Initialize the database
     logger.info("Database setup module executed directly.")

@@ -12,14 +12,14 @@ from pymongo import UpdateOne, MongoClient
 # Logging Configuration
 # =======================
 logger = logging.getLogger('GenerateUniqueTermsLogger')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 if not logger.handlers:
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.WARNING)
 
     file_handler = logging.FileHandler('generate_unique_terms.log', mode='a')
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
 
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     console_handler.setFormatter(formatter)
@@ -94,8 +94,7 @@ def generate_unique_terms(db):
     
     # Filter: Only process documents that haven't been processed yet
     cursor = documents_collection.find(
-        {"unique_terms_processed": {"$ne": True}},
-        {'_id': 0}  # Exclude _id for efficiency
+        {"unique_terms_processed": {"$ne": True}}
     )
     
     aggregated_unique = {}
@@ -112,7 +111,7 @@ def generate_unique_terms(db):
         
         # Mark the document as processed
         documents_collection.update_one(
-            {"_id": doc.get('_id')},
+            {"_id": doc['_id']},  # Corrected to use the actual _id field
             {"$set": {"unique_terms_processed": True}}
         )
         processed_count += 1
@@ -133,7 +132,7 @@ def generate_unique_terms(db):
                     )
                 )
     
-    logger.debug(f"Prepared {len(operations)} bulk operations for unique_terms.")
+    logger.info(f"Prepared {len(operations)} bulk operations for unique_terms.")
     
     if operations:
         try:
@@ -146,6 +145,7 @@ def generate_unique_terms(db):
         logger.warning("No unique terms to upsert.")
     
     logger.info("Unique terms generation completed.")
+
 
 # =======================
 # Main Execution
