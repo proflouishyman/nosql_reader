@@ -15,6 +15,10 @@ mongosh mongodb://admin:secret@localhost:27017/admin
 PRIORITIES
 6. Add cross-referencing of named entities
 
+STATUS: linking seems to work. unique terms no longer works. need to check or revert or soemthing.
+
+
+
 named entity, reprocessing, and fuzzy matching
 
 1. reprocess and add NER to documents, priomed for fuzzy matching
