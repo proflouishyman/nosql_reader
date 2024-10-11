@@ -99,6 +99,10 @@ def initialize_worker():
 # Utility Functions
 # =======================
 
+def entity_default():
+    """Default factory function for defaultdict."""
+    return {'frequency': 0, 'document_ids': set()}
+
 def fetch_wikidata_entity(term):
     """
     Fetch Wikidata entity ID for a given term using the Wikidata API.
@@ -165,13 +169,17 @@ def fuzzy_match(term, reference_terms, threshold=90):
     Returns the matched term if similarity exceeds the threshold, else None.
     """
     try:
-        match, score = process.extractOne(term, reference_terms, scorer=fuzz.token_sort_ratio)
+        result = process.extractOne(term, reference_terms, scorer=fuzz.token_sort_ratio)
+        if result is None:
+            return None
+        match, score = result
         if score >= threshold:
             return match
         return None
     except Exception as e:
-        logger.error(f"Error during fuzzy matching for term '{term}': {e}")
+        logger.error(f"Exception during fuzzy matching for term '{term}': {e}")
         return None
+
 
 def chunkify(iterable, chunk_size):
     """
@@ -198,7 +206,7 @@ def process_documents_batch(args):
     global nlp
     if nlp is None:
         nlp = initialize_spacy()
-    batch_aggregated_entities = defaultdict(lambda: {'frequency': 0, 'document_ids': set()})
+    batch_aggregated_entities = defaultdict(entity_default)
     processed_doc_ids = []
 
     for doc in batch_docs:
@@ -250,7 +258,7 @@ def link_entities(db, fields_to_process, enable_llm=False, fuzzy_threshold=90, b
     # Prepare a list of already linked terms for fuzzy matching
     existing_linked_terms = linked_entities_collection.distinct("term")
 
-    aggregated_entities = defaultdict(lambda: {'frequency': 0, 'document_ids': set()})
+    aggregated_entities = defaultdict(entity_default)
     processed_count = 0
     linked_count = 0
 
