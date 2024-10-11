@@ -1,0 +1,9 @@
+bson
+python-dotenv
+openai
+pymongo
+rapidfuzz
+requests
+spacy
+torch
+tqdm

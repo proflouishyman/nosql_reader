@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:6.0
@@ -37,7 +35,9 @@ services:
         max-file: "3"
 
   setup:
-    image: python:3.10-slim  # Updated Python version to 3.10
+    build:
+      context: ./setup
+      dockerfile: Dockerfile
     container_name: setup
     depends_on:
       - mongodb
@@ -47,16 +47,6 @@ services:
     volumes:
       - ./app:/app
       - ./archives:/app/archives  # Correctly map your data directory
-    working_dir: /app
-    command: >
-      sh -c "pip install --upgrade pip && \
-             pip install -r requirements.txt && \
-             python database_setup.py && \
-             python data_processing.py && \
-             python generate_unique_terms.py && \
-             python -m spacy download en_core_web_lg && \
-             python -m spacy download en_core_web_trf && \
-             python entity_linking.py"
     networks:
       - app_network
     logging:
@@ -66,7 +56,9 @@ services:
         max-file: "3"
 
   app:
-    image: python:3.10-slim  # Updated Python version to 3.10
+    build:
+      context: ./app
+      dockerfile: Dockerfile
     container_name: flask_app
     ports:
       - "5000:5000"
@@ -82,11 +74,6 @@ services:
     depends_on:
       - setup
       - mongodb
-    working_dir: /app
-    command: >
-      sh -c "pip install --upgrade pip && \
-             pip install -r requirements.txt && \
-             python app.py"
     networks:
       - app_network
     logging:
@@ -96,7 +83,9 @@ services:
         max-file: "3"
 
   # mongo_test:
-  #   image: python:3.10-slim  # Updated Python version to 3.10
+  #   build:
+  #     context: ./mongo_test
+  #     dockerfile: Dockerfile
   #   container_name: mongo_test
   #   environment:
   #     MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
