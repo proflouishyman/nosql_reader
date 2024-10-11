@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mongodb:
     image: mongo:6.0
@@ -34,27 +36,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  setup:
-    build:
-      context: ./setup
-      dockerfile: Dockerfile
-    container_name: setup
-    depends_on:
-      - mongodb
-    environment:
-      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin"
-      SECRET_KEY: ${SECRET_KEY}
-    volumes:
-      - ./app:/app
-      - ./archives:/app/archives  # Correctly map your data directory
-    networks:
-      - app_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   app:
     build:
       context: ./app
@@ -63,7 +44,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin" #admin needs to be at the end
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin"
       FLASK_APP: app.py
       FLASK_ENV: ${FLASK_ENV}
       FLASK_DEBUG: ${FLASK_DEBUG}
@@ -72,7 +53,6 @@ services:
       - ./app:/app
       - ./archives:/app/archives
     depends_on:
-      - setup
       - mongodb
     networks:
       - app_network
@@ -82,26 +62,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # mongo_test:
-  #   build:
-  #     context: ./mongo_test
-  #     dockerfile: Dockerfile
-  #   container_name: mongo_test
-  #   environment:
-  #     MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/"
-  #   volumes:
-  #     - .:/app
-  #   working_dir: /app
-  #   command: sh -c "pip install --upgrade pip && pip install -r requirements.txt && python test_mongo_connection.py"
-  #   depends_on:
-  #     - mongodb
-  #   networks:
-  #     - app_network
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "10m"
-  #       max-file: "3"
+  
 
 volumes:
   mongodb_data:

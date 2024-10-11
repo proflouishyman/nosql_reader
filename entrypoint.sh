@@ -1,23 +1,18 @@
+# app/entrypoint.sh
 #!/bin/sh
+
+# Exit immediately if a command exits with a non-zero status
 set -e
 
-# Function to wait for MongoDB to be ready
-wait_for_mongo() {
-    echo "Waiting for MongoDB to be ready..."
-    until mongo --host mongodb --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1
-    do
-        echo "MongoDB is unavailable - sleeping"
-        sleep 2
-    done
-    echo "MongoDB is up and running!"
-}
+echo "Running database setup scripts..."
 
-# Wait for MongoDB
-wait_for_mongo
-
-# Run initialization scripts
+# Execute setup scripts
 python database_setup.py
 python data_processing.py
+python generate_unique_terms.py
+python entity_linking.py
 
-# Execute the container's main process (what's set as CMD in Dockerfile)
+echo "Setup scripts completed. Starting Flask app..."
+
+# Start the Flask app
 exec "$@"
