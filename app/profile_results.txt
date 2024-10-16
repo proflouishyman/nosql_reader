@@ -1,0 +1,28 @@
+         16796 function calls (16556 primitive calls) in 8.249 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1162 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    8.249    8.249 /app/entity_linking.py:487(main)
+        1    0.000    0.000    8.226    8.226 /app/entity_linking.py:327(link_entities)
+        8    0.000    0.000    8.092    1.012 /usr/local/lib/python3.10/threading.py:288(wait)
+       52    8.092    0.156    8.092    0.156 {method 'acquire' of '_thread.lock' objects}
+        2    0.000    0.000    8.090    4.045 /root/.local/lib/python3.10/site-packages/tqdm/std.py:1160(__iter__)
+        2    0.000    0.000    8.089    4.045 /usr/local/lib/python3.10/multiprocessing/pool.py:853(next)
+        6    0.000    0.000    0.059    0.010 /usr/local/lib/python3.10/multiprocessing/util.py:205(__call__)
+        1    0.000    0.000    0.059    0.059 /usr/local/lib/python3.10/multiprocessing/pool.py:738(__exit__)
+        1    0.000    0.000    0.059    0.059 /usr/local/lib/python3.10/multiprocessing/pool.py:654(terminate)
+        1    0.000    0.000    0.059    0.059 /usr/local/lib/python3.10/multiprocessing/pool.py:680(_terminate_pool)
+        1    0.000    0.000    0.055    0.055 /usr/local/lib/python3.10/multiprocessing/context.py:115(Pool)
+       21    0.000    0.000    0.055    0.003 /usr/local/lib/python3.10/multiprocessing/popen_fork.py:24(poll)
+       21    0.055    0.003    0.055    0.003 {built-in method posix.waitpid}
+        1    0.000    0.000    0.055    0.055 /usr/local/lib/python3.10/multiprocessing/process.py:142(join)
+        1    0.000    0.000    0.055    0.055 /usr/local/lib/python3.10/multiprocessing/popen_fork.py:36(wait)
+        1    0.000    0.000    0.050    0.050 /usr/local/lib/python3.10/multiprocessing/pool.py:183(__init__)
+        1    0.000    0.000    0.043    0.043 /usr/local/lib/python3.10/multiprocessing/pool.py:305(_repopulate_pool)
+        1    0.000    0.000    0.043    0.043 /usr/local/lib/python3.10/multiprocessing/pool.py:314(_repopulate_pool_static)
+        5    0.000    0.000    0.042    0.008 /usr/local/lib/python3.10/multiprocessing/process.py:110(start)
+        5    0.000    0.000    0.041    0.008 /usr/local/lib/python3.10/multiprocessing/context.py:278(_Popen)
+
+

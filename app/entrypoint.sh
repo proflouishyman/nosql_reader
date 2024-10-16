@@ -27,6 +27,11 @@ echo "MongoDB is up and running."
 
 echo "Running database setup scripts..."
 
+echo "Environmental variables"
+python show_env.py
+
+
+
 # Execute setup scripts
 echo "Running database_setup.py..."
 python database_setup.py
