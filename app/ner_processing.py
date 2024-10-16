@@ -176,7 +176,6 @@ def fetch_wikidata_entity(term):
 # =======================
 # Main Processing Functions
 # =======================
-
 def process_documents_batch(args):
     """
     Process a batch of documents to extract entities.
@@ -205,6 +204,12 @@ def process_documents_batch(args):
         if combined_text.strip():
             texts.append(combined_text)
             doc_id_mapping.append(doc_id)
+        else:
+            logger.warning(f"Document '{doc_id}' has no text in specified fields.")
+
+    if not texts:
+        logger.warning("No texts found in the current batch to process.")
+        return processed_doc_ids, aggregated_entities
 
     logger.debug(f"Processing batch of {len(texts)} documents.")
     # Process texts in batch using nlp.pipe()
@@ -225,12 +230,20 @@ def process_documents_batch(args):
 
         if entities:
             # Update the document with extracted entities
-            documents_collection.update_one(
-                {'_id': doc_id},
-                {'$set': {'extracted_entities': entities}}
-            )
-            processed_doc_ids.append(doc_id)
+            try:
+                documents_collection.update_one(
+                    {'_id': doc_id},
+                    {'$set': {'extracted_entities': entities}}
+                )
+                processed_doc_ids.append(doc_id)
+                logger.debug(f"Updated document '{doc_id}' with extracted entities.")
+            except Exception as e:
+                logger.error(f"Failed to update document '{doc_id}': {e}")
+        else:
+            logger.info(f"No valid entities found in document '{doc_id}'.")
+
     return processed_doc_ids, aggregated_entities
+
 
 def extract_and_link_entities(documents_collection, linked_entities_collection, fields_to_process, link_wikidata, fuzzy_threshold=90, batch_size=1000, use_multiprocessing=False):
     """

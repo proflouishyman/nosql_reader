@@ -33,17 +33,20 @@ python show_env.py
 
 
 # Execute setup scripts
-echo "Running database_setup.py..."
-python database_setup.py
-echo "database_setup.py completed."
+# echo "Running database_setup.py..."
+# python database_setup.py
+# echo "database_setup.py completed."
 
-echo "Running data_processing.py..."
-python data_processing.py
-echo "data_processing.py completed."
+# echo "Running data_processing.py..."
+# python data_processing.py
+# echo "data_processing.py completed."
 
-echo "Running generate_unique_terms.py..."
-python generate_unique_terms.py
-echo "generate_unique_terms.py completed."
+# echo "Running generate_unique_terms.py..."
+# python generate_unique_terms.py
+# echo "generate_unique_terms.py completed."
+
+echo "NER Processing"
+python ner_processing.py
 
 echo "Running entity_linking.py..."
 python entity_linking.py
@@ -51,5 +54,5 @@ echo "entity_linking.py completed."
 
 echo "Setup scripts completed. Starting Flask app..."
 
-# Start the Flask app
-exec "$@"
+# # Start the Flask app
+# exec "$@"
