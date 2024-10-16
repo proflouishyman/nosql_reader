@@ -116,6 +116,15 @@ def initialize_database(client):
     field_structure = db['field_structure']
     field_structure.create_index([("field", 1)], unique=True)
     logger.info("Created unique index on 'field' in 'field_structure' collection.")
+
+
+    # Create unique index on 'term' in 'linked_entities' collection
+    linked_entities = db['linked_entities']
+    existing_le_indexes = linked_entities.index_information()
+    if 'term_1' not in existing_le_indexes:
+        linked_entities.create_index([("term", ASCENDING)], unique=True)
+        logger.info("Created unique index on 'term' in 'linked_entities' collection.")
+    
     
     logger.info("Database initialized with required collections and indexes.")
 

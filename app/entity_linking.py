@@ -9,6 +9,8 @@ from tqdm import tqdm
 from rapidfuzz import process, fuzz
 import multiprocessing
 import json
+import uuid
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -69,6 +71,11 @@ def get_collections(db):
 # =======================
 # Utility Functions
 # =======================
+
+def generate_custom_kb_id():
+    """Generate a unique custom kb_id."""
+    return f"CUSTOM_{uuid.uuid4()}"
+
 
 def entity_default():
     """Default factory function for defaultdict."""
@@ -145,6 +152,12 @@ def link_entity_with_llm(term, context):
     except Exception as e:
         logger.error(f"Error linking entity with LLM for term '{term}': {e}")
         return None
+from rapidfuzz import process, fuzz
+import logging
+
+# Configure logging if not already configured
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def fuzzy_match(term, reference_terms, threshold=90):
     """
@@ -156,14 +169,19 @@ def fuzzy_match(term, reference_terms, threshold=90):
         if result is None:
             logger.debug(f"No fuzzy match found for term '{term}'.")
             return None
-        match, score = result
+        
+        # Unpack only the first two elements: match and score
+        match, score, *_ = result  # The *_ captures any additional elements
+        
         logger.debug(f"Fuzzy match for term '{term}': '{match}' with score {score}.")
+        
         if score >= threshold:
             return match
         return None
     except Exception as e:
         logger.error(f"Exception during fuzzy matching for term '{term}': {e}")
         return None
+
 
 def chunkify(iterable, chunk_size):
     """
@@ -211,42 +229,26 @@ def aggregate_entities(documents_collection, batch_size=1000):
                 aggregated_entities[(term_lower, ent_type)]['type'] = ent_type
 
     return aggregated_entities
-
-def link_entities(db, enable_llm=False, fuzzy_threshold=90, batch_size=1000):
+def link_entities(aggregated_entities, linked_entities_collection, existing_linked_terms, link_wikidata, fuzzy_threshold, batch_size):
     """
-    Link entities to Wikidata.
-    Populates the linked_entities collection with the results.
+    Link aggregated entities and update the linked_entities collection.
     """
-    documents_collection, linked_entities_collection = get_collections(db)
-
-    # Prepare a list of already linked terms for fuzzy matching
-    existing_linked_terms = linked_entities_collection.distinct("term")
-    logger.debug(f"Fetched {len(existing_linked_terms)} existing linked terms for fuzzy matching.")
-
     linked_count = 0
-
-    # Aggregate entities from documents
-    aggregated_entities = aggregate_entities(documents_collection, batch_size=batch_size)
-
-    logger.info("Starting to process aggregated entities.")
+    processed_entities = 0
     total_entities = len(aggregated_entities)
     logger.info(f"Total unique entities to process: {total_entities}")
-    processed_entities = 0
 
-    # Process aggregated entities
     operations = []
+
     for (term_lower, ent_type), data in aggregated_entities.items():
         frequency = data['frequency']
         document_ids = list(data['document_ids'])
+        wikidata_id = None
 
-        wikidata_id = fetch_wikidata_entity(term_lower)
+        if link_wikidata:
+            wikidata_id = fetch_wikidata_entity(term_lower)
 
-        # If not found and LLM is enabled, attempt to use LLM for disambiguation
-        if not wikidata_id and enable_llm:
-            context = f"Entity: {term_lower}, Type: {ent_type}"
-            wikidata_id = link_entity_with_llm(term_lower, context)
-
-        # If still not found, perform fuzzy matching
+        # If Wikidata linking is disabled or Wikidata ID not found, perform fuzzy matching
         if not wikidata_id:
             fuzzy_match_term = fuzzy_match(term_lower, existing_linked_terms, threshold=fuzzy_threshold)
             if fuzzy_match_term:
@@ -255,6 +257,37 @@ def link_entities(db, enable_llm=False, fuzzy_threshold=90, batch_size=1000):
                 if matched_entity:
                     wikidata_id = matched_entity.get('kb_id')
                     logger.debug(f"Fuzzy matched term '{term_lower}' to '{fuzzy_match_term}' with Wikidata ID '{wikidata_id}'.")
+            else:
+                logger.debug(f"No fuzzy match found for term '{term_lower}'.")
+
+        # If still no wikidata_id, automate custom entry creation
+        if not wikidata_id:
+            # Generate a unique kb_id for the custom entry
+            custom_kb_id = f"CUSTOM_{uuid.uuid4()}"
+            try:
+                # Insert the new linked entity
+                linked_entities_collection.insert_one({
+                    "term": term_lower,
+                    "kb_id": custom_kb_id,
+                    "frequency": frequency,
+                    "document_ids": document_ids,
+                    "type": ent_type
+                })
+                wikidata_id = custom_kb_id
+                logger.debug(f"Inserted custom linked entity for term '{term_lower}' with kb_id '{custom_kb_id}'.")
+            except pymongo.errors.DuplicateKeyError:
+                # If the term was inserted by another process/thread, update it instead
+                linked_entities_collection.update_one(
+                    {"term": term_lower},
+                    {
+                        "$inc": {"frequency": frequency},
+                        "$addToSet": {"document_ids": {"$each": document_ids}},
+                        "$set": {"type": ent_type}
+                    }
+                )
+                matched_entity = linked_entities_collection.find_one({"term": term_lower})
+                wikidata_id = matched_entity.get('kb_id')
+                logger.debug(f"Updated existing custom linked entity for term '{term_lower}' with kb_id '{wikidata_id}'.")
 
         update = {
             "$inc": {"frequency": frequency},
