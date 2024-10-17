@@ -1,3 +1,5 @@
+# ner_processing.py
+
 import os
 import logging
 from pymongo import UpdateOne, MongoClient
@@ -8,6 +10,10 @@ import multiprocessing
 import json
 from collections import defaultdict
 from rapidfuzz import process, fuzz
+import requests
+
+# Import the worker function from ner_worker.py
+from ner_worker import process_documents_batch, initialize_spacy
 
 # Load environment variables from .env file
 load_dotenv()
@@ -66,28 +72,6 @@ def get_collections(db):
         raise e
 
 # =======================
-# spaCy Initialization
-# =======================
-def initialize_spacy():
-    """Load spaCy model."""
-    try:
-        logger.info("Loading spaCy model with optimized settings.")
-        # Load spaCy model with only the NER component
-        nlp = spacy.load("en_core_web_lg", disable=["tagger", "parser", "lemmatizer"])
-        return nlp
-    except Exception as e:
-        logger.error(f"Error loading spaCy model: {e}")
-        raise e
-
-# Global variable for spaCy model in worker processes
-nlp = None
-
-def initialize_worker():
-    """Initialize spaCy model in worker processes."""
-    global nlp
-    nlp = initialize_spacy()
-
-# =======================
 # Utility Functions
 # =======================
 
@@ -104,17 +88,8 @@ def chunkify(iterable, chunk_size):
     if chunk:
         yield chunk
 
-def update_documents_as_processed(documents_collection, processed_doc_ids):
-    """
-    Batch update documents as processed.
-    """
-    operations = [
-        UpdateOne({"_id": doc_id}, {"$set": {"entities_processed": True}})
-        for doc_id in processed_doc_ids
-    ]
-    if operations:
-        documents_collection.bulk_write(operations, ordered=False)
-        logger.debug(f"Updated {len(operations)} documents as processed.")
+# In-memory cache for Wikidata entities
+wikidata_cache = {}
 
 def entity_default():
     """Default factory function for defaultdict."""
@@ -138,9 +113,6 @@ def fuzzy_match(term, reference_terms, threshold=90):
     except Exception as e:
         logger.error(f"Exception during fuzzy matching for term '{term}': {e}")
         return None
-
-# In-memory cache for Wikidata entities
-wikidata_cache = {}
 
 def fetch_wikidata_entity(term):
     """
@@ -176,74 +148,6 @@ def fetch_wikidata_entity(term):
 # =======================
 # Main Processing Functions
 # =======================
-def process_documents_batch(args):
-    """
-    Process a batch of documents to extract entities.
-    """
-    batch_docs, fields_to_process, valid_entity_labels, existing_linked_terms, link_wikidata, fuzzy_threshold = args
-    global nlp
-    if nlp is None:
-        nlp = initialize_spacy()
-    processed_doc_ids = []
-    aggregated_entities = defaultdict(entity_default)
-
-    texts = []
-    doc_id_mapping = []
-    for doc in batch_docs:
-        doc_id = doc['_id']
-        combined_text = ''
-        for field in fields_to_process:
-            text = doc.get(field, '')
-            if not text:
-                continue
-            if isinstance(text, list):
-                text = ' '.join(text)
-            elif not isinstance(text, str):
-                continue
-            combined_text += ' ' + text
-        if combined_text.strip():
-            texts.append(combined_text)
-            doc_id_mapping.append(doc_id)
-        else:
-            logger.warning(f"Document '{doc_id}' has no text in specified fields.")
-
-    if not texts:
-        logger.warning("No texts found in the current batch to process.")
-        return processed_doc_ids, aggregated_entities
-
-    logger.debug(f"Processing batch of {len(texts)} documents.")
-    # Process texts in batch using nlp.pipe()
-    for doc_id, spacy_doc in zip(doc_id_mapping, nlp.pipe(texts, batch_size=100, n_process=1)):
-        entities = []
-        for ent in spacy_doc.ents:
-            if ent.label_ in valid_entity_labels:
-                term = ent.text
-                ent_type = ent.label_
-                term_lower = term.lower()
-                entities.append({'text': term, 'type': ent_type})
-                logger.debug(f"Found entity '{term}' of type '{ent_type}' in document '{doc_id}'.")
-
-                # Aggregate entities for linking
-                aggregated_entities[(term_lower, ent_type)]['frequency'] += 1
-                aggregated_entities[(term_lower, ent_type)]['document_ids'].add(doc_id)
-                aggregated_entities[(term_lower, ent_type)]['type'] = ent_type
-
-        if entities:
-            # Update the document with extracted entities
-            try:
-                documents_collection.update_one(
-                    {'_id': doc_id},
-                    {'$set': {'extracted_entities': entities}}
-                )
-                processed_doc_ids.append(doc_id)
-                logger.debug(f"Updated document '{doc_id}' with extracted entities.")
-            except Exception as e:
-                logger.error(f"Failed to update document '{doc_id}': {e}")
-        else:
-            logger.info(f"No valid entities found in document '{doc_id}'.")
-
-    return processed_doc_ids, aggregated_entities
-
 
 def extract_and_link_entities(documents_collection, linked_entities_collection, fields_to_process, link_wikidata, fuzzy_threshold=90, batch_size=1000, use_multiprocessing=False):
     """
@@ -291,12 +195,10 @@ def extract_and_link_entities(documents_collection, linked_entities_collection, 
         num_processes = multiprocessing.cpu_count() - 1 or 1  # Reserve one core
         logger.info(f"Using {num_processes} worker processes for multiprocessing.")
 
-        with multiprocessing.Pool(processes=num_processes, initializer=initialize_worker) as pool:
+        with multiprocessing.Pool(processes=num_processes, initializer=initialize_spacy) as pool:
             results = tqdm(pool.imap_unordered(process_documents_batch, batch_args), total=total_batches, desc="Processing batches")
             for processed_doc_ids, batch_aggregated_entities in results:
-                # Batch update documents as processed
-                if processed_doc_ids:
-                    update_documents_as_processed(documents_collection, processed_doc_ids)
+                # No need to update 'entities_processed' here as workers already did it
                 processed_count += len(processed_doc_ids)
                 logger.debug(f"Processed {processed_count}/{total_documents} documents so far.")
 
@@ -307,14 +209,11 @@ def extract_and_link_entities(documents_collection, linked_entities_collection, 
                     aggregated_entities[key]['type'] = value['type']
     else:
         logger.info("Multiprocessing is DISABLED.")
-        global nlp
         nlp = initialize_spacy()  # Initialize spaCy once here
         batches = chunkify(cursor, batch_size)
         for batch_docs in tqdm(batches, desc="Processing batches"):
             processed_doc_ids, batch_aggregated_entities = process_documents_batch((batch_docs, fields_to_process, valid_entity_labels, existing_linked_terms, link_wikidata, fuzzy_threshold))
-            # Batch update documents as processed
-            if processed_doc_ids:
-                update_documents_as_processed(documents_collection, processed_doc_ids)
+            # No need to update 'entities_processed' here as workers already did it
             processed_count += len(processed_doc_ids)
             logger.debug(f"Processed {processed_count}/{total_documents} documents so far.")
 
@@ -359,7 +258,8 @@ def link_entities(aggregated_entities, linked_entities_collection, existing_link
                     logger.debug(f"Fuzzy matched term '{term_lower}' to '{fuzzy_match_term}' with Wikidata ID '{wikidata_id}'.")
             else:
                 logger.debug(f"No match found for term '{term_lower}'.")
-        else:
+
+        if wikidata_id:
             logger.debug(f"Linked term '{term_lower}' to Wikidata ID '{wikidata_id}'.")
 
         update = {
