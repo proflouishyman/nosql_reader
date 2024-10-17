@@ -59,7 +59,7 @@ echo "MongoDB is up and running."
 
 # #TESTING VERSION
 
-echo "Running testing version"
+echo "***Running testing version***"
 echo "Running database setup scripts..."
 
 echo "Environmental variables"
