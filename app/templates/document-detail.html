@@ -15,11 +15,7 @@
         <tr>
           <th>{{ field.field_name | replace('_', ' ') | title }}</th>
           <td>
-            {% if section.section_name in ["Employment Records", "Additional Events"] %}
-              {{ format_employment_field(field) }}
-            {% else %}
-              {{ field.value }}
-            {% endif %}
+            {{ field.value if field.value is not none else 'N/A' }}
             {% if field.linked_information %}
               {{ render_linked_information(field.linked_information) }}
             {% endif %}
@@ -29,6 +25,7 @@
     </table>
   </div>
 {% endmacro %}
+
 
 {% macro format_employment_field(field) %}
   {% set parts = field.value.split(', ') %}
@@ -45,6 +42,7 @@
     {{ field.value }}
   {% endif %}
 {% endmacro %}
+
 
 {% macro render_linked_information(linked_info) %}
   {% if linked_info %}
@@ -70,17 +68,17 @@
                 {% endfor %}
               </table>
             {% elif value is iterable and not value is string %}
-              <ul>
+              <div class="nested-block">
                 {% for item in value %}
-                  <li>
+                  <div class="nested-item">
                     {% if item is mapping %}
                       {{ render_nested_value(item) }}
                     {% else %}
                       {{ item }}
                     {% endif %}
-                  </li>
+                  </div>
                 {% endfor %}
-              </ul>
+              </div>
             {% else %}
               {{ value }}
             {% endif %}
@@ -111,17 +109,17 @@
       {% endfor %}
     </table>
   {% elif value is iterable and not value is string %}
-    <ul>
+    <div class="nested-block">
       {% for item in value %}
-        <li>
+        <div class="nested-item">
           {% if item is mapping %}
             {{ render_nested_value(item) }}
           {% else %}
             {{ item }}
           {% endif %}
-        </li>
+        </div>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
     {{ value }}
   {% endif %}
@@ -129,8 +127,47 @@
 
 
 
+
 {% block styles %}
 <style>
+  /* Nested Blocks */
+  .nested-block {
+    background-color: #f9f9f9; /* Light gray background */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+
+  .nested-item {
+    background-color: #e0f7fa; /* Light cyan background */
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+  }
+  .nested-item:nth-child(even) {
+    background-color: #e0f7fa; /* Light cyan */
+  }
+
+  .nested-item:nth-child(odd) {
+    background-color: #b2ebf2; /* Slightly darker cyan */
+  }
+  .nested-block {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .nested-item {
+    background-color: #e0f7fa;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+  }
+
+
+
   /* Layout Containers */
   .document-detail .detail-container {
     display: flex;
