@@ -7,10 +7,8 @@ import requests
 import openai
 from tqdm import tqdm
 from rapidfuzz import process, fuzz
-import multiprocessing
-import json
 import uuid
-
+import pymongo
 
 # Load environment variables from .env file
 load_dotenv()
@@ -75,7 +73,6 @@ def get_collections(db):
 def generate_custom_kb_id():
     """Generate a unique custom kb_id."""
     return f"CUSTOM_{uuid.uuid4()}"
-
 
 def entity_default():
     """Default factory function for defaultdict."""
@@ -152,12 +149,6 @@ def link_entity_with_llm(term, context):
     except Exception as e:
         logger.error(f"Error linking entity with LLM for term '{term}': {e}")
         return None
-from rapidfuzz import process, fuzz
-import logging
-
-# Configure logging if not already configured
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
 
 def fuzzy_match(term, reference_terms, threshold=90):
     """
@@ -169,19 +160,18 @@ def fuzzy_match(term, reference_terms, threshold=90):
         if result is None:
             logger.debug(f"No fuzzy match found for term '{term}'.")
             return None
-        
+
         # Unpack only the first two elements: match and score
         match, score, *_ = result  # The *_ captures any additional elements
-        
+
         logger.debug(f"Fuzzy match for term '{term}': '{match}' with score {score}.")
-        
+
         if score >= threshold:
             return match
         return None
     except Exception as e:
         logger.error(f"Exception during fuzzy matching for term '{term}': {e}")
         return None
-
 
 def chunkify(iterable, chunk_size):
     """
@@ -204,13 +194,13 @@ def aggregate_entities(documents_collection, batch_size=1000):
     """
     Aggregate entities from the 'extracted_entities' field of documents.
     """
-    # Query to fetch documents that have 'extracted_entities'
-    query = {'extracted_entities': {'$exists': True, '$ne': []}}
+    # Query to fetch documents that have 'extracted_entities' and have not been processed
+    query = {'extracted_entities': {'$exists': True, '$ne': []}, 'entity_linking_processed': {'$ne': True}}
 
     cursor = documents_collection.find(query, {'_id': 1, 'extracted_entities': 1})
 
     total_documents = documents_collection.count_documents(query)
-    logger.info(f"Total documents with extracted entities: {total_documents}")
+    logger.info(f"Total documents with extracted entities to process: {total_documents}")
 
     aggregated_entities = defaultdict(entity_default)
 
@@ -229,7 +219,8 @@ def aggregate_entities(documents_collection, batch_size=1000):
                 aggregated_entities[(term_lower, ent_type)]['type'] = ent_type
 
     return aggregated_entities
-def link_entities(aggregated_entities, linked_entities_collection, existing_linked_terms, link_wikidata, fuzzy_threshold, batch_size):
+
+def link_entities(aggregated_entities, linked_entities_collection, existing_linked_terms, link_wikidata, fuzzy_threshold, batch_size, documents_collection):
     """
     Link aggregated entities and update the linked_entities collection.
     """
@@ -263,7 +254,7 @@ def link_entities(aggregated_entities, linked_entities_collection, existing_link
         # If still no wikidata_id, automate custom entry creation
         if not wikidata_id:
             # Generate a unique kb_id for the custom entry
-            custom_kb_id = f"CUSTOM_{uuid.uuid4()}"
+            custom_kb_id = generate_custom_kb_id()
             try:
                 # Insert the new linked entity
                 linked_entities_collection.insert_one({
@@ -331,6 +322,22 @@ def link_entities(aggregated_entities, linked_entities_collection, existing_link
             logger.error(f"Error bulk upserting linked entities: {e}")
             raise e
 
+    # Mark documents as processed
+    document_ids_to_mark = set()
+    for (term_lower, ent_type), data in aggregated_entities.items():
+        document_ids_to_mark.update(data['document_ids'])
+
+    if document_ids_to_mark:
+        try:
+            documents_collection.update_many(
+                {"_id": {"$in": list(document_ids_to_mark)}},
+                {"$set": {"entity_linking_processed": True}}
+            )
+            logger.info(f"Marked {len(document_ids_to_mark)} documents as processed.")
+        except Exception as e:
+            logger.error(f"Error marking documents as processed: {e}")
+            raise e
+
     logger.info(f"Successfully linked {linked_count} entities.")
 
 # =======================
@@ -354,8 +361,26 @@ if __name__ == "__main__":
         fuzzy_threshold = int(os.getenv('FUZZY_MATCH_THRESHOLD', 90))
         batch_size = int(os.getenv('BATCH_SIZE', 1000))  # Set default batch_size to 1000
 
+        # Aggregate entities from unprocessed documents
+        aggregated_entities = aggregate_entities(documents_collection, batch_size=batch_size)
+
+        if not aggregated_entities:
+            logger.info("No new entities to process.")
+            exit(0)
+
+        # Fetch existing linked terms for fuzzy matching
+        existing_linked_terms = [doc['term'] for doc in linked_entities_collection.find({}, {'term': 1})]
+
         # Perform entity linking
-        link_entities(db, enable_llm=enable_llm, fuzzy_threshold=fuzzy_threshold, batch_size=batch_size)
+        link_entities(
+            aggregated_entities,
+            linked_entities_collection,
+            existing_linked_terms,
+            link_wikidata=enable_llm,
+            fuzzy_threshold=fuzzy_threshold,
+            batch_size=batch_size,
+            documents_collection=documents_collection
+        )
 
     except Exception as e:
         logger.error(f"An error occurred during entity linking: {e}", exc_info=True)

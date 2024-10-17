@@ -5,7 +5,6 @@ import re
 import logging
 from collections import Counter, defaultdict
 from tqdm import tqdm
-import multiprocessing
 
 from pymongo import UpdateOne, MongoClient
 from dotenv import load_dotenv
@@ -92,16 +91,10 @@ def chunkify(iterable, chunk_size):
 # Main Processing Functions
 # =======================
 
-def process_documents_batch(args):
+def process_documents_batch(batch_docs):
     """Process a batch of documents to extract unique terms."""
-    batch_docs = args
     unique_terms = defaultdict(lambda: {'word': Counter(), 'phrase': Counter()})
     processed_doc_ids = []
-
-    # Establish a new MongoDB client in each process
-    client = get_client()
-    db = get_db(client)
-    documents_collection, _ = get_collections(db)
 
     for doc in batch_docs:
         doc_id = doc['_id']
@@ -109,6 +102,11 @@ def process_documents_batch(args):
         for field, terms in doc_unique.items():
             merge_counters(unique_terms[field], terms)
         processed_doc_ids.append(doc_id)
+
+    # Establish a new MongoDB client for updating
+    client = get_client()
+    db = get_db(client)
+    documents_collection, _ = get_collections(db)
 
     # Mark documents as processed
     if processed_doc_ids:
@@ -136,16 +134,13 @@ def process_document(document):
 
     return unique_terms
 
-def generate_unique_terms(db, batch_size=1000, use_multiprocessing=False):
+def generate_unique_terms(db, batch_size=1000):
     """Generate unique terms from documents and populate the unique_terms collection."""
     documents_collection, unique_terms_collection = get_collections(db)
 
     # Filter: Only process documents that haven't been processed yet
     query = {"unique_terms_processed": {"$ne": True}}
-    cursor = documents_collection.find(
-        query,
-        {'_id': 1, '*': 1}  # Fetch all fields
-    )
+    cursor = documents_collection.find(query)  # Corrected projection
 
     # Use count_documents() instead of cursor.count()
     total_documents = documents_collection.count_documents(query)
@@ -158,28 +153,16 @@ def generate_unique_terms(db, batch_size=1000, use_multiprocessing=False):
     aggregated_unique = defaultdict(lambda: {'word': Counter(), 'phrase': Counter()})
     processed_count = 0
 
-    if use_multiprocessing:
-        logger.info("Multiprocessing is ENABLED.")
-        batches = list(chunkify(cursor, batch_size))
-        total_batches = len(batches)
-        logger.info(f"Total batches to process: {total_batches}")
+    batches = chunkify(cursor, batch_size)
+    total_batches = (total_documents // batch_size) + (1 if total_documents % batch_size else 0)
+    logger.info(f"Total batches to process: {total_batches}")
 
-        with multiprocessing.Pool() as pool:
-            results = tqdm(pool.imap_unordered(process_documents_batch, batches), total=total_batches, desc="Processing batches")
-            for batch_unique_terms in results:
-                # Merge batch results into the main aggregated_unique
-                for field, types in batch_unique_terms.items():
-                    merge_counters(aggregated_unique[field], types)
-                processed_count += batch_size
-    else:
-        logger.info("Multiprocessing is DISABLED.")
-        batches = chunkify(cursor, batch_size)
-        for batch_docs in tqdm(batches, desc="Processing batches"):
-            batch_unique_terms = process_documents_batch(batch_docs)
-            # Merge batch results into the main aggregated_unique
-            for field, types in batch_unique_terms.items():
-                merge_counters(aggregated_unique[field], types)
-            processed_count += len(batch_docs)
+    for batch_docs in tqdm(batches, total=total_batches, desc="Processing batches"):
+        batch_unique_terms = process_documents_batch(batch_docs)
+        # Merge batch results into the main aggregated_unique
+        for field, types in batch_unique_terms.items():
+            merge_counters(aggregated_unique[field], types)
+        processed_count += len(batch_docs)
 
     logger.debug(f"Aggregated unique terms: {aggregated_unique}")
     logger.info(f"Processed {processed_count} documents.")
@@ -202,7 +185,7 @@ def generate_unique_terms(db, batch_size=1000, use_multiprocessing=False):
                 )
 
     logger.info(f"Prepared {len(operations)} bulk operations for unique_terms.")
-
+    print("Adding to database. Please be patient")
     if operations:
         try:
             result = unique_terms_collection.bulk_write(operations, ordered=False)
@@ -224,17 +207,14 @@ if __name__ == "__main__":
         db = get_db(client)
         logger.info("Connected to MongoDB.")
 
-        # Determine if multiprocessing is enabled
-        use_multiprocessing = os.getenv('ENABLE_MULTIPROCESSING', 'False').lower() in ('true', '1', 't')
-        if use_multiprocessing:
-            logger.info("Multiprocessing is ENABLED.")
-        else:
-            logger.info("Multiprocessing is DISABLED.")
+        # Set multiprocessing to False
+        use_multiprocessing = False
+        logger.info("Multiprocessing is DISABLED.")
 
         # Fetch batch size from .env or use default
         batch_size = int(os.getenv('BATCH_SIZE', 1000))
 
-        generate_unique_terms(db, batch_size=batch_size, use_multiprocessing=use_multiprocessing)
+        generate_unique_terms(db, batch_size=batch_size)
 
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)

@@ -25,34 +25,67 @@ python -c "import pymongo; client = pymongo.MongoClient('${MONGO_URI}', serverSe
 
 echo "MongoDB is up and running."
 
+# echo "Running database setup scripts..."
+
+# echo "Environmental variables"
+# python show_env.py
+
+
+
+
+# echo "Running database_setup.py..."
+# python database_setup.py
+# echo "database_setup.py completed."
+
+# echo "Running data_processing.py..."
+# python data_processing.py
+# echo "data_processing.py completed."
+
+# echo "Running generate_unique_terms.py..."
+# python generate_unique_terms.py
+# echo "generate_unique_terms.py completed."
+
+# echo "NER Processing"
+# python ner_processing.py
+
+# echo "Running entity_linking.py..."
+# python entity_linking.py
+# echo "entity_linking.py completed."
+
+# echo "Setup scripts completed. Starting Flask app..."
+
+# # Start the Flask app
+# exec "$@"
+
+# #TESTING VERSION
+
+echo "Running testing version"
 echo "Running database setup scripts..."
 
 echo "Environmental variables"
-python show_env.py
-
-
-
+python -m cProfile -o show_env.prof show_env.py
 
 echo "Running database_setup.py..."
-python database_setup.py
+python -m cProfile -o database_setup.prof database_setup.py
 echo "database_setup.py completed."
 
 echo "Running data_processing.py..."
-python data_processing.py
+python -m cProfile -o data_processing.prof data_processing.py
 echo "data_processing.py completed."
 
 echo "Running generate_unique_terms.py..."
-python generate_unique_terms.py
+python -m cProfile -o generate_unique_terms.prof generate_unique_terms.py
 echo "generate_unique_terms.py completed."
 
 echo "NER Processing"
-python ner_processing.py
+python -m cProfile -o ner_processing.prof ner_processing.py
 
 echo "Running entity_linking.py..."
-python entity_linking.py
+python -m cProfile -o entity_linking.prof entity_linking.py
 echo "entity_linking.py completed."
 
 echo "Setup scripts completed. Starting Flask app..."
 
 # Start the Flask app
 exec "$@"
+

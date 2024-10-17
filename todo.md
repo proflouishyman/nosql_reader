@@ -11,13 +11,38 @@ docker compose exec -it mongodb /bin/bash
 mongosh mongodb://admin:secret@localhost:27017/admin
 
 
+to drop
+
+db.documents.updateMany(
+    { "entities_processed": { "$exists": true } }, // Filter for documents with the field
+    { "$unset": { "entities_processed": "" } } // Remove the field
+)
+
+see CDIST for faster fuzzy matching
+
+
+allow fo rthe use of fuzzy matching:
+{
+    _id: ObjectId('670ff5f0ab41bbc86731de5a'),
+    term: '.87',
+    document_ids: [
+      ObjectId('670ff1ec0cc27d75bc5d2559'),
+      ObjectId('670ff1fc0cc27d75bc5d36f5'),
+      ObjectId('670ff22a0cc27d75bc5d4e0e'),
+      ObjectId('670ff1ed0cc27d75bc5d279e'),
+      ObjectId('670ff1e60cc27d75bc5d1bd2')
+    ],
+    frequency: 15,
+    kb_id: null,
+    type: 'ORG'
+  },
 
 PRIORITIES
 6. Add cross-referencing of named entities
-
+debug env file and add scrip that prints env variables
 STATUS: linking seems to work. unique terms no longer works. need to check or revert or soemthing.
 
-
+revert to earlier unique items
 
 named entity, reprocessing, and fuzzy matching
 
