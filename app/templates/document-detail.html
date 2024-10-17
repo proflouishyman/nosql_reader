@@ -7,28 +7,115 @@
   </div>
 {% endmacro %}
 
-{% macro render_value(value) %}
-  {% if value is mapping %}
+{% macro render_section(section) %}
+  <div class="info-section">
+    <h2>{{ section.section_name | replace('_', ' ') | title }}</h2>
     <table class="info-table">
-      {% for subkey, subvalue in value.items() %}
+      {% for field in section.fields %}
         <tr>
-          <th>{{ subkey|title }}</th>
+          <th>{{ field.field_name | replace('_', ' ') | title }}</th>
           <td>
-            {{ render_value(subvalue) }}
+            {% if section.section_name in ["Employment Records", "Additional Events"] %}
+              {{ format_employment_field(field) }}
+            {% else %}
+              {{ field.value }}
+            {% endif %}
+            {% if field.linked_information %}
+              {{ render_linked_information(field.linked_information) }}
+            {% endif %}
           </td>
         </tr>
       {% endfor %}
     </table>
-  {% elif value is iterable and value is not string %}
-    <ul class="info-list">
+  </div>
+{% endmacro %}
+
+{% macro format_employment_field(field) %}
+  {% set parts = field.value.split(', ') %}
+  {% if parts|length >= 5 %}
+    <strong>Date:</strong> {{ parts[0] }}<br>
+    <strong>Occupation:</strong> {{ parts[1] }}<br>
+    <strong>Division:</strong> {{ parts[2] }}<br>
+    <strong>Employee:</strong> {{ parts[3] }}<br>
+    <strong>Rate:</strong> {{ parts[4] }}<br>
+    {% if parts|length > 5 %}
+      <strong>Remarks:</strong> {{ parts[5] }}
+    {% endif %}
+  {% else %}
+    {{ field.value }}
+  {% endif %}
+{% endmacro %}
+
+{% macro render_linked_information(linked_info) %}
+  {% if linked_info %}
+    <div class="linked-information">
+      <h4>Linked Information:</h4>
+      {% for key, value in linked_info.items() %}
+        {% if value %}
+          <div class="linked-section">
+            <h5>{{ key.replace('_', ' ') | title }}</h5>
+            {% if value is mapping %}
+              <table class="info-table nested">
+                {% for subkey, subvalue in value.items() %}
+                  <tr>
+                    <th>{{ subkey.replace('_', ' ') | title }}</th>
+                    <td>
+                      {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
+                        {{ render_nested_value(subvalue) }}
+                      {% else %}
+                        {{ subvalue }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            {% elif value is iterable and not value is string %}
+              <ul>
+                {% for item in value %}
+                  <li>
+                    {% if item is mapping %}
+                      {{ render_nested_value(item) }}
+                    {% else %}
+                      {{ item }}
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              {{ value }}
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+
+
+
+{% macro render_nested_value(value) %}
+  {% if value is mapping %}
+    <table class="info-table nested">
+      {% for subkey, subvalue in value.items() %}
+        <tr>
+          <th>{{ subkey.replace('_', ' ') | title }}</th>
+          <td>
+            {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
+              {{ render_nested_value(subvalue) }}
+            {% else %}
+              {{ subvalue }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% elif value is iterable and not value is string %}
+    <ul>
       {% for item in value %}
         <li>
           {% if item is mapping %}
-            <div class="nested-mapping">
-              {% for itemkey, itemvalue in item.items() %}
-                <strong>{{ itemkey|title }}:</strong> {{ render_value(itemvalue) }}<br>
-              {% endfor %}
-            </div>
+            {{ render_nested_value(item) }}
           {% else %}
             {{ item }}
           {% endif %}
@@ -36,12 +123,15 @@
       {% endfor %}
     </ul>
   {% else %}
-    {{ value if value is not none else 'N/A' }}
+    {{ value }}
   {% endif %}
 {% endmacro %}
 
+
+
 {% block styles %}
 <style>
+  /* Layout Containers */
   .document-detail .detail-container {
     display: flex;
     gap: 20px;
@@ -60,6 +150,7 @@
     align-self: flex-start;
   }
 
+  /* Image Container */
   #imageContainer {
     width: 100%;
     height: auto;
@@ -78,6 +169,7 @@
     transform-origin: center;
   }
 
+  /* Controls */
   .zoom-controls,
   .adjustment-controls {
     margin-top: 10px;
@@ -124,7 +216,59 @@
   input[type="range"] {
     position: relative;
   }
+
+  /* Information Sections */
+  .document-detail .info-section {
+    margin-bottom: 20px;
+  }
+
+  /* Tables */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+
+  .info-table th {
+    text-align: left;
+    padding: 8px;
+    background-color: #f2f2f2;
+    width: 30%;
+    vertical-align: top;
+  }
+
+  .info-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .info-table.nested th {
+    padding-left: 20px;
+    background-color: #e6e6e6;
+  }
+
+  /* Linked Information */
+  .linked-information {
+    margin-top: 10px;
+    padding-left: 10px;
+    border-left: 2px solid #ccc;
+  }
+
+  .linked-section {
+    margin-bottom: 10px;
+  }
+
+  .linked-section h5 {
+    margin-bottom: 5px;
+  }
+
+  /* Lists within Tables */
+  .info-table ul {
+    list-style-type: disc;
+    margin-left: 40px;
+  }
 </style>
+
 {% endblock %}
 
 {% block content %}
@@ -133,30 +277,27 @@
     <div class="info-panel">
       <div class="navigation">
         <a href="{{ url_for('index') }}?return_to_search=true" class="nav-button" title="Return to Search Results">
-            <span>Search</span>
+          <span>Search</span>
         </a>
         <a href="{{ prev_id and url_for('document_detail', doc_id=prev_id, search_id=search_id) or '#' }}" class="nav-button {{ 'disabled' if not prev_id else '' }}" title="Previous Result">
-            <span>Previous</span>
+          <span>Previous</span>
         </a>
         <a href="{{ url_for('index') }}" class="nav-button" title="Home">
-            <span>Home</span>
+          <span>Home</span>
         </a>
         <a href="{{ next_id and url_for('document_detail', doc_id=next_id, search_id=search_id) or '#' }}" class="nav-button {{ 'disabled' if not next_id else '' }}" title="Next Result">
-            <span>Next</span>
+          <span>Next</span>
         </a>
       </div>
 
       <h1>{{ document.get('filename', 'Untitled Document') }}</h1>
 
       <div class="info-container">
-        {% for key, value in document.items() %}
-          {% if key != '_id' and key != 'filename' %}
-            {{ render_json(key, value) }}
-          {% endif %}
+        {% for section in document.sections %}
+          {{ render_section(section) }}
         {% endfor %}
       </div>
     </div>
-
     <div class="image-panel">
       {% if image_exists %}
         <div id="imageContainer">
