@@ -160,7 +160,7 @@
     <div class="image-panel">
       {% if image_exists %}
         <div id="imageContainer">
-          <img id="documentImage" src="{{ url_for('serve_image', filename=image_path | urlencode) }}" alt="Document Image">
+          <img id="documentImage" src="{{ url_for('serve_image', filename=image_path) }}" alt="Document Image">
         </div>
         <div class="zoom-controls">
           <button id="rotateLeft">Rotate Left</button>

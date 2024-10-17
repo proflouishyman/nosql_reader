@@ -43,10 +43,10 @@ logger.addHandler(file_handler)
 def get_client():
     """Initialize and return a new MongoDB client."""
     try:
-        print("this is the main sequence")
+        
         mongo_uri = os.environ.get('MONGO_URI') # this SHOULD read from .env file but sometimes does not.
         #mongo_uri= "mongodb://admin:secret@mongodb:27017/admin" # this is correct and needs the /admin for the administrative db. REMOVE before prduction
-        print(mongo_uri)
+        #print(mongo_uri)
 
         if not mongo_uri:
             raise ValueError("MONGO_URI environment variable not set")

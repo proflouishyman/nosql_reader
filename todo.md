@@ -2,6 +2,18 @@ todo.txt
 
 ## To Do
 
+
+DEBUG PAPER IMAGES
+
+SEARCH BOX FOR UNIQUE TERMs
+
+
+
+
+
+
+
+
 to access the shell
 docker compose exec -it flask_app /bin/bash
 

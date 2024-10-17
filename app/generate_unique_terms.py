@@ -139,8 +139,8 @@ def generate_unique_terms(db, batch_size=1000):
     documents_collection, unique_terms_collection = get_collections(db)
 
     # Filter: Only process documents that haven't been processed yet
-    query = {"unique_terms_processed": {"$ne": True}}
-    cursor = documents_collection.find(query)  # Corrected projection
+    query = {"$or": [{"unique_terms_processed": {"$exists": False}}, {"unique_terms_processed": False}]}
+    cursor = documents_collection.find(query)
 
     # Use count_documents() instead of cursor.count()
     total_documents = documents_collection.count_documents(query)
@@ -150,51 +150,52 @@ def generate_unique_terms(db, batch_size=1000):
         logger.info("No unprocessed documents found. Exiting.")
         return
 
-    aggregated_unique = defaultdict(lambda: {'word': Counter(), 'phrase': Counter()})
     processed_count = 0
-
     batches = chunkify(cursor, batch_size)
     total_batches = (total_documents // batch_size) + (1 if total_documents % batch_size else 0)
     logger.info(f"Total batches to process: {total_batches}")
 
+    # Load existing terms from unique_terms_collection
+    existing_terms = {}
+    for doc in unique_terms_collection.find({}, {"term": 1, "frequency": 1, "field": 1, "type": 1}):
+        key = (doc['term'], doc['field'], doc['type'])
+        existing_terms[key] = doc['frequency']
+
     for batch_docs in tqdm(batches, total=total_batches, desc="Processing batches"):
         batch_unique_terms = process_documents_batch(batch_docs)
-        # Merge batch results into the main aggregated_unique
+        # Prepare bulk operations based on new terms and frequency differences
+        operations = []
+        
         for field, types in batch_unique_terms.items():
-            merge_counters(aggregated_unique[field], types)
+            for term_type, counter in types.items():
+                for term, freq in counter.items():
+                    key = (term, field, term_type)
+                    existing_freq = existing_terms.get(key, 0)
+                    freq_diff = freq - existing_freq
+                    
+                    if freq_diff > 0:  # Only upsert if there is a difference
+                        operations.append(
+                            UpdateOne(
+                                {"term": term, "field": field, "type": term_type},
+                                {"$inc": {"frequency": freq_diff}},
+                                upsert=True
+                            )
+                        )
+                        # Update existing_terms to avoid repeated increments
+                        existing_terms[key] = freq
+
         processed_count += len(batch_docs)
-
-    logger.debug(f"Aggregated unique terms: {aggregated_unique}")
-    logger.info(f"Processed {processed_count} documents.")
-
-    if not aggregated_unique:
-        logger.warning("No unique terms were extracted from the processed documents.")
-        return
-
-    # Prepare bulk operations
-    operations = []
-    for field, types in aggregated_unique.items():
-        for term_type, counter in types.items():
-            for term, freq in counter.items():
-                operations.append(
-                    UpdateOne(
-                        {"term": term, "field": field, "type": term_type},
-                        {"$inc": {"frequency": freq}},
-                        upsert=True
-                    )
-                )
-
-    logger.info(f"Prepared {len(operations)} bulk operations for unique_terms.")
-    print("Adding to database. Please be patient")
-    if operations:
-        try:
-            result = unique_terms_collection.bulk_write(operations, ordered=False)
-            logger.info(f"Bulk upserted {result.upserted_count + result.modified_count} unique terms.")
-        except Exception as e:
-            logger.error(f"Error bulk upserting unique terms: {e}")
-            raise e
-    else:
-        logger.warning("No unique terms to upsert.")
+        logger.info(f"Processed {processed_count} documents.")
+        
+        if operations:
+            try:
+                result = unique_terms_collection.bulk_write(operations, ordered=False)
+                logger.info(f"Bulk upserted {result.upserted_count + result.modified_count} unique terms.")
+            except Exception as e:
+                logger.error(f"Error bulk upserting unique terms: {e}")
+                raise e
+        else:
+            logger.warning("No unique terms to upsert in this batch.")
 
     logger.info("Unique terms generation completed.")
 
