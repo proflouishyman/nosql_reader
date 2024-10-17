@@ -133,42 +133,6 @@ def store_combined_hash(db, combined_hash):
         upsert=True
     )
 
-def total_hash_check(directory_path):
-    files = get_all_files(directory_path)
-    total = len(files)
-
-    logger.info(f"Found {total} files to process.")
-
-    if total == 0:
-        logger.warning("No files found to process. Exiting.")
-        return
-
-    # Calculate the combined hash of all files
-    logger.info("Calculating combined hash of all files...")
-    combined_hash = calculate_combined_hash(files)
-    logger.debug(f"Combined Hash: {combined_hash}")
-
-
-
-    # Initialize database connection
-    init_db()
-
-    # Retrieve the stored combined hash
-    stored_hash = get_stored_combined_hash(db)
-    logger.debug(f"Stored Combined Hash: {stored_hash}")
-
-    if combined_hash == stored_hash:
-        logger.info("No changes detected. Skipping processing.")
-        print("No changes detected. Skipping processing.")
-        flag = False
-        return
-    else:
-        logger.info("Changes detected. Proceeding with processing.")
-        print("Changes detected. Proceeding with processing.")
-        flag = True
-
-    return flag 
-
 # =======================
 # Processing Functions
 # =======================
@@ -229,15 +193,17 @@ def get_all_files(directory):
     for root, _, files in os.walk(directory):
         for file in files:
             if file.lower().endswith(('.json', '.txt')):
-                file_list.append(os.path.join(root, file))
-                logger.debug(f"Found file: {os.path.join(root, file)}")
+                file_path = os.path.join(root, file)
+                file_list.append(file_path)
+                logger.debug(f"Found file: {file_path}")
     return file_list
 
 # =======================
-# Sequential Processing
+# Combined Hash Processing
 # =======================
-def process_directory(directory_path):
-    """Process all files in a directory and its subdirectories sequentially for debugging."""
+
+def process_directory_with_combined_hash(directory_path):
+    """Process all files in a directory using the combined hash optimization."""
     global root_directory
     root_directory = directory_path
 
@@ -251,6 +217,26 @@ def process_directory(directory_path):
         logger.warning("No files found to process. Exiting.")
         return
 
+    # Calculate the combined hash of all files
+    logger.info("Calculating combined hash of all files...")
+    combined_hash = calculate_combined_hash(files)
+    logger.debug(f"Combined Hash: {combined_hash}")
+
+    # Initialize database connection
+    init_db()
+
+    # Retrieve the stored combined hash
+    stored_hash = get_stored_combined_hash(db)
+    logger.debug(f"Stored Combined Hash: {stored_hash}")
+
+    if combined_hash == stored_hash:
+        logger.info("No changes detected. Skipping processing.")
+        print("No changes detected. Skipping processing.")
+        return
+    else:
+        logger.info("Changes detected. Proceeding with processing.")
+        print("Changes detected. Proceeding with processing.")
+
     # Initialize results_dict in the main process
     results_dict = {
         'processed': [],
@@ -258,17 +244,13 @@ def process_directory(directory_path):
         'skipped': []
     }
 
-    with tqdm(total=total, desc="Processing files") as pbar:
-        for idx, file_path in enumerate(files, 1):
-            result, _ = process_file(file_path)
+    # Setup multiprocessing pool
+    num_workers = min(cpu_count(), 8)  # Limit to 8 workers to prevent excessive load
+    with Pool(processes=num_workers) as pool:
+        # Use tqdm for progress bar
+        for result, _ in tqdm(pool.imap_unordered(process_file, files), total=total, desc="Processing files"):
             for key in ['processed', 'failed', 'skipped']:
                 results_dict[key].extend(result.get(key, []))
-            pbar.update(1)
-
-    # Initialize database connection (if not already)
-    if db is None:
-        init_db()
-        logger.debug("Initialized main process database connection.")
 
     logger.info("\nProcessing Summary:")
     logger.info(f"Total files found: {total}")
@@ -280,6 +262,10 @@ def process_directory(directory_path):
         logger.info("\nFailed files:")
         for file_path, error in results_dict['failed']:
             logger.error(f"- {file_path}: {error}")
+
+    # Update the stored combined hash after successful processing
+    store_combined_hash(db, combined_hash)
+    logger.info("Updated the stored combined hash.")
 
     duration = time.time() - start_time
     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
@@ -296,7 +282,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     data_directory = args.data_directory
-    print(data_directory)
+    print(f"Data Directory: {data_directory}")
     if not os.path.exists(data_directory):
         logger.error(f"Error: The specified directory does not exist: {data_directory}")
         logger.info(f"Creating directory: {data_directory}")
@@ -307,18 +293,8 @@ if __name__ == "__main__":
             logger.exception("Failed to create directory")
             exit(1)
 
-    #hash check for archive file change
-    logger.info("Checking to see if archive has changed")
-    archives_file_change = total_hash_check(data_directory) #should return a boolean
+    logger.info(f"Processing directory: {data_directory}")
+    print("Don't Forget To Turn On Your Fan!")
 
-    if archives_file_change == True:
-        logger.info(f"Processing directory: {data_directory}")
-        process_directory(data_directory)
-
-        # After processing, calculate and store the new hash
-        new_combined_hash = calculate_combined_hash(get_all_files(data_directory))
-        store_combined_hash(db, new_combined_hash)
-        logger.info("Updated stored hash after processing.")
-    else:
-        logger.info("No change in archives")
-
+    # Start processing with combined hash optimization
+    process_directory_with_combined_hash(data_directory)

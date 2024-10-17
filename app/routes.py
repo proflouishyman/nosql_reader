@@ -350,13 +350,14 @@ def serve_image(filename):
         logger.warning(f"Image not found at: {image_path}")
         abort(404)
 
-
-def get_top_unique_terms(db, field, term_type, limit=1000, skip=0):
+def get_top_unique_terms(db, field, term_type, query='', limit=1000, skip=0):
     """
-    Retrieve top unique terms sorted by frequency in descending order with pagination.
+    Retrieve top unique terms based on the field, term type, and optional search query.
+
     :param db: Database instance
     :param field: The field to filter terms by (e.g., 'title', 'description')
     :param term_type: The type of term ('word' or 'phrase')
+    :param query: Optional search query string to filter terms
     :param limit: Number of top terms to retrieve
     :param skip: Number of records to skip for pagination
     :return: List of dictionaries with term and count
@@ -364,42 +365,69 @@ def get_top_unique_terms(db, field, term_type, limit=1000, skip=0):
     unique_terms_collection = db['unique_terms']
     
     try:
-        query = {"field": field, "type": term_type}
+        # Base MongoDB query
+        mongo_query = {"field": field, "type": term_type}
+        
+        # If a search query is provided, add a regex filter for the 'term' field
+        if query:
+            # Escape special regex characters to prevent injection attacks
+            escaped_query = re.escape(query)
+            # Case-insensitive search for terms containing the query substring
+            mongo_query['term'] = {"$regex": f".*{escaped_query}.*", "$options": "i"}
+        
         start_time = time.time()
-        cursor = unique_terms_collection.find(query, {"_id": 0, "term": 1, "frequency": 1}) \
-                                         .sort("frequency", pymongo.DESCENDING) \
-                                         .skip(skip) \
-                                         .limit(limit)
+        
+        # Execute the query with sorting, skipping, and limiting for pagination
+        cursor = unique_terms_collection.find(
+            mongo_query,
+            {"_id": 0, "term": 1, "frequency": 1}
+        ).sort("frequency", pymongo.DESCENDING).skip(skip).limit(limit)
+        
         terms_list = []
         for doc in cursor:
             key = 'word' if term_type == 'word' else 'phrase'
             terms_list.append({key: doc['term'], 'count': doc['frequency']})
         
         duration = time.time() - start_time
-        logger.info(f"Retrieved top {len(terms_list)} {term_type}s in {duration:.4f} seconds for field '{field}'.")
+        logger.info(f"Retrieved top {len(terms_list)} {term_type}s in {duration:.4f} seconds for field '{field}' with query '{query}'.")
         
         return terms_list
     except Exception as e:
         logger.error(f"Error retrieving unique terms: {e}")
         return []
 
-def get_unique_terms_count(db, field, term_type):
+def get_unique_terms_count(db, field, term_type, query=''):
     """
-    Get the count of unique terms for a specific field and type.
+    Get the count of unique terms based on the field, term type, and optional search query.
+
     :param db: Database instance
     :param field: The field to filter terms by
     :param term_type: The type of term ('word' or 'phrase')
+    :param query: Optional search query string to filter terms
     :return: Integer count of unique terms
     """
     unique_terms_collection = db['unique_terms']
     
     try:
-        count = unique_terms_collection.count_documents({"field": field, "type": term_type})
-        logger.info(f"Counted {count} unique {term_type}s for field '{field}'.")
+        # Base MongoDB query
+        mongo_query = {"field": field, "type": term_type}
+        
+        # If a search query is provided, add a regex filter for the 'term' field
+        if query:
+            # Escape special regex characters to prevent injection attacks
+            escaped_query = re.escape(query)
+            # Case-insensitive search for terms containing the query substring
+            mongo_query['term'] = {"$regex": f".*{escaped_query}.*", "$options": "i"}
+        
+        # Count the number of unique terms matching the query
+        count = unique_terms_collection.count_documents(mongo_query)
+        logger.info(f"Counted {count} unique {term_type}s for field '{field}' with query '{query}'.")
         return count
     except Exception as e:
         logger.error(f"Error counting unique terms: {e}")
         return 0
+
+
 
 @app.route('/search-terms', methods=['GET'])
 def search_terms():
@@ -412,8 +440,11 @@ def search_terms():
         if not field:
             return jsonify({"error": "No field specified"}), 400
 
-        logger.debug(f"AJAX request for field: {field}")  # Using logger here
-        
+        # Extract the search query
+        query = request.args.get('query', '').strip().lower()  # Normalize the query
+
+        logger.debug(f"AJAX request for field: {field}, query: {query}")  # Using logger here
+
         # Define term types
         term_types = ['word', 'phrase']
         data = {}
@@ -423,9 +454,13 @@ def search_terms():
             page = int(request.args.get('page', 1))
             per_page = int(request.args.get('per_page', 100))
             skip = (page - 1) * per_page
-            terms = get_top_unique_terms(db, field, term_type, limit=per_page, skip=skip)
+
+            # Fetch filtered terms based on the query
+            terms = get_top_unique_terms(db, field, term_type, query=query, limit=per_page, skip=skip)
             data[term_type + 's'] = terms
-            count = get_unique_terms_count(db, field, term_type)
+
+            # Fetch the count of unique terms based on the query
+            count = get_unique_terms_count(db, field, term_type, query=query)
             data['unique_' + term_type + 's'] = count
             total_records += count
 

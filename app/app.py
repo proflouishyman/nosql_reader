@@ -113,7 +113,7 @@ def inject_ui_config():
     db = get_db(client)
     field_struct = get_field_structure(db)
     return dict(ui_config=app.config['UI_CONFIG'], field_structure=field_struct)
-
+#rewrite
 # Import routes after initializing app to avoid circular imports
 from routes import *
 
