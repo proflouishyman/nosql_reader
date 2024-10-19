@@ -155,8 +155,7 @@ def extract_and_link_entities(documents_collection, linked_entities_collection, 
     """
     # Extended entity types to consider
     valid_entity_labels = [
-        'PERSON', 'ORG', 'GPE', 'LOC', 'EVENT',
-        'FAC', 'PRODUCT', 'LANGUAGE', 'DATE', 'TIME',
+        'PERSON', 'ORG', 'GPE', 'LOC', 'DATE', 'TIME',
         'MONEY'
     ]
 

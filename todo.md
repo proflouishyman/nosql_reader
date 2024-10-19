@@ -49,6 +49,33 @@ allow fo rthe use of fuzzy matching:
     type: 'ORG'
   },
 
+
+
+AI linking
+AI assited document retrieval (RAG LLM)
+Geographic features
+REcord linking across datasets
+Full ingestion of all teh data
+Restricted searches
+SQL injection attacks
+security
+
+
+history topics:
+reprimands
+
+
+woman
+
+corrections
+
+crowdsource corrections to the db
+
+next roll image
+next folder
+
+shift from remaking a connection to passing a connection (but how does that work with multiprocessing?)
+SummaryThe profiling output indicates that your script is heavily involved in I/O operations, particularly through the poll method of select.poll objects. To address this:Reuse the MongoDB client to minimize connection overhead.Optimize batch sizes and database operations to reduce the number of I/O calls.Enhance logging efficiency to prevent excessive I/O wait times.Consider asynchronous programming paradigms if applicable.
 PRIORITIES
 6. Add cross-referencing of named entities
 debug env file and add scrip that prints env variables
