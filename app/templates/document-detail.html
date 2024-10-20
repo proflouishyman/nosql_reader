@@ -258,6 +258,31 @@
     list-style-type: disc;
     margin-left: 40px;
   }
+
+
+
+    /* Extracted Entities Section */
+  .entity-group {
+    margin-bottom: 15px;
+  }
+
+  .entity-group h3 {
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .entity-group ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding-left: 0;
+  }
+
+  .entity-group li {
+    padding: 3px 0;
+    color: #555;
+  }
+
 </style>
 {% endblock %}
 
@@ -305,6 +330,23 @@
         {% for section in document.sections %}
           {{ render_section(section) }}
         {% endfor %}
+
+        <!-- Render All Extracted Entities -->
+        {% if document.extracted_entities %}
+        <div class="info-section">
+          <h2>Extracted Entities</h2>
+          {% for type, entities in document.extracted_entities | groupby('type') %}
+            <div class="entity-group">
+              <h3>{{ type }}</h3>
+              <ul>
+                {% for entity in entities %}
+                  <li>{{ entity.text }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endfor %}
+  </div>
+{% endif %}
       </div>
     </div>
     

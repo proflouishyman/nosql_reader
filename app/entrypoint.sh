@@ -10,20 +10,41 @@ MONGO_HOST="mongodb"
 MONGO_PORT=27017
 MONGO_URI="mongodb://admin:secret@${MONGO_HOST}:${MONGO_PORT}/admin"
 
-echo "Waiting for MongoDB to be ready..."
+echo "MONGO_URI is set to: ${MONGO_URI}"
+echo "Waiting for MongoDB to be ready...REALLY REAL"
+
+# Export MONGO_URI so it's available to Python
+export MONGO_URI
 
 # Backoff loop to wait for MongoDB
 for ((i=1;i<=MAX_RETRIES;i++)); do
     echo "Attempt $i/$MAX_RETRIES: Checking MongoDB connection..."
-    python -c "import pymongo; client = pymongo.MongoClient('${MONGO_URI}', serverSelectionTimeoutMS=5000); client.admin.command('ping')" && break
+    python -c "
+import os
+import pymongo
+MONGO_URI = os.environ.get('MONGO_URI')
+print('MONGO_URI:', MONGO_URI)
+client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+client.admin.command('ping')
+" && break
     echo "MongoDB is not ready yet. Waiting ${SLEEP_TIME} seconds..."
     sleep ${SLEEP_TIME}
 done
 
 # Verify if MongoDB is up after retries
-python -c "import pymongo; client = pymongo.MongoClient('${MONGO_URI}', serverSelectionTimeoutMS=5000); client.admin.command('ping')" || { echo "MongoDB did not become ready in time after ${MAX_RETRIES} attempts. Exiting."; exit 1; }
+python -c "
+import os
+import pymongo
+MONGO_URI = os.environ.get('MONGO_URI')
+print('Final check - MONGO_URI:', MONGO_URI)
+client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+client.admin.command('ping')
+" || { echo "MongoDB did not become ready in time after ${MAX_RETRIES} attempts. Exiting."; exit 1; }
 
 echo "MongoDB is up and running."
+
+# Proceed with the rest of your script...
+
 
 # echo "Running database setup scripts..."
 
