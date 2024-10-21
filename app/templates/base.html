@@ -13,11 +13,12 @@
     <nav>
         <ul>
             <li><a href="{{ url_for('index') }}">Home</a></li>
+            <!-- Login commmented out 
             {% if session.get('logged_in') %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
                 <li><a href="{{ url_for('login') }}">Login</a></li>
-            {% endif %}
+            {% endif %} -->
             <li><a href="{{ url_for('search_terms') }}">Search Terms</a></li>
             <li><a href="{{ url_for('database_info') }}">Database Info</a></li>
             <li><a href="{{ url_for('settings') }}">Settings</a></li>
