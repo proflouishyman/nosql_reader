@@ -1,7 +1,7 @@
 
 services:
   mongodb:
-    image: mongo:6.0
+    image: mongo:4.4.6
     container_name: mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
