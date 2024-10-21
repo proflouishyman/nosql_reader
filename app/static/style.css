@@ -17,6 +17,7 @@ body {
     padding: 20px;
 }
 
+/* Headings */
 h1, h2, h3 {
     font-family: 'Montserrat', sans-serif;
     color: #333;
@@ -38,7 +39,7 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #007bff;
+    color: #3498db; /* Updated to use consistent color */
     font-weight: bold;
 }
 
@@ -70,7 +71,7 @@ input[type="text"], select {
 
 button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #3498db; /* Updated to use consistent color */
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -80,7 +81,13 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9; /* Updated to use consistent color */
+}
+
+
+/* Add box-sizing to all elements */
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 /* Navigation Buttons */
@@ -88,7 +95,7 @@ button:hover {
     display: inline-block;
     padding: 8px 12px;
     margin-right: 5px;
-    background-color: #007bff;
+    background-color: #3498db; /* Updated to use consistent color */
     color: #fff;
     text-decoration: none;
     border-radius: 4px;
@@ -98,7 +105,7 @@ button:hover {
 }
 
 .nav-button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9; /* Updated to use consistent color */
 }
 
 .nav-button.disabled {
@@ -138,7 +145,7 @@ button:hover {
 }
 
 #results a {
-    color: #007bff;
+    color: #3498db; /* Updated to use consistent color */
     text-decoration: none;
 }
 
@@ -150,6 +157,7 @@ button:hover {
 #loadingIndicator {
     text-align: center;
     margin-top: 20px;
+    display: none; /* Moved from inline styles */
 }
 
 .spinner {
@@ -190,61 +198,464 @@ button:hover {
 
 .document-detail .info-panel {
     flex: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 40px);
 }
 
 .document-detail .image-panel {
     flex: 1;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
+}
+
+/* Ensure tables inside info-panel don't exceed container width */
+.info-panel table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.info-panel th, .info-panel td {
+    word-wrap: break-word;
+    /* Alternatively, you can use */
+    /* word-break: break-all; */
+}
+
+
+#imageContainer {
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 100px);
+    overflow: auto;
+    cursor: grab;
     position: relative;
 }
 
-#imageContainer {
-    overflow: auto;
-    max-width: 100%;
-    max-height: 600px;
+#imageContainer.active {
+    cursor: grabbing;
 }
 
 #documentImage {
-    max-width: 100%;
-    max-height: 100%;
-    transform-origin: top left;
+    display: block;
+    transform-origin: center;
 }
 
-.zoom-controls {
+/* Zoom and Adjustment Controls */
+.zoom-controls,
+.adjustment-controls {
     margin-top: 10px;
 }
 
-.zoom-controls button {
-    margin-right: 5px;
+.zoom-controls button,
+.adjustment-controls button {
+    padding: 8px 12px;
+    font-size: 14px;
 }
 
-.info-section {
+.adjustment-controls label {
+    margin-right: 10px;
+}
+
+.adjustment-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    align-items: center;
+}
+
+.adjustment-controls .control-group {
+    display: flex;
+    align-items: center;
+}
+
+.adjustment-controls .control-group label {
+    flex: 1;
+}
+
+.adjustment-controls .control-group input[type="range"] {
+    flex: 2;
+}
+
+.adjustment-controls .buttons-group {
+    grid-column: span 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Optional: Style for better tooltip visibility */
+input[type="range"] {
+    position: relative;
+}
+
+/* Information Sections */
+.document-detail .info-section {
     margin-bottom: 20px;
     border: 1px solid #e0e0e0;
     border-radius: 5px;
     padding: 15px;
 }
 
+/* Tables */
 .info-table, .nested-table {
     width: 100%;
     border-collapse: collapse;
-}
-
-.info-table th, .info-table td,
-.nested-table th, .nested-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+    margin-bottom: 10px;
 }
 
 .info-table th, .nested-table th {
+    text-align: left;
+    padding: 8px;
     background-color: #f2f2f2;
+    width: 30%;
+    vertical-align: top;
 }
 
-.nested-list, .info-list {
-    list-style-type: none;
+.info-table td, .nested-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.info-table.nested th {
+    padding-left: 20px;
+    background-color: #e6e6e6;
+}
+
+/* Linked Information */
+.linked-information {
+    margin-top: 10px;
+    padding-left: 10px;
+    border-left: 2px solid #ccc;
+}
+
+.linked-section {
+    margin-bottom: 10px;
+}
+
+.linked-section h5 {
+    margin-bottom: 5px;
+}
+
+/* Lists within Tables */
+.info-table ul, .nested-list, .info-list {
+    list-style-type: disc;
+    margin-left: 40px;
     padding-left: 0;
 }
 
-.nested-list li, .info-list li {
+.info-table ul li,
+.nested-list li,
+.info-list li {
     margin-bottom: 10px;
 }
+
+/* Nested Blocks */
+.nested-block {
+    background-color: #f9f9f9; /* Light gray background */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nested-item {
+    background-color: #e0f7fa; /* Light cyan background */
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.nested-item:nth-child(even) {
+    background-color: #e0f7fa; /* Light cyan */
+}
+
+.nested-item:nth-child(odd) {
+    background-color: #b2ebf2; /* Slightly darker cyan */
+}
+
+/* Extracted Entities Section */
+.entity-group {
+    margin-bottom: 15px;
+}
+
+.entity-group h3 {
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.entity-group ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding-left: 0;
+}
+
+.entity-group li {
+    padding: 3px 0;
+    color: #555;
+}
+
+/* Spinner Styles (for consistency) */
+#loadingIndicator {
+    display: none; /* Ensures it's hidden by default */
+    text-align: center;
+    margin-top: 20px;
+}
+
+#noDataMessage {
+    display: none;
+    color: red;
+    margin-top: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Section Styles */
+.section {
+    margin-top: 30px;
+}
+
+/* Pagination Controls Styles */
+.pagination-controls {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination-controls button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+}
+
+.pagination-controls button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+/* Search Box Styles */
+#searchContainer {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#searchInput {
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+}
+
+#searchButton {
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+}
+
+#searchButton:hover {
+    background-color: #2980b9;
+}
+
+
+/* Layout Containers */
+/* Existing styles... */
+
+/* Layout Containers */
+.document-detail .detail-container {
+    display: flex;
+    gap: 20px;
+    width: 100%; /* Ensure the container uses the full available width */
+}
+
+.document-detail .info-panel {
+    flex: 2 1 0%; /* Grow factor, shrink factor, basis */
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100vh - 40px);
+    min-width: 0; /* Prevents content from overflowing */
+}
+
+.document-detail .image-panel {
+    flex: 1 1 0%;
+    position: relative;
+    min-width: 0; /* Prevents content from overflowing */
+}
+
+
+/* Image Container */
+#imageContainer {
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 100px);
+    overflow: auto;
+    cursor: grab;
+    position: relative;
+}
+
+#imageContainer.active {
+    cursor: grabbing;
+}
+
+#documentImage {
+    display: block;
+    transform-origin: center;
+}
+
+/* Controls */
+.zoom-controls,
+.adjustment-controls {
+    margin-top: 10px;
+}
+
+.zoom-controls button,
+.adjustment-controls button {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+/* Adjustment Controls Layout */
+.adjustment-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    align-items: center;
+}
+
+.adjustment-controls .control-group {
+    display: flex;
+    align-items: center;
+}
+
+.adjustment-controls .control-group label {
+    flex: 1;
+}
+
+.adjustment-controls .control-group input[type="range"] {
+    flex: 2;
+}
+
+.adjustment-controls .buttons-group {
+    grid-column: span 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Information Sections */
+.document-detail .info-section {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+/* Tables */
+.info-table, .nested-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.info-table th, .nested-table th {
+    text-align: left;
+    padding: 8px;
+    background-color: #f2f2f2;
+    width: 30%;
+    vertical-align: top;
+}
+
+.info-table td, .nested-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Nested Tables */
+.info-table.nested th {
+    padding-left: 20px;
+    background-color: #e6e6e6;
+}
+
+/* Linked Information */
+.linked-information {
+    margin-top: 10px;
+    padding-left: 10px;
+    border-left: 2px solid #ccc;
+}
+
+.linked-section {
+    margin-bottom: 10px;
+}
+
+.linked-section h5 {
+    margin-bottom: 5px;
+}
+
+/* Lists within Tables */
+.info-table ul, .nested-list, .info-list {
+    list-style-type: disc;
+    margin-left: 40px;
+    padding-left: 0;
+}
+
+.info-table ul li,
+.nested-list li,
+.info-list li {
+    margin-bottom: 10px;
+}
+
+/* Nested Blocks */
+.nested-block {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nested-item {
+    background-color: #e0f7fa;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.nested-item:nth-child(even) {
+    background-color: #e0f7fa;
+}
+
+.nested-item:nth-child(odd) {
+    background-color: #b2ebf2;
+}
+
+/* Extracted Entities Section */
+.entity-group {
+    margin-bottom: 15px;
+}
+
+.entity-group h3 {
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.entity-group ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding-left: 0;
+}
+
+.entity-group li {
+    padding: 3px 0;
+    color: #555;
+}
+
+

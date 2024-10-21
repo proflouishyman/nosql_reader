@@ -23,6 +23,9 @@ docker compose exec -it mongodb /bin/bash
 mongosh mongodb://admin:secret@localhost:27017/admin
 
 
+db.documents.findOne({ _id: ObjectId("671184b24ba198139d8daf55") })
+
+
 to drop
 
 db.documents.updateMany(
