@@ -356,6 +356,15 @@ button:hover {
     transform-origin: center;
 }
 
+/* Image Styles */
+#documentImage {
+    display: block;
+    width: 100%; /* Make the image take the full width of its container */
+    height: auto; /* Maintain aspect ratio */
+    transform-origin: center;
+}
+
+
 /* Zoom and Adjustment Controls */
 .zoom-controls,
 .adjustment-controls {
