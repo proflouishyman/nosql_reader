@@ -1,102 +1,6 @@
+<!-- templates/document_detail.html -->
 {% extends "base.html" %}
 
-{% macro render_section(section) %}
-  <div class="info-section">
-    <h2>{{ section.section_name | replace('_', ' ') | title }}</h2>
-    <table class="info-table">
-      {% for field in section.fields %}
-        <tr>
-          <th>{{ field.field_name | replace('_', ' ') | title }}</th>
-          <td>
-            {{ field.value if field.value is not none else 'N/A' }}
-            {% if field.linked_information %}
-              {{ render_linked_information(field.linked_information) }}
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
-  </div>
-{% endmacro %}
-
-{% macro render_linked_information(linked_info) %}
-  {% if linked_info %}
-    <div class="linked-information">
-      <h4>Linked Information:</h4>
-      {% for key, value in linked_info.items() %}
-        {% if value %}
-          <div class="linked-section">
-            <h5>{{ key.replace('_', ' ') | title }}</h5>
-            {% if value is mapping %}
-              <table class="info-table nested">
-                {% for subkey, subvalue in value.items() %}
-                  <tr>
-                    <th>{{ subkey.replace('_', ' ') | title }}</th>
-                    <td>
-                      {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
-                        {{ render_nested_value(subvalue) }}
-                      {% else %}
-                        {{ subvalue }}
-                      {% endif %}
-                    </td>
-                  </tr>
-                {% endfor %}
-              </table>
-            {% elif value is iterable and not value is string %}
-              <div class="nested-block">
-                {% for item in value %}
-                  <div class="nested-item">
-                    {% if item is mapping %}
-                      {{ render_nested_value(item) }}
-                    {% else %}
-                      {{ item }}
-                    {% endif %}
-                  </div>
-                {% endfor %}
-              </div>
-            {% else %}
-              {{ value }}
-            {% endif %}
-          </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endmacro %}
-
-{% macro render_nested_value(value) %}
-  {% if value is mapping %}
-    <table class="info-table nested">
-      {% for subkey, subvalue in value.items() %}
-        <tr>
-          <th>{{ subkey.replace('_', ' ') | title }}</th>
-          <td>
-            {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
-              {{ render_nested_value(subvalue) }}
-            {% else %}
-              {{ subvalue }}
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% elif value is iterable and not value is string %}
-    <div class="nested-block">
-      {% for item in value %}
-        <div class="nested-item">
-          {% if item is mapping %}
-            {{ render_nested_value(item) }}
-          {% else %}
-            {{ item }}
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    {{ value }}
-  {% endif %}
-{% endmacro %}
-<!-- removed css sy-->
 {% block content %}
 <div class="document-detail">
   <div class="detail-container">
@@ -144,23 +48,26 @@
 
         <!-- Render All Extracted Entities -->
         {% if document.extracted_entities %}
-        <div class="info-section">
-          <h2>Extracted Entities</h2>
-          {% for type, entities in document.extracted_entities | groupby('type') %}
-            <div class="entity-group">
-              <h3>{{ type }}</h3>
-              <ul>
-                {% for entity in entities %}
-                  <li>{{ entity.text }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          {% endfor %}
-  </div>
-{% endif %}
+          <div class="info-section">
+            <h2>Extracted Entities</h2>
+            {% for type, entities in document.extracted_entities | groupby('type') %}
+              <div class="entity-group">
+                <h3>{{ type }}</h3>
+                <ul>
+                  {% for entity in entities %}
+                    <li>{{ entity.text }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
     </div>
-    
+
+    <!-- Resizer Element -->
+    <div class="resizer"></div>
+
     <!-- Image Panel -->
     <div class="image-panel">
       {% if image_exists %}
@@ -179,32 +86,26 @@
             <label for="brightnessRange">Brightness:</label>
             <input type="range" id="brightnessRange" min="0.5" max="1.5" step="0.1" value="1" title="1">
           </div>
-          
           <div class="control-group">
             <label for="contrastRange">Contrast:</label>
             <input type="range" id="contrastRange" min="0.5" max="2" step="0.1" value="1" title="1">
           </div>
-          
           <div class="control-group">
             <label for="saturationRange">Saturation:</label>
             <input type="range" id="saturationRange" min="0" max="3" step="0.1" value="1" title="1">
           </div>
-          
           <div class="control-group">
             <label for="hueRange">Hue Rotation:</label>
             <input type="range" id="hueRange" min="0" max="360" step="10" value="0" title="0">
           </div>
-          
           <div class="control-group">
             <label for="sharpenRange">Sharpen:</label>
             <input type="range" id="sharpenRange" min="0" max="5" step="0.1" value="0" title="0">
           </div>
-          
           <div class="control-group">
             <label for="thresholdRange">Threshold:</label>
             <input type="range" id="thresholdRange" min="0" max="255" step="1" value="128" title="128">
           </div>
-          
           <div class="buttons-group">
             <button id="grayscaleBtn">Grayscale</button>
             <button id="sepiaBtn">Sepia</button>
@@ -220,7 +121,6 @@
           <filter id="sharpen">
             <feConvolveMatrix in="SourceGraphic" order="3" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0" />
           </filter>
-          
           <!-- Threshold Filter -->
           <filter id="threshold">
             <feComponentTransfer>
@@ -246,7 +146,6 @@
         </div>
       {% endif %}
     </div>
-    
   </div>
 </div>
 {% endblock %}
@@ -254,6 +153,7 @@
 {% block scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // Image Manipulation Code
     let scale = 1;
     let rotation = 0;
     const ZOOM_STEP = 0.1;
@@ -380,14 +280,12 @@
     grayscaleBtn.addEventListener('click', () => {
       isGrayscale = !isGrayscale;
       if (isGrayscale) isSepia = false;
-      sepiaBtn.textContent = isGrayscale ? 'Sepia' : 'Sepia';
       updateFilters();
     });
 
     sepiaBtn.addEventListener('click', () => {
       isSepia = !isSepia;
       if (isSepia) isGrayscale = false;
-      grayscaleBtn.textContent = isSepia ? 'Grayscale' : 'Grayscale';
       updateFilters();
     });
 
@@ -506,6 +404,136 @@
 
     // Initial Filter Setup
     updateFilters();
+
+    // Resizer Code
+    const resizer = document.querySelector('.resizer');
+    const leftSide = resizer.previousElementSibling;
+    const rightSide = resizer.nextElementSibling;
+
+    let x = 0;
+    let leftWidth = 0;
+
+    const mouseDownHandler = function (e) {
+      x = e.clientX;
+      leftWidth = leftSide.getBoundingClientRect().width;
+
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+    };
+
+    const mouseMoveHandler = function (e) {
+      const dx = e.clientX - x;
+      const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+      if (newLeftWidth > 10 && newLeftWidth < 90) { // Set min and max widths
+        leftSide.style.flexBasis = `${newLeftWidth}%`;
+        rightSide.style.flexBasis = `${100 - newLeftWidth}%`;
+      }
+    };
+
+    const mouseUpHandler = function () {
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
+
+    resizer.addEventListener('mousedown', mouseDownHandler);
   });
 </script>
 {% endblock %}
+
+<!-- Macros for rendering sections -->
+{% macro render_section(section) %}
+  <div class="info-section">
+    <h2>{{ section.section_name | replace('_', ' ') | title }}</h2>
+    <table class="info-table">
+      {% for field in section.fields %}
+        <tr>
+          <th>{{ field.field_name | replace('_', ' ') | title }}</th>
+          <td>
+            {{ field.value if field.value is not none else 'N/A' }}
+            {% if field.linked_information %}
+              {{ render_linked_information(field.linked_information) }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro render_linked_information(linked_info) %}
+  {% if linked_info %}
+    <div class="linked-information">
+      <h4>Linked Information:</h4>
+      {% for key, value in linked_info.items() %}
+        {% if value %}
+          <div class="linked-section">
+            <h5>{{ key.replace('_', ' ') | title }}</h5>
+            {% if value is mapping %}
+              <table class="info-table nested">
+                {% for subkey, subvalue in value.items() %}
+                  <tr>
+                    <th>{{ subkey.replace('_', ' ') | title }}</th>
+                    <td>
+                      {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
+                        {{ render_nested_value(subvalue) }}
+                      {% else %}
+                        {{ subvalue }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            {% elif value is iterable and not value is string %}
+              <div class="nested-block">
+                {% for item in value %}
+                  <div class="nested-item">
+                    {% if item is mapping %}
+                      {{ render_nested_value(item) }}
+                    {% else %}
+                      {{ item }}
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              {{ value }}
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro render_nested_value(value) %}
+  {% if value is mapping %}
+    <table class="info-table nested">
+      {% for subkey, subvalue in value.items() %}
+        <tr>
+          <th>{{ subkey.replace('_', ' ') | title }}</th>
+          <td>
+            {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
+              {{ render_nested_value(subvalue) }}
+            {% else %}
+              {{ subvalue }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% elif value is iterable and not value is string %}
+    <div class="nested-block">
+      {% for item in value %}
+        <div class="nested-item">
+          {% if item is mapping %}
+            {{ render_nested_value(item) }}
+          {% else %}
+            {{ item }}
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {{ value }}
+  {% endif %}
+{% endmacro %}
