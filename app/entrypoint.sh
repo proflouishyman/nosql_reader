@@ -90,20 +90,20 @@ echo "Running database_setup.py..."
 python -m cProfile -o database_setup.prof database_setup.py
 echo "database_setup.py completed."
 
-# echo "Running data_processing.py..."
-# python -m cProfile -o data_processing.prof data_processing.py
-# echo "data_processing.py completed."
+echo "Running data_processing.py..."
+python -m cProfile -o data_processing.prof data_processing.py
+echo "data_processing.py completed."
 
-# echo "Running generate_unique_terms.py..."
-# python -m cProfile -o generate_unique_terms.prof generate_unique_terms.py
-# echo "generate_unique_terms.py completed."
+echo "Running generate_unique_terms.py..."
+python -m cProfile -o generate_unique_terms.prof generate_unique_terms.py
+echo "generate_unique_terms.py completed."
 
-# echo "NER Processing"
-# python -m cProfile -o ner_processing.prof ner_processing.py
+echo "NER Processing"
+python -m cProfile -o ner_processing.prof ner_processing.py
 
-# echo "Running entity_linking.py..."
-# python -m cProfile -o entity_linking.prof entity_linking.py
-# echo "entity_linking.py completed."
+echo "Running entity_linking.py..."
+python -m cProfile -o entity_linking.prof entity_linking.py
+echo "entity_linking.py completed."
 
 echo "Setup scripts completed. Starting Flask app..."
 
