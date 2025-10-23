@@ -281,6 +281,24 @@ button.secondary:hover,
     box-shadow: none;
 }
 
+.button--icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    line-height: 1;
+    background: #e2e8f0;
+    color: #1e293b;
+    box-shadow: none;
+}
+
+.button--icon:hover,
+.button--icon:focus {
+    background: #cbd5f5;
+    color: #1e40af;
+}
+
 .button--secondary:hover,
 .button--secondary:focus,
 .button.secondary:hover,
@@ -1529,6 +1547,36 @@ input[type="range"] {
 
 .form-field__hint--selection {
     color: var(--color-text-muted, #4b5563);
+}
+
+.directory-selection__status {
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #4b5563);
+}
+
+.directory-selection__item[data-state="running"] .directory-selection__status {
+    color: var(--color-accent, #2563eb);
+}
+
+.directory-selection__item[data-state="success"] .directory-selection__status {
+    color: var(--color-success, #10793f);
+}
+
+.directory-selection__item[data-state="error"] .directory-selection__status {
+    color: var(--color-danger, #b00020);
+}
+
+.directory-selection__message {
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #4b5563);
+}
+
+.directory-selection__item[data-state="success"] .directory-selection__message {
+    color: var(--color-success, #10793f);
+}
+
+.directory-selection__item[data-state="error"] .directory-selection__message {
+    color: var(--color-danger, #b00020);
 }
 .help-page {
     display: grid;
