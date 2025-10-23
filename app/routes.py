@@ -1077,8 +1077,6 @@ def settings():
 def data_ingestion_options():
     """Return configuration details for the image ingestion pipeline."""
 
-    # The UI periodically requests this to populate dropdowns and placeholders
-    # without hard-coding model lists or defaults in JavaScript.
     base_url = request.args.get('ollama_base_url') or image_ingestion.DEFAULT_OLLAMA_BASE_URL
     models = image_ingestion.ollama_models(base_url)
     return jsonify({
@@ -1108,10 +1106,8 @@ def settings_run_data_ingestion():
     try:
         candidate = Path(directory_raw)
         if candidate.is_absolute():
-            # Allow the user to target any absolute path (e.g. an external drive).
             directory_path = image_ingestion.expand_directory(directory_raw)
         else:
-            # Relative paths are resolved against the configured archives root.
             directory_path = (_archives_root() / candidate).resolve()
     except Exception as exc:
         return jsonify({'status': 'error', 'message': f'Invalid directory: {exc}'}), 400
@@ -1146,8 +1142,6 @@ def settings_run_data_ingestion():
                 'message': 'Provide an OpenAI API key before running ingestion.',
             }), 400
 
-    # Bundle all runtime parameters into a dataclass so the ingestion module can
-    # treat UI and CLI calls identically.
     config = image_ingestion.ModelConfig(
         provider=provider,
         model=model,
@@ -1175,8 +1169,6 @@ def settings_run_data_ingestion():
         'directory': str(directory_path),
     }
     if provider == 'openai':
-        # Signal to the frontend that the key was persisted this run so it can
-        # display a friendly confirmation message.
         response['api_key_saved'] = key_saved
 
     return jsonify(response)
@@ -1191,8 +1183,6 @@ def settings_save_data_ingestion_key():
     if not api_key:
         return jsonify({'status': 'error', 'message': 'Provide an API key to save.'}), 400
 
-    # Persist the key to the configured location so subsequent runs can reuse it
-    # without prompting the operator again.
     image_ingestion.ensure_api_key(api_key)
     return jsonify({'status': 'ok'})
 
