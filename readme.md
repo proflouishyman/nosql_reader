@@ -179,7 +179,7 @@ When an override is active, the sidebar displays a badge showing the active prov
 | Follow logs for all services | `docker compose logs -f` |
 | Run ingestion manually inside app container | `docker compose exec flask_app ./bootstrap_data.sh` |
 | Drop into a shell inside Flask container | `docker compose exec flask_app bash` |
-| Drop into MongoDB shell | `docker compose exec mongodb mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD"` |
+| Drop into MongoDB shell | `docker compose exec mongodb mongosh -u "$MONGO_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin` |
 | Stop and remove containers | `docker compose down` |
 | Stop containers and clear volumes | `docker compose down -v` (Use with caution; this deletes MongoDB data.) |
 
