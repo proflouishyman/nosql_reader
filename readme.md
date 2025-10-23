@@ -105,10 +105,12 @@ When you change any setting, the LangChain pipeline is rebuilt automatically and
 Open **UI Settings → Data ingestion** to add new source material to the ingestion directory defined by `ARCHIVES_PATH` (inside the container) and `ARCHIVES_HOST_PATH` (on the host). The section lets you:
 
 - Upload one or many `.json` or `.jsonl` files with an optional subfolder path.
+- Queue image folders for processing via the native folder picker. Each selection is listed so you can review the directories that will run before starting the pipeline.
+- Watch live status updates as each folder is processed, including generated JSON counts and any errors surfaced by the backend.
 - Review a snapshot of the most recent files already present in the archive directory.
 - Download a ZIP bundle of every archive file while preserving the folder structure for offline analysis or backups.
 
-Uploaded files are saved immediately. The next time you run `data_processing.py`—either manually or via `bootstrap_data.sh`—the new documents will be hashed, validated, and inserted if they have not been seen before.
+Uploaded files are saved immediately. Folder selections are resolved relative to the configured archive root, so you can click **Choose folder…** repeatedly to add multiple directories before pressing **Process images**. The next time you run `data_processing.py`—either manually or via `bootstrap_data.sh`—the new documents will be hashed, validated, and inserted if they have not been seen before.
 
 ### Data ingestion and maintenance
 

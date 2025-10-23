@@ -1578,6 +1578,36 @@ input[type="range"] {
 .directory-selection__item[data-state="error"] .directory-selection__message {
     color: var(--color-danger, #b00020);
 }
+
+.directory-selection__status {
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #4b5563);
+}
+
+.directory-selection__item[data-state="running"] .directory-selection__status {
+    color: var(--color-accent, #2563eb);
+}
+
+.directory-selection__item[data-state="success"] .directory-selection__status {
+    color: var(--color-success, #10793f);
+}
+
+.directory-selection__item[data-state="error"] .directory-selection__status {
+    color: var(--color-danger, #b00020);
+}
+
+.directory-selection__message {
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #4b5563);
+}
+
+.directory-selection__item[data-state="success"] .directory-selection__message {
+    color: var(--color-success, #10793f);
+}
+
+.directory-selection__item[data-state="error"] .directory-selection__message {
+    color: var(--color-danger, #b00020);
+}
 .help-page {
     display: grid;
     gap: 32px;

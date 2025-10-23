@@ -8,7 +8,15 @@ MAX_RETRIES=${MONGO_MAX_RETRIES:-10}
 SLEEP_TIME=${MONGO_RETRY_DELAY:-5}
 MONGO_HOST=${MONGO_HOST:-mongodb}
 MONGO_PORT=${MONGO_PORT:-27017}
-MONGO_URI=${MONGO_URI:-"mongodb://admin:secret@${MONGO_HOST}:${MONGO_PORT}/admin"}
+
+if [ -z "${MONGO_URI}" ]; then
+    MONGO_URI=$(python - <<'PY'
+from app.util.mongo_env import build_mongo_uri
+
+print(build_mongo_uri(), end="")
+PY
+    )
+fi
 
 echo "MONGO_URI is set to: ${MONGO_URI}"
 echo "Waiting for MongoDB to be ready...REALLY REAL"
