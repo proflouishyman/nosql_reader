@@ -25,14 +25,6 @@ The Historical Document Reader is a Flask application that helps historians and 
 - **Historian Agent** – A Retrieval-Augmented Generation (RAG) assistant built on LangChain. It can target either local Ollama models or hosted OpenAI models and always includes citations for the supporting documents it retrieved from MongoDB.
 - **Archive management UI** – Upload additional JSON records directly from the web interface so the ingestion pipeline can pick them up without touching the server filesystem.
 
-## Core capabilities
-
-- **Rich search experience** – Multi-field search with AND/OR controls, paginated result sets, and CSV export so researchers can triage documents quickly.
-- **Flexible document viewer** – Detail pages surface high-value metadata, associated media, and navigation shortcuts informed by the user’s search context.
-- **Configurable UI** – All UI settings, field groupings, and layout choices are reloaded per-request from `config.json`, making it easy to experiment with presentation changes without redeploying.
-- **Historian Agent** – A Retrieval-Augmented Generation (RAG) assistant built on LangChain. It can target either local Ollama models or hosted OpenAI models and always includes citations for the supporting documents it retrieved from MongoDB.
-- **Archive management UI** – Upload additional JSON records directly from the web interface so the ingestion pipeline can pick them up without touching the server filesystem.
-
 ## Repository structure
 
 ```
@@ -63,17 +55,17 @@ nosql_reader/
    cd nosql_reader
    ```
 
-3. **Prepare local directories**
-   Create host directories to hold stateful data that should not live inside containers:
-   - `ARCHIVES_HOST_PATH` – path to your raw JSON archives
-   - `ARCHIVES_HOST_PATH/images` (optional but recommended) – companion images referenced by archive JSON files
-   - `MONGO_DATA_HOST_PATH` – path for MongoDB’s data files
-   - `SESSION_HOST_PATH` – path for persisted Flask session data
+3. **Run the bootstrap script**
+   Use the interactive helper to create the default host directories one level above the repository and synchronise them with `.env`:
+   ```bash
+   bash scripts/initial_setup.sh
+   ```
+   The script will confirm the target paths (for archives, MongoDB data, and Flask session storage), copy `.env.example` to `.env` if needed, and update the directory-related variables. After preparing the folders it offers to rotate the MongoDB root username/password while keeping the ready-to-use defaults (`admin` / `change-me`). You can safely rerun it anytime you want to regenerate the defaults or adjust credentials.
 
-4. **Configure environment variables**
-   - Copy `.env.example` to `.env` and update the paths and credentials.
+4. **Review environment variables**
+   - Open `.env` to verify the paths written by the setup script and tweak any credentials or feature flags.
    - Specify whether the Historian Agent should use Ollama or OpenAI by editing `HISTORIAN_AGENT_MODEL_PROVIDER` and its companion variables.
-   - Provide `SECRET_KEY`, `MONGO_INITDB_ROOT_USERNAME`, and `MONGO_INITDB_ROOT_PASSWORD` for a secure deployment.
+   - Provide a unique `SECRET_KEY`. MongoDB defaults to `MONGO_ROOT_USERNAME=admin` and `MONGO_ROOT_PASSWORD=change-me`; change them in `.env` or via the setup script before production use.
 
 5. **Start the stack**
    ```bash

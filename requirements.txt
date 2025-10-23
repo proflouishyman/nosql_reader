@@ -1,9 +1,2 @@
-bson
-python-dotenv
-openai
-pymongo
-rapidfuzz
-requests
-spacy
-torch
-tqdm
+# Reuse the application dependency set by default so local installs match the Docker image.
+-r app/requirements.txt
