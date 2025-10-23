@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Error</h1>
-    <p>{{ message }}</p>
-    <a href="{{ url_for('index') }}">Return to Home</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Error · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container error-page">
+    <h1>Something went wrong</h1>
+    <p>{{ message or 'An unexpected error occurred. Please try again later.' }}</p>
+    <a class="button" href="{{ url_for('index') }}">Return home</a>
+</div>
+{% endblock %}

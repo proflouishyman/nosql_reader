@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Search Database · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container search-page">
+    <header class="search-page__header">
+        <h1>Search the archives</h1>
+        <p>Combine multiple fields with Boolean operators to target precise records. Need a vocabulary overview? <a href="{{ url_for('search_terms') }}">Open the unique terms explorer</a>.</p>
+    </header>
+
+    <form id="searchForm" class="search-form">
+        <div id="searchFields" class="search-form__fields">
+            {% for i in range(1, num_search_fields + 1) %}
+            <div class="search-field">
+                <label for="field{{ i }}">Field</label>
+                <select name="field{{ i }}" id="field{{ i }}">
+                    <option value="" disabled selected>Select a field</option>
+                    {% for field in field_structure|dictsort %}
+                    <option value="{{ field[0] }}">{{ field[0] }}</option>
+                    {% endfor %}
+                </select>
+                <label for="operator{{ i }}">Operator</label>
+                <select name="operator{{ i }}" id="operator{{ i }}">
+                    <option value="AND">AND</option>
+                    <option value="OR">OR</option>
+                    <option value="NOT">NOT</option>
+                </select>
+                <label for="searchTerm{{ i }}">Search term</label>
+                <input type="text" name="searchTerm{{ i }}" id="searchTerm{{ i }}" placeholder="Enter search term">
+            </div>
+            {% endfor %}
+        </div>
+        <div class="search-form__actions">
+            <button type="submit" id="searchButton">Search</button>
+            <button id="exportSelectedCsv" class="secondary" style="display: none;">Export selected to CSV</button>
+        </div>
+    </form>
+
+    <div id="loadingIndicator" class="loading-indicator" hidden>
+        <div class="spinner"></div>
+        <p>Loading… Please wait.</p>
+    </div>
+
+    <button id="cancelSearch" class="secondary" hidden>Cancel search</button>
+    <div id="totalResults" class="search-page__meta"></div>
+    <div id="results" class="search-page__results" aria-live="polite"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}

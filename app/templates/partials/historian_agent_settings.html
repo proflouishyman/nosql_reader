@@ -1,0 +1,80 @@
+<div class="agent-settings" id="agentSettings" data-config-endpoint="{{ config_endpoint }}">
+    <div class="agent-settings__header">
+        <h3>Historian Agent configuration</h3>
+        <p>Tune provider credentials, retrieval parameters, and prompts for the ChatBot experience.</p>
+        {% if agent_error %}
+        <div class="agent-alert agent-alert--error" role="alert">{{ agent_error }}</div>
+        {% endif %}
+    </div>
+    <form id="agentSettingsForm" class="agent-settings__form" novalidate>
+        <div class="form-field form-field--toggle">
+            <label for="agentEnabled">
+                <span>Enable Historian Agent</span>
+                <input type="checkbox" id="agentEnabled" name="enabled" {% if agent_config_payload.enabled %}checked{% endif %}>
+            </label>
+            <p class="form-field__hint">Disable to pause the ChatBot without removing your settings.</p>
+        </div>
+        <div class="form-field">
+            <label for="agentModelProvider">Model provider</label>
+            <select id="agentModelProvider" name="model_provider">
+                {% for option in provider_options %}
+                <option value="{{ option.value }}" {% if option.value == agent_config_payload.model_provider %}selected{% endif %}>{{ option.label }}</option>
+                {% endfor %}
+            </select>
+            <p class="form-field__hint">Choose between a local Ollama host or a hosted LLM provider.</p>
+        </div>
+        <div class="agent-provider agent-provider--ollama" data-provider="ollama" {% if agent_config_payload.model_provider != 'ollama' %}hidden{% endif %}>
+            <div class="form-field">
+                <label for="agentOllamaBaseUrl">Ollama base URL</label>
+                <input type="text" id="agentOllamaBaseUrl" name="ollama_base_url" value="{{ agent_config_payload.ollama_base_url }}" placeholder="http://localhost:11434">
+                <p class="form-field__hint">Point to the Ollama service inside Docker or on your workstation.</p>
+            </div>
+        </div>
+        <div class="agent-provider agent-provider--openai" data-provider="openai" {% if agent_config_payload.model_provider != 'openai' %}hidden{% endif %}>
+            <div class="form-field">
+                <label for="agentOpenAiKey">OpenAI API key</label>
+                <input type="password" id="agentOpenAiKey" name="openai_api_key" value="" placeholder="{% if agent_config_payload.openai_api_key_present %}API key configured{% else %}Enter OpenAI API key{% endif %}">
+                <p class="form-field__hint">Keys are stored in your encrypted Flask session. Leave blank to keep the current key.</p>
+            </div>
+        </div>
+        <div class="form-field">
+            <label for="agentModelName">Model name</label>
+            <input type="text" id="agentModelName" name="model_name" value="{{ agent_config_payload.model_name }}" placeholder="llama3">
+        </div>
+        <div class="form-field form-field--grid">
+            <div>
+                <label for="agentTemperature">Temperature</label>
+                <input type="number" id="agentTemperature" name="temperature" step="0.1" min="0" max="2" value="{{ '%.2f'|format(agent_config_payload.temperature) }}">
+            </div>
+            <div>
+                <label for="agentContextDocuments">Context documents</label>
+                <input type="number" id="agentContextDocuments" name="max_context_documents" min="1" value="{{ agent_config_payload.max_context_documents }}">
+            </div>
+        </div>
+        <div class="form-field">
+            <label for="agentSystemPrompt">System prompt</label>
+            <textarea id="agentSystemPrompt" name="system_prompt" rows="4">{{ agent_config_payload.system_prompt }}</textarea>
+        </div>
+        <div class="form-field">
+            <label for="agentContextFields">Context fields</label>
+            <textarea id="agentContextFields" name="context_fields" rows="3">{{ agent_config_payload.context_fields | join('\n') }}</textarea>
+            <p class="form-field__hint">Specify MongoDB fields to inspect, one per line.</p>
+        </div>
+        <div class="form-field">
+            <label for="agentSummaryField">Summary fallback field</label>
+            <input type="text" id="agentSummaryField" name="summary_field" value="{{ agent_config_payload.summary_field }}" placeholder="content">
+        </div>
+        <div class="form-field form-field--toggle">
+            <label for="agentAllowFallback">
+                <span>Allow summary fallback</span>
+                <input type="checkbox" id="agentAllowFallback" name="allow_general_fallback" {% if agent_config_payload.allow_general_fallback %}checked{% endif %}>
+            </label>
+            <p class="form-field__hint">Use the summary field when direct snippets are unavailable.</p>
+        </div>
+        <div class="agent-settings__actions">
+            <button type="submit">Save configuration</button>
+            <button type="button" id="agentSettingsReset" class="secondary">Reset to defaults</button>
+        </div>
+        <div class="agent-config-status" id="agentConfigStatus" role="status" aria-live="polite" hidden></div>
+    </form>
+</div>

@@ -1,64 +1,136 @@
-<!-- File: templates/settings.html -->
-
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}UI Settings · Historical Document Reader{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Settings</h1>
-    <form method="POST">
-        <h2>Fonts</h2>
-        <label for="fonts_main">Main Font:</label>
-        <input type="text" id="fonts_main" name="fonts[main]" value="{{ config['fonts']['main'] }}"><br>
-        <label for="fonts_headers">Headers Font:</label>
-        <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config['fonts']['headers'] }}"><br>
+<div class="container settings-page">
+    <h1>User interface &amp; ingestion settings</h1>
 
-        <h2>Sizes</h2>
-        <label for="sizes_base">Base Size:</label>
-        <input type="text" id="sizes_base" name="sizes[base]" value="{{ config['sizes']['base'] }}"><br>
-        <label for="sizes_h1">H1 Size:</label>
-        <input type="text" id="sizes_h1" name="sizes[h1]" value="{{ config['sizes']['h1'] }}"><br>
-        <label for="sizes_h2">H2 Size:</label>
-        <input type="text" id="sizes_h2" name="sizes[h2]" value="{{ config['sizes']['h2'] }}"><br>
-        <label for="sizes_h3">H3 Size:</label>
-        <input type="text" id="sizes_h3" name="sizes[h3]" value="{{ config['sizes']['h3'] }}"><br>
+    <section id="ui-preferences" class="settings-section">
+        <div class="settings-section__header">
+            <h2>Interface appearance</h2>
+            <p>Customise fonts, sizing, and colour tokens used across the application.</p>
+        </div>
+        <form method="POST" class="settings-form">
+            <input type="hidden" name="action" value="update_ui">
+            <div class="settings-grid">
+                <div class="settings-group">
+                    <h3>Fonts</h3>
+                    <label for="fonts_main">Main font</label>
+                    <input type="text" id="fonts_main" name="fonts[main]" value="{{ config.get('fonts', {}).get('main', '') }}">
+                    <label for="fonts_headers">Header font</label>
+                    <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config.get('fonts', {}).get('headers', '') }}">
+                </div>
+                <div class="settings-group">
+                    <h3>Sizes</h3>
+                    <label for="sizes_base">Base size</label>
+                    <input type="text" id="sizes_base" name="sizes[base]" value="{{ config.get('sizes', {}).get('base', '') }}">
+                    <label for="sizes_h1">Heading 1</label>
+                    <input type="text" id="sizes_h1" name="sizes[h1]" value="{{ config.get('sizes', {}).get('h1', '') }}">
+                    <label for="sizes_h2">Heading 2</label>
+                    <input type="text" id="sizes_h2" name="sizes[h2]" value="{{ config.get('sizes', {}).get('h2', '') }}">
+                    <label for="sizes_h3">Heading 3</label>
+                    <input type="text" id="sizes_h3" name="sizes[h3]" value="{{ config.get('sizes', {}).get('h3', '') }}">
+                </div>
+                <div class="settings-group">
+                    <h3>Colours</h3>
+                    <label for="colors_primary">Primary colour</label>
+                    <input type="color" id="colors_primary" name="colors[primary]" value="{{ config.get('colors', {}).get('primary', '#2A4365') }}">
+                    <label for="colors_secondary">Secondary colour</label>
+                    <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config.get('colors', {}).get('secondary', '#718096') }}">
+                    <label for="colors_background">Background</label>
+                    <input type="color" id="colors_background" name="colors[background]" value="{{ config.get('colors', {}).get('background', '#ffffff') }}">
+                    <label for="colors_text">Text</label>
+                    <input type="color" id="colors_text" name="colors[text]" value="{{ config.get('colors', {}).get('text', '#1a202c') }}">
+                </div>
+                <div class="settings-group">
+                    <h3>Spacing</h3>
+                    <label for="spacing_small">Small spacing</label>
+                    <input type="text" id="spacing_small" name="spacing[small]" value="{{ config.get('spacing', {}).get('small', '0.5rem') }}">
+                    <label for="spacing_medium">Medium spacing</label>
+                    <input type="text" id="spacing_medium" name="spacing[medium]" value="{{ config.get('spacing', {}).get('medium', '1rem') }}">
+                    <label for="spacing_large">Large spacing</label>
+                    <input type="text" id="spacing_large" name="spacing[large]" value="{{ config.get('spacing', {}).get('large', '2rem') }}">
+                </div>
+            </div>
+            <button type="submit">Save UI preferences</button>
+        </form>
+    </section>
 
-        <h2>Colors</h2>
-        <label for="colors_primary">Primary Color:</label>
-        <input type="color" id="colors_primary" name="colors[primary]" value="{{ config['colors']['primary'] }}"><br>
-        <label for="colors_secondary">Secondary Color:</label>
-        <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config['colors']['secondary'] }}"><br>
-        <label for="colors_background">Background Color:</label>
-        <input type="color" id="colors_background" name="colors[background]" value="{{ config['colors']['background'] }}"><br>
-        <label for="colors_text">Text Color:</label>
-        <input type="color" id="colors_text" name="colors[text]" value="{{ config['colors']['text'] }}"><br>
+    <section id="data-ingestion" class="settings-section">
+        <div class="settings-section__header">
+            <h2>Data ingestion</h2>
+            <p>Upload additional archive files and download the current corpus snapshot. Files are stored in <code>{{ archive_root }}</code>.</p>
+        </div>
+        <form method="POST" enctype="multipart/form-data" class="settings-form" id="archiveUploadForm">
+            <input type="hidden" name="action" value="upload_archives">
+            <div class="settings-grid">
+                <div class="settings-group">
+                    <label for="targetSubdir">Optional subfolder</label>
+                    <input type="text" id="targetSubdir" name="target_subdir" placeholder="e.g. 1944/reports">
+                    <p class="form-field__hint">Use forward slashes to create nested folders. Unsafe characters are removed automatically.</p>
+                </div>
+                <div class="settings-group">
+                    <label for="archiveFiles">Choose JSON files</label>
+                    <input type="file" id="archiveFiles" name="archives" accept=".json,.jsonl" multiple required>
+                    <p class="form-field__hint">Supported formats: <code>.json</code> and <code>.jsonl</code>.</p>
+                </div>
+            </div>
+            <button type="submit">Upload files</button>
+        </form>
+        <div class="settings-ingestion__summary">
+            <a class="button button--secondary" href="{{ url_for('download_all_archives') }}">Download all archives</a>
+            {% if archive_files %}
+            <ul class="settings-ingestion__list">
+                {% for item in archive_files %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+            {% if archive_list_truncated %}
+            <p class="form-field__hint">Listing limited to the first {{ archive_files|length }} files. Inspect the archive directory for the full catalogue.</p>
+            {% endif %}
+            {% else %}
+            <p class="form-field__hint">No files uploaded yet.</p>
+            {% endif %}
+        </div>
+    </section>
 
-        <h2>Spacing</h2>
-        <label for="spacing_small">Small Spacing:</label>
-        <input type="text" id="spacing_small" name="spacing[small]" value="{{ config['spacing']['small'] }}"><br>
-        <label for="spacing_medium">Medium Spacing:</label>
-        <input type="text" id="spacing_medium" name="spacing[medium]" value="{{ config['spacing']['medium'] }}"><br>
-        <label for="spacing_large">Large Spacing:</label>
-        <input type="text" id="spacing_large" name="spacing[large]" value="{{ config['spacing']['large'] }}"><br>
-
-        <button type="submit">Save Settings</button>
-    </form>
+    <section id="chatbot-settings" class="settings-section">
+        <div class="settings-section__header">
+            <h2>ChatBot configuration</h2>
+            <p>Adjust model providers, prompts, and retrieval limits for the Historian Agent. Changes apply immediately for your session.</p>
+        </div>
+        {% include 'partials/historian_agent_settings.html' with context %}
+    </section>
 </div>
+<script id="historianAgentConfigData" type="application/json">{{ agent_config_payload | tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
 <script>
-    // Convert nested objects to JSON strings before form submission
-    document.querySelector('form').addEventListener('submit', function(e) {
+(function() {
+    const form = document.querySelector('#ui-preferences form');
+    if (!form) return;
+    form.addEventListener('submit', function(event) {
         ['fonts', 'sizes', 'colors', 'spacing'].forEach(function(key) {
-            var inputs = document.querySelectorAll(`[name^="${key}\\["]`);
-            var obj = {};
+            const inputs = form.querySelectorAll(`[name^="${key}\\["]`);
+            const payload = {};
             inputs.forEach(function(input) {
-                var prop = input.name.match(/\[(.*?)\]/)[1];
-                obj[prop] = input.value;
+                const match = input.name.match(/\[(.*?)\]/);
+                if (!match) return;
+                payload[match[1]] = input.value;
             });
-            var hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = key;
-            hiddenInput.value = JSON.stringify(obj);
-            this.appendChild(hiddenInput);
-        }, this);
+            let hidden = form.querySelector(`input[name="${key}"]`);
+            if (!hidden) {
+                hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = key;
+                form.appendChild(hidden);
+            }
+            hidden.value = JSON.stringify(payload);
+        });
     });
+})();
 </script>
+<script src="{{ url_for('static', filename='historian_agent.js') }}"></script>
 {% endblock %}

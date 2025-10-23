@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Home · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container home">
+    <section class="home-hero">
+        <h1>Welcome to the Historical Document Reader</h1>
+        <p class="home-hero__lead">Explore digitised archives, surface relevant records with full-text search, and interrogate the collection using the Historian ChatBot.</p>
+        <div class="home-hero__actions">
+            <a class="button" href="{{ url_for('search_database') }}">Start searching</a>
+            <a class="button button--secondary" href="{{ url_for('historian_agent_page') }}">Ask the ChatBot</a>
+        </div>
+    </section>
+
+    <section class="home-sections">
+        <article class="home-card">
+            <h2><i class="fa-solid fa-magnifying-glass"></i> Search Database</h2>
+            <p>Compose multi-field queries, filter by metadata, and export curated document sets as CSV.</p>
+            <a href="{{ url_for('search_database') }}" class="home-card__link">Launch search</a>
+        </article>
+        <article class="home-card">
+            <h2><i class="fa-solid fa-comments"></i> ChatBot</h2>
+            <p>Ask free-form questions about the archives and receive contextual answers with source citations.</p>
+            <a href="{{ url_for('historian_agent_page') }}" class="home-card__link">Chat with the Historian Agent</a>
+        </article>
+        <article class="home-card">
+            <h2><i class="fa-solid fa-database"></i> Database Information</h2>
+            <p>Review collection field coverage to understand how metadata is distributed across documents.</p>
+            <a href="{{ url_for('database_info') }}" class="home-card__link">View database insights</a>
+        </article>
+        <article class="home-card">
+            <h2><i class="fa-solid fa-sliders"></i> UI &amp; Ingestion Settings</h2>
+            <p>Manage interface preferences, upload new archives for processing, and configure the Historian Agent.</p>
+            <a href="{{ url_for('settings') }}" class="home-card__link">Open settings</a>
+        </article>
+        <article class="home-card">
+            <h2><i class="fa-solid fa-circle-question"></i> Help Centre</h2>
+            <p>Follow setup guides, learn the data flow, and troubleshoot with best practices taken from the README.</p>
+            <a href="{{ url_for('help_page') }}" class="home-card__link">Read the help guide</a>
+        </article>
+    </section>
+</div>
+{% endblock %}

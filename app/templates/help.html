@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Help · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container help-page">
+    <h1>Help centre</h1>
+    <p class="help-intro">This guide condenses the key workflows from the README so you can set up the stack, explore the UI, and troubleshoot common issues without leaving the application.</p>
+
+    <section id="getting-started" class="help-section">
+        <h2>Getting started</h2>
+        <ol>
+            <li>
+                <strong>Install prerequisites</strong>
+                <ul>
+                    <li>Docker Engine 24 or newer and the Docker Compose plugin.</li>
+                    <li>Git and Python 3.10+ if you plan to run helper scripts locally.</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Clone the repository</strong>
+                <pre><code>git clone https://github.com/proflouishyman/nosql_reader.git
+cd nosql_reader</code></pre>
+            </li>
+            <li>
+                <strong>Run the interactive setup</strong>
+                <p>Execute <code>bash scripts/initial_setup.sh</code> to create the host directories one level above the repository, populate <code>.env</code>, and optionally rotate the default MongoDB credentials (<code>admin</code>/<code>change-me</code>).</p>
+            </li>
+            <li>
+                <strong>Review environment variables</strong>
+                <p>Open <code>.env</code> to confirm archive paths, choose the Historian Agent provider (<code>ollama</code> or <code>openai</code>), and set a secure <code>SECRET_KEY</code>. The defaults work out of the box for local development.</p>
+            </li>
+            <li>
+                <strong>Start the stack</strong>
+                <pre><code>docker compose up --build</code></pre>
+                <p>Flask will listen on <code>http://localhost:5000</code> and MongoDB on <code>localhost:27017</code>.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="using-the-app" class="help-section">
+        <h2>Using the application</h2>
+        <article>
+            <h3>Search Database</h3>
+            <p>Select up to three fields, choose Boolean operators (AND/OR/NOT), and enter keywords. Results stream in batches with infinite scroll. Open any record to view the full document, navigate with Previous/Next controls, and export selected results to CSV.</p>
+        </article>
+        <article>
+            <h3>Historian ChatBot</h3>
+            <p>The ChatBot uses retrieval-augmented generation to cite primary sources. Suggested prompts help you get started. Configuration such as provider, temperature, context size, and API keys are now managed on the <a href="{{ url_for('settings') }}#chatbot-settings">UI Settings</a> page. Changes rebuild the pipeline instantly for your session.</p>
+        </article>
+        <article>
+            <h3>Data ingestion</h3>
+            <p>Upload <code>.json</code> or <code>.jsonl</code> archives from the settings page. Files are stored under the host directory managed by the setup script. Run <code>app/bootstrap_data.sh</code> (inside the container) or enable <code>RUN_BOOTSTRAP=1</code> to process new material automatically.</p>
+        </article>
+    </section>
+
+    <section id="operations" class="help-section">
+        <h2>Operations cheat-sheet</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Task</th>
+                    <th scope="col">Command</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Start stack in background</td>
+                    <td><code>docker compose up -d</code></td>
+                </tr>
+                <tr>
+                    <td>Follow logs</td>
+                    <td><code>docker compose logs -f</code></td>
+                </tr>
+                <tr>
+                    <td>Run ingestion manually</td>
+                    <td><code>docker compose exec nosql_reader_app ./bootstrap_data.sh</code></td>
+                </tr>
+                <tr>
+                    <td>Open MongoDB shell</td>
+                    <td><code>docker compose exec nosql_reader_mongodb mongosh -u "$MONGO_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD"</code></td>
+                </tr>
+                <tr>
+                    <td>Stop and remove containers</td>
+                    <td><code>docker compose down</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="troubleshooting" class="help-section">
+        <h2>Troubleshooting</h2>
+        <ul>
+            <li><strong>Historian Agent errors:</strong> Check the banner on the ChatBot page or the status message in settings. The configuration endpoint validates providers and reports missing API keys or unreachable Ollama hosts.</li>
+            <li><strong>MongoDB connection issues:</strong> Ensure the directories defined in <code>.env</code> exist and that Docker has permission to write to them. Inspect service logs with <code>docker compose logs nosql_reader_mongodb</code>.</li>
+            <li><strong>Archive ingestion:</strong> Confirm new files follow the recommended layout (JSON files mirroring media paths). The bootstrap script skips duplicates based on content hashes.</li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

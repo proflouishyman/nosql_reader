@@ -7,7 +7,7 @@
     <div class="info-panel">
       <!-- Navigation -->
       <div class="navigation">
-        <a href="{{ url_for('index') }}?return_to_search=true" class="nav-button" title="Return to Search Results">
+        <a href="{{ url_for('search_database') }}?return_to_search=true" class="nav-button" title="Return to Search Results">
           <span>Search</span>
         </a>
         <a href="{{ prev_id and url_for('document_detail', doc_id=prev_id, search_id=search_id) or '#' }}" class="nav-button {{ 'disabled' if not prev_id else '' }}" title="Previous Result">

@@ -77,7 +77,7 @@ nosql_reader/
 
 ### Accessing the web UI
 
-Open `http://localhost:5000` in your browser once Docker reports that the Flask container is ready. Every page includes a top navigation bar that links to the Search interface, Archive Files page, Historian Agent, and any other templates defined in `config.json`.
+Open `http://localhost:5000` in your browser once Docker reports that the Flask container is ready. The top navigation bar provides quick access to Home, Search Database, ChatBot, Database Information, UI Settings, and the in-app Help guide.
 
 ### Performing searches
 
@@ -102,7 +102,7 @@ When you change any setting, the LangChain pipeline is rebuilt automatically and
 
 ### Managing archive files
 
-Visit **Archive Files** in the navigation to add new source material to the ingestion directory defined by `ARCHIVES_PATH` (inside the container) and `ARCHIVES_HOST_PATH` (on the host). The page lets you:
+Open **UI Settings → Data ingestion** to add new source material to the ingestion directory defined by `ARCHIVES_PATH` (inside the container) and `ARCHIVES_HOST_PATH` (on the host). The section lets you:
 
 - Upload one or many `.json` or `.jsonl` files with an optional subfolder path.
 - Review a snapshot of the most recent files already present in the archive directory.
