@@ -95,9 +95,10 @@ def build_mongo_uri(existing: str) -> str:
     port = f":{parsed.port}" if parsed.port else ""
     path = parsed.path or "/admin"
     query = f"?{parsed.query}" if parsed.query else ""
-    username = "${MONGO_ROOT_USERNAME}"
-    password = "${MONGO_ROOT_PASSWORD}"
-    return f"{scheme}://{username}:{password}@{host}{port}{path}{query}"
+    return (
+        f"{scheme}://{os.environ['MONGO_USERNAME']}:{os.environ['MONGO_PASSWORD']}@"
+        f"{host}{port}{path}{query}"
+    )
 
 existing_uri_match = re.search(r"^APP_MONGO_URI=(.*)$", contents, re.MULTILINE)
 existing_uri = existing_uri_match.group(1) if existing_uri_match else ""
