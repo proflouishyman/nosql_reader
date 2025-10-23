@@ -20,9 +20,6 @@
         const openAiModelInput = form.querySelector('#imageIngestionOpenAiModel');
         const promptField = form.querySelector('#imageIngestionPrompt');
         const directoryInput = form.querySelector('#imageIngestionDirectory');
-        const directoryPicker = form.querySelector('#imageIngestionDirectoryPicker');
-        const directoryButton = form.querySelector('[data-directory-picker]');
-        const directoryPickedHint = form.querySelector('[data-directory-picked]');
         const reprocessInput = form.querySelector('#imageIngestionReprocess');
         const apiKeyRow = form.querySelector('[data-api-key-row]');
         const apiKeyInput = form.querySelector('#imageIngestionApiKey');
@@ -146,17 +143,6 @@
             }
         }
 
-        function updateDirectoryHint(directory) {
-            if (!directoryPickedHint) return;
-            if (directory) {
-                directoryPickedHint.textContent = `Selected folder: ${directory}`;
-                directoryPickedHint.hidden = false;
-            } else {
-                directoryPickedHint.hidden = true;
-                directoryPickedHint.textContent = '';
-            }
-        }
-
         async function fetchOptions(url) {
             const response = await fetch(url, { credentials: 'same-origin' });
             if (!response.ok) {
@@ -215,43 +201,6 @@
             } catch (error) {
                 setStatus(`Unable to refresh models: ${error.message}`, 'error');
             }
-        }
-
-        function deriveDirectoryFromFiles(files) {
-            if (!files || !files.length) return '';
-            const dirSegments = [];
-            files.forEach(function(file) {
-                const relative = file.webkitRelativePath || '';
-                if (!relative) {
-                    return;
-                }
-                const parts = relative.split('/');
-                if (!parts.length) {
-                    return;
-                }
-                parts.pop();
-                if (parts.length) {
-                    dirSegments.push(parts);
-                }
-            });
-            if (!dirSegments.length) {
-                const fallback = files[0].webkitRelativePath || '';
-                const idx = fallback.lastIndexOf('/');
-                return idx > 0 ? fallback.slice(0, idx) : '';
-            }
-            let prefix = dirSegments[0].slice();
-            for (let i = 1; i < dirSegments.length; i += 1) {
-                const current = dirSegments[i];
-                let j = 0;
-                while (j < prefix.length && j < current.length && prefix[j] === current[j]) {
-                    j += 1;
-                }
-                prefix = prefix.slice(0, j);
-                if (!prefix.length) {
-                    break;
-                }
-            }
-            return prefix.join('/');
         }
 
         async function submitForm(event) {
@@ -338,46 +287,11 @@
             }
         }
 
-        if (directoryButton && directoryPicker) {
-            directoryButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                directoryPicker.click();
-            });
-            directoryPicker.addEventListener('change', function() {
-                const files = Array.from(directoryPicker.files || []);
-                if (!files.length) {
-                    return;
-                }
-                const directory = deriveDirectoryFromFiles(files);
-                if (directoryInput && directory) {
-                    directoryInput.value = directory;
-                    updateDirectoryHint(directory);
-                    clearStatus();
-                } else if (!directory) {
-                    setStatus('Unable to determine the selected folder. Please enter it manually.', 'error');
-                    updateDirectoryHint('');
-                }
-                directoryPicker.value = '';
-            });
-        }
-
-        if (directoryInput) {
-            directoryInput.addEventListener('input', function() {
-                if (!directoryInput.value.trim()) {
-                    updateDirectoryHint('');
-                }
-            });
-        }
-
         if (refreshButton) {
             refreshButton.addEventListener('click', function(event) {
                 event.preventDefault();
                 refreshModels();
             });
-        }
-
-        if (directoryInput) {
-            updateDirectoryHint(directoryInput.value.trim());
         }
 
         if (providerSelect) {

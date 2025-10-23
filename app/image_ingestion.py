@@ -375,11 +375,7 @@ def process_directory(
     reprocess_existing: bool = False,
     api_key: Optional[str] = None,
 ) -> IngestionSummary:
-    """Process images under ``directory`` and ingest generated JSON documents.
-
-    The source image files are only read – never moved or deleted – so they remain
-    untouched alongside any newly generated ``.json`` artefacts.
-    """
+    """Process images under ``directory`` and ingest generated JSON documents."""
 
     if not directory.exists() or not directory.is_dir():
         raise IngestionError(f"Directory does not exist: {directory}")
@@ -423,8 +419,6 @@ def process_directory(
                 raise IngestionError(f"Unsupported provider: {config.provider}")
 
             payload = _serialise_json(output_text)
-            # Writing the JSON alongside the original image ensures that the source
-            # file is left exactly where it was discovered.
             json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
             json_targets.append(json_path)
             summary.generated += 1
