@@ -4,16 +4,24 @@
 
 import os
 import subprocess
-from datetime import datetime
+import sys
+from pathlib import Path
 from dotenv import load_dotenv
 import getpass
+
+BASE_DIR = Path(__file__).resolve().parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.append(str(BASE_DIR))
+
+from app.util.mongo_env import build_admin_auth_uri, resolve_credentials
 
 # Load environment variables from the .env file
 load_dotenv()
 
 # Get MongoDB credentials from environment variables
-username = os.getenv("MONGO_INITDB_ROOT_USERNAME")
-password = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+creds = resolve_credentials()
+username = creds.username or "admin"
+password = creds.password
 database_name = "railroad_documents"  # Change this if needed
 backup_root = "../db_backup"
 
@@ -45,46 +53,21 @@ if latest_backup_dir:
     # Securely get the password
     password = get_password()
 
-    # Construct the MongoDB URI without the database name
-    uri = f"mongodb://{username}@localhost:27017/?authSource=admin"
-
-    # Option 1: Use --nsInclude to specify the database
-    command = [
-        "mongorestore",
-        f"--uri={uri}",
-        f"--nsInclude={database_name}.*",
-        latest_backup_dir
-    ]
-
-    # Option 2: Point directly to the specific database directory
-    # Uncomment the following lines if you prefer this method
-    """
-    backup_dir = os.path.join(latest_backup_dir, database_name)
-    if not os.path.exists(backup_dir):
-        print(f"Backup directory for database '{database_name}' does not exist: {backup_dir}")
-    else:
-        command = [
-            "mongorestore",
-            f"--uri={uri}",
-            backup_dir
-        ]
-    """
-
     # Execute the restore command
     try:
-        # If password is required via URI, you might need to include it securely
-        # Alternatively, use a config file or prompt
-        # Here, we'll include it directly for simplicity, but be cautious
-        # Update the URI to include the password
-        uri_with_password = f"mongodb://{username}:{password}@localhost:27017/?authSource=admin"
-        command_with_password = [
+        uri_with_password = build_admin_auth_uri(
+            host=os.getenv('MONGO_BACKUP_HOST', 'localhost'),
+            username=username,
+            password=password,
+        )
+        command = [
             "mongorestore",
-            f"--uri={uri_with_password}",
+            f"--uri={uri_with_password}?authSource={creds.auth_db}",
             f"--nsInclude={database_name}.*",
             latest_backup_dir
         ]
 
-        subprocess.run(command_with_password, check=True)
+        subprocess.run(command, check=True)
         print(f"Database '{database_name}' restored successfully from {latest_backup_dir}.")
     except subprocess.CalledProcessError as e:
         print(f"Restore failed: {e}")

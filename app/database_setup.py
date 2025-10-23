@@ -3,10 +3,11 @@
 from pymongo import MongoClient, ASCENDING, DESCENDING, UpdateOne
 from bson import ObjectId
 import logging
-import os
 from dotenv import load_dotenv
 import pymongo
 from pymongo import UpdateOne
+
+from app.util.mongo_env import build_mongo_uri
 
 # Load environment variables from .env file
 load_dotenv()
@@ -44,12 +45,7 @@ def get_client():
     """Initialize and return a new MongoDB client."""
     try:
         
-        mongo_uri = os.environ.get('MONGO_URI') # this SHOULD read from .env file but sometimes does not.
-        #mongo_uri= "mongodb://admin:secret@mongodb:27017/admin" # this is correct and needs the /admin for the administrative db. REMOVE before prduction
-        #print(mongo_uri)
-
-        if not mongo_uri:
-            raise ValueError("MONGO_URI environment variable not set")
+        mongo_uri = build_mongo_uri()
         client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
         # Test connection
         client.admin.command('ping')

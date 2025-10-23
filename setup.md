@@ -104,6 +104,7 @@ The Flask app becomes available at [http://localhost:5000](http://localhost:5000
 - Place JSON or JSONL source files inside the folder referenced by `ARCHIVES_HOST_PATH`.
 - Store related media (images, PDFs, etc.) alongside the JSON with matching relative paths. For example: `archives/newspapers/1901-05-12.jsonl` and `archives/newspapers/images/page_001.png`.
 - When the app runs, you can trigger ingestion via `docker compose exec app /app/bootstrap_data.sh` or manually run `python app/data_processing.py` inside the container.
+- Alternatively, open **Settings → Data ingestion** in the web UI, click **Choose folder…** to queue one or more archive directories via the native picker, and start the run with **Process images**.
 
 ---
 
