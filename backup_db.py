@@ -4,15 +4,21 @@
 
 import os
 import subprocess
+import sys
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.append(str(BASE_DIR))
+
+from app.util.mongo_env import build_admin_auth_uri
 
 # Load environment variables from the .env file
 load_dotenv()
 
 # Get MongoDB credentials from environment variables
-username = os.getenv("MONGO_ROOT_USERNAME") or os.getenv("MONGO_INITDB_ROOT_USERNAME")
-password = os.getenv("MONGO_ROOT_PASSWORD") or os.getenv("MONGO_INITDB_ROOT_PASSWORD")
 database_name = "railroad_documents"  # Change this if needed
 backup_root = os.path.join(os.path.dirname(os.path.dirname(__file__)), "db_backup")
 
@@ -26,7 +32,8 @@ os.makedirs(backup_dir, exist_ok=True)
 # Create the mongodump command
 command = [
     "mongodump",
-    f"--uri=mongodb://{username}:{password}@localhost:27017/{database_name}?authSource=admin",
+    f"--uri={build_admin_auth_uri(host=os.getenv('MONGO_BACKUP_HOST', 'localhost'))}?authSource=admin",
+    f"--db={database_name}",
     f"--out={backup_dir}"
 ]
 

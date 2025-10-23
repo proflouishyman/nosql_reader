@@ -9,16 +9,14 @@ SLEEP_TIME=${MONGO_RETRY_DELAY:-5}
 MONGO_HOST=${MONGO_HOST:-mongodb}
 MONGO_PORT=${MONGO_PORT:-27017}
 
-# Normalise MongoDB credentials across the different environment variable names
-# that appear in older `.env` files (`MONGO_INITDB_ROOT_*`) and the newer ones
-# (`MONGO_ROOT_*`).  Falling back keeps upgrades from breaking existing setups.
-MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-${MONGO_INITDB_ROOT_USERNAME:-admin}}
-MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-${MONGO_INITDB_ROOT_PASSWORD:-secret}}
+if [ -z "${MONGO_URI}" ]; then
+    MONGO_URI=$(python - <<'PY'
+from app.util.mongo_env import build_mongo_uri
 
-# Prefer the explicitly supplied URI values but fall back to a string composed
-# from the resolved credentials.  This avoids the app container starting before
-# MongoDB has created the user because of mismatched environment variables.
-MONGO_URI=${MONGO_URI:-${APP_MONGO_URI:-"mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/admin"}}
+print(build_mongo_uri(), end="")
+PY
+    )
+fi
 
 echo "MONGO_URI is set to: ${MONGO_URI}"
 echo "Waiting for MongoDB to be ready...REALLY REAL"

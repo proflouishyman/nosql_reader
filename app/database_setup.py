@@ -3,10 +3,11 @@
 from pymongo import MongoClient, ASCENDING, DESCENDING, UpdateOne
 from bson import ObjectId
 import logging
-import os
 from dotenv import load_dotenv
 import pymongo
 from pymongo import UpdateOne
+
+from app.util.mongo_env import build_mongo_uri
 
 # Load environment variables from .env file
 load_dotenv()
@@ -44,17 +45,7 @@ def get_client():
     """Initialize and return a new MongoDB client."""
     try:
         
-        mongo_uri = os.environ.get('MONGO_URI') or os.environ.get('APP_MONGO_URI')
-        if not mongo_uri:
-            username = os.environ.get('MONGO_ROOT_USERNAME') or os.environ.get('MONGO_INITDB_ROOT_USERNAME')
-            password = os.environ.get('MONGO_ROOT_PASSWORD') or os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
-            host = os.environ.get('MONGO_HOST', 'mongodb')
-            port = os.environ.get('MONGO_PORT', '27017')
-            if username and password:
-                mongo_uri = f"mongodb://{username}:{password}@{host}:{port}/admin"
-
-        if not mongo_uri:
-            raise ValueError("MONGO_URI environment variable not set")
+        mongo_uri = build_mongo_uri()
         client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
         # Test connection
         client.admin.command('ping')
