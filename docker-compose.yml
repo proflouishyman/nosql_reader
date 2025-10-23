@@ -1,11 +1,13 @@
+version: "3.9"
+
 services:
   mongodb:
     image: mongo:6.0
     container_name: nosql_reader_mongodb
     env_file: .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - type: bind
         source: ${MONGO_DATA_HOST_PATH:-../mongo_data}
@@ -17,9 +19,9 @@ services:
         "CMD",
         "mongosh",
         "--username",
-        "${MONGO_ROOT_USERNAME}",
+        "${MONGO_INITDB_ROOT_USERNAME}",
         "--password",
-        "${MONGO_ROOT_PASSWORD}",
+        "${MONGO_INITDB_ROOT_PASSWORD}",
         "--authenticationDatabase",
         "admin",
         "--eval",
@@ -44,7 +46,7 @@ services:
     env_file: .env
     environment:
       FLASK_APP: app.py
-      MONGO_URI: ${APP_MONGO_URI}
+      MONGO_URI: ${MONGO_URI}
       ARCHIVES_PATH: ${ARCHIVES_PATH:-/data/archives}
       SESSION_FILE_DIR: ${SESSION_PATH:-/app/flask_session}
       HISTORIAN_AGENT_ENABLED: ${HISTORIAN_AGENT_ENABLED:-1}

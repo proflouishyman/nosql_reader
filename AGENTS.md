@@ -60,3 +60,46 @@ Before merging any PR that modifies .env or docker-compose.yml, agents must:
 Compare both files for variable name parity.
 Validate that no variables are quoted or commented inline.
 Preserve the structure and indentation of YAML files exactly.
+Agent Coding & Stability Guide (add to agents.md)
+# Agent Development & Stability Guidelines
+
+This project is designed to run reliably inside a multi-container Docker environment.
+All contributors and AI agents must follow these conventions to maintain consistency and prevent misconfiguration.
+
+---
+
+## 1. Environment Variables
+- Always use canonical MongoDB variables:
+  ```bash
+  MONGO_INITDB_ROOT_USERNAME
+  MONGO_INITDB_ROOT_PASSWORD
+  APP_MONGO_URI
+Never hard-code credentials or hostnames.
+Access the URI from os.environ["MONGO_URI"] — the entrypoint script ensures it’s defined.
+Do not modify .env formatting (no quotes, no inline comments).
+2. Database Access
+All MongoDB access must go through database_setup.py:
+from database_setup import get_client, get_db
+Never call MongoClient() directly in route or helper files.
+Ensure get_client() validates the connection before queries.
+3. Application Structure
+The app is initialized in app.py.
+Routes must import this instance:
+from app import app
+Do not reinitialize Flask() elsewhere.
+Avoid circular imports — always import routes after app creation.
+4. Logging
+Use the Flask logger (app.logger or current_app.logger) for all logs.
+Do not use print() for debugging; logs are captured in Docker.
+Prefer structured messages:
+app.logger.info("Loaded collection: %s", collection_name)
+app.logger.exception("Failed to insert document", exc_info=True)
+5. Stability & Build Hygiene
+Never modify Dockerfile, docker-compose.yml, or .env in generated merges unless explicitly requested.
+Respect canonical variable names and paths (/app, /data/archives, /data/db).
+If new dependencies are required, add them to requirements.txt and rebuild using:
+docker-compose build --no-cache
+Before merging, verify startup logs show:
+MongoDB is up and running.
+Starting Flask app...
+Following these conventio
