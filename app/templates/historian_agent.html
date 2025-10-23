@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}ChatBot · Historical Document Reader{% endblock %}
+{% block title %}Historian Agent · Historical Document Reader{% endblock %}
 
 {% block content %}
 <div class="container historian-agent">
     <div class="agent-hero">
         <span class="agent-hero__badge">RAG powered</span>
-        <h1>Historian ChatBot</h1>
+        <h1>Historian Agent</h1>
         <p class="agent-hero__subtitle">Ask natural language questions about the archives and receive sourced answers from the Historian Agent.</p>
     </div>
     <section class="agent-panel" data-agent-enabled="{{ 'true' if agent_config_payload.enabled else 'false' }}" data-agent-error="{{ 'true' if agent_error else 'false' }}">
@@ -37,9 +37,9 @@
         </div>
     </section>
     <aside class="agent-settings-callout">
-        <h2>Configure the ChatBot</h2>
-        <p>Model provider credentials, retrieval depth, and ingestion options now live on the <a href="{{ url_for('settings') }}#chatbot-settings">UI Settings</a> page.</p>
-        <a class="button" href="{{ url_for('settings') }}#chatbot-settings">Open ChatBot settings</a>
+        <h2>Configure the Historian Agent</h2>
+        <p>Model provider credentials, retrieval depth, and ingestion options now live on the <a href="{{ url_for('settings') }}#chatbot-settings">Settings</a> page.</p>
+        <a class="button" href="{{ url_for('settings') }}#chatbot-settings">Open Historian Agent settings</a>
     </aside>
 </div>
 <script id="historianAgentConfigData" type="application/json">{{ agent_config_payload | tojson }}</script>
