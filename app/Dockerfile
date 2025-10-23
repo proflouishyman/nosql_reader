@@ -24,9 +24,6 @@ RUN mkdir -p /root/.local/share/spacy/models
 # Download spaCy models only if they are not already downloaded
 RUN if [ ! -d "/root/.local/share/spacy/models/en_core_web_lg" ]; then \
         python -m spacy download en_core_web_lg; \
-    fi && \
-    if [ ! -d "/root/.local/share/spacy/models/en_core_web_trf" ]; then \
-        python -m spacy download en_core_web_trf; \
     fi
 
 # Copy project files into the container
