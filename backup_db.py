@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get MongoDB credentials from environment variables
-username = os.getenv("MONGO_INITDB_ROOT_USERNAME")
-password = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+username = os.getenv("MONGO_ROOT_USERNAME") or os.getenv("MONGO_INITDB_ROOT_USERNAME")
+password = os.getenv("MONGO_ROOT_PASSWORD") or os.getenv("MONGO_INITDB_ROOT_PASSWORD")
 database_name = "railroad_documents"  # Change this if needed
 backup_root = os.path.join(os.path.dirname(os.path.dirname(__file__)), "db_backup")
 

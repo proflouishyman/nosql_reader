@@ -44,9 +44,14 @@ def get_client():
     """Initialize and return a new MongoDB client."""
     try:
         
-        mongo_uri = os.environ.get('MONGO_URI') # this SHOULD read from .env file but sometimes does not.
-        #mongo_uri= "mongodb://admin:secret@mongodb:27017/admin" # this is correct and needs the /admin for the administrative db. REMOVE before prduction
-        #print(mongo_uri)
+        mongo_uri = os.environ.get('MONGO_URI') or os.environ.get('APP_MONGO_URI')
+        if not mongo_uri:
+            username = os.environ.get('MONGO_ROOT_USERNAME') or os.environ.get('MONGO_INITDB_ROOT_USERNAME')
+            password = os.environ.get('MONGO_ROOT_PASSWORD') or os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
+            host = os.environ.get('MONGO_HOST', 'mongodb')
+            port = os.environ.get('MONGO_PORT', '27017')
+            if username and password:
+                mongo_uri = f"mongodb://{username}:{password}@{host}:{port}/admin"
 
         if not mongo_uri:
             raise ValueError("MONGO_URI environment variable not set")
