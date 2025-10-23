@@ -65,8 +65,8 @@ By default the script places persistent data one directory above the cloned repo
 
 You will be prompted before anything is created, and you can relocate the folders later by editing `.env`. After preparing the
 directories the script offers to update the MongoDB root username and password. Press **Enter** to keep the working defaults
-(`admin` / `change-me`) or supply your own values—the script rewrites both `MONGO_ROOT_*` entries and the `APP_MONGO_URI`
-connection string to match.
+(`admin` / `change-me`) or supply your own values—the script rewrites both `MONGO_ROOT_*` entries and ensures `APP_MONGO_URI`
+keeps referencing those variables so the connection string stays in sync automatically.
 
 ### 2.4 Configure environment variables
 
@@ -76,8 +76,9 @@ connection string to match.
    ```
 2. Edit `.env` with your preferred editor (`code .env`, `nano .env`, etc.) and update:
    - `SECRET_KEY` – random string used by Flask sessions.
-   - `MONGO_ROOT_USERNAME` / `MONGO_ROOT_PASSWORD` – credentials for MongoDB. The defaults (`admin` / `change-me`) are ready for
-     local development, and the setup script can regenerate them if you ever change the values.
+  - `MONGO_ROOT_USERNAME` / `MONGO_ROOT_PASSWORD` – credentials for MongoDB. The defaults (`admin` / `change-me`) are ready for
+    local development, and the setup script can regenerate them if you ever change the values. `APP_MONGO_URI` references these
+    entries, so you do not have to edit the URI manually when rotating credentials.
    - `ARCHIVES_HOST_PATH`, `MONGO_DATA_HOST_PATH`, `SESSION_HOST_PATH` – absolute or relative paths on your Mac.
    - Historian Agent settings (`HISTORIAN_AGENT_*`, `OLLAMA_BASE_URL`, `OPENAI_API_KEY` if using OpenAI).
 
