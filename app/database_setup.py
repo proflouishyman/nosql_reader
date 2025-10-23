@@ -7,7 +7,19 @@ from dotenv import load_dotenv
 import pymongo
 from pymongo import UpdateOne
 
-from app.util.mongo_env import build_mongo_uri
+try:
+    from app.util.mongo_env import build_mongo_uri
+except (ModuleNotFoundError, ImportError) as exc:
+    # When ``database_setup`` is imported while running ``python app.py`` the
+    # interpreter's search path points at ``/app``.  In that context the package
+    # name ``app`` resolves to the current module rather than the application
+    # package, so ``from app.util`` fails or triggers a circular import.  Fallback
+    # to a local import so the module works both when executed inside the package
+    # and when run as a script.  Only swallow errors related to resolving the
+    # package to avoid hiding genuine import problems.
+    if getattr(exc, 'name', None) not in {None, 'app', 'app.util', 'app.util.mongo_env', 'database_setup'}:
+        raise
+    from util.mongo_env import build_mongo_uri
 
 # Load environment variables from .env file
 load_dotenv()
