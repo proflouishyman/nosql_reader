@@ -1540,6 +1540,19 @@ input[type="range"] {
     align-items: center;
 }
 
+/* Keep the folder picker input accessible for screen readers while moving it off-screen so browsers honour clicks on the proxy button. */
+.settings-directory-picker__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+}
+
 .settings-directory-picker__buttons {
     display: flex;
     flex-direction: column;

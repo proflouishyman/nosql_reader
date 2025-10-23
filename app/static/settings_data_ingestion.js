@@ -571,7 +571,14 @@
         if (directoryButton && directoryPicker) {
             directoryButton.addEventListener('click', function(event) {
                 event.preventDefault();
-                directoryPicker.click();
+                // Prefer the modern showPicker API when available to reliably display the folder dialog; fall back to click() otherwise.
+                if (typeof directoryPicker.showPicker === 'function') {
+                    directoryPicker.showPicker().catch(function() {
+                        directoryPicker.click();
+                    });
+                } else {
+                    directoryPicker.click();
+                }
             });
             directoryPicker.addEventListener('change', function() {
                 const files = Array.from(directoryPicker.files || []);

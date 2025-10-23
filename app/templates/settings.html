@@ -88,7 +88,8 @@
                                 <button type="button" class="button button--secondary" data-directory-add title="Add the typed folder to the list">Add</button>
                             </div>
                         </div>
-                        <input type="file" id="imageIngestionDirectoryPicker" hidden webkitdirectory directory multiple>
+                        <!-- Hidden-in-plain-sight file input that powers the native folder picker; kept off-screen via CSS so browsers allow user-initiated clicks. -->
+                        <input type="file" id="imageIngestionDirectoryPicker" class="settings-directory-picker__input" webkitdirectory directory multiple>
                         <p class="form-field__hint">Select one or more folders. Relative paths resolve under <code>{{ archive_root }}</code>.</p>
                         <div class="directory-selection" data-directory-selection>
                             <p class="directory-selection__empty" data-directory-empty>No folders selected yet.</p>
