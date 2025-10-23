@@ -1,19 +1,30 @@
-<!-- templates/document-list.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Document List</title>
-</head>
-<body>
-    <h1>Document List</h1>
+{% extends 'base.html' %}
+{% block title %}Document List · Historical Document Reader{% endblock %}
 
-    <ul id="documentList">
-    {% for document in documents %}
+{% block content %}
+<div class="container document-list-page">
+    <header class="document-list__header">
+        <h1>Document list</h1>
+        <p>Select any document to open the detailed viewer in a new tab. Use your browser back button to return here.</p>
+    </header>
+
+    {% if documents %}
+    <ul class="document-list__items">
+        {% for document in documents %}
         <li>
-            <a href="{{ url_for('document_detail', doc_id=document['_id']) }}" target="_blank" rel="noopener noreferrer" class="document-link">{{ document.get('filename', 'Untitled Document') }}</a>
+            <a
+                href="{{ url_for('document_detail', doc_id=document['_id']) }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="document-list__link"
+            >
+                {{ document.get('filename', 'Untitled Document') }}
+            </a>
         </li>
-    {% endfor %}
+        {% endfor %}
     </ul>
-</body>
-</html>
+    {% else %}
+    <p class="document-list__empty">No documents available.</p>
+    {% endif %}
+</div>
+{% endblock %}

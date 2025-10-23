@@ -3,19 +3,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialization
     // ===============================
     const searchForm = document.getElementById('searchForm');
+    if (!searchForm) {
+        return;
+    }
+
     const resultsDiv = document.getElementById('results');
     const loadingIndicator = document.getElementById('loadingIndicator');
     const cancelButton = document.getElementById('cancelSearch');
     const totalResultsDiv = document.getElementById('totalResults');
     const exportSelectedCsvButton = document.getElementById('exportSelectedCsv');
-
-    // Add console warnings for missing elements
-    if (!searchForm) console.warn('Search form not found');
-    if (!resultsDiv) console.warn('Results div not found');
-    if (!loadingIndicator) console.warn('Loading indicator not found');
-    if (!cancelButton) console.warn('Cancel button not found');
-    if (!totalResultsDiv) console.warn('Total results div not found');
-    if (!exportSelectedCsvButton) console.warn('Export Selected CSV button not found');
 
     // Pagination and Search Variables
     let controller;
@@ -99,7 +95,9 @@ document.addEventListener('DOMContentLoaded', function() {
      * Shows the loading indicator.
      */
     function showLoadingIndicator() {
-        if (loadingIndicator && loadingIndicator.style) {
+        if (!loadingIndicator) return;
+        loadingIndicator.hidden = false;
+        if (loadingIndicator.style) {
             loadingIndicator.style.display = 'block';
         }
     }
@@ -108,7 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
      * Hides the loading indicator.
      */
     function hideLoadingIndicator() {
-        if (loadingIndicator && loadingIndicator.style) {
+        if (!loadingIndicator) return;
+        loadingIndicator.hidden = true;
+        if (loadingIndicator.style) {
             loadingIndicator.style.display = 'none';
         }
     }
@@ -264,7 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         showLoadingIndicator();
-        if (cancelButton) cancelButton.style.display = 'inline-block';
+        if (cancelButton) {
+            cancelButton.hidden = false;
+            cancelButton.style.display = 'inline-block';
+        }
 
         // Add page and perPage to currentQuery
         currentQuery.page = page;
@@ -284,7 +287,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             hideLoadingIndicator();
-            if (cancelButton) cancelButton.style.display = 'none';
+            if (cancelButton) {
+                cancelButton.hidden = true;
+                cancelButton.style.display = 'none';
+            }
             if (data.documents && data.documents.length > 0) {
                 // Store search_id if it's a new search
                 if (isNewSearch) {
@@ -313,7 +319,10 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             hideLoadingIndicator();
-            if (cancelButton) cancelButton.style.display = 'none';
+            if (cancelButton) {
+                cancelButton.hidden = true;
+                cancelButton.style.display = 'none';
+            }
             isLoading = false;
             if (error.name === 'AbortError') {
                 console.log('Search was cancelled');
@@ -506,7 +515,10 @@ document.addEventListener('DOMContentLoaded', function() {
             hideLoadingIndicator();
             isLoading = false;
             hasMore = false;
-            if (cancelButton) cancelButton.style.display = 'none';
+            if (cancelButton) {
+                cancelButton.hidden = true;
+                cancelButton.style.display = 'none';
+            }
         }
     }
 

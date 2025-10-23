@@ -138,6 +138,36 @@ def _list_archives() -> Tuple[List[str], bool]:
     return files, False
 
 
+def _process_archive_uploads(
+    uploads: List[Any],
+    subdirectory: Optional[str],
+) -> Tuple[List[str], List[str]]:
+    """Save uploaded archive files and return (saved, rejected) lists."""
+
+    archive_root = _archives_root()
+    target_subdir = _normalise_subdirectory(subdirectory)
+    saved_files: List[str] = []
+    rejected_files: List[str] = []
+
+    for file_storage in uploads:
+        if not file_storage or not getattr(file_storage, 'filename', None):
+            continue
+
+        original_name = file_storage.filename
+        filename = secure_filename(original_name)
+
+        if not filename or not _allowed_archive(filename):
+            rejected_files.append(original_name)
+            continue
+
+        destination = archive_root / target_subdir / filename
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        file_storage.save(destination)
+        saved_files.append(str(destination.relative_to(archive_root)))
+
+    return saved_files, rejected_files
+
+
 @app.route('/data-files', methods=['GET', 'POST'])
 def data_file_manager():
     """Allow users to upload additional archive files for data processing."""
@@ -146,37 +176,27 @@ def data_file_manager():
 
     if request.method == 'POST':
         uploads = request.files.getlist('archives')
-        subdirectory = _normalise_subdirectory(request.form.get('target_subdir'))
-
-        saved_files: List[str] = []
-        rejected_files: List[str] = []
-
-        for file_storage in uploads:
-            if not file_storage or not file_storage.filename:
-                continue
-
-            original_name = file_storage.filename
-            filename = secure_filename(original_name)
-
-            if not filename or not _allowed_archive(filename):
-                rejected_files.append(original_name)
-                continue
-
-            destination = archive_root / subdirectory / filename
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            file_storage.save(destination)
-            saved_files.append(str(destination.relative_to(archive_root)))
+        saved_files, rejected_files = _process_archive_uploads(
+            uploads,
+            request.form.get('target_subdir'),
+        )
 
         if saved_files:
             display_subset = ', '.join(saved_files[:3])
             if len(saved_files) > 3:
                 display_subset += ', …'
-            flash(f"Uploaded {len(saved_files)} file(s): {display_subset}")
+            flash(
+                f"Uploaded {len(saved_files)} file(s): {display_subset}",
+                'success',
+            )
         else:
-            flash('No files were uploaded. Please choose JSON files with supported extensions (.json, .jsonl).')
+            flash(
+                'No files were uploaded. Please choose JSON files with supported extensions (.json, .jsonl).',
+                'warning',
+            )
 
         if rejected_files:
-            flash(f"Skipped unsupported files: {', '.join(rejected_files)}")
+            flash(f"Skipped unsupported files: {', '.join(rejected_files)}", 'warning')
 
         return redirect(url_for('data_file_manager'))
 
@@ -346,10 +366,21 @@ def login_required(f):
 @app.route('/')
 # @login_required
 def index():
-    app.logger.info('Handling request to index')
-    num_search_fields = 3  # Number of search fields to display
-    field_structure = get_field_structure(db)  # Pass 'db' here
-    return render_template('index.html', num_search_fields=num_search_fields, field_structure=field_structure)
+    app.logger.info('Rendering home page')
+    return render_template('home.html')
+
+
+@app.route('/search')
+# @login_required
+def search_database():
+    app.logger.info('Rendering search interface')
+    num_search_fields = 3
+    field_structure = get_field_structure(db)
+    return render_template(
+        'search.html',
+        num_search_fields=num_search_fields,
+        field_structure=field_structure,
+    )
 
 
 @app.route('/historian-agent')
@@ -936,13 +967,57 @@ def database_info():
 
     return render_template('database-info.html', collection_info=collection_info)
 
+
+@app.route('/help')
+def help_page():
+    """Render the in-app help centre derived from the README."""
+
+    return render_template('help.html')
+
 @app.route('/settings', methods=['GET', 'POST'])
 # @login_required
 def settings():
     config_path = os.path.join(os.path.dirname(__file__), 'config.json')
 
     if request.method == 'POST':
+        action = request.form.get('action', 'update_ui')
+
+        if action == 'upload_archives':
+            uploads = request.files.getlist('archives')
+            has_selection = any(getattr(item, 'filename', '') for item in uploads)
+            if not has_selection:
+                flash('Select one or more JSON files to upload.', 'warning')
+                return redirect(url_for('settings') + '#data-ingestion')
+
+            saved_files, rejected_files = _process_archive_uploads(
+                uploads,
+                request.form.get('target_subdir'),
+            )
+
+            if saved_files:
+                display_subset = ', '.join(saved_files[:3])
+                if len(saved_files) > 3:
+                    display_subset += ', …'
+                flash(
+                    f"Uploaded {len(saved_files)} file(s): {display_subset}",
+                    'success',
+                )
+            else:
+                flash(
+                    'No files were uploaded. Please choose JSON files with supported extensions (.json, .jsonl).',
+                    'warning',
+                )
+
+            if rejected_files:
+                flash(
+                    f"Skipped unsupported files: {', '.join(rejected_files)}",
+                    'warning',
+                )
+
+            return redirect(url_for('settings') + '#data-ingestion')
+
         new_config = request.form.to_dict()
+        new_config.pop('action', None)
 
         for key in ['fonts', 'sizes', 'colors', 'spacing']:
             if key in new_config:
@@ -950,17 +1025,17 @@ def settings():
                     new_config[key] = json.loads(new_config[key])
                 except json.JSONDecodeError:
                     flash(f"Invalid JSON format for {key}.", 'danger')
-                    return redirect(url_for('settings'))
+                    return redirect(url_for('settings') + '#ui-preferences')
 
         try:
             with open(config_path, 'w') as config_file:
                 json.dump(new_config, config_file, indent=4)
             app.config['UI_CONFIG'] = new_config
-            flash('Settings updated successfully', 'success')
+            flash('UI preferences updated successfully.', 'success')
         except Exception as e:
             logger.error(f"Error updating settings: {str(e)}")
-            flash('Failed to update settings.', 'danger')
-        return redirect(url_for('settings'))
+            flash('Failed to update UI settings.', 'danger')
+        return redirect(url_for('settings') + '#ui-preferences')
 
     try:
         if os.path.exists(config_path):
@@ -972,7 +1047,23 @@ def settings():
         config = {}
         flash('Configuration file is corrupted. Using default settings.', 'warning')
 
-    return render_template('settings.html', config=config)
+    archive_root_path = _archives_root()
+    archive_files, archive_list_truncated = _list_archives()
+    overrides = _historian_agent_overrides()
+    agent_config = HistorianAgentConfig.from_env(overrides)
+    agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
+
+    return render_template(
+        'settings.html',
+        config=config,
+        archive_root=str(archive_root_path),
+        archive_files=archive_files,
+        archive_list_truncated=archive_list_truncated,
+        agent_config_payload=_serialise_agent_config(agent_config),
+        provider_options=HISTORIAN_PROVIDER_OPTIONS,
+        agent_error=agent_error,
+        config_endpoint=url_for('historian_agent_config'),
+    )
 
 # Consider streaming if it ends up being thousands of documents
 @app.route('/export_selected_csv', methods=['POST'])
