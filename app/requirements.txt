@@ -25,5 +25,6 @@ en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_
 # Historian agent pipeline
 langchain-community==0.2.11
 langchain-core>=0.2.27,<0.3.0  # Range satisfies community/openai packages while avoiding resolver conflicts.
+
 langchain-openai==0.1.7
 openai==1.51.2
