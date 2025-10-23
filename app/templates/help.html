@@ -6,6 +6,17 @@
     <h1>Help centre</h1>
     <p class="help-intro">This guide condenses the key workflows from the README so you can set up the stack, explore the UI, and troubleshoot common issues without leaving the application.</p>
 
+    <section id="core-capabilities" class="help-section">
+        <h2>Core capabilities</h2>
+        <ul>
+            <li><strong>Rich search experience:</strong> Build multi-field queries, combine AND/OR logic, and export curated result sets as CSV.</li>
+            <li><strong>Flexible document viewer:</strong> Inspect every metadata field alongside navigation controls that honour your current search context.</li>
+            <li><strong>Configurable UI:</strong> Update fonts, colours, spacing, and layout tokens stored in <code>config.json</code> directly from the Settings page.</li>
+            <li><strong>Historian Agent:</strong> Chat with a Retrieval-Augmented Generation assistant powered by LangChain and either Ollama or OpenAI models.</li>
+            <li><strong>Archive management:</strong> Upload additional JSON/JSONL records straight from the browser so ingestion scripts can index new material.</li>
+        </ul>
+    </section>
+
     <section id="getting-started" class="help-section">
         <h2>Getting started</h2>
         <ol>
@@ -44,13 +55,98 @@ cd nosql_reader</code></pre>
             <p>Select up to three fields, choose Boolean operators (AND/OR/NOT), and enter keywords. Results stream in batches with infinite scroll. Open any record to view the full document, navigate with Previous/Next controls, and export selected results to CSV.</p>
         </article>
         <article>
-            <h3>Historian ChatBot</h3>
-            <p>The ChatBot uses retrieval-augmented generation to cite primary sources. Suggested prompts help you get started. Configuration such as provider, temperature, context size, and API keys are now managed on the <a href="{{ url_for('settings') }}#chatbot-settings">UI Settings</a> page. Changes rebuild the pipeline instantly for your session.</p>
+            <h3>Historian Agent</h3>
+            <p>The Historian Agent uses retrieval-augmented generation to cite primary sources. Suggested prompts help you get started. Configuration such as provider, temperature, context size, and API keys are now managed on the <a href="{{ url_for('settings') }}#chatbot-settings">Settings</a> page. Changes rebuild the pipeline instantly for your session.</p>
         </article>
         <article>
             <h3>Data ingestion</h3>
             <p>Upload <code>.json</code> or <code>.jsonl</code> archives from the settings page. Files are stored under the host directory managed by the setup script. Run <code>app/bootstrap_data.sh</code> (inside the container) or enable <code>RUN_BOOTSTRAP=1</code> to process new material automatically.</p>
         </article>
+    </section>
+
+    <section id="data-ingestion-maintenance" class="help-section">
+        <h2>Data ingestion &amp; maintenance</h2>
+        <ul>
+            <li>Run <code>app/bootstrap_data.sh</code> inside the container (or set <code>RUN_BOOTSTRAP=1</code>) to process newly uploaded archives.</li>
+            <li>Use <code>backup_db.py</code> and <code>restore_db.py</code> from the repository root to create or restore MongoDB snapshots.</li>
+            <li>Re-run <code>scripts/initial_setup.sh</code> whenever you need to regenerate host directories or rotate MongoDB credentials.</li>
+        </ul>
+    </section>
+
+    <section id="data-directory-layout" class="help-section">
+        <h2>Recommended data directory layout</h2>
+        <pre><code>ARCHIVES_HOST_PATH/
+├── rolls/
+│   ├── tray_01/
+│   │   ├── page_001.png
+│   │   ├── page_001.png.json
+│   │   ├── page_002.png
+│   │   └── page_002.png.json
+│   └── tray_02/
+│       ├── images/
+│       │   ├── frame_01.tif
+│       │   └── frame_02.tif
+│       └── metadata/
+│           ├── frame_01.tif.json
+│           └── frame_02.tif.json
+└── newspapers/
+    └── 1901-05-12.jsonl</code></pre>
+        <p>Keep metadata and media paths mirrored so the application can derive image locations by removing the <code>.json</code> suffix when rendering document detail pages.</p>
+    </section>
+
+    <section id="historian-agent-reference" class="help-section">
+        <h2>Historian Agent configuration reference</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Setting</th>
+                    <th scope="col">Environment variable</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Provider</td>
+                    <td><code>HISTORIAN_AGENT_MODEL_PROVIDER</code></td>
+                    <td>Choose <code>ollama</code> for local models or <code>openai</code> for hosted models.</td>
+                </tr>
+                <tr>
+                    <td>Model name</td>
+                    <td><code>HISTORIAN_AGENT_MODEL</code></td>
+                    <td>Identifier sent to the selected provider (e.g., <code>llama3</code>, <code>gpt-4o-mini</code>).</td>
+                </tr>
+                <tr>
+                    <td>Ollama base URL</td>
+                    <td><code>HISTORIAN_AGENT_OLLAMA_BASE_URL</code></td>
+                    <td>HTTP endpoint for an accessible Ollama instance when using local models.</td>
+                </tr>
+                <tr>
+                    <td>OpenAI API key</td>
+                    <td><code>OPENAI_API_KEY</code></td>
+                    <td>Credential stored in your Flask session when using OpenAI.</td>
+                </tr>
+                <tr>
+                    <td>Temperature</td>
+                    <td><code>HISTORIAN_AGENT_TEMPERATURE</code></td>
+                    <td>Controls answer creativity; lower values make responses more deterministic.</td>
+                </tr>
+                <tr>
+                    <td>Max documents</td>
+                    <td><code>HISTORIAN_AGENT_MAX_DOCS</code></td>
+                    <td>Number of retrieved records supplied to the RAG pipeline per question.</td>
+                </tr>
+                <tr>
+                    <td>Context fields</td>
+                    <td><code>HISTORIAN_AGENT_SOURCE_FIELDS</code></td>
+                    <td>Comma-separated whitelist of document fields eligible for retrieval context.</td>
+                </tr>
+                <tr>
+                    <td>System prompt</td>
+                    <td><code>HISTORIAN_AGENT_SYSTEM_PROMPT</code></td>
+                    <td>Prefix message that guides tone, sourcing, and behaviour.</td>
+                </tr>
+            </tbody>
+        </table>
     </section>
 
     <section id="operations" class="help-section">
@@ -90,7 +186,7 @@ cd nosql_reader</code></pre>
     <section id="troubleshooting" class="help-section">
         <h2>Troubleshooting</h2>
         <ul>
-            <li><strong>Historian Agent errors:</strong> Check the banner on the ChatBot page or the status message in settings. The configuration endpoint validates providers and reports missing API keys or unreachable Ollama hosts.</li>
+            <li><strong>Historian Agent errors:</strong> Check the banner on the Historian Agent page or the status message in settings. The configuration endpoint validates providers and reports missing API keys or unreachable Ollama hosts.</li>
             <li><strong>MongoDB connection issues:</strong> Ensure the directories defined in <code>.env</code> exist and that Docker has permission to write to them. Inspect service logs with <code>docker compose logs nosql_reader_mongodb</code>.</li>
             <li><strong>Archive ingestion:</strong> Confirm new files follow the recommended layout (JSON files mirroring media paths). The bootstrap script skips duplicates based on content hashes.</li>
         </ul>
