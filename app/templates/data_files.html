@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Archive Files{% endblock %}
+
+{% block content %}
+<div class="container data-files">
+    <div class="data-files__intro">
+        <h1>Archive file management</h1>
+        <p>Upload additional JSON documents that will be ingested by <code>data_processing.py</code> the next time it runs. Files are stored in <code>{{ archive_root }}</code>.</p>
+    </div>
+    <section class="data-files__panel">
+        <h2>Upload new files</h2>
+        <form method="post" enctype="multipart/form-data" class="data-files__form">
+            <div class="form-field">
+                <label for="targetSubdir">Optional subfolder</label>
+                <input type="text" id="targetSubdir" name="target_subdir" placeholder="e.g. 1944/reports">
+                <p class="form-field__hint">Use forward slashes to create nested folders. Unsafe characters are removed automatically.</p>
+            </div>
+            <div class="form-field">
+                <label for="archiveFiles">Choose JSON files</label>
+                <input type="file" id="archiveFiles" name="archives" accept=".json,.jsonl" multiple required>
+                <p class="form-field__hint">Supported formats: <code>.json</code> and <code>.jsonl</code>.</p>
+            </div>
+            <button type="submit">Upload files</button>
+        </form>
+    </section>
+    <section class="data-files__panel">
+        <h2>Existing files</h2>
+        <div class="data-files__download">
+            <a class="data-files__download-link" href="{{ url_for('download_all_archives') }}">Download all files</a>
+            <p class="data-files__hint">Generates a ZIP snapshot of every archive, preserving the folder structure.</p>
+        </div>
+        {% if archive_files %}
+        <ul class="data-files__list">
+            {% for item in archive_files %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+        {% if archive_list_truncated %}
+        <p class="data-files__note">Listing limited to the first {{ archive_files|length }} files. Inspect the archive directory for the full catalogue.</p>
+        {% endif %}
+        {% else %}
+        <p class="data-files__note">No files found in the archive directory yet.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

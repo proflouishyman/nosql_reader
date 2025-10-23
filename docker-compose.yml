@@ -1,14 +1,15 @@
-
 services:
   mongodb:
-    image: mongo:4.4.6
-    container_name: mongodb
+    image: mongo:6.0
+    container_name: nosql_reader_mongodb
+    env_file: .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     volumes:
-      - mongodb_data:/data/db
-      - ./mongo-init/:/docker-entrypoint-initdb.d/
+      - type: bind
+        source: ${MONGO_DATA_HOST_PATH:-./mongo_data}
+        target: ${MONGO_DATA_PATH:-/data/db}
     ports:
       - "27017:27017"
     healthcheck:
@@ -16,9 +17,9 @@ services:
         "CMD",
         "mongosh",
         "--username",
-        "admin",
+        "${MONGO_ROOT_USERNAME}",
         "--password",
-        "secret",
+        "${MONGO_ROOT_PASSWORD}",
         "--authenticationDatabase",
         "admin",
         "--eval",
@@ -39,20 +40,35 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
-    container_name: flask_app
+    container_name: nosql_reader_app
+    env_file: .env
+    environment:
+      FLASK_APP: app.py
+      MONGO_URI: ${APP_MONGO_URI}
+      ARCHIVES_PATH: ${ARCHIVES_PATH:-/data/archives}
+      SESSION_FILE_DIR: ${SESSION_PATH:-/app/flask_session}
+      HISTORIAN_AGENT_ENABLED: ${HISTORIAN_AGENT_ENABLED:-1}
+      HISTORIAN_AGENT_MODEL_PROVIDER: ${HISTORIAN_AGENT_MODEL_PROVIDER:-ollama}
+      HISTORIAN_AGENT_MODEL: ${HISTORIAN_AGENT_MODEL:-llama3}
+      HISTORIAN_AGENT_TEMPERATURE: ${HISTORIAN_AGENT_TEMPERATURE:-0.2}
+      HISTORIAN_AGENT_CONTEXT_K: ${HISTORIAN_AGENT_CONTEXT_K:-4}
+      HISTORIAN_AGENT_CONTEXT_FIELDS: ${HISTORIAN_AGENT_CONTEXT_FIELDS:-title,content}
+      HISTORIAN_AGENT_SUMMARY_FIELD: ${HISTORIAN_AGENT_SUMMARY_FIELD:-content}
+      HISTORIAN_AGENT_FALLBACK: ${HISTORIAN_AGENT_FALLBACK:-1}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     ports:
       - "5000:5000"
-    environment:
-      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/admin"
-      FLASK_APP: app.py
-      FLASK_ENV: ${FLASK_ENV}
-      FLASK_DEBUG: ${FLASK_DEBUG}
-      SECRET_KEY: ${SECRET_KEY}
     volumes:
-      - ./app:/app
-      - ./archives:/app/archives
+      - type: bind
+        source: ${ARCHIVES_HOST_PATH:-./archives}
+        target: ${ARCHIVES_PATH:-/data/archives}
+      - type: bind
+        source: ${SESSION_HOST_PATH:-./flask_session}
+        target: ${SESSION_PATH:-/app/flask_session}
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - app_network
     logging:
@@ -61,13 +77,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-volumes:
-  mongodb_data:
-
 networks:
   app_network:
     driver: bridge
-
-# Notes:
-# - Ensure you have a .env file in your project root with the necessary variables.
-# - Add .env to your .gitignore to prevent committing sensitive information.

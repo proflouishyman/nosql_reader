@@ -73,17 +73,27 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_KEY_PREFIX'] = 'historical_document_reader'
 
+session_directory = os.environ.get('SESSION_FILE_DIR')
+if session_directory:
+    os.makedirs(session_directory, exist_ok=True)
+    app.config['SESSION_FILE_DIR'] = session_directory
+
 def get_secret_key():
+    env_key = os.environ.get('SECRET_KEY')
+    if env_key:
+        return env_key
+
     secret_file = os.path.join(app.root_path, 'secret_key.txt')
     if os.path.exists(secret_file):
         with open(secret_file, 'r') as f:
             return f.read().strip()
-    else:
-        import secrets
-        generated_key = secrets.token_hex(16)
-        with open(secret_file, 'w') as f:
-            f.write(generated_key)
-        return generated_key
+
+    import secrets
+
+    generated_key = secrets.token_hex(16)
+    with open(secret_file, 'w') as f:
+        f.write(generated_key)
+    return generated_key
 
 # Set the secret key
 app.secret_key = get_secret_key()
