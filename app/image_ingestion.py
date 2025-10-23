@@ -1,18 +1,4 @@
-"""Image-to-JSON ingestion pipeline utilities.
-
-This module orchestrates three stages of the ingestion workflow:
-
-1. **Generation** – send image bytes to either an Ollama or OpenAI
-   multimodal model to obtain a JSON description of the document.
-2. **Persistence** – save the generated JSON alongside the source image so
-   future runs can skip files that were already processed.
-3. **Database ingestion** – load the JSON artefacts and upsert them into the
-   MongoDB collections used by the rest of the application.
-
-Utility helpers handle model discovery, API key persistence, and JSON
-validation.  The functions are intentionally written with small, testable units
-so the UI and CLI flows can share them.
-"""
+"""Image-to-JSON ingestion pipeline utilities."""
 
 from __future__ import annotations
 
@@ -36,7 +22,6 @@ from database_setup import (
     update_field_structure,
 )
 
-# Dedicated module-level logger for tracing ingestion progress and failures.
 LOGGER = logging.getLogger(__name__)
 
 DEFAULT_PROVIDER = "ollama"
@@ -157,11 +142,7 @@ FALLBACK_KEY_PATH = Path.home() / ".config" / "nosql_reader" / "openai_api_key.t
 
 @dataclass
 class ModelConfig:
-    """Configuration for a model invocation.
-
-    The UI serialises this dataclass when launching an ingestion run so both
-    providers can be invoked with a shared parameter structure.
-    """
+    """Configuration for a model invocation."""
 
     provider: str
     model: str
@@ -188,8 +169,6 @@ class IngestionSummary:
             self.errors = []
 
     def as_dict(self) -> Dict[str, object]:
-        """Return a serialisable dictionary for API responses."""
-
         return {
             "images_total": self.images_total,
             "generated": self.generated,
@@ -207,12 +186,7 @@ class IngestionError(RuntimeError):
     """Raised when the ingestion pipeline encounters a fatal error."""
 
 def ollama_models(base_url: Optional[str] = None) -> List[str]:
-    """Return the available Ollama models from the local runtime.
-
-    The settings screen calls this to populate the dropdown when the user wants
-    to pick a different local model.  The endpoint path mirrors Ollama's HTTP
-    API and the timeout keeps the UI responsive if the daemon is offline.
-    """
+    """Return a list of available Ollama models from the local runtime."""
 
     endpoint = (base_url or DEFAULT_OLLAMA_BASE_URL or "http://localhost:11434").rstrip("/") + OLLAMA_TAGS_ENDPOINT
     try:
@@ -227,7 +201,6 @@ def ollama_models(base_url: Optional[str] = None) -> List[str]:
 
 
 def _image_to_base64(path: Path) -> Tuple[str, str]:
-    """Read ``path`` and return a base64 payload plus the detected MIME type."""
     suffix = path.suffix.lower()
     mime_map = {
         ".png": "image/png",
@@ -246,7 +219,6 @@ def _image_to_base64(path: Path) -> Tuple[str, str]:
 
 
 def _call_ollama(image_path: Path, config: ModelConfig) -> str:
-    """Send the image to Ollama and return the raw JSON string response."""
     base_url = (config.base_url or DEFAULT_OLLAMA_BASE_URL or "http://localhost:11434").rstrip("/")
     url = f"{base_url}{OLLAMA_CHAT_ENDPOINT}"
     encoded, mime = _image_to_base64(image_path)
@@ -287,7 +259,6 @@ def _call_ollama(image_path: Path, config: ModelConfig) -> str:
     return str(content)
 
 def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
-    """Send the image to the OpenAI chat completions API and return JSON."""
     from openai import OpenAI  # Imported lazily to keep optional dependency optional
 
     client = OpenAI(api_key=api_key)
@@ -312,12 +283,6 @@ def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
 
 
 def _serialise_json(text: str) -> Dict[str, object]:
-    """Parse the model output into a Python dictionary.
-
-    A direct ``json.loads`` is attempted first and we fall back to the existing
-    ``data_processing.clean_json`` helper when the model emits slightly malformed
-    JSON (missing commas, trailing commas, etc.).
-    """
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -326,19 +291,14 @@ def _serialise_json(text: str) -> Dict[str, object]:
 
 
 def _json_path_for_image(image_path: Path) -> Path:
-    """Return the JSON artefact path that belongs to ``image_path``."""
-
     return image_path.with_suffix(image_path.suffix + ".json")
 
 
 def _archives_relative(path: Path, root: Path) -> str:
-    """Return the path of ``path`` relative to the archive ``root``."""
-
     return str(path.relative_to(root))
 
 
 def _ensure_api_key_path() -> Path:
-    """Locate the configured or default file used to persist the API key."""
     configured = os.environ.get(OPENAI_KEY_FILE_ENV)
     if configured:
         return Path(configured).expanduser()
@@ -346,7 +306,6 @@ def _ensure_api_key_path() -> Path:
 
 
 def read_api_key() -> Optional[str]:
-    """Return the stored OpenAI API key if the key file exists."""
     path = _ensure_api_key_path()
     if path.exists():
         return path.read_text(encoding="utf-8").strip() or None
@@ -354,7 +313,6 @@ def read_api_key() -> Optional[str]:
 
 
 def write_api_key(value: str) -> Path:
-    """Persist the OpenAI API key to disk and return the file path."""
     path = _ensure_api_key_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(value.strip(), encoding="utf-8")
@@ -362,19 +320,9 @@ def write_api_key(value: str) -> Path:
 
 
 def _document_exists(db: Database, relative_path: str) -> bool:
-    """Check whether the MongoDB ``documents`` collection already has the file."""
-
     return db["documents"].find_one({"relative_path": relative_path}) is not None
 
-def _ingest_json_documents(
-    db: Database, json_paths: Iterable[Path], root: Path, summary: IngestionSummary
-) -> None:
-    """Load JSON files and upsert them into MongoDB.
-
-    The helper de-duplicates paths, validates each JSON file through the
-    existing ``data_processing`` module, and tracks success/failure metrics on
-    the provided ``summary`` instance.
-    """
+def _ingest_json_documents(db: Database, json_paths: Iterable[Path], root: Path, summary: IngestionSummary) -> None:
     collection: Collection = db["documents"]
     unique_paths = []
     seen: set[Path] = set()
@@ -387,8 +335,6 @@ def _ingest_json_documents(
     if not unique_paths:
         return
 
-    # ``data_processing`` expects these globals to be set before validation so it
-    # can derive relative paths and establish database connections.
     data_processing.root_directory = str(root)
 
     for json_path in unique_paths:
@@ -414,12 +360,9 @@ def _ingest_json_documents(
                     collection.insert_one(json_data)
                     summary.ingested += 1
                 except DuplicateKeyError:
-                    # If the relative path changed but the hash matches we update
-                    # the existing document in place to avoid duplicates.
                     collection.replace_one({"file_hash": json_data.get("file_hash")}, json_data, upsert=True)
                     summary.updated += 1
 
-            # Keep the derived field index in sync with any new schema elements.
             update_field_structure(db, json_data)
         except Exception as exc:  # pragma: no cover - interacts with external db
             LOGGER.exception("Failed to ingest JSON %s", json_path)
@@ -432,18 +375,12 @@ def process_directory(
     reprocess_existing: bool = False,
     api_key: Optional[str] = None,
 ) -> IngestionSummary:
-    """Process images under ``directory`` and ingest generated JSON documents.
-
-    The source image files are only read – never moved or deleted – so they remain
-    untouched alongside any newly generated ``.json`` artefacts.
-    """
+    """Process images under ``directory`` and ingest generated JSON documents."""
 
     if not directory.exists() or not directory.is_dir():
         raise IngestionError(f"Directory does not exist: {directory}")
 
     summary = IngestionSummary()
-    # Discover every supported image file under the directory tree.  ``rglob``
-    # ensures nested folders are covered automatically.
     images: List[Path] = [
         path for path in directory.rglob("*") if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
     ]
@@ -454,8 +391,6 @@ def process_directory(
 
     json_targets: List[Path] = []
 
-    # Reuse the existing database wiring so ingestion updates the same Mongo
-    # instance as the rest of the application.
     client = get_client()
     db = get_db(client)
 
@@ -484,8 +419,6 @@ def process_directory(
                 raise IngestionError(f"Unsupported provider: {config.provider}")
 
             payload = _serialise_json(output_text)
-            # Writing the JSON alongside the original image ensures that the source
-            # file is left exactly where it was discovered.
             json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
             json_targets.append(json_path)
             summary.generated += 1

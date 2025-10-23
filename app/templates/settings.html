@@ -61,9 +61,6 @@
             <h2>Data ingestion</h2>
             <p>Select an archive folder to process images into JSON files. Files are stored in <code>{{ archive_root }}</code>.</p>
         </div>
-        <!-- Image ingestion controls allow operators to kick off the backend pipeline
-             from the UI.  The markup intentionally mirrors the JavaScript queries in
-             settings_data_ingestion.js so element IDs should be kept in sync. -->
         <div class="settings-subsection settings-ingestion__automation" data-ingestion-root>
             <h3>Image ingestion pipeline</h3>
             <p>Generate JSON metadata from image archives using a local Ollama model or the ChatGPT API.</p>
@@ -78,22 +75,88 @@
                   data-default-ollama-url="{{ ingestion_ollama_base_url or '' }}">
                 <div class="settings-grid">
                     <div class="settings-group">
-                        <label for="imageIngestionDirectory">Archive folders</label>
+                        <label for="imageIngestionDirectory">Archive directory</label>
                         <div class="settings-directory-picker">
-                            <!-- Text input remains for manual entry and automated tests; the button
-                                 invokes the native folder picker provided by modern browsers. -->
-                            <input type="text" id="imageIngestionDirectory" name="directory" placeholder="e.g. rolls/tray_01">
-                            <div class="settings-directory-picker__buttons">
-                                <button type="button" class="button button--secondary" data-directory-picker>Choose folder…</button>
-                                <button type="button" class="button button--secondary" data-directory-add title="Add the typed folder to the list">Add</button>
-                            </div>
+                            <input type="text" id="imageIngestionDirectory" name="directory" placeholder="e.g. rolls/tray_01" required>
+                            <button type="button" class="button button--secondary" data-directory-picker>Choose folder…</button>
                         </div>
                         <input type="file" id="imageIngestionDirectoryPicker" hidden webkitdirectory directory multiple>
-                        <p class="form-field__hint">Select one or more folders. Relative paths resolve under <code>{{ archive_root }}</code>.</p>
-                        <div class="directory-selection" data-directory-selection>
-                            <p class="directory-selection__empty" data-directory-empty>No folders selected yet.</p>
-                            <ul class="directory-selection__list" data-directory-list></ul>
-                        </div>
+                        <p class="form-field__hint">Relative paths resolve under <code>{{ archive_root }}</code>.</p>
+                        <p class="form-field__hint form-field__hint--selection" data-directory-picked hidden></p>
+                    </div>
+                    <div class="settings-group">
+                        <label for="imageIngestionProvider">Model provider</label>
+                        <select id="imageIngestionProvider" name="provider">
+                            <option value="ollama" {% if ingestion_default_provider == 'ollama' %}selected{% endif %}>Ollama (local)</option>
+                            <option value="openai" {% if ingestion_default_provider == 'openai' %}selected{% endif %}>ChatGPT API</option>
+                        </select>
+                        <p class="form-field__hint">Choose a local Ollama model or the hosted ChatGPT API.</p>
+                    </div>
+                </div>
+                <div class="settings-grid" data-provider-section="ollama">
+                    <div class="settings-group">
+                        <label for="imageIngestionOllamaBase">Ollama base URL</label>
+                        <input type="text" id="imageIngestionOllamaBase" name="ollama_base_url" value="{{ ingestion_ollama_base_url or '' }}">
+                        <p class="form-field__hint">Defaults to {{ ingestion_ollama_base_url or 'http://localhost:11434' }}.</p>
+                    </div>
+                    <div class="settings-group">
+                        <label for="imageIngestionModel">Model</label>
+                        <select id="imageIngestionModel" name="model">
+                            <option value="{{ ingestion_default_ollama_model }}">{{ ingestion_default_ollama_model }}</option>
+                        </select>
+                        <button type="button" class="button button--secondary" data-refresh-models>Refresh model list</button>
+                        <p class="form-field__hint">Populate from available Ollama models.</p>
+                    </div>
+                </div>
+                <div class="settings-grid" data-provider-section="openai" hidden>
+                    <div class="settings-group">
+                        <label for="imageIngestionOpenAiModel">ChatGPT model</label>
+                        <input type="text" id="imageIngestionOpenAiModel" name="openai_model" value="{{ ingestion_default_openai_model }}">
+                        <p class="form-field__hint">Use a multimodal model such as <code>gpt-4o-mini</code>.</p>
+                    </div>
+                </div>
+                <div class="settings-group" data-api-key-row hidden>
+                    <label for="imageIngestionApiKey">OpenAI API key</label>
+                    <input type="password" id="imageIngestionApiKey" name="api_key" placeholder="{% if ingestion_api_key_configured %}API key configured{% else %}Enter API key{% endif %}">
+                    <p class="form-field__hint" data-api-key-hint>{% if ingestion_api_key_configured %}The stored key will be reused if left blank.{% else %}The key is stored outside the container with other environment files.{% endif %}</p>
+                </div>
+                <div class="settings-group">
+                    <label for="imageIngestionPrompt">Processing prompt</label>
+                    <textarea id="imageIngestionPrompt" name="prompt" rows="14">{{ ingestion_default_prompt }}</textarea>
+                    <p class="form-field__hint">Adjust the instructions used to produce JSON for each document.</p>
+                </div>
+                <div class="settings-group">
+                    <label class="checkbox">
+                        <input type="checkbox" id="imageIngestionReprocess" name="reprocess">
+                        <span>Reprocess existing JSON files</span>
+                    </label>
+                    <p class="form-field__hint">When disabled, existing JSON files are skipped if they are already ingested.</p>
+                </div>
+                <div class="settings-actions">
+                    <button type="submit">Process images</button>
+                </div>
+            </form>
+            <div class="ingestion-status" data-ingestion-status hidden></div>
+            <dl class="ingestion-summary" data-ingestion-summary hidden></dl>
+            <div class="ingestion-errors" data-ingestion-errors hidden></div>
+        </div>
+        <div class="settings-subsection settings-ingestion__automation" data-ingestion-root>
+            <h3>Image ingestion pipeline</h3>
+            <p>Generate JSON metadata from image archives using a local Ollama model or the ChatGPT API.</p>
+            <form id="imageIngestionForm" class="settings-form"
+                  data-options-url="{{ url_for('data_ingestion_options') }}"
+                  data-run-url="{{ url_for('settings_run_data_ingestion') }}"
+                  data-api-key-url="{{ url_for('settings_save_data_ingestion_key') }}"
+                  data-default-provider="{{ ingestion_default_provider }}"
+                  data-default-ollama-model="{{ ingestion_default_ollama_model }}"
+                  data-default-openai-model="{{ ingestion_default_openai_model }}"
+                  data-key-configured="{{ '1' if ingestion_api_key_configured else '0' }}"
+                  data-default-ollama-url="{{ ingestion_ollama_base_url or '' }}">
+                <div class="settings-grid">
+                    <div class="settings-group">
+                        <label for="imageIngestionDirectory">Archive directory</label>
+                        <input type="text" id="imageIngestionDirectory" name="directory" placeholder="e.g. rolls/tray_01" required>
+                        <p class="form-field__hint">Relative paths resolve under <code>{{ archive_root }}</code>.</p>
                     </div>
                     <div class="settings-group">
                         <label for="imageIngestionProvider">Model provider</label>
