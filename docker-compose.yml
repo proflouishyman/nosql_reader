@@ -6,8 +6,9 @@ services:
     container_name: nosql_reader_mongodb
     env_file: .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      # Map canonical MONGO_ROOT_* values onto the variables the Mongo image expects.
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     volumes:
       - type: bind
         source: ${MONGO_DATA_HOST_PATH:-../mongo_data}
@@ -46,7 +47,8 @@ services:
     env_file: .env
     environment:
       FLASK_APP: app.py
-      MONGO_URI: ${MONGO_URI}
+      # Provide the canonical URI so the entrypoint can expose MONGO_URI to the app.
+      APP_MONGO_URI: ${APP_MONGO_URI}
       ARCHIVES_PATH: ${ARCHIVES_PATH:-/data/archives}
       SESSION_FILE_DIR: ${SESSION_PATH:-/app/flask_session}
       HISTORIAN_AGENT_ENABLED: ${HISTORIAN_AGENT_ENABLED:-1}
