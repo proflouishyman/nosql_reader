@@ -1516,29 +1516,19 @@ input[type="range"] {
     margin-bottom: 4px;
 }
 
-.settings-ingestion__summary {
-    display: grid;
-    gap: 16px;
+.settings-directory-picker {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
-.settings-ingestion__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 8px;
-    max-height: 280px;
-    overflow-y: auto;
+.settings-directory-picker input[type="text"] {
+    flex: 1;
+    min-width: 0;
 }
 
-.settings-ingestion__list li {
-    padding: 8px 12px;
-    background: #f1f5f9;
-    border-radius: 10px;
-    font-family: 'Fira Code', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    font-size: 0.85rem;
-    color: #1f2937;
-    word-break: break-all;
+.form-field__hint--selection {
+    color: var(--color-text-muted, #4b5563);
 }
 .help-page {
     display: grid;
