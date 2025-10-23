@@ -2,6 +2,7 @@
 __pycache__/
 logs/
 flask_session/
+mongo_data/
 secret_key.txt
 data/
 data_processing.log

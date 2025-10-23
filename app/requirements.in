@@ -30,6 +30,9 @@ idna
 itsdangerous
 Jinja2
 jiter
+langchain-community>=0.2.10,<0.3.0
+langchain-core>=0.2.10,<0.3.0
+langchain-openai>=0.1.7,<0.2.0
 langcodes
 language_data
 Levenshtein

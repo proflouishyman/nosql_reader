@@ -58,7 +58,8 @@ COPY --from=builder /app /app
 
 # Copy and set permissions for the entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+COPY bootstrap_data.sh /app/bootstrap_data.sh
+RUN chmod +x /app/entrypoint.sh /app/bootstrap_data.sh
 
 # Set the entrypoint to the entrypoint script for container initialization
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -4,11 +4,11 @@
 set -e
 
 # Configuration for backoff
-MAX_RETRIES=10
-SLEEP_TIME=10
-MONGO_HOST="mongodb"
-MONGO_PORT=27017
-MONGO_URI="mongodb://admin:secret@${MONGO_HOST}:${MONGO_PORT}/admin"
+MAX_RETRIES=${MONGO_MAX_RETRIES:-10}
+SLEEP_TIME=${MONGO_RETRY_DELAY:-5}
+MONGO_HOST=${MONGO_HOST:-mongodb}
+MONGO_PORT=${MONGO_PORT:-27017}
+MONGO_URI=${MONGO_URI:-"mongodb://admin:secret@${MONGO_HOST}:${MONGO_PORT}/admin"}
 
 echo "MONGO_URI is set to: ${MONGO_URI}"
 echo "Waiting for MongoDB to be ready...REALLY REAL"
@@ -43,70 +43,13 @@ client.admin.command('ping')
 
 echo "MongoDB is up and running."
 
-# Proceed with the rest of your script...
+if [ "${RUN_BOOTSTRAP:-0}" = "1" ]; then
+    echo "RUN_BOOTSTRAP enabled - executing data bootstrap pipeline"
+    /app/bootstrap_data.sh || echo "Bootstrap pipeline exited with status $?"
+else
+    echo "RUN_BOOTSTRAP not enabled - skipping data bootstrap"
+fi
 
-
-# echo "Running database setup scripts..."
-
-# echo "Environmental variables"
-# python show_env.py
-
-
-
-
-# echo "Running database_setup.py..."
-# python database_setup.py
-# echo "database_setup.py completed."
-
-# echo "Running data_processing.py..."
-# python data_processing.py
-# echo "data_processing.py completed."
-
-# echo "Running generate_unique_terms.py..."
-# python generate_unique_terms.py
-# echo "generate_unique_terms.py completed."
-
-# echo "NER Processing"
-# python ner_processing.py
-
-# echo "Running entity_linking.py..."
-# python entity_linking.py
-# echo "entity_linking.py completed."
-
-# echo "Setup scripts completed. Starting Flask app..."
-
-# # Start the Flask app
-# exec "$@"
-
-# #TESTING VERSION
-
-echo "***Running testing version***"
-echo "Running database setup scripts..."
-
-echo "Environmental variables"
-python -m cProfile -o show_env.prof show_env.py
-
-echo "Running database_setup.py..."
-python -m cProfile -o database_setup.prof database_setup.py
-echo "database_setup.py completed."
-
-echo "Running data_processing.py..."
-python -m cProfile -o data_processing.prof data_processing.py
-echo "data_processing.py completed."
-
-echo "Running generate_unique_terms.py..."
-python -m cProfile -o generate_unique_terms.prof generate_unique_terms.py
-echo "generate_unique_terms.py completed."
-
-echo "NER Processing"
-python -m cProfile -o ner_processing.prof ner_processing.py
-
-echo "Running entity_linking.py..."
-python -m cProfile -o entity_linking.prof entity_linking.py
-echo "entity_linking.py completed."
-
-echo "Setup scripts completed. Starting Flask app..."
-
-# Start the Flask app
+echo "Starting Flask app..."
 exec "$@"
 

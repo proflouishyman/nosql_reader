@@ -1,7 +1,20 @@
 # File: routes.py
 # Path: routes.py
 
-from flask import request, jsonify, render_template, redirect, url_for, flash, session, abort, Response, send_file, Flask
+from flask import (
+    request,
+    jsonify,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    session,
+    abort,
+    Response,
+    send_file,
+    Flask,
+    has_request_context,
+)
 from functools import wraps
 from app import app, cache
 from database_setup import (
@@ -15,6 +28,7 @@ from database_setup import (
 )
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import math
 import json
 import re
@@ -23,11 +37,21 @@ import time
 from datetime import datetime, timedelta
 import random
 import csv
-from io import StringIO
+from io import StringIO, BytesIO
 from logging.handlers import RotatingFileHandler
+from typing import Any, Dict, List, Optional, Tuple
 import os
 import uuid
 import pymongo
+from pathlib import Path
+import zipfile
+
+from historian_agent import (
+    HistorianAgentConfig,
+    HistorianAgentError,
+    get_agent,
+    reset_agent,
+)
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -61,6 +85,234 @@ ADMIN_PASSWORD_HASH = 'pbkdf2:sha256:260000$uxZ1Fkjt9WQCHwuN$ca37dfb41ebc26b19da
 MAX_ATTEMPTS = 5
 LOCKOUT_TIME = 15 * 60  # 15 minutes in seconds
 login_attempts = {}
+
+HISTORIAN_HISTORY_TIMEOUT = 3600
+HISTORIAN_HISTORY_MAX_TURNS = 20
+
+ARCHIVE_ALLOWED_EXTENSIONS = {'.json', '.jsonl'}
+ARCHIVE_LIST_LIMIT = 200
+
+
+def _archives_root() -> Path:
+    """Return the archive root directory, creating it if necessary."""
+
+    root_path = Path(
+        os.environ.get('ARCHIVES_PATH', os.path.join(app.root_path, 'archives'))
+    ).expanduser()
+    root_path.mkdir(parents=True, exist_ok=True)
+    return root_path
+
+
+def _normalise_subdirectory(raw_subdir: Optional[str]) -> Path:
+    """Sanitise a user-supplied subdirectory string for archive uploads."""
+
+    if not raw_subdir:
+        return Path()
+    cleaned = Path(raw_subdir.strip().replace('\\', '/'))
+    safe_parts = [
+        secure_filename(part)
+        for part in cleaned.parts
+        if part not in {'', '.', '..'}
+    ]
+    return Path(*[part for part in safe_parts if part])
+
+
+def _allowed_archive(filename: str) -> bool:
+    """Return True if the provided filename has an allowed extension."""
+
+    suffix = Path(filename).suffix.lower()
+    return suffix in ARCHIVE_ALLOWED_EXTENSIONS
+
+
+def _list_archives() -> Tuple[List[str], bool]:
+    """Return archive files relative to the root and whether results were truncated."""
+
+    root_path = _archives_root()
+    files: List[str] = []
+    for directory, _subdirs, filenames in os.walk(root_path):
+        for name in sorted(filenames):
+            relative = Path(directory, name).relative_to(root_path)
+            files.append(str(relative))
+            if len(files) > ARCHIVE_LIST_LIMIT:
+                return files[:ARCHIVE_LIST_LIMIT], True
+    return files, False
+
+
+@app.route('/data-files', methods=['GET', 'POST'])
+def data_file_manager():
+    """Allow users to upload additional archive files for data processing."""
+
+    archive_root = _archives_root()
+
+    if request.method == 'POST':
+        uploads = request.files.getlist('archives')
+        subdirectory = _normalise_subdirectory(request.form.get('target_subdir'))
+
+        saved_files: List[str] = []
+        rejected_files: List[str] = []
+
+        for file_storage in uploads:
+            if not file_storage or not file_storage.filename:
+                continue
+
+            original_name = file_storage.filename
+            filename = secure_filename(original_name)
+
+            if not filename or not _allowed_archive(filename):
+                rejected_files.append(original_name)
+                continue
+
+            destination = archive_root / subdirectory / filename
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            file_storage.save(destination)
+            saved_files.append(str(destination.relative_to(archive_root)))
+
+        if saved_files:
+            display_subset = ', '.join(saved_files[:3])
+            if len(saved_files) > 3:
+                display_subset += ', …'
+            flash(f"Uploaded {len(saved_files)} file(s): {display_subset}")
+        else:
+            flash('No files were uploaded. Please choose JSON files with supported extensions (.json, .jsonl).')
+
+        if rejected_files:
+            flash(f"Skipped unsupported files: {', '.join(rejected_files)}")
+
+        return redirect(url_for('data_file_manager'))
+
+    archive_files, truncated = _list_archives()
+    return render_template(
+        'data_files.html',
+        archive_root=str(archive_root),
+        archive_files=archive_files,
+        archive_list_truncated=truncated,
+    )
+
+
+@app.route('/data-files/download-all', methods=['GET'])
+def download_all_archives():
+    """Bundle the entire archive directory into a ZIP for download."""
+
+    archive_root = _archives_root()
+    files_to_include = [p for p in archive_root.rglob('*') if p.is_file()]
+
+    if not files_to_include:
+        flash('No archive files available to download yet.')
+        return redirect(url_for('data_file_manager'))
+
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', compression=zipfile.ZIP_DEFLATED) as bundle:
+        for file_path in files_to_include:
+            arcname = file_path.relative_to(archive_root)
+            bundle.write(file_path, arcname=str(arcname))
+
+    zip_buffer.seek(0)
+    timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+    filename = f'archives_{timestamp}.zip'
+
+    return send_file(
+        zip_buffer,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
+def _historian_session_overrides() -> dict:
+    """Return session-scoped Historian Agent overrides if available."""
+
+    if not has_request_context():
+        return {}
+    stored = session.get('historian_agent_overrides')
+    if isinstance(stored, dict):
+        return stored.copy()
+    return {}
+
+
+def _historian_agent_overrides(include_session: bool = True) -> dict:
+    """Combine config defaults with optional UI/session overrides."""
+
+    settings = app.config.get('UI_CONFIG', {}).get('historian_agent', {})
+    overrides: Dict[str, Any] = {}
+    if isinstance(settings, dict):
+        allowed = {
+            'enabled',
+            'model_provider',
+            'model_name',
+            'temperature',
+            'max_context_documents',
+            'system_prompt',
+            'context_fields',
+            'summary_field',
+            'allow_general_fallback',
+            'ollama_base_url',
+            'openai_api_key',
+        }
+        overrides.update({key: value for key, value in settings.items() if key in allowed})
+    if include_session:
+        overrides.update(_historian_session_overrides())
+    return overrides
+
+
+def _serialise_agent_config(config: HistorianAgentConfig) -> Dict[str, Any]:
+    """Convert the agent configuration into JSON-safe primitives."""
+
+    return {
+        'enabled': config.enabled,
+        'model_provider': config.model_provider,
+        'model_name': config.model_name,
+        'temperature': config.temperature,
+        'max_context_documents': config.max_context_documents,
+        'system_prompt': config.system_prompt,
+        'context_fields': list(config.context_fields),
+        'summary_field': config.summary_field,
+        'allow_general_fallback': config.allow_general_fallback,
+        'ollama_base_url': config.ollama_base_url or '',
+        'openai_api_key_present': bool(config.openai_api_key),
+    }
+
+
+HISTORIAN_PROVIDER_OPTIONS = [
+    {'value': 'ollama', 'label': 'Ollama (local)'},
+    {'value': 'openai', 'label': 'OpenAI (cloud)'},
+]
+
+
+def _evaluate_agent_error(
+    overrides: Optional[Dict[str, Any]] = None,
+    config: Optional[HistorianAgentConfig] = None,
+) -> Optional[str]:
+    """Return a user-friendly error string if the Historian Agent is unavailable."""
+
+    current_overrides = overrides if overrides is not None else _historian_agent_overrides()
+    if config is None:
+        config = HistorianAgentConfig.from_env(current_overrides)
+    if not config.enabled:
+        return None
+    try:
+        get_agent(documents, current_overrides)
+    except HistorianAgentError as exc:
+        return str(exc)
+    except Exception:  # pragma: no cover - defensive logging
+        app.logger.exception('Historian agent configuration check failed')
+        return 'Historian agent is currently unavailable.'
+    return None
+
+
+def _historian_history_cache_key(conversation_id: str) -> str:
+    """Return the cache key used to persist chat history for a conversation."""
+
+    return f"historian_agent_history_{conversation_id}"
+
+
+def _is_truthy(value) -> bool:
+    """Coerce form inputs and JSON payload values into booleans."""
+
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {'1', 'true', 'yes', 'y'}
+    return False
 
 def is_locked_out(ip):
     if ip in login_attempts:
@@ -98,6 +350,191 @@ def index():
     num_search_fields = 3  # Number of search fields to display
     field_structure = get_field_structure(db)  # Pass 'db' here
     return render_template('index.html', num_search_fields=num_search_fields, field_structure=field_structure)
+
+
+@app.route('/historian-agent')
+def historian_agent_page():
+    """Render the Historian Agent interface with the current configuration."""
+
+    refresh = _is_truthy(request.args.get('refresh'))
+    if refresh:
+        reset_agent()
+    overrides = _historian_agent_overrides()
+    agent_config = HistorianAgentConfig.from_env(overrides)
+    agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
+
+    return render_template(
+        'historian_agent.html',
+        agent_enabled=agent_config.enabled and agent_error is None,
+        agent_config_payload=_serialise_agent_config(agent_config),
+        provider_options=HISTORIAN_PROVIDER_OPTIONS,
+        agent_error=agent_error,
+    )
+
+
+def _parse_agent_config_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Validate and normalise posted Historian Agent configuration values."""
+
+    overrides: Dict[str, Any] = {}
+    if 'enabled' in payload:
+        overrides['enabled'] = _is_truthy(payload['enabled'])
+    if 'model_provider' in payload:
+        provider = str(payload['model_provider']).strip().lower()
+        allowed = {option['value'] for option in HISTORIAN_PROVIDER_OPTIONS}
+        if provider and provider not in allowed:
+            raise ValueError('Unsupported model provider selected.')
+        if provider:
+            overrides['model_provider'] = provider
+    if 'model_name' in payload:
+        model_name = str(payload['model_name']).strip()
+        if model_name:
+            overrides['model_name'] = model_name
+        else:
+            overrides['model_name'] = ''
+    if 'temperature' in payload and payload['temperature'] != '':
+        try:
+            temperature = float(payload['temperature'])
+        except (TypeError, ValueError) as exc:
+            raise ValueError('Temperature must be a number.') from exc
+        overrides['temperature'] = temperature
+    if 'max_context_documents' in payload and payload['max_context_documents'] != '':
+        try:
+            max_docs = int(payload['max_context_documents'])
+        except (TypeError, ValueError) as exc:
+            raise ValueError('Context documents must be a whole number.') from exc
+        if max_docs < 1:
+            raise ValueError('Context documents must be at least 1.')
+        overrides['max_context_documents'] = max_docs
+    if 'system_prompt' in payload:
+        overrides['system_prompt'] = str(payload['system_prompt'])
+    if 'context_fields' in payload:
+        raw_fields = payload['context_fields']
+        items: List[str] = []
+        if isinstance(raw_fields, str):
+            for value in re.split(r'[\n,]+', raw_fields):
+                value = value.strip()
+                if value:
+                    items.append(value)
+        elif isinstance(raw_fields, list):
+            for value in raw_fields:
+                if not isinstance(value, str):
+                    continue
+                value = value.strip()
+                if value:
+                    items.append(value)
+        overrides['context_fields'] = items if items else None
+    if 'summary_field' in payload:
+        overrides['summary_field'] = str(payload['summary_field']).strip()
+    if 'allow_general_fallback' in payload:
+        overrides['allow_general_fallback'] = _is_truthy(payload['allow_general_fallback'])
+    if 'ollama_base_url' in payload:
+        base_url = str(payload['ollama_base_url']).strip()
+        overrides['ollama_base_url'] = base_url or None
+    if 'openai_api_key' in payload:
+        api_key = str(payload['openai_api_key']).strip()
+        overrides['openai_api_key'] = api_key or None
+    return overrides
+
+
+@app.route('/historian-agent/config', methods=['GET', 'POST'])
+def historian_agent_config():
+    """Return or mutate the active Historian Agent configuration."""
+
+    if request.method == 'GET':
+        config = HistorianAgentConfig.from_env(_historian_agent_overrides())
+        return jsonify(
+            {
+                'config': _serialise_agent_config(config),
+                'provider_options': HISTORIAN_PROVIDER_OPTIONS,
+                'agent_error': _evaluate_agent_error(config=config),
+            }
+        )
+
+    payload = request.get_json(silent=True) or {}
+    if _is_truthy(payload.get('reset')):
+        session.pop('historian_agent_overrides', None)
+        session.modified = True
+        reset_agent()
+        config = HistorianAgentConfig.from_env(_historian_agent_overrides())
+        return jsonify(
+            {
+                'config': _serialise_agent_config(config),
+                'message': 'Historian Agent configuration reset to defaults.',
+                'agent_error': _evaluate_agent_error(config=config),
+            }
+        )
+
+    try:
+        overrides = _parse_agent_config_payload(payload)
+    except ValueError as exc:
+        return jsonify({'error': str(exc)}), 400
+
+    session_overrides = _historian_session_overrides()
+    for key, value in overrides.items():
+        if value in (None, ''):
+            session_overrides.pop(key, None)
+        else:
+            session_overrides[key] = value
+    session['historian_agent_overrides'] = session_overrides
+    session.modified = True
+    reset_agent()
+    config = HistorianAgentConfig.from_env(_historian_agent_overrides())
+    return jsonify(
+        {
+            'config': _serialise_agent_config(config),
+            'message': 'Historian Agent configuration updated.',
+            'agent_error': _evaluate_agent_error(config=config),
+        }
+    )
+
+
+@app.route('/historian-agent/query', methods=['POST'])
+def historian_agent_query():
+    """Execute a Historian Agent turn and persist the resulting chat history."""
+
+    payload = request.get_json(silent=True) or {}
+    question = (payload.get('question') or '').strip()
+    conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
+    refresh_requested = _is_truthy(payload.get('refresh'))
+    history_key = _historian_history_cache_key(conversation_id)
+    if refresh_requested:
+        reset_agent()
+        cache.delete(history_key)
+        if not question:
+            return jsonify({
+                'conversation_id': str(uuid.uuid4()),
+                'answer': '',
+                'sources': [],
+                'history': [],
+            })
+
+    if not question:
+        return jsonify({'error': 'A question is required.'}), 400
+
+    history = cache.get(history_key) or []
+
+    try:
+        agent = get_agent(documents, _historian_agent_overrides())
+        result = agent.invoke(question, chat_history=history)
+    except HistorianAgentError as exc:
+        return jsonify({'error': str(exc)}), 400
+    except Exception:
+        app.logger.exception('Historian agent query failed')
+        return jsonify({'error': 'Historian agent failed to generate a response.'}), 500
+
+    history.append({'role': 'user', 'content': question})
+    history.append({'role': 'assistant', 'content': result['answer']})
+    if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
+        history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
+    cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
+
+    response_payload = {
+        'conversation_id': conversation_id,
+        'answer': result['answer'],
+        'sources': result['sources'],
+        'history': history,
+    }
+    return jsonify(response_payload)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
