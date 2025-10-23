@@ -53,6 +53,8 @@ from historian_agent import (
     reset_agent,
 )
 
+import image_ingestion
+
 # Create a logger instance
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -1063,7 +1065,127 @@ def settings():
         provider_options=HISTORIAN_PROVIDER_OPTIONS,
         agent_error=agent_error,
         config_endpoint=url_for('historian_agent_config'),
+        ingestion_default_prompt=image_ingestion.DEFAULT_PROMPT,
+        ingestion_default_provider=image_ingestion.DEFAULT_PROVIDER,
+        ingestion_default_ollama_model=image_ingestion.DEFAULT_OLLAMA_MODEL,
+        ingestion_default_openai_model=image_ingestion.DEFAULT_OPENAI_MODEL,
+        ingestion_ollama_base_url=image_ingestion.DEFAULT_OLLAMA_BASE_URL,
+        ingestion_api_key_configured=image_ingestion.read_api_key() is not None,
     )
+
+@app.route('/settings/data-ingestion/options', methods=['GET'])
+def data_ingestion_options():
+    """Return configuration details for the image ingestion pipeline."""
+
+    base_url = request.args.get('ollama_base_url') or image_ingestion.DEFAULT_OLLAMA_BASE_URL
+    models = image_ingestion.ollama_models(base_url)
+    return jsonify({
+        'default_provider': image_ingestion.DEFAULT_PROVIDER,
+        'default_prompt': image_ingestion.DEFAULT_PROMPT,
+        'ollama': {
+            'base_url': base_url,
+            'default_model': image_ingestion.DEFAULT_OLLAMA_MODEL,
+            'models': models,
+        },
+        'openai': {
+            'default_model': image_ingestion.DEFAULT_OPENAI_MODEL,
+            'key_configured': image_ingestion.read_api_key() is not None,
+        },
+    })
+
+
+@app.route('/settings/data-ingestion/run', methods=['POST'])
+def settings_run_data_ingestion():
+    """Trigger the image-to-JSON ingestion workflow for a directory."""
+
+    payload = request.get_json(silent=True) or {}
+    directory_raw = str(payload.get('directory', '')).strip()
+    if not directory_raw:
+        return jsonify({'status': 'error', 'message': 'Provide a directory path to ingest.'}), 400
+
+    try:
+        candidate = Path(directory_raw)
+        if candidate.is_absolute():
+            directory_path = image_ingestion.expand_directory(directory_raw)
+        else:
+            directory_path = (_archives_root() / candidate).resolve()
+    except Exception as exc:
+        return jsonify({'status': 'error', 'message': f'Invalid directory: {exc}'}), 400
+
+    provider = image_ingestion.provider_from_string(payload.get('provider'))
+    prompt = str(payload.get('prompt') or image_ingestion.DEFAULT_PROMPT)
+    base_url = payload.get('base_url') or payload.get('ollama_base_url')
+
+    model_value = payload.get('model') or ''
+    if provider == 'ollama':
+        model = model_value.strip() or image_ingestion.DEFAULT_OLLAMA_MODEL
+    else:
+        openai_model = payload.get('openai_model') or model_value
+        model = str(openai_model or image_ingestion.DEFAULT_OPENAI_MODEL).strip()
+
+    reprocess_raw = payload.get('reprocess')
+    if isinstance(reprocess_raw, str):
+        reprocess = reprocess_raw.strip().lower() in {'1', 'true', 'yes', 'on'}
+    else:
+        reprocess = bool(reprocess_raw)
+
+    api_key = None
+    key_saved = False
+    if provider == 'openai':
+        provided_key = payload.get('api_key')
+        api_key = image_ingestion.ensure_api_key(provided_key)
+        key_saved = bool(provided_key)
+        if not api_key:
+            return jsonify({
+                'status': 'error',
+                'code': 'missing_api_key',
+                'message': 'Provide an OpenAI API key before running ingestion.',
+            }), 400
+
+    config = image_ingestion.ModelConfig(
+        provider=provider,
+        model=model,
+        prompt=prompt,
+        base_url=base_url or None,
+    )
+
+    try:
+        summary = image_ingestion.process_directory(
+            directory_path,
+            config,
+            reprocess_existing=reprocess,
+            api_key=api_key,
+        )
+    except image_ingestion.IngestionError as exc:
+        return jsonify({'status': 'error', 'message': str(exc)}), 400
+    except Exception as exc:
+        logger.exception('Unexpected failure during image ingestion')
+        return jsonify({'status': 'error', 'message': f'Unexpected failure: {exc}'}), 500
+
+    response = {
+        'status': 'ok',
+        'summary': summary.as_dict(),
+        'provider': provider,
+        'directory': str(directory_path),
+    }
+    if provider == 'openai':
+        response['api_key_saved'] = key_saved
+
+    return jsonify(response)
+
+
+@app.route('/settings/data-ingestion/api-key', methods=['POST'])
+def settings_save_data_ingestion_key():
+    """Persist a ChatGPT API key for future ingestion runs."""
+
+    payload = request.get_json(silent=True) or {}
+    api_key = str(payload.get('api_key', '')).strip()
+    if not api_key:
+        return jsonify({'status': 'error', 'message': 'Provide an API key to save.'}), 400
+
+    image_ingestion.ensure_api_key(api_key)
+    return jsonify({'status': 'ok'})
+
 
 # Consider streaming if it ends up being thousands of documents
 @app.route('/export_selected_csv', methods=['POST'])
