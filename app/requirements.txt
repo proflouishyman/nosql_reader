@@ -13,6 +13,16 @@ anyio==4.6.0
     #   -r requirements.in
     #   httpx
     #   openai
+aiohttp==3.9.5
+    # via langchain-community
+aiosignal==1.3.1
+    # via aiohttp
+async-timeout==4.0.3
+    # via
+    #   aiohttp
+    #   langchain-core
+attrs==24.2.0
+    # via aiohttp
 blinker==1.8.2
     # via
     #   -r requirements.in
@@ -103,6 +113,8 @@ fsspec==2024.9.0
     #   -r requirements.in
     #   huggingface-hub
     #   torch
+frozenlist==1.4.1
+    # via aiohttp
 fuzzywuzzy==0.18.0
     # via -r requirements.in
 h11==0.14.0
@@ -138,10 +150,23 @@ jinja2==3.1.4
     #   flask
     #   spacy
     #   torch
+jsonpatch==1.33
+    # via langchain-core
+jsonpointer==2.4
+    # via jsonpatch
 jiter==0.6.1
     # via
     #   -r requirements.in
     #   openai
+langchain-community==0.2.11
+    # via -r requirements.in
+langchain-core==0.2.12
+    # via
+    #   -r requirements.in
+    #   langchain-community
+    #   langchain-openai
+langchain-openai==0.1.7
+    # via -r requirements.in
 langcodes==3.4.1
     # via
     #   -r requirements.in
@@ -150,6 +175,10 @@ language-data==1.2.0
     # via
     #   -r requirements.in
     #   langcodes
+langsmith==0.1.83
+    # via
+    #   langchain-community
+    #   langchain-core
 levenshtein==0.26.0
     # via -r requirements.in
 marisa-trie==1.2.0
@@ -177,6 +206,10 @@ msgspec==0.18.6
     # via
     #   -r requirements.in
     #   flask-session
+multidict==6.0.5
+    # via
+    #   aiohttp
+    #   yarl
 murmurhash==1.0.10
     # via
     #   -r requirements.in
@@ -359,6 +392,8 @@ sympy==1.13.3
     # via
     #   -r requirements.in
     #   torch
+tenacity==8.5.0
+    # via langchain-core
 thinc==8.3.2
     # via
     #   -r requirements.in
@@ -404,6 +439,9 @@ typing-extensions==4.12.2
     #   pydantic-core
     #   torch
     #   typer
+    #   langchain-core
+yarl==1.9.4
+    # via aiohttp
 urllib3==2.2.3
     # via
     #   -r requirements.in
