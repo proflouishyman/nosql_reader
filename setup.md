@@ -99,6 +99,8 @@ docker compose up --build
 
 The Flask app becomes available at [http://localhost:5000](http://localhost:5000). MongoDB listens on port 27017. Use `docker compose down` to stop containers and `docker compose down -v` to remove volumes (Mongo data will persist because it is mapped to `MONGO_DATA_HOST_PATH`).
 
+All maintenance utilities that talk to MongoDB (`app/util/export_unique_terms.py`, `app/util/export_linked_terms.py`, `app/util/delete_db.py`, etc.) import `app.database_setup` so they always use the canonical `MONGO_URI`. Run them from the repository root or with `python -m app.util.<script>` inside the container to keep the helper import path resolvable.
+
 ### 2.7 Populate the archives directory (optional first run)
 
 - Place JSON or JSONL source files inside the folder referenced by `ARCHIVES_HOST_PATH`.
