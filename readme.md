@@ -115,6 +115,7 @@ Uploaded files are saved immediately. The next time you run `data_processing.py`
 - Use `/app/bootstrap_data.sh` (inside the container) to run the end-to-end ingestion pipeline. It hashes archive files, loads new documents, recalculates unique term statistics, and runs enrichment scripts.
 - You can invoke the bootstrap at container startup by setting `RUN_BOOTSTRAP=1` in `.env`. The script exits gracefully if the archives directory is empty, so it is safe to keep the flag enabled in development.
 - Additional helper scripts such as `backup_db.py` and `restore_db.py` are available for database maintenance. Execute them from the repository root or inside the running container using `docker compose exec`.
+- The export and cleanup utilities in `app/util/` (for example `export_unique_terms.py`, `export_linked_terms.py`, and `delete_db.py`) use `app.database_setup` so they inherit the canonical `MONGO_URI`. Run them from the repository root or with `python -m app.util.<script>` to ensure the helpers resolve correctly inside Docker.
 
 ## Data directory layout
 

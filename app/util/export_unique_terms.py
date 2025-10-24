@@ -1,10 +1,23 @@
 # export_unique_terms.py
 
-import os
+import sys
 import logging
+from pathlib import Path
+
 import pandas as pd
-from pymongo import MongoClient
 from dotenv import load_dotenv
+
+# ---------------------------------------------------------------------------
+# Allow direct execution by ensuring the project root is importable.
+# ---------------------------------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+# ---------------------------------------------------------------------------
+# Reuse the shared database helpers so the URI handling stays consistent.
+# ---------------------------------------------------------------------------
+from app.database_setup import get_client, get_db
 
 # Load environment variables from .env file
 load_dotenv()
@@ -28,17 +41,6 @@ if not logger.handlers:
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
-
-# =======================
-# Database Configuration
-# =======================
-
-def get_client():
-    mongo_uri = os.getenv('MONGO_URI', 'mongodb://admin:secret@mongodbt:27017/admin')
-    return MongoClient(mongo_uri)
-
-def get_db(client):
-    return client['railroad_documents']
 
 def get_unique_terms_collection(db):
     return db['unique_terms']

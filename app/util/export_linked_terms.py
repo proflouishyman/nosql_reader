@@ -1,8 +1,21 @@
-import os
+import sys
 import logging
+from pathlib import Path
+
 import pandas as pd
-from pymongo import MongoClient
 from dotenv import load_dotenv
+
+# ---------------------------------------------------------------------------
+# Allow direct execution by ensuring the project root is importable.
+# ---------------------------------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+# ---------------------------------------------------------------------------
+# Reuse the shared database helpers to keep connection handling consistent.
+# ---------------------------------------------------------------------------
+from app.database_setup import get_client, get_db
 
 # Load environment variables from .env file
 load_dotenv()
@@ -26,16 +39,6 @@ if not logger.handlers:
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
-
-# =======================
-# Database Configuration
-# =======================
-def get_client():
-    mongo_uri = os.getenv('MONGO_URI', 'mongodb://admin:secret@mongodbt:27017/admin')
-    return MongoClient(mongo_uri)
-
-def get_db(client):
-    return client['railroad_documents']
 
 def get_collections(db):
     linked_entities_collection = db['linked_entities']
@@ -76,6 +79,7 @@ def export_linked_terms(db):
 # Main Execution
 # =======================
 if __name__ == "__main__":
+    client = None
     try:
         client = get_client()
         db = get_db(client)
@@ -85,3 +89,7 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.error(f"An error occurred during export: {e}", exc_info=True)
+    finally:
+        if client is not None:
+            # Close the client so we do not leak sockets on repeated runs.
+            client.close()

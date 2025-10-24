@@ -1,13 +1,28 @@
 # generate_unique_terms.py
 
 import os
+import sys
 import re
 import logging
 from collections import Counter, defaultdict
+from pathlib import Path
+
 from tqdm import tqdm
 
-from pymongo import UpdateOne, MongoClient
+from pymongo import UpdateOne
 from dotenv import load_dotenv
+
+# ---------------------------------------------------------------------------
+# Allow direct execution by ensuring the project root is importable.
+# ---------------------------------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+# ---------------------------------------------------------------------------
+# Reuse the shared database helpers so connection handling stays consistent.
+# ---------------------------------------------------------------------------
+from app.database_setup import get_client, get_db
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,17 +46,6 @@ if not logger.handlers:
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
-
-# =======================
-# Database Configuration
-# =======================
-
-def get_client():
-    mongo_uri = os.getenv('MONGO_URI', 'mongodb://admin:secret@mongodbt:27017/admin')
-    return MongoClient(mongo_uri)
-
-def get_db(client):
-    return client['railroad_documents']
 
 def get_collections(db):
     documents = db['documents']

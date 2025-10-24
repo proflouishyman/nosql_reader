@@ -1,26 +1,52 @@
 # drop_db.py
-from pymongo import MongoClient
+"""Utility for dropping the MongoDB database using the canonical helpers."""
+
+import sys
+from pathlib import Path
+
 from dotenv import load_dotenv
-import os
+
+# ---------------------------------------------------------------------------
+# Ensure the project root is on sys.path so we can import database_setup when
+# this script is executed directly (python app/util/delete_db.py).
+# ---------------------------------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+# ---------------------------------------------------------------------------
+# Import the shared connection helpers so we honour the naming conventions.
+# ---------------------------------------------------------------------------
+from app.database_setup import get_client, get_db
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Get MongoDB connection details from environment variables
-MONGODB_URI = os.getenv("MONGODB_URI")  # Ensure you have this set in your .env file
-DATABASE_NAME = "railroad_documents"      # Replace with the name of the database you want to delete
-
 def drop_database():
     """Drop the specified MongoDB database."""
+    client = None
+    # Track the name for logging even if connection fails.
+    database_name = "unknown"
     try:
         print("Connecting to db")
-        # Connect to the MongoDB server
-        client = MongoClient(MONGODB_URI)
-        # Drop the database
-        client.drop_database(DATABASE_NAME)
-        print(f"Database '{DATABASE_NAME}' dropped successfully.")
+        # Reuse the centralised helper so we always read MONGO_URI correctly.
+        client = get_client()
+
+        # Use the helper again to obtain the configured database handle.
+        db = get_db(client)
+
+        # Derive the database name from the handle to avoid hard-coded strings.
+        database_name = db.name
+
+        # Drop the database using the canonical client connection.
+        client.drop_database(database_name)
+        print(f"Database '{database_name}' dropped successfully.")
     except Exception as e:
-        print(f"Error dropping database '{DATABASE_NAME}': {e}")
+        print(f"Error dropping database '{database_name}': {e}")
+    finally:
+        if client is not None:
+            # Close the client so the connection pool is released cleanly.
+            client.close()
 
 if __name__ == "__main__":
     drop_database()
