@@ -4,6 +4,9 @@ Before you finish, make sure that the mongodb connections have not been broken a
 
 Do the minimal changes for the solution to the prompt.
 
+Follow the naming conventions in the file header
+
+
 Comment everything you do.
 
 Revise the readme.md as needed
@@ -15,6 +18,30 @@ When in doubt, stop working and ask a question of the user.
 always read the readme.md file when you start so you know what the file structure looks like and how the program works. 
 
 environment & Docker Variable Guidelines
+
+# ===========================================================
+# MongoDB Connection Standards
+# Created: 2025-10-24
+# Purpose: Ensure consistent variable naming and prevent Codex
+#          or automated tools from renaming or duplicating vars.
+#
+# NAMING CONVENTIONS
+# -----------------------------------------------------------
+# MONGO_URI    → environment variable or constant holding the
+#                full Mongo connection string.
+# client       → the active pymongo.MongoClient instance.
+# db           → database handle, e.g. client["admin"] or client[DB_NAME].
+# collection   → collection handle from db["collection_name"].
+#
+# RULES
+# -----------------------------------------------------------
+# - Do NOT create variants like mongoURI, mongo_uri, or client2.
+# - Do NOT rename MONGO_URI or client.
+# - Do NOT modify imports or connection structure unless explicitly instructed.
+# - Use get_env() or os.environ.get() to retrieve env vars safely.
+# - Handle connection errors with try/except, logging the exception only.
+# ===========================================================
+
 These rules prevent authentication errors, failed Docker builds, and misaligned configurations when Codex or other automated agents modify environment or Docker files.
 1. Canonical Variable Names
 Always use the following canonical naming convention for MongoDB and related services:
@@ -28,7 +55,12 @@ docker-compose.yml
 The consuming app (Flask, Node, etc.)
 New services must follow the same pattern:
 <SERVICE>_USERNAME, <SERVICE>_PASSWORD, <SERVICE>_URI
-2. No Quotes or Inline Comments in .env
+
+Never edit .env files unless adding new variables.
+Do not touch the docker files.
+At all cost, do not break the database, docker connections.
+
+3. No Quotes or Inline Comments in .env
 Environment variables must be defined without quotes or inline comments.
 ❌ Incorrect
 MONGO_URI= "mongodb://admin:secret@mongodb:27017/admin" # admin db
