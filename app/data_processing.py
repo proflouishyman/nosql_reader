@@ -4,6 +4,7 @@ import os
 import json
 import re
 import hashlib
+from pathlib import Path  # Added to discover dynamically mounted ingestion directories.
 from database_setup import (
     insert_document,
     update_field_structure,
@@ -48,6 +49,7 @@ if not logger.handlers:
 
 root_directory = None
 db = None  # Will be initialized in each process
+DATA_MOUNT_ROOT = Path('/mnt')  # Added constant so ingestion can discover Docker-provided mount points.
 
 # =======================
 # Utility Functions
@@ -232,6 +234,24 @@ def get_all_files(directory):
                 file_list.append(os.path.join(root, file))
                 logger.debug(f"Found file: {os.path.join(root, file)}")
     return file_list
+
+
+def discover_all_mounts():
+    """Return a list of mount directories exposed under /mnt inside the container."""
+
+    # Added comprehension to surface every mounted directory so the pipeline can ingest from multiple sources.
+    if not DATA_MOUNT_ROOT.exists():
+        return []
+    return [path for path in DATA_MOUNT_ROOT.iterdir() if path.is_dir()]
+
+
+def run_ingestion_across_mounts():
+    """Iterate through every discovered mount and run the existing processor."""
+
+    # Added loop so callers can reuse the current process_directory logic for each mounted dataset.
+    for mount_path in discover_all_mounts():
+        logger.info(f"Processing mounted directory: {mount_path}")
+        process_directory(str(mount_path))
 
 # =======================
 # Sequential Processing

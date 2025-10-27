@@ -303,4 +303,49 @@
         updateProviderVisibility();
         loadOptions();
     });
+
+    window.submitMounts = async function submitMounts() {
+        // Added dynamic mount submission to forward user-selected directories to the backend updater.
+        const textarea = document.getElementById('mountDirectories');
+        if (!textarea) {
+            // Added guard to avoid runtime errors when the mount UI is hidden or unavailable.
+            return;
+        }
+
+        const directories = textarea.value
+            .split('\n')
+            .map(function(line) {
+                return line.trim();
+            })
+            .filter(function(value) {
+                return Boolean(value);
+            });
+
+        if (!directories.length) {
+            // Added prompt so users know at least one directory is required before sending the request.
+            alert('Enter at least one directory path to mount.');
+            return;
+        }
+
+        try {
+            // Added POST request to trigger docker-compose mount updates via the new backend endpoint.
+            const response = await fetch('/api/update_mounts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ directories: directories }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                // Added inline feedback when the backend rejects the mount update.
+                alert(data && data.error ? data.error : 'Failed to update mounts.');
+                return;
+            }
+            alert(data.message || 'Mounts updated. Docker is rebuilding...');
+        } catch (error) {
+            // Added catch to surface unexpected network failures during mount updates.
+            alert(`Unable to update mounts: ${error.message}`);
+        }
+    };
 })();

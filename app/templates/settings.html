@@ -213,8 +213,17 @@
             <div class="ingestion-status" data-ingestion-status hidden></div>
             <dl class="ingestion-summary" data-ingestion-summary hidden></dl>
             <div class="ingestion-errors" data-ingestion-errors hidden></div>
+            <div class="settings-group">
+                <!-- Added dynamic mount controls so the UI can collect host directories for Docker bind mounts. -->
+                <h3>Mount Data Directories</h3>
+                <textarea id="mountDirectories" rows="6" placeholder="Enter one path per line"></textarea>
+                <p class="form-field__hint">Enter absolute host paths; each entry becomes /mnt/dataN inside Docker.</p>
+                <div class="settings-actions">
+                    <button type="button" onclick="submitMounts()">Update Mounts</button>
+                </div>
+            </div>
         </div>
-        
+
     </section>
 
     <section id="chatbot-settings" class="settings-section">
