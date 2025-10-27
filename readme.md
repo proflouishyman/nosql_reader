@@ -117,6 +117,23 @@ Uploaded files are saved immediately. The next time you run `data_processing.py`
 - Additional helper scripts such as `backup_db.py` and `restore_db.py` are available for database maintenance. Execute them from the repository root or inside the running container using `docker compose exec`.
 - The export and cleanup utilities in `app/util/` (for example `export_unique_terms.py`, `export_linked_terms.py`, and `delete_db.py`) use `app.database_setup` so they inherit the canonical `MONGO_URI`. Run them from the repository root or with `python -m app.util.<script>` to ensure the helpers resolve correctly inside Docker.
 
+<!-- Added documentation for dynamic mount workflow introduced in settings UI. -->
+### Dynamic data mounting
+
+nosql_reader now supports mounting multiple host directories straight from the Settings UI so the ingestion container can access data stored on external drives or other folders.
+
+1. **Start the stack**
+   ```bash
+   docker compose up -d --build
+   ```
+2. **Open the Settings page** – Navigate to `http://localhost:5000/settings` once the app container is healthy.
+3. **Enter host directories** – In the **Mount Data Directories** section, paste one absolute host path per line and click **Update Mounts**.
+4. **Wait for Docker to rebuild** – The app triggers `update_mounts.py`, which rewrites `docker-compose.yml`, runs `docker compose down`, and then `docker compose up -d --build` so the new mounts are live.
+
+Each directory is available inside the container as `/mnt/data1`, `/mnt/data2`, and so on. Ingestion helpers can iterate over them via `app.data_processing.discover_all_mounts()` and `app.data_processing.run_ingestion_across_mounts()` to process every mounted dataset.
+
+> **Notes:** Make sure the host paths exist and are readable when Docker rebuilds. If a drive is disconnected, Docker will skip that bind mount and log an error. Prefer bind mounts over uploading large files through the browser for better performance.
+
 ## Data directory layout
 
 The ingest pipeline expects a mirrored relationship between metadata files and any associated images or media assets. The precise layout is configurable, but keeping everything under a single archive root simplifies ingestion and preview rendering.

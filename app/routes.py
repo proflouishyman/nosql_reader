@@ -31,6 +31,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import math
 import json
+import subprocess  # Added to spawn the mount updater script when directories change.
 import re
 import logging
 import time
@@ -45,6 +46,8 @@ import uuid
 import pymongo
 from pathlib import Path
 import zipfile
+import tempfile  # Added to persist mount directory lists for the updater script.
+import sys  # Added to reference the current Python executable for subprocess launches.
 
 from historian_agent import (
     HistorianAgentConfig,
@@ -1072,6 +1075,56 @@ def settings():
         ingestion_ollama_base_url=image_ingestion.DEFAULT_OLLAMA_BASE_URL,
         ingestion_api_key_configured=image_ingestion.read_api_key() is not None,
     )
+
+
+@app.route('/api/update_mounts', methods=['POST'])
+def api_update_mounts():
+    """Persist a list of host directories and trigger Docker to rebuild with new mounts."""
+
+    payload = request.get_json(silent=True) or {}
+    directories = payload.get('directories') or []
+    if not isinstance(directories, list) or not directories:
+        # Added validation so the backend rejects empty or invalid mount requests early.
+        return jsonify({'error': 'No directories provided'}), 400
+
+    cleaned_directories = []
+    for item in directories:
+        if not isinstance(item, str):
+            # Added type enforcement to ensure only string paths are forwarded to the updater.
+            continue
+        path = item.strip()
+        if path:
+            cleaned_directories.append(path)
+
+    if not cleaned_directories:
+        # Added guard to stop processing when all provided entries are blank after trimming.
+        return jsonify({'error': 'No directories provided'}), 400
+
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
+            # Added temporary JSON dump so the asynchronous updater can read the directory list.
+            json.dump(cleaned_directories, tmp_file)
+            tmp_path = tmp_file.name
+    except Exception as exc:
+        # Added error handler so users receive a descriptive failure if the temp file cannot be written.
+        logger.exception('Failed to stage mount directories for update')
+        return jsonify({'error': f'Unable to stage directories: {exc}'}), 500
+
+    try:
+        # Added asynchronous launch of update_mounts.py using the current interpreter for compatibility.
+        subprocess.Popen([sys.executable, 'update_mounts.py', tmp_path])
+    except Exception as exc:
+        logger.exception('Failed to launch mount updater process')
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            # Added cleanup fallback so orphaned temp files do not accumulate after launch failures.
+            logger.debug('Temporary mount file cleanup skipped; file already removed.')
+        return jsonify({'error': f'Unable to start mount update: {exc}'}), 500
+
+    message = f'Updating Docker mounts for {len(cleaned_directories)} directories.'
+    return jsonify({'message': message})
+
 
 @app.route('/settings/data-ingestion/options', methods=['GET'])
 def data_ingestion_options():
