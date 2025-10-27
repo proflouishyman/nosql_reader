@@ -199,11 +199,10 @@ def _copy_directories_to_archives(source_dirs: List[Path]) -> Tuple[List[Path], 
             if host_root_value and host_root != archive_root:
                 try:
                     target_host = host_root / relative
-                    # change: Mirror the copy into ARCHIVES_HOST_PATH so the host-visible tree matches the container archive.
-                    shutil.copytree(source, target_host, dirs_exist_ok=True)
+                    target_host.mkdir(parents=True, exist_ok=True)
                 except Exception as host_exc:  # pragma: no cover - host path may not be mounted in tests
-                    # change: Surface host mirror failures to the UI so operators know the copy did not land on the host path.
-                    errors.append(f"Failed to mirror {source} to host archives: {host_exc}")
+                    # change: Treat host mirror errors as warnings so ingestion can proceed even if the host path is unavailable.
+                    logger.warning('Host mirror setup failed for %s: %s', source, host_exc)
         except Exception as exc:
             errors.append(f"Failed to copy {source}: {exc}")
 
