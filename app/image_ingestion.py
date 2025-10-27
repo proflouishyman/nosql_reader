@@ -138,6 +138,7 @@ DEFAULT_OLLAMA_BASE_URL = os.environ.get("HISTORIAN_AGENT_OLLAMA_BASE_URL") or o
 )
 OPENAI_KEY_FILE_ENV = "OPENAI_API_KEY_FILE"
 FALLBACK_KEY_PATH = Path.home() / ".config" / "nosql_reader" / "openai_api_key.txt"
+DATA_MOUNT_ROOT = Path("/mnt")  # change: Dynamic bind mounts are projected into this directory tree inside the container.
 
 
 @dataclass
@@ -447,3 +448,55 @@ def ensure_api_key(value: Optional[str]) -> Optional[str]:
         write_api_key(value)
         return value.strip()
     return read_api_key()
+
+
+def discover_all_mounts() -> List[Path]:
+    """Return available bind mounts created by the dynamic mount helper."""
+
+    mounts: List[Path] = []  # change: Collect valid directories so callers can iterate safely.
+    if not DATA_MOUNT_ROOT.exists():
+        return mounts  # change: Avoid raising when the helper has not created any mounts yet.
+    for candidate in sorted(DATA_MOUNT_ROOT.iterdir()):
+        if candidate.is_dir():
+            mounts.append(candidate)  # change: Only expose directories that ingestion can traverse.
+    return mounts
+
+
+def run_ingestion_over_mounts(
+    config: ModelConfig,
+    reprocess_existing: bool = False,
+    api_key: Optional[str] = None,
+) -> IngestionSummary:
+    """Process every mounted directory under ``/mnt`` sequentially."""
+
+    combined = IngestionSummary()  # change: Aggregate per-mount results for a consolidated report.
+    for mount_path in discover_all_mounts():
+        try:
+            summary = process_directory(
+                mount_path,
+                config,
+                reprocess_existing=reprocess_existing,
+                api_key=api_key,
+            )
+        except IngestionError as exc:
+            LOGGER.error("Skipping mount %s due to ingestion error: %s", mount_path, exc)  # change: Log mount-level failures for troubleshooting.
+            combined.errors.append({"path": str(mount_path), "error": str(exc)})  # change: Surface mount-level failures to callers.
+            combined.ingest_failures += 1  # change: Track mounts we could not process.
+            continue
+        _merge_summaries(combined, summary)
+    return combined
+
+
+def _merge_summaries(target: IngestionSummary, addition: IngestionSummary) -> None:
+    """Merge two ingestion summaries in place."""
+
+    target.images_total += addition.images_total  # change: Aggregate the counts across mounts.
+    target.generated += addition.generated  # change: Carry over generated counts from each mount.
+    target.skipped_existing += addition.skipped_existing  # change: Combine skip totals for accurate reporting.
+    target.queued_existing += addition.queued_existing  # change: Include queued existing JSON counts.
+    target.failed += addition.failed  # change: Capture image-processing failures across mounts.
+    target.ingested += addition.ingested  # change: Sum database insert counts.
+    target.updated += addition.updated  # change: Aggregate update counts for previously ingested docs.
+    target.ingest_failures += addition.ingest_failures  # change: Track JSON ingest failures from each run.
+    if addition.errors:
+        target.errors.extend(addition.errors)  # change: Preserve detailed error context for operators.

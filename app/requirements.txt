@@ -17,6 +17,7 @@ pandas==2.2.3
 rapidfuzz==3.10.0
 requests==2.32.3
 tqdm==4.66.5
+PyYAML==6.0.2  # change: Enable the mount updater to parse and rewrite docker-compose.yml.
 
 # Natural language processing
 spacy==3.8.2

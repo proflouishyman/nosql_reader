@@ -11,11 +11,13 @@ The Historical Document Reader is a Flask application that helps historians and 
 5. [Data ingestion and maintenance](#data-ingestion-and-maintenance)
 6. [Data directory layout](#data-directory-layout)
 7. [Historian Agent configuration reference](#historian-agent-configuration-reference)
-8. [Docker operations cheat-sheet](#docker-operations-cheat-sheet)
-9. [Troubleshooting](#troubleshooting)
-10. [Planned features](#planned-features)
-11. [Contributing](#contributing)
-12. [License & contact](#license--contact)
+8. [Dynamic data mounting](#dynamic-data-mounting)
+9. [Docker operations cheat-sheet](#docker-operations-cheat-sheet)
+10. [Troubleshooting](#troubleshooting)
+11. [Planned features](#planned-features)
+12. [Contributing](#contributing)
+13. [License & contact](#license--contact)
+<!-- change: Note the new dynamic mount documentation for quick discovery. -->
 
 ## Core capabilities
 
@@ -116,6 +118,7 @@ Uploaded files are saved immediately. The next time you run `data_processing.py`
 - You can invoke the bootstrap at container startup by setting `RUN_BOOTSTRAP=1` in `.env`. The script exits gracefully if the archives directory is empty, so it is safe to keep the flag enabled in development.
 - Additional helper scripts such as `backup_db.py` and `restore_db.py` are available for database maintenance. Execute them from the repository root or inside the running container using `docker compose exec`.
 - The export and cleanup utilities in `app/util/` (for example `export_unique_terms.py`, `export_linked_terms.py`, and `delete_db.py`) use `app.database_setup` so they inherit the canonical `MONGO_URI`. Run them from the repository root or with `python -m app.util.<script>` to ensure the helpers resolve correctly inside Docker.
+- Enter absolute paths directly into the ingestion form or expose them through the **Mount data directories** panel before processing. <!-- change: Clarify the simplified manual entry workflow alongside the new mount helper. -->
 
 ## Data directory layout
 
@@ -153,6 +156,51 @@ ARCHIVES_HOST_PATH/
 3. The `/images/<path:filename>` route streams the resulting file from disk. Any nested directory structure is preserved, so `rolls/tray_02/images/frame_01.tif` is served correctly as long as the file exists under `ARCHIVES_HOST_PATH`.
 
 If you are ingesting material that does not have associated images, the UI simply omits the preview panel—no additional configuration is required.
+
+## Dynamic data mounting
+<!-- change: Document the UI workflow that rewrites docker-compose volumes based on operator input. -->
+
+nosql_reader now supports dynamic data mounts — you can add multiple local or external directories directly from the web UI.
+
+### Steps
+
+1. **Start the app**
+   ```bash
+   docker compose up -d --build
+   ```
+2. **Open the Settings UI**
+   Navigate to: `http://localhost:5000/settings`
+3. **Add your data directories**
+   - Paste one path per line into the “Mount Data Directories” box.
+   - Click “Update Mounts.”
+
+The system will:
+
+- Automatically update `docker-compose.yml`
+- Rebuild the container
+- Mount all directories under:
+  ```bash
+  /mnt/data1
+  /mnt/data2
+  /mnt/data3
+  ```
+
+Access in backend:
+
+Your ingestion routines can read from any of these paths:
+
+```python
+/mnt/data1
+/mnt/data2
+/mnt/data3
+```
+
+### Notes
+
+- Works with both internal and external drives.
+- Paths must exist and be readable on the host at rebuild time.
+- If a drive is unplugged, Docker will skip that mount and show an error.
+- For performance, prefer bind mounts over file uploads.
 
 ## Historian Agent configuration reference
 
@@ -210,6 +258,8 @@ The roadmap below captures high-priority enhancements that build on top of the c
 - **External dataset linking** – Support for referencing related records stored in other systems (e.g., Wikidata, archival finding aids) so each document can expose verified authority links.
 - **Network analysis visualisations** – Graph views that surface entity co-occurrence networks, correspondence maps, or other relationship insights derived from the MongoDB corpus.
 - **Scheduled re-ingestion jobs** – Workflow automation that periodically reconciles new archive drops, re-runs enrichment models, and alerts maintainers when schema changes are detected.
+<!-- change: Note the future work to clear database records before rerunning ingestion via the new placeholder control. -->
+- **Archive reset ingestion mode** – Add a copy-and-purge option that removes existing database records before reprocessing copied folders.
 - **Multi-user profiles** – Optional authentication and role-based access to gate edit features, store personalised Historian Agent settings, and track user activity for analytics.
 
 These items are intentionally modular; each feature will be developed behind a configuration flag so deployments can adopt them incrementally.

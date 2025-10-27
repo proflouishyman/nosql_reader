@@ -1,0 +1,8 @@
+[2025-10-27 14:26] app/static/settings_data_ingestion.js edited — Preserve absolute folder paths when available from the picker
+[2025-10-27 14:33] app/static/settings_data_ingestion.js edited — Keep manual directory entries when browsers hide absolute paths
+[2025-10-27 14:34] app/static/settings_data_ingestion.js edited — Add manual entry reminder when absolute picker paths are unavailable
+[2025-10-27 14:40] app/routes.py, app/templates/settings.html, app/static/settings_data_ingestion.js, readme.md edited — Implement API-backed directory browser for ingestion and document the workflow
+[2025-10-27 15:12] app/static/settings_data_ingestion.js, app/templates/settings.html edited — Remove native directory picker fallback so folder selection always uses the API browser
+[2025-10-27 15:13] app/templates/settings.html, app/static/settings_data_ingestion.js, app/routes.py edited — Simplified ingestion directory entry to manual paths
+[2025-10-27 15:45] app/templates/settings.html edited — Clarified copy mode applies to all listed directories.
+[2025-10-27 16:45] app/templates/settings.html, app/static/settings_data_ingestion.js, app/routes.py, update_mounts.py, app/image_ingestion.py, app/requirements.txt, readme.md edited — Add dynamic mount workflow with UI controls, backend helper, ingestion support, and documentation.
