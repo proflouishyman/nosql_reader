@@ -45,6 +45,7 @@ import uuid
 import pymongo
 from pathlib import Path
 import zipfile
+import shutil  # change: Needed to mirror selected folders into the archive tree when copy mode is chosen.
 
 from historian_agent import (
     HistorianAgentConfig,
@@ -138,6 +139,75 @@ def _list_archives() -> Tuple[List[str], bool]:
             if len(files) > ARCHIVE_LIST_LIMIT:
                 return files[:ARCHIVE_LIST_LIMIT], True
     return files, False
+
+
+def _merge_ingestion_summary(target: image_ingestion.IngestionSummary, addition: image_ingestion.IngestionSummary) -> None:
+    """Accumulate counters from one ingestion summary into another."""
+
+    # change: Aggregate per-directory results so multi-folder runs report combined totals.
+    target.images_total += addition.images_total
+    target.generated += addition.generated
+    target.skipped_existing += addition.skipped_existing
+    target.queued_existing += addition.queued_existing
+    target.failed += addition.failed
+    target.ingested += addition.ingested
+    target.updated += addition.updated
+    target.ingest_failures += addition.ingest_failures
+    if addition.errors:
+        target.errors.extend(addition.errors)
+
+
+def _copy_directories_to_archives(source_dirs: List[Path]) -> Tuple[List[Path], List[str]]:
+    """Copy folders into the archive root while preserving their relative structure."""
+
+    archive_root = _archives_root()
+    host_root_value = os.environ.get('ARCHIVES_HOST_PATH')
+    # change: Reflect the configured host mirror so operators understand where copies land outside the container.
+    host_root = Path(host_root_value).expanduser() if host_root_value else archive_root
+
+    valid_sources: List[Path] = []
+    errors: List[str] = []
+    for candidate in source_dirs:
+        if candidate.exists() and candidate.is_dir():
+            valid_sources.append(candidate)
+        else:
+            errors.append(f"{candidate} is not an accessible directory")
+
+    if not valid_sources:
+        return [], errors
+
+    try:
+        common_root = Path(os.path.commonpath([str(path) for path in valid_sources]))
+    except ValueError:
+        common_root = None
+
+    copied_paths: List[Path] = []
+    for source in valid_sources:
+        try:
+            if common_root:
+                try:
+                    relative = source.relative_to(common_root)
+                except ValueError:
+                    relative = Path(source.name)
+            else:
+                relative = Path(source.name)
+            if str(relative) == '.':
+                relative = Path(source.name)
+            target = archive_root / relative
+            shutil.copytree(source, target, dirs_exist_ok=True)
+            copied_paths.append(target)
+            if host_root_value and host_root != archive_root:
+                try:
+                    target_host = host_root / relative
+                    # change: Mirror the copy into ARCHIVES_HOST_PATH so the host-visible tree matches the container archive.
+                    shutil.copytree(source, target_host, dirs_exist_ok=True)
+                except Exception as host_exc:  # pragma: no cover - host path may not be mounted in tests
+                    # change: Surface host mirror failures to the UI so operators know the copy did not land on the host path.
+                    errors.append(f"Failed to mirror {source} to host archives: {host_exc}")
+        except Exception as exc:
+            errors.append(f"Failed to copy {source}: {exc}")
+
+    return copied_paths, errors
 
 
 def _process_archive_uploads(
@@ -1094,23 +1164,89 @@ def data_ingestion_options():
     })
 
 
+@app.route('/settings/data-ingestion/browse', methods=['GET'])
+def settings_browse_data_ingestion():
+    """Return a directory listing so the UI can browse server-visible folders."""
+
+    # change: Interpret the requested path while defaulting to the archive root for first-time visits.
+    requested_raw = request.args.get('path', '').strip()
+    if requested_raw:
+        try:
+            requested_path = Path(requested_raw).expanduser()
+            if not requested_path.is_absolute():
+                requested_path = (_archives_root() / requested_path).resolve()  # change: Resolve relative paths within the archive root to mirror ingestion behaviour.
+        except Exception as exc:
+            return jsonify({'status': 'error', 'message': f'Invalid path: {exc}'}), 400
+    else:
+        requested_path = _archives_root()
+
+    try:
+        resolved_path = requested_path.resolve()
+    except Exception as exc:
+        return jsonify({'status': 'error', 'message': f'Unable to resolve path: {exc}'}), 400
+
+    if not resolved_path.exists():
+        return jsonify({'status': 'error', 'message': f'Directory not found: {resolved_path}'}), 404
+    if not resolved_path.is_dir():
+        return jsonify({'status': 'error', 'message': f'Not a directory: {resolved_path}'}), 400
+
+    # change: Collect only subdirectories to keep the UI focused on folder selection and cap the results to a reasonable size.
+    entries: List[Dict[str, str]] = []
+    try:
+        for child in sorted(resolved_path.iterdir(), key=lambda item: item.name.lower()):
+            if child.is_dir():
+                entries.append({'name': child.name, 'path': str(child.resolve())})
+            if len(entries) >= 200:
+                break
+    except PermissionError as exc:
+        return jsonify({'status': 'error', 'message': f'Permission denied while listing {resolved_path}: {exc}'}), 403
+    except Exception as exc:
+        return jsonify({'status': 'error', 'message': f'Failed to read directory: {exc}'}), 500
+
+    parent_path = resolved_path.parent if resolved_path.parent != resolved_path else None
+
+    return jsonify({
+        'status': 'ok',
+        'path': str(resolved_path),
+        'entries': entries,
+        'parent': str(parent_path) if parent_path else None,
+    })
+
+
 @app.route('/settings/data-ingestion/run', methods=['POST'])
 def settings_run_data_ingestion():
     """Trigger the image-to-JSON ingestion workflow for a directory."""
 
     payload = request.get_json(silent=True) or {}
     directory_raw = str(payload.get('directory', '')).strip()
-    if not directory_raw:
+    directories_payload_raw = payload.get('directories')
+    directories_payload = directories_payload_raw if isinstance(directories_payload_raw, list) else []  # change: Normalise the optional list from the request.
+    # change: Allow multiple directories to be queued from the enhanced UI picker.
+    directories_raw: List[str] = []
+    for item in directories_payload:
+        text = str(item).strip()
+        if text and text not in directories_raw:
+            directories_raw.append(text)
+    if directory_raw and directory_raw not in directories_raw:
+        directories_raw.insert(0, directory_raw)
+
+    if not directories_raw:
         return jsonify({'status': 'error', 'message': 'Provide a directory path to ingest.'}), 400
 
-    try:
-        candidate = Path(directory_raw)
-        if candidate.is_absolute():
-            directory_path = image_ingestion.expand_directory(directory_raw)
-        else:
-            directory_path = (_archives_root() / candidate).resolve()
-    except Exception as exc:
-        return jsonify({'status': 'error', 'message': f'Invalid directory: {exc}'}), 400
+    archive_root = _archives_root()
+    resolved_directories: List[Path] = []
+    for entry in directories_raw:
+        try:
+            candidate = Path(entry)
+            if candidate.is_absolute():
+                resolved = image_ingestion.expand_directory(entry)
+            else:
+                resolved = (archive_root / candidate).resolve()
+        except Exception as exc:
+            return jsonify({'status': 'error', 'message': f'Invalid directory {entry}: {exc}'}), 400
+        resolved_directories.append(resolved)
+    if not resolved_directories:
+        return jsonify({'status': 'error', 'message': 'No valid directories were provided.'}), 400
 
     provider = image_ingestion.provider_from_string(payload.get('provider'))
     prompt = str(payload.get('prompt') or image_ingestion.DEFAULT_PROMPT)
@@ -1149,24 +1285,43 @@ def settings_run_data_ingestion():
         base_url=base_url or None,
     )
 
-    try:
-        summary = image_ingestion.process_directory(
-            directory_path,
-            config,
-            reprocess_existing=reprocess,
-            api_key=api_key,
-        )
-    except image_ingestion.IngestionError as exc:
-        return jsonify({'status': 'error', 'message': str(exc)}), 400
-    except Exception as exc:
-        logger.exception('Unexpected failure during image ingestion')
-        return jsonify({'status': 'error', 'message': f'Unexpected failure: {exc}'}), 500
+    copy_mode_raw = str(payload.get('copy_mode', 'in_place')).strip().lower()
+    # change: Normalise copy mode to the supported set.
+    copy_mode = copy_mode_raw if copy_mode_raw in {'copy', 'copy_reset'} else 'in_place'
+
+    if copy_mode in {'copy', 'copy_reset'}:
+        copied, copy_errors = _copy_directories_to_archives(resolved_directories)
+        if copy_errors:
+            return jsonify({'status': 'error', 'message': '; '.join(copy_errors)}), 400
+        resolved_directories = copied
+        if not resolved_directories:
+            return jsonify({'status': 'error', 'message': 'Copying directories into the archive failed.'}), 400
+
+    combined_summary = image_ingestion.IngestionSummary()
+    processed_directories: List[str] = []
+    for directory_path in resolved_directories:
+        try:
+            summary = image_ingestion.process_directory(
+                directory_path,
+                config,
+                reprocess_existing=reprocess,
+                api_key=api_key,
+            )
+        except image_ingestion.IngestionError as exc:
+            return jsonify({'status': 'error', 'message': str(exc)}), 400
+        except Exception as exc:
+            logger.exception('Unexpected failure during image ingestion')
+            return jsonify({'status': 'error', 'message': f'Unexpected failure: {exc}'}), 500
+        _merge_ingestion_summary(combined_summary, summary)
+        processed_directories.append(str(directory_path))
 
     response = {
         'status': 'ok',
-        'summary': summary.as_dict(),
+        'summary': combined_summary.as_dict(),
         'provider': provider,
-        'directory': str(directory_path),
+        'directories': processed_directories,
+        'copy_mode': copy_mode,
+        'directory': processed_directories[0] if processed_directories else '',  # change: Preserve the legacy response key for existing clients.
     }
     if provider == 'openai':
         response['api_key_saved'] = key_saved
