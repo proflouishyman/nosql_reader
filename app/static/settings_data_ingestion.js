@@ -1,4 +1,6 @@
 (function() {
+    // Added new read-only data ingestion UI script that lists mounts and triggers scans.
+
     function ready(fn) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', fn);
@@ -7,87 +9,64 @@
         }
     }
 
+    function sanitizeId(value) {
+        // Added helper so mount targets with slashes can be used as DOM ids safely.
+        return value.replace(/[^a-z0-9_-]/gi, '_');
+    }
+
+    async function fetchJson(url, options) {
+        // Added wrapper to centralise fetch error handling for the new endpoints.
+        const response = await fetch(url, options || {});
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            const message = data && data.message ? data.message : `Request failed with status ${response.status}`;
+            throw new Error(message);
+        }
+        return data;
+    }
+
     ready(function() {
-        const form = document.getElementById('imageIngestionForm');
-        if (!form) return;
+        const root = document.querySelector('[data-ingestion-root]');
+        if (!root) return;
 
-        const root = form.closest('[data-ingestion-root]') || form.parentElement;
-        const providerSelect = form.querySelector('#imageIngestionProvider');
-        const ollamaSection = form.querySelector('[data-provider-section="ollama"]');
-        const openAiSection = form.querySelector('[data-provider-section="openai"]');
-        const baseUrlInput = form.querySelector('#imageIngestionOllamaBase');
-        const modelSelect = form.querySelector('#imageIngestionModel');
-        const openAiModelInput = form.querySelector('#imageIngestionOpenAiModel');
-        const promptField = form.querySelector('#imageIngestionPrompt');
-        const directoryInput = form.querySelector('#imageIngestionDirectory');
-        const reprocessInput = form.querySelector('#imageIngestionReprocess');
-        const apiKeyRow = form.querySelector('[data-api-key-row]');
-        const apiKeyInput = form.querySelector('#imageIngestionApiKey');
-        const apiKeyHint = form.querySelector('[data-api-key-hint]');
-        const refreshButton = form.querySelector('[data-refresh-models]');
-        const submitButton = form.querySelector('button[type="submit"]');
+        const mountsUrl = root.dataset.mountsUrl;
+        const treeUrl = root.dataset.treeUrl;
+        const scanUrl = root.dataset.scanUrl;
+        const rebuildUrl = root.dataset.rebuildUrl;
 
-        const statusNode = root ? root.querySelector('[data-ingestion-status]') : null;
-        const summaryNode = root ? root.querySelector('[data-ingestion-summary]') : null;
-        const errorsNode = root ? root.querySelector('[data-ingestion-errors]') : null;
-
-        const dataset = form.dataset || {};
-        const optionsUrl = dataset.optionsUrl;
-        const runUrl = dataset.runUrl;
-        const defaultProvider = dataset.defaultProvider || 'ollama';
-        const defaultOllamaModel = dataset.defaultOllamaModel || '';
-        const defaultOpenaiModel = dataset.defaultOpenaiModel || '';
-        const defaultOllamaUrl = dataset.defaultOllamaUrl || '';
-        let keyConfigured = dataset.keyConfigured === '1';
-
-        if (baseUrlInput && !baseUrlInput.value && defaultOllamaUrl) {
-            baseUrlInput.value = defaultOllamaUrl;
-        }
-        if (openAiModelInput && !openAiModelInput.value && defaultOpenaiModel) {
-            openAiModelInput.value = defaultOpenaiModel;
-        }
-        if (providerSelect && !providerSelect.value) {
-            providerSelect.value = defaultProvider;
-        }
-        if (modelSelect && !modelSelect.value && defaultOllamaModel) {
-            modelSelect.value = defaultOllamaModel;
-        }
+        const mountsContainer = root.querySelector('[data-mounts]');
+        const statusNode = root.querySelector('[data-ingestion-status]');
+        const summaryNode = root.querySelector('[data-ingestion-summary]');
+        const errorsNode = root.querySelector('[data-ingestion-errors]');
+        const scanButton = root.querySelector('[data-scan-mounts]');
+        const rebuildButton = root.querySelector('[data-rebuild-mounts]');
 
         function setStatus(message, type) {
+            // Added status helper so both scan and rebuild share consistent messaging.
             if (!statusNode) return;
             statusNode.textContent = message || '';
             statusNode.dataset.statusType = type || 'info';
             statusNode.hidden = !message;
         }
 
-        function clearStatus() {
-            setStatus('', 'info');
-        }
-
-        function clearSummary() {
-            if (summaryNode) {
-                summaryNode.innerHTML = '';
-                summaryNode.hidden = true;
-            }
-            if (errorsNode) {
-                errorsNode.innerHTML = '';
-                errorsNode.hidden = true;
-            }
-        }
-
-        function renderSummary(summary) {
+        function renderSummary(totals) {
+            // Added renderer to show aggregate ingestion metrics from new endpoints.
             if (!summaryNode) return;
-            const pairs = [
-                ['Images discovered', summary.images_total],
-                ['JSON generated', summary.generated],
-                ['Skipped (already processed)', summary.skipped_existing],
-                ['Queued for ingest', summary.queued_existing],
-                ['Image processing failures', summary.failed],
-                ['Database inserts', summary.ingested],
-                ['Database updates', summary.updated],
-                ['Ingestion failures', summary.ingest_failures]
-            ];
             summaryNode.innerHTML = '';
+            if (!totals) {
+                summaryNode.hidden = true;
+                return;
+            }
+            const pairs = [
+                ['Images discovered', totals.images_total],
+                ['JSON generated', totals.generated],
+                ['Skipped (already processed)', totals.skipped_existing],
+                ['Queued for ingest', totals.queued_existing],
+                ['Image processing failures', totals.failed],
+                ['Database inserts', totals.ingested],
+                ['Database updates', totals.updated],
+                ['Ingestion failures', totals.ingest_failures],
+            ];
             pairs.forEach(function(pair) {
                 const dt = document.createElement('dt');
                 dt.textContent = pair[0];
@@ -97,210 +76,141 @@
                 summaryNode.appendChild(dd);
             });
             summaryNode.hidden = false;
+        }
 
-            if (errorsNode) {
-                errorsNode.innerHTML = '';
-                const errors = Array.isArray(summary.errors) ? summary.errors : [];
-                if (errors.length) {
-                    const list = document.createElement('ul');
-                    errors.slice(0, 5).forEach(function(error) {
-                        const item = document.createElement('li');
-                        if (error && typeof error === 'object') {
-                            const path = error.path ? String(error.path) : '';
-                            const message = error.error ? String(error.error) : '';
-                            item.textContent = path ? `${path}: ${message}` : message;
-                        } else {
-                            item.textContent = String(error);
-                        }
-                        list.appendChild(item);
-                    });
-                    errorsNode.appendChild(list);
-                    errorsNode.hidden = false;
+        function renderErrors(results) {
+            // Added error renderer so missing mounts or ingestion failures are visible to operators.
+            if (!errorsNode) return;
+            errorsNode.innerHTML = '';
+            const issues = Array.isArray(results) ? results.filter(function(item) {
+                return item && (item.status === 'error' || item.status === 'missing');
+            }) : [];
+
+            if (!issues.length) {
+                errorsNode.hidden = true;
+                return;
+            }
+
+            const list = document.createElement('ul');
+            issues.forEach(function(item) {
+                const li = document.createElement('li');
+                if (item.status === 'missing') {
+                    li.textContent = `${item.target} is not available inside the container.`;
+                } else if (item.message) {
+                    li.textContent = `${item.target}: ${item.message}`;
                 } else {
-                    errorsNode.hidden = true;
+                    li.textContent = `${item.target}: unexpected error.`;
                 }
-            }
+                list.appendChild(li);
+            });
+
+            errorsNode.appendChild(list);
+            errorsNode.hidden = false;
         }
 
-        function updateProviderVisibility() {
-            const provider = providerSelect ? providerSelect.value : 'ollama';
-            if (ollamaSection) {
-                ollamaSection.hidden = provider !== 'ollama';
-            }
-            if (openAiSection) {
-                openAiSection.hidden = provider !== 'openai';
-            }
-            if (apiKeyRow) {
-                apiKeyRow.hidden = provider !== 'openai';
-                if (provider === 'openai' && apiKeyInput) {
-                    apiKeyInput.placeholder = keyConfigured ? 'API key configured' : 'Enter API key';
-                }
-                if (provider === 'openai' && apiKeyHint) {
-                    apiKeyHint.textContent = keyConfigured
-                        ? 'The stored key will be reused if left blank.'
-                        : 'The key is stored outside the container with other environment files.';
-                }
-            }
-        }
-
-        async function fetchOptions(url) {
-            const response = await fetch(url, { credentials: 'same-origin' });
-            if (!response.ok) {
-                throw new Error(`Options request failed with status ${response.status}`);
-            }
-            return response.json();
-        }
-
-        function applyOptions(data) {
-            if (!data) return;
-            if (data.openai && typeof data.openai.key_configured !== 'undefined') {
-                keyConfigured = !!data.openai.key_configured;
-            }
-            if (baseUrlInput && data.ollama && data.ollama.base_url && !baseUrlInput.value) {
-                baseUrlInput.value = data.ollama.base_url;
-            }
-            if (modelSelect && data.ollama && Array.isArray(data.ollama.models) && data.ollama.models.length) {
-                const current = modelSelect.value;
-                modelSelect.innerHTML = '';
-                data.ollama.models.forEach(function(model) {
-                    const option = document.createElement('option');
-                    option.value = model;
-                    option.textContent = model;
-                    modelSelect.appendChild(option);
-                });
-                if (current && data.ollama.models.includes(current)) {
-                    modelSelect.value = current;
-                } else if (data.ollama.default_model) {
-                    modelSelect.value = data.ollama.default_model;
-                }
-            }
-            updateProviderVisibility();
-        }
-
-        async function loadOptions() {
-            if (!optionsUrl) return;
-            try {
-                const data = await fetchOptions(optionsUrl);
-                applyOptions(data);
-            } catch (error) {
-                setStatus(`Unable to load ingestion options: ${error.message}`, 'error');
-            }
-        }
-
-        async function refreshModels() {
-            if (!optionsUrl) return;
-            try {
-                setStatus('Checking Ollama models…', 'info');
-                const url = new URL(optionsUrl, window.location.origin);
-                if (baseUrlInput && baseUrlInput.value.trim()) {
-                    url.searchParams.set('ollama_base_url', baseUrlInput.value.trim());
-                }
-                const data = await fetchOptions(url.toString());
-                applyOptions(data);
-                setStatus('Ollama model list updated.', 'success');
-            } catch (error) {
-                setStatus(`Unable to refresh models: ${error.message}`, 'error');
-            }
-        }
-
-        async function submitForm(event) {
-            event.preventDefault();
-            clearStatus();
-            clearSummary();
-
-            if (!runUrl) {
-                setStatus('Ingestion endpoint not available.', 'error');
+        async function loadMountTree(target, block) {
+            // Added fetch to display a short folder tree for each mount.
+            if (!treeUrl || !target) {
+                block.textContent = 'No preview available.';
                 return;
             }
-            const payload = {
-                directory: directoryInput ? directoryInput.value.trim() : '',
-                provider: providerSelect ? providerSelect.value : defaultProvider,
-                prompt: promptField ? promptField.value : '',
-                reprocess: reprocessInput ? reprocessInput.checked : false,
-            };
-
-            if (baseUrlInput) {
-                payload.base_url = baseUrlInput.value.trim();
-                payload.ollama_base_url = payload.base_url;
-            }
-            if (payload.provider === 'ollama') {
-                if (modelSelect) {
-                    payload.model = modelSelect.value;
-                }
-            } else if (payload.provider === 'openai') {
-                if (openAiModelInput) {
-                    payload.openai_model = openAiModelInput.value.trim();
-                }
-                if (apiKeyInput && apiKeyInput.value.trim()) {
-                    payload.api_key = apiKeyInput.value.trim();
-                }
-            }
-
-            if (!payload.directory) {
-                setStatus('Enter the archive directory to ingest.', 'error');
-                directoryInput && directoryInput.focus();
-                return;
-            }
-
+            block.textContent = 'Loading…';
             try {
-                if (submitButton) {
-                    submitButton.disabled = true;
-                }
-                setStatus('Starting ingestion…', 'info');
-                const response = await fetch(runUrl, {
+                const tree = await fetchJson(treeUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target: target }),
                 });
-                const result = await response.json().catch(() => ({}));
-                if (!response.ok || result.status === 'error') {
-                    const message = result && result.message ? result.message : `Ingestion failed with status ${response.status}`;
-                    setStatus(message, 'error');
-                    if (result && result.code === 'missing_api_key') {
-                        keyConfigured = false;
-                        updateProviderVisibility();
-                    }
+                block.textContent = JSON.stringify(tree, null, 2);
+            } catch (error) {
+                block.textContent = `Unable to load tree: ${error.message}`;
+            }
+        }
+
+        async function loadMounts() {
+            // Added loader to populate the list of mounts from the backend helper.
+            if (!mountsContainer) return;
+            mountsContainer.innerHTML = '';
+            if (!mountsUrl) {
+                mountsContainer.textContent = 'Mount discovery endpoint unavailable.';
+                return;
+            }
+            try {
+                const data = await fetchJson(mountsUrl);
+                const mounts = Array.isArray(data.mounts) ? data.mounts : [];
+                if (!mounts.length) {
+                    mountsContainer.textContent = 'No mounts defined for the app service.';
                     return;
                 }
 
-                if (result.api_key_saved) {
-                    keyConfigured = true;
-                    if (apiKeyInput) {
-                        apiKeyInput.value = '';
-                    }
-                }
-                updateProviderVisibility();
+                mounts.forEach(function(mount) {
+                    const block = document.createElement('div');
+                    block.className = 'mount-block';
+                    const header = document.createElement('h4');
+                    header.textContent = mount.target || '(unknown target)';
+                    block.appendChild(header);
 
-                if (result.summary) {
-                    renderSummary(result.summary);
-                }
-                setStatus('Ingestion completed successfully.', 'success');
+                    const hostPath = document.createElement('p');
+                    hostPath.className = 'mount-host-path';
+                    hostPath.textContent = `Host path: ${mount.source || 'not specified'}`;
+                    block.appendChild(hostPath);
+
+                    const availability = document.createElement('p');
+                    availability.className = 'mount-availability';
+                    availability.textContent = mount.target_exists ? 'Mounted inside container.' : 'Target not found inside container.';
+                    block.appendChild(availability);
+
+                    const treePre = document.createElement('pre');
+                    treePre.id = `tree-${sanitizeId(mount.target || 'unknown')}`;
+                    block.appendChild(treePre);
+
+                    mountsContainer.appendChild(block);
+                    loadMountTree(mount.target, treePre);
+                });
             } catch (error) {
-                setStatus(`Ingestion failed: ${error.message}`, 'error');
-            } finally {
-                if (submitButton) {
-                    submitButton.disabled = false;
-                }
+                mountsContainer.textContent = `Unable to load mounts: ${error.message}`;
             }
         }
 
-        if (refreshButton) {
-            refreshButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                refreshModels();
+        async function triggerAction(url, startMessage, successBuilder) {
+            // Added shared button handler to reduce duplication between scan and rebuild actions.
+            if (!url) {
+                setStatus('Ingestion endpoint not available.', 'error');
+                return;
+            }
+
+            try {
+                setStatus(startMessage, 'info');
+                const result = await fetchJson(url, { method: 'POST' });
+                renderSummary(result.aggregate);
+                renderErrors(result.results);
+                const message = successBuilder(result);
+                setStatus(message, 'success');
+            } catch (error) {
+                setStatus(error.message, 'error');
+            }
+        }
+
+        if (scanButton) {
+            scanButton.addEventListener('click', function() {
+                // Added event binding so users can scan mounts for new images.
+                triggerAction(scanUrl, 'Scanning mounts for new images…', function(result) {
+                    const aggregate = result && result.aggregate ? result.aggregate : {};
+                    return `Scan complete. ${aggregate.generated || 0} JSON files generated.`;
+                });
             });
         }
 
-        if (providerSelect) {
-            providerSelect.addEventListener('change', updateProviderVisibility);
+        if (rebuildButton) {
+            rebuildButton.addEventListener('click', function() {
+                // Added event binding so users can rebuild the database from mounted directories.
+                triggerAction(rebuildUrl, 'Rebuilding ingestion data…', function(result) {
+                    const aggregate = result && result.aggregate ? result.aggregate : {};
+                    return `Rebuild finished. ${aggregate.ingested || 0} records inserted.`;
+                });
+            });
         }
 
-        form.addEventListener('submit', submitForm);
-
-        updateProviderVisibility();
-        loadOptions();
+        loadMounts();
     });
 })();
