@@ -20,6 +20,11 @@
         const openAiModelInput = form.querySelector('#imageIngestionOpenAiModel');
         const promptField = form.querySelector('#imageIngestionPrompt');
         const directoryInput = form.querySelector('#imageIngestionDirectory');
+        const directoryPickerInput = form.querySelector('#imageIngestionDirectoryPicker'); // change: Track the hidden directory picker input so we can react to folder selections.
+        const directoryPickerButton = form.querySelector('[data-directory-picker]'); // change: Capture the visible button to launch the directory chooser.
+        const directoryHint = form.querySelector('[data-directory-picked]'); // change: Reference the hint element to show the current selection summary.
+        const directoryList = form.querySelector('[data-directory-list]'); // change: Store the list element used to display top-level folder names.
+        const copyModeInputs = form.querySelectorAll('input[name="ingestionCopyMode"]'); // change: Collect the copy mode radios to forward the chosen behaviour to the backend.
         const reprocessInput = form.querySelector('#imageIngestionReprocess');
         const apiKeyRow = form.querySelector('[data-api-key-row]');
         const apiKeyInput = form.querySelector('#imageIngestionApiKey');
@@ -203,6 +208,88 @@
             }
         }
 
+        function parseDirectoriesFromInput(value) {
+            // change: Split the directory input so both manual entries and picker selections can be ingested together.
+            if (!value) {
+                return [];
+            }
+            return value
+                .split(/\r?\n|,/)
+                .map(function(part) { return part.trim(); })
+                .filter(function(part) { return part.length > 0; });
+        }
+
+        function currentCopyMode() {
+            // change: Determine whether the user wants to copy into the archives or run in place.
+            let mode = 'in_place';
+            copyModeInputs.forEach(function(radio) {
+                if (radio.checked) {
+                    mode = radio.value || mode;
+                }
+            });
+            return mode;
+        }
+
+        function topLevelFoldersFromFiles(fileList) {
+            // change: Extract the first directory component from each picked file so the UI can list selected folders.
+            const folders = new Set();
+            Array.prototype.forEach.call(fileList, function(file) {
+                const relativePath = file.webkitRelativePath || file.name || '';
+                if (!relativePath) {
+                    return;
+                }
+                const parts = relativePath.split('/').filter(Boolean);
+                if (parts.length) {
+                    folders.add(parts[0]);
+                }
+            });
+            return Array.from(folders).sort();
+        }
+
+        function updateDirectoryDisplay(folders) {
+            // change: Synchronise the hint text and preview list with the currently selected folders.
+            if (directoryHint) {
+                if (folders.length) {
+                    directoryHint.textContent = `Selected ${folders.length} folder${folders.length > 1 ? 's' : ''}.`;
+                    directoryHint.hidden = false;
+                } else {
+                    directoryHint.hidden = true;
+                    directoryHint.textContent = '';
+                }
+            }
+            if (directoryList) {
+                directoryList.innerHTML = '';
+                if (folders.length) {
+                    folders.forEach(function(folder) {
+                        const item = document.createElement('li');
+                        item.textContent = folder;
+                        directoryList.appendChild(item);
+                    });
+                    directoryList.hidden = false;
+                } else {
+                    directoryList.hidden = true;
+                }
+            }
+        }
+
+        function syncDirectoryInputFromPicker(fileList) {
+            // change: Fill the text input with newline separated folders after the user chooses directories.
+            const folders = topLevelFoldersFromFiles(fileList);
+            if (folders.length && directoryInput) {
+                directoryInput.value = folders.join('\n');
+            }
+            updateDirectoryDisplay(folders);
+        }
+
+        function syncDisplayFromManualInput() {
+            // change: Keep the preview list accurate when the user edits the field manually.
+            if (!directoryInput) {
+                return;
+            }
+            const folders = parseDirectoriesFromInput(directoryInput.value);
+            updateDirectoryDisplay(folders);
+        }
+
         async function submitForm(event) {
             event.preventDefault();
             clearStatus();
@@ -212,11 +299,14 @@
                 setStatus('Ingestion endpoint not available.', 'error');
                 return;
             }
+            const directories = parseDirectoriesFromInput(directoryInput ? directoryInput.value : ''); // change: Allow multiple folder paths to be posted together.
             const payload = {
-                directory: directoryInput ? directoryInput.value.trim() : '',
+                directory: directories.length ? directories[0] : '', // change: Preserve the legacy single-directory field for backwards compatibility.
+                directories: directories, // change: Send the expanded directory list so the backend can ingest multiple folders.
                 provider: providerSelect ? providerSelect.value : defaultProvider,
                 prompt: promptField ? promptField.value : '',
                 reprocess: reprocessInput ? reprocessInput.checked : false,
+                copy_mode: currentCopyMode(), // change: Forward the selected copy behaviour to the server.
             };
 
             if (baseUrlInput) {
@@ -236,7 +326,7 @@
                 }
             }
 
-            if (!payload.directory) {
+            if (!payload.directory && (!payload.directories || !payload.directories.length)) {
                 setStatus('Enter the archive directory to ingest.', 'error');
                 directoryInput && directoryInput.focus();
                 return;
@@ -300,7 +390,28 @@
 
         form.addEventListener('submit', submitForm);
 
+        if (directoryPickerButton && directoryPickerInput) {
+            // change: Trigger the hidden picker when the visible button is pressed.
+            directoryPickerButton.addEventListener('click', function() {
+                directoryPickerInput.click();
+            });
+        }
+
+        if (directoryPickerInput) {
+            // change: React to folder selections and update the input plus preview list.
+            directoryPickerInput.addEventListener('change', function(event) {
+                const files = event.target && event.target.files ? event.target.files : [];
+                syncDirectoryInputFromPicker(files);
+            });
+        }
+
+        if (directoryInput) {
+            // change: Rebuild the preview list as the user edits the directory field manually.
+            directoryInput.addEventListener('input', syncDisplayFromManualInput);
+        }
+
         updateProviderVisibility();
         loadOptions();
+        syncDisplayFromManualInput(); // change: Ensure any prefilled value populates the folder preview on load.
     });
 })();

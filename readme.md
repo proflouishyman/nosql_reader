@@ -210,6 +210,8 @@ The roadmap below captures high-priority enhancements that build on top of the c
 - **External dataset linking** – Support for referencing related records stored in other systems (e.g., Wikidata, archival finding aids) so each document can expose verified authority links.
 - **Network analysis visualisations** – Graph views that surface entity co-occurrence networks, correspondence maps, or other relationship insights derived from the MongoDB corpus.
 - **Scheduled re-ingestion jobs** – Workflow automation that periodically reconciles new archive drops, re-runs enrichment models, and alerts maintainers when schema changes are detected.
+<!-- change: Note the future work to clear database records before rerunning ingestion via the new placeholder control. -->
+- **Archive reset ingestion mode** – Add a copy-and-purge option that removes existing database records before reprocessing copied folders.
 - **Multi-user profiles** – Optional authentication and role-based access to gate edit features, store personalised Historian Agent settings, and track user activity for analytics.
 
 These items are intentionally modular; each feature will be developed behind a configuration flag so deployments can adopt them incrementally.
