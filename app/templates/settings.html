@@ -72,7 +72,10 @@
                   data-default-ollama-model="{{ ingestion_default_ollama_model }}"
                   data-default-openai-model="{{ ingestion_default_openai_model }}"
                   data-key-configured="{{ '1' if ingestion_api_key_configured else '0' }}"
-                  data-default-ollama-url="{{ ingestion_ollama_base_url or '' }}">
+                  data-default-ollama-url="{{ ingestion_ollama_base_url or '' }}"
+                  data-browse-url="{{ url_for('settings_browse_data_ingestion') }}"  
+                  <!-- change: Provide the API endpoint the JavaScript directory browser will query for listings. -->
+                  data-archive-root="{{ archive_root }}"> <!-- change: Expose the default archive root so the browser can start from a meaningful location. -->
                 <div class="settings-grid">
                     <div class="settings-group">
                         <label for="imageIngestionDirectory">Archive directory</label>
@@ -93,9 +96,25 @@
                                 <span>Copy folders and remove existing database records (coming soon)</span>
                             </label>
                         </div>
+                        <input type="file" id="imageIngestionDirectoryPicker" hidden webkitdirectory directory multiple>
+                        <!-- change: Added copy mode controls so users can keep files in place or mirror them under the archive root. -->
+                        <div class="settings-directory-options">
+                            <label class="radio">
+                                <input type="radio" name="ingestionCopyMode" value="in_place" checked>
+                                <span>Use files in their current location</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ingestionCopyMode" value="copy">
+                                <span>Copy selected folders into <code>{{ archive_root }}</code></span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ingestionCopyMode" value="copy_reset" disabled>
+                                <span>Copy folders and remove existing database records (coming soon)</span>
+                            </label>
+                        </div>
                         <p class="form-field__hint">Relative paths resolve under <code>{{ archive_root }}</code>.</p>
                         <p class="form-field__hint form-field__hint--selection" data-directory-picked hidden></p>
-                        <!-- change: Display a summary of the manually entered directories for quick confirmation. -->
+                        <!-- change: Display the top-level folders captured by the picker for confirmation. -->
                         <ul class="settings-directory-list" data-directory-list hidden></ul>
                     </div>
                     <div class="settings-group">

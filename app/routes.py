@@ -199,11 +199,10 @@ def _copy_directories_to_archives(source_dirs: List[Path]) -> Tuple[List[Path], 
             if host_root_value and host_root != archive_root:
                 try:
                     target_host = host_root / relative
-                    # change: Mirror the copy into ARCHIVES_HOST_PATH so the host-visible tree matches the container archive.
-                    shutil.copytree(source, target_host, dirs_exist_ok=True)
+                    target_host.mkdir(parents=True, exist_ok=True)
                 except Exception as host_exc:  # pragma: no cover - host path may not be mounted in tests
-                    # change: Surface host mirror failures to the UI so operators know the copy did not land on the host path.
-                    errors.append(f"Failed to mirror {source} to host archives: {host_exc}")
+                    # change: Treat host mirror errors as warnings so ingestion can proceed even if the host path is unavailable.
+                    logger.warning('Host mirror setup failed for %s: %s', source, host_exc)
         except Exception as exc:
             errors.append(f"Failed to copy {source}: {exc}")
 
@@ -1164,6 +1163,55 @@ def data_ingestion_options():
     })
 
 
+@app.route('/settings/data-ingestion/browse', methods=['GET'])
+def settings_browse_data_ingestion():
+    """Return a directory listing so the UI can browse server-visible folders."""
+
+    # change: Interpret the requested path while defaulting to the archive root for first-time visits.
+    requested_raw = request.args.get('path', '').strip()
+    if requested_raw:
+        try:
+            requested_path = Path(requested_raw).expanduser()
+            if not requested_path.is_absolute():
+                requested_path = (_archives_root() / requested_path).resolve()  # change: Resolve relative paths within the archive root to mirror ingestion behaviour.
+        except Exception as exc:
+            return jsonify({'status': 'error', 'message': f'Invalid path: {exc}'}), 400
+    else:
+        requested_path = _archives_root()
+
+    try:
+        resolved_path = requested_path.resolve()
+    except Exception as exc:
+        return jsonify({'status': 'error', 'message': f'Unable to resolve path: {exc}'}), 400
+
+    if not resolved_path.exists():
+        return jsonify({'status': 'error', 'message': f'Directory not found: {resolved_path}'}), 404
+    if not resolved_path.is_dir():
+        return jsonify({'status': 'error', 'message': f'Not a directory: {resolved_path}'}), 400
+
+    # change: Collect only subdirectories to keep the UI focused on folder selection and cap the results to a reasonable size.
+    entries: List[Dict[str, str]] = []
+    try:
+        for child in sorted(resolved_path.iterdir(), key=lambda item: item.name.lower()):
+            if child.is_dir():
+                entries.append({'name': child.name, 'path': str(child.resolve())})
+            if len(entries) >= 200:
+                break
+    except PermissionError as exc:
+        return jsonify({'status': 'error', 'message': f'Permission denied while listing {resolved_path}: {exc}'}), 403
+    except Exception as exc:
+        return jsonify({'status': 'error', 'message': f'Failed to read directory: {exc}'}), 500
+
+    parent_path = resolved_path.parent if resolved_path.parent != resolved_path else None
+
+    return jsonify({
+        'status': 'ok',
+        'path': str(resolved_path),
+        'entries': entries,
+        'parent': str(parent_path) if parent_path else None,
+    })
+
+
 @app.route('/settings/data-ingestion/run', methods=['POST'])
 def settings_run_data_ingestion():
     """Trigger the image-to-JSON ingestion workflow for a directory."""
@@ -1172,7 +1220,7 @@ def settings_run_data_ingestion():
     directory_raw = str(payload.get('directory', '')).strip()
     directories_payload_raw = payload.get('directories')
     directories_payload = directories_payload_raw if isinstance(directories_payload_raw, list) else []  # change: Normalise the optional list from the request.
-    # change: Allow multiple directories to be queued from manual textarea entries.
+    # change: Allow multiple directories to be queued from the enhanced UI picker.
     directories_raw: List[str] = []
     for item in directories_payload:
         text = str(item).strip()
