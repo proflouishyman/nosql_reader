@@ -20,17 +20,10 @@
         const openAiModelInput = form.querySelector('#imageIngestionOpenAiModel');
         const promptField = form.querySelector('#imageIngestionPrompt');
         const directoryInput = form.querySelector('#imageIngestionDirectory');
-        const directoryPickerButton = form.querySelector('[data-directory-picker]'); // change: Capture the visible button that now always opens the API-backed browser overlay.
+        const directoryPickerInput = form.querySelector('#imageIngestionDirectoryPicker'); // change: Track the hidden directory picker input so we can react to folder selections.
+        const directoryPickerButton = form.querySelector('[data-directory-picker]'); // change: Capture the visible button to launch the directory chooser.
         const directoryHint = form.querySelector('[data-directory-picked]'); // change: Reference the hint element to show the current selection summary.
-        const directoryList = form.querySelector('[data-directory-list]'); // change: Store the list element used to display the selected directories for confirmation.
-        const directoryBrowser = root ? root.querySelector('[data-directory-browser]') : null; // change: Locate the overlay that renders server-side directory listings.
-        const browserList = directoryBrowser ? directoryBrowser.querySelector('[data-browser-list]') : null; // change: Reference the list container for browse results.
-        const browserPathInput = directoryBrowser ? directoryBrowser.querySelector('[data-browser-path]') : null; // change: Allow navigation to arbitrary paths supplied by the user.
-        const browserError = directoryBrowser ? directoryBrowser.querySelector('[data-browser-error]') : null; // change: Surface backend errors encountered during browsing.
-        const browserApplyButton = directoryBrowser ? directoryBrowser.querySelector('[data-browser-apply]') : null; // change: Confirm the selected folders and write them into the ingestion form.
-        const browserUpButton = directoryBrowser ? directoryBrowser.querySelector('[data-browser-up]') : null; // change: Provide parent-directory navigation from the overlay.
-        const browserJumpButton = directoryBrowser ? directoryBrowser.querySelector('[data-browser-jump]') : null; // change: Trigger API lookups for manually typed paths.
-        const browserDismissButtons = directoryBrowser ? directoryBrowser.querySelectorAll('[data-browser-dismiss]') : []; // change: Close the overlay when the backdrop or header control is activated.
+        const directoryList = form.querySelector('[data-directory-list]'); // change: Store the list element used to display top-level folder names.
         const copyModeInputs = form.querySelectorAll('input[name="ingestionCopyMode"]'); // change: Collect the copy mode radios to forward the chosen behaviour to the backend.
         const reprocessInput = form.querySelector('#imageIngestionReprocess');
         const apiKeyRow = form.querySelector('[data-api-key-row]');
@@ -222,17 +215,10 @@
             if (!value) {
                 return [];
             }
-            const seen = new Set(); // change: Deduplicate entries to prevent submitting the same folder multiple times.
             return value
                 .split(/\r?\n|,/)
                 .map(function(part) { return part.trim(); })
-                .filter(function(part) {
-                    if (!part.length || seen.has(part)) {
-                        return false;
-                    }
-                    seen.add(part);
-                    return true;
-                });
+                .filter(function(part) { return part.length > 0; });
         }
 
         function currentCopyMode() {
@@ -246,11 +232,27 @@
             return mode;
         }
 
+        function topLevelFoldersFromFiles(fileList) {
+            // change: Extract the first directory component from each picked file so the UI can list selected folders.
+            const folders = new Set();
+            Array.prototype.forEach.call(fileList, function(file) {
+                const relativePath = file.webkitRelativePath || file.name || '';
+                if (!relativePath) {
+                    return;
+                }
+                const parts = relativePath.split('/').filter(Boolean);
+                if (parts.length) {
+                    folders.add(parts[0]);
+                }
+            });
+            return Array.from(folders).sort();
+        }
+
         function updateDirectoryDisplay(folders) {
-            // change: Summarise the selected directories using the backend browser or manual entries without relying on the deprecated native picker.
+            // change: Synchronise the hint text and preview list with the currently selected folders.
             if (directoryHint) {
                 if (folders.length) {
-                    directoryHint.textContent = `Queued ${folders.length} director${folders.length > 1 ? 'ies' : 'y'} for ingestion.`;
+                    directoryHint.textContent = `Selected ${folders.length} folder${folders.length > 1 ? 's' : ''}.`;
                     directoryHint.hidden = false;
                 } else {
                     directoryHint.hidden = true;
@@ -272,137 +274,13 @@
             }
         }
 
-        function setBrowserError(message) {
-            // change: Centralise browser error handling so API failures can be surfaced consistently.
-            if (!browserError) {
-                return;
+        function syncDirectoryInputFromPicker(fileList) {
+            // change: Fill the text input with newline separated folders after the user chooses directories.
+            const folders = topLevelFoldersFromFiles(fileList);
+            if (folders.length && directoryInput) {
+                directoryInput.value = folders.join('\n');
             }
-            if (message) {
-                browserError.textContent = message;
-                browserError.hidden = false;
-            } else {
-                browserError.textContent = '';
-                browserError.hidden = true;
-            }
-        }
-
-        function renderBrowserEntries(entries) {
-            // change: Populate the overlay list with the directories returned by the backend endpoint.
-            if (!browserList) {
-                return;
-            }
-            const existing = new Set(parseDirectoriesFromInput(directoryInput ? directoryInput.value : ''));
-            browserList.innerHTML = '';
-            if (!entries.length) {
-                const empty = document.createElement('li');
-                empty.textContent = 'No subdirectories found in this location.';
-                browserList.appendChild(empty);
-                return;
-            }
-            entries.forEach(function(entry) {
-                const item = document.createElement('li');
-                item.className = 'settings-directory-browser__item';
-                const label = document.createElement('label');
-                label.className = 'checkbox';
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.value = entry.path;
-                checkbox.setAttribute('data-browser-select', '1');
-                if (existing.has(entry.path)) {
-                    checkbox.checked = true;
-                }
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = entry.name || entry.path;
-                label.appendChild(checkbox);
-                label.appendChild(nameSpan);
-                const openButton = document.createElement('button');
-                openButton.type = 'button';
-                openButton.className = 'button button--secondary';
-                openButton.textContent = 'Open';
-                openButton.dataset.browserEnter = entry.path;
-                item.appendChild(label);
-                item.appendChild(openButton);
-                browserList.appendChild(item);
-            });
-        }
-
-        async function loadBrowserPath(targetPath) {
-            // change: Query the Flask endpoint for the specified directory and refresh the overlay with the results.
-            if (!browseUrl) {
-                return;
-            }
-            const trimmed = targetPath && typeof targetPath === 'string' ? targetPath.trim() : '';
-            const url = new URL(browseUrl, window.location.origin);
-            if (trimmed) {
-                url.searchParams.set('path', trimmed);
-            }
-            setBrowserError('');
-            try {
-                const response = await fetch(url.toString(), { credentials: 'same-origin' });
-                const payload = await response.json().catch(function() { return {}; });
-                if (!response.ok || (payload && payload.status === 'error')) {
-                    const message = payload && payload.message ? payload.message : `Listing failed with status ${response.status}`;
-                    setBrowserError(message);
-                    return;
-                }
-                if (browserPathInput) {
-                    browserPathInput.value = payload.path || trimmed;
-                }
-                renderBrowserEntries(Array.isArray(payload.entries) ? payload.entries : []);
-                if (browserUpButton) {
-                    const parentPath = payload && payload.parent && payload.parent !== payload.path ? payload.parent : '';
-                    browserUpButton.disabled = !parentPath;
-                    if (parentPath) {
-                        browserUpButton.dataset.browserParent = parentPath;
-                    } else {
-                        delete browserUpButton.dataset.browserParent;
-                    }
-                }
-            } catch (error) {
-                setBrowserError(`Unable to list directories: ${error.message}`);
-            }
-        }
-
-        function openDirectoryBrowser(initialPath) {
-            // change: Notify the user to type the path manually when the API-backed browser endpoint is unavailable.
-            if (!directoryBrowser || !browseUrl) {
-                setStatus('Directory browser unavailable. Enter the full path manually.', 'warning');
-                return;
-            }
-            directoryBrowser.hidden = false;
-            const startingPath = initialPath && initialPath.trim()
-                ? initialPath.trim()
-                : (browserPathInput && browserPathInput.value.trim())
-                    ? browserPathInput.value.trim()
-                    : archiveRoot;
-            loadBrowserPath(startingPath || archiveRoot);
-        }
-
-        function closeDirectoryBrowser() {
-            // change: Hide the overlay after selection or cancellation.
-            if (!directoryBrowser) {
-                return;
-            }
-            directoryBrowser.hidden = true;
-            setBrowserError('');
-        }
-
-        function applyBrowserSelection() {
-            // change: Merge the checked directories into the main input field and refresh the preview list.
-            if (!browserList || !directoryInput) {
-                closeDirectoryBrowser();
-                return;
-            }
-            const selections = browserList.querySelectorAll('input[type="checkbox"][data-browser-select]');
-            const aggregate = new Set(parseDirectoriesFromInput(directoryInput.value));
-            selections.forEach(function(checkbox) {
-                if (checkbox.checked && checkbox.value) {
-                    aggregate.add(checkbox.value);
-                }
-            });
-            directoryInput.value = Array.from(aggregate).join('\n');
-            syncDisplayFromManualInput();
-            closeDirectoryBrowser();
+            updateDirectoryDisplay(folders);
         }
 
         function syncDisplayFromManualInput() {
@@ -411,7 +289,7 @@
                 return;
             }
             const folders = parseDirectoriesFromInput(directoryInput.value);
-            updateDirectoryDisplay(folders); // change: Reflect the current directory list without relying on the deprecated native picker metadata.
+            updateDirectoryDisplay(folders);
         }
 
         async function submitForm(event) {
@@ -514,62 +392,18 @@
 
         form.addEventListener('submit', submitForm);
 
-        if (directoryPickerButton) {
-            // change: Always route folder selection through the API-powered overlay.
-            directoryPickerButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                openDirectoryBrowser(directoryInput ? directoryInput.value.split(/\r?\n|,/)[0] : archiveRoot);
+        if (directoryPickerButton && directoryPickerInput) {
+            // change: Trigger the hidden picker when the visible button is pressed.
+            directoryPickerButton.addEventListener('click', function() {
+                directoryPickerInput.click();
             });
         }
 
-        if (browserList) {
-            // change: Enable navigation into subdirectories directly from the overlay list.
-            browserList.addEventListener('click', function(event) {
-                const target = event.target;
-                if (target && target.dataset && target.dataset.browserEnter) {
-                    event.preventDefault();
-                    loadBrowserPath(target.dataset.browserEnter);
-                }
-            });
-        }
-
-        browserDismissButtons.forEach(function(node) {
-            // change: Dismiss the overlay when the user clicks the backdrop or close button.
-            node.addEventListener('click', function(event) {
-                event.preventDefault();
-                closeDirectoryBrowser();
-            });
-        });
-
-        if (browserApplyButton) {
-            // change: Commit the checked folders and close the browser overlay.
-            browserApplyButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                applyBrowserSelection();
-            });
-        }
-
-        if (browserUpButton) {
-            // change: Request the parent directory listing when available.
-            browserUpButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                const parentPath = browserUpButton.dataset.browserParent || '';
-                const fallback = browserPathInput ? browserPathInput.value : archiveRoot;
-                loadBrowserPath(parentPath || fallback);
-            });
-        }
-
-        if (browserJumpButton && browserPathInput) {
-            // change: Allow direct navigation to typed paths without leaving the overlay.
-            browserJumpButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                loadBrowserPath(browserPathInput.value);
-            });
-            browserPathInput.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    loadBrowserPath(browserPathInput.value);
-                }
+        if (directoryPickerInput) {
+            // change: React to folder selections and update the input plus preview list.
+            directoryPickerInput.addEventListener('change', function(event) {
+                const files = event.target && event.target.files ? event.target.files : [];
+                syncDirectoryInputFromPicker(files);
             });
         }
 

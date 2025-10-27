@@ -83,7 +83,7 @@
                             <input type="text" id="imageIngestionDirectory" name="directory" placeholder="e.g. rolls/tray_01" required>
                             <button type="button" class="button button--secondary" data-directory-picker>Choose folder…</button>
                         </div>
-                        <!-- change: Removed the native directory picker input so selections always flow through the API-backed browser. -->
+                        <input type="file" id="imageIngestionDirectoryPicker" hidden webkitdirectory directory multiple>
                         <!-- change: Added copy mode controls so users can keep files in place or mirror them under the archive root. -->
                         <div class="settings-directory-options">
                             <label class="radio">
@@ -101,31 +101,8 @@
                         </div>
                         <p class="form-field__hint">Relative paths resolve under <code>{{ archive_root }}</code>.</p>
                         <p class="form-field__hint form-field__hint--selection" data-directory-picked hidden></p>
-                        <!-- change: Display the selected directories returned by the API browser or entered manually. -->
+                        <!-- change: Display the top-level folders captured by the picker for confirmation. -->
                         <ul class="settings-directory-list" data-directory-list hidden></ul>
-                        <!-- change: Insert an API-backed browser overlay so users can explore server-visible folders without uploading files. -->
-                        <div class="settings-directory-browser" data-directory-browser hidden>
-                            <div class="settings-directory-browser__backdrop" data-browser-dismiss></div>
-                            <div class="settings-directory-browser__dialog">
-                                <div class="settings-directory-browser__header">
-                                    <h4>Select folders for ingestion</h4>
-                                    <button type="button" class="button button--secondary" data-browser-dismiss>&times;</button> <!-- change: Provide a close control so the overlay can be dismissed without picking folders. -->
-                                </div>
-                                <div class="settings-directory-browser__body">
-                                    <label class="form-field__label">Current path</label>
-                                    <div class="settings-directory-browser__path">
-                                        <input type="text" data-browser-path value="{{ archive_root }}"> <!-- change: Seed the browser with the archive root as the initial location. -->
-                                        <button type="button" class="button button--secondary" data-browser-jump>Go</button> <!-- change: Allow users to jump directly to a typed path via the API bridge. -->
-                                        <button type="button" class="button button--secondary" data-browser-up>Up one level</button> <!-- change: Offer navigation to the parent directory when exploring the filesystem. -->
-                                    </div>
-                                    <p class="form-field__hint" data-browser-error hidden></p> <!-- change: Reserve space for API or permission error messaging. -->
-                                    <ul class="settings-directory-browser__list" data-browser-list></ul> <!-- change: Display the immediate subdirectories returned by the backend endpoint. -->
-                                </div>
-                                <div class="settings-directory-browser__footer">
-                                    <button type="button" class="button button--primary" data-browser-apply>Select folders</button> <!-- change: Confirm the checked folders and populate the ingestion form. -->
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="settings-group">
                         <label for="imageIngestionProvider">Model provider</label>
