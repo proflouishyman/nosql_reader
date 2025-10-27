@@ -72,7 +72,10 @@
                   data-default-ollama-model="{{ ingestion_default_ollama_model }}"
                   data-default-openai-model="{{ ingestion_default_openai_model }}"
                   data-key-configured="{{ '1' if ingestion_api_key_configured else '0' }}"
-                  data-default-ollama-url="{{ ingestion_ollama_base_url or '' }}">
+                  data-default-ollama-url="{{ ingestion_ollama_base_url or '' }}"
+                  data-browse-url="{{ url_for('settings_browse_data_ingestion') }}"  
+                  <!-- change: Provide the API endpoint the JavaScript directory browser will query for listings. -->
+                  data-archive-root="{{ archive_root }}"> <!-- change: Expose the default archive root so the browser can start from a meaningful location. -->
                 <div class="settings-grid">
                     <div class="settings-group">
                         <label for="imageIngestionDirectory">Archive directory</label>

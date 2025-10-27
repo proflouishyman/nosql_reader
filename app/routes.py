@@ -1163,6 +1163,55 @@ def data_ingestion_options():
     })
 
 
+@app.route('/settings/data-ingestion/browse', methods=['GET'])
+def settings_browse_data_ingestion():
+    """Return a directory listing so the UI can browse server-visible folders."""
+
+    # change: Interpret the requested path while defaulting to the archive root for first-time visits.
+    requested_raw = request.args.get('path', '').strip()
+    if requested_raw:
+        try:
+            requested_path = Path(requested_raw).expanduser()
+            if not requested_path.is_absolute():
+                requested_path = (_archives_root() / requested_path).resolve()  # change: Resolve relative paths within the archive root to mirror ingestion behaviour.
+        except Exception as exc:
+            return jsonify({'status': 'error', 'message': f'Invalid path: {exc}'}), 400
+    else:
+        requested_path = _archives_root()
+
+    try:
+        resolved_path = requested_path.resolve()
+    except Exception as exc:
+        return jsonify({'status': 'error', 'message': f'Unable to resolve path: {exc}'}), 400
+
+    if not resolved_path.exists():
+        return jsonify({'status': 'error', 'message': f'Directory not found: {resolved_path}'}), 404
+    if not resolved_path.is_dir():
+        return jsonify({'status': 'error', 'message': f'Not a directory: {resolved_path}'}), 400
+
+    # change: Collect only subdirectories to keep the UI focused on folder selection and cap the results to a reasonable size.
+    entries: List[Dict[str, str]] = []
+    try:
+        for child in sorted(resolved_path.iterdir(), key=lambda item: item.name.lower()):
+            if child.is_dir():
+                entries.append({'name': child.name, 'path': str(child.resolve())})
+            if len(entries) >= 200:
+                break
+    except PermissionError as exc:
+        return jsonify({'status': 'error', 'message': f'Permission denied while listing {resolved_path}: {exc}'}), 403
+    except Exception as exc:
+        return jsonify({'status': 'error', 'message': f'Failed to read directory: {exc}'}), 500
+
+    parent_path = resolved_path.parent if resolved_path.parent != resolved_path else None
+
+    return jsonify({
+        'status': 'ok',
+        'path': str(resolved_path),
+        'entries': entries,
+        'parent': str(parent_path) if parent_path else None,
+    })
+
+
 @app.route('/settings/data-ingestion/run', methods=['POST'])
 def settings_run_data_ingestion():
     """Trigger the image-to-JSON ingestion workflow for a directory."""

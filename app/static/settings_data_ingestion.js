@@ -39,6 +39,8 @@
         const dataset = form.dataset || {};
         const optionsUrl = dataset.optionsUrl;
         const runUrl = dataset.runUrl;
+        const browseUrl = dataset.browseUrl || ''; // change: Store the server endpoint that enumerates directories for the UI picker.
+        const archiveRoot = dataset.archiveRoot || ''; // change: Remember the configured archive root so the browser has a sensible default location.
         const defaultProvider = dataset.defaultProvider || 'ollama';
         const defaultOllamaModel = dataset.defaultOllamaModel || '';
         const defaultOpenaiModel = dataset.defaultOpenaiModel || '';
