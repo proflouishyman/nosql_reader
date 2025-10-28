@@ -16,7 +16,7 @@ from flask import (
     has_request_context,
 )
 from functools import wraps
-from app import app, cache
+from main import app, cache
 from database_setup import (
     get_client,
     get_db,
@@ -54,7 +54,7 @@ from historian_agent import (
 )
 
 import image_ingestion
-from app.utils.mounts import get_mounted_paths, short_tree  # Added to support read-only ingestion mounts view.
+from utils.mounts import get_mounted_paths, short_tree  # Added to support read-only ingestion mounts view.
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
