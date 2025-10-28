@@ -54,7 +54,7 @@ from historian_agent import (
 )
 
 import image_ingestion
-from utils.mounts import get_mounted_paths, short_tree  # Use direct utils import because `app` is a module, not a package.
+from app.utils.mounts import get_mounted_paths, short_tree  # Added to support read-only ingestion mounts view.
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
