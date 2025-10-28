@@ -46,7 +46,7 @@ services:
     container_name: nosql_reader_app
     env_file: .env
     environment:
-      FLASK_APP: app.py
+      FLASK_APP: main.py  # Point Flask CLI to renamed main module
       # Provide the canonical URI so the entrypoint can expose MONGO_URI to the app.
       APP_MONGO_URI: ${APP_MONGO_URI}
       ARCHIVES_PATH: ${ARCHIVES_PATH:-/data/archives}

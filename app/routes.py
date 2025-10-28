@@ -54,6 +54,7 @@ from historian_agent import (
 )
 
 import image_ingestion
+from utils.mounts import get_mounted_paths, short_tree  # Use direct utils import because `app` is a module, not a package.
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -138,6 +139,59 @@ def _list_archives() -> Tuple[List[str], bool]:
             if len(files) > ARCHIVE_LIST_LIMIT:
                 return files[:ARCHIVE_LIST_LIMIT], True
     return files, False
+
+
+def _ingestion_default_config() -> Tuple[image_ingestion.ModelConfig, Optional[str]]:
+    """Build a ``ModelConfig`` using the stored defaults for automated scans."""
+
+    # Added helper so new mount-based endpoints reuse the existing ingestion defaults.
+    provider = image_ingestion.DEFAULT_PROVIDER
+    if provider == 'ollama':
+        config = image_ingestion.ModelConfig(
+            provider=provider,
+            model=image_ingestion.DEFAULT_OLLAMA_MODEL,
+            prompt=image_ingestion.DEFAULT_PROMPT,
+            base_url=image_ingestion.DEFAULT_OLLAMA_BASE_URL,
+        )
+        api_key: Optional[str] = None
+    else:
+        api_key = image_ingestion.read_api_key()
+        config = image_ingestion.ModelConfig(
+            provider=provider,
+            model=image_ingestion.DEFAULT_OPENAI_MODEL,
+            prompt=image_ingestion.DEFAULT_PROMPT,
+            base_url=None,
+        )
+
+    return config, api_key
+
+
+def _blank_ingestion_totals() -> Dict[str, object]:
+    """Return an accumulator dict for per-mount ingestion results."""
+
+    # Added explicit structure so responses stay consistent between scan and rebuild endpoints.
+    return {
+        'images_total': 0,
+        'generated': 0,
+        'skipped_existing': 0,
+        'queued_existing': 0,
+        'failed': 0,
+        'ingested': 0,
+        'updated': 0,
+        'ingest_failures': 0,
+        'errors': [],
+    }
+
+
+def _merge_ingestion_totals(target: Dict[str, object], summary: Dict[str, object]) -> None:
+    """Update ``target`` with numeric values from ``summary``."""
+
+    # Added helper to share aggregation logic between the new scan and rebuild routes.
+    for key in ['images_total', 'generated', 'skipped_existing', 'queued_existing', 'failed', 'ingested', 'updated', 'ingest_failures']:
+        target[key] = int(target.get(key, 0)) + int(summary.get(key, 0))
+    errors = list(target.get('errors', []))
+    errors.extend(summary.get('errors', []) or [])
+    target['errors'] = errors
 
 
 def _process_archive_uploads(
@@ -1072,6 +1126,149 @@ def settings():
         ingestion_ollama_base_url=image_ingestion.DEFAULT_OLLAMA_BASE_URL,
         ingestion_api_key_configured=image_ingestion.read_api_key() is not None,
     )
+
+@app.route('/settings/data-ingestion/mounts', methods=['GET'])
+def list_data_ingestion_mounts():
+    """Return Docker mount metadata so the UI can display read-only paths."""
+
+    # Added exists flag to highlight mounts that are not yet present on disk.
+    mounts_payload = []
+    for source, target in get_mounted_paths():
+        target_path = Path(target)
+        mounts_payload.append({
+            'source': source,
+            'target': str(target),
+            'target_exists': target_path.exists(),
+        })
+
+    return jsonify({'mounts': mounts_payload})
+
+
+@app.route('/settings/data-ingestion/tree', methods=['POST'])
+def list_data_ingestion_tree():
+    """Return a short directory listing for a provided mount target."""
+
+    payload = request.get_json(silent=True) or {}
+    target = str(payload.get('target', '')).strip()
+    if not target:
+        # Added guard so clients receive a helpful message when target is missing.
+        return jsonify({'error': 'Missing target'}), 400
+
+    tree = short_tree(target)
+    return jsonify(tree)
+
+
+@app.route('/settings/data-ingestion/scan', methods=['POST'])
+def scan_mounted_images():
+    """Scan each mount for new images and ingest any unprocessed files."""
+
+    config, api_key = _ingestion_default_config()
+    if config.provider == 'openai' and not api_key:
+        # Added explicit error so users know an API key is required before scanning.
+        return jsonify({'status': 'error', 'message': 'Configure an OpenAI API key before scanning mounts.'}), 400
+
+    totals = _blank_ingestion_totals()
+    results: List[Dict[str, object]] = []
+
+    for source, target in get_mounted_paths():
+        target_path = Path(target)
+        entry: Dict[str, object] = {
+            'source': source,
+            'target': str(target_path),
+        }
+        if not target_path.exists():
+            entry['status'] = 'missing'
+            results.append(entry)
+            continue
+
+        try:
+            summary = image_ingestion.process_directory(
+                target_path,
+                config,
+                reprocess_existing=False,
+                api_key=api_key,
+            )
+            summary_dict = summary.as_dict()
+            entry.update(summary_dict)
+            entry['status'] = 'ok'
+            _merge_ingestion_totals(totals, summary_dict)
+        except image_ingestion.IngestionError as exc:
+            entry['status'] = 'error'
+            entry['message'] = str(exc)
+        except Exception as exc:  # pragma: no cover - depends on external services
+            logger.exception('Mount scan failed for %s', target_path)
+            entry['status'] = 'error'
+            entry['message'] = str(exc)
+
+        results.append(entry)
+
+    return jsonify({
+        'status': 'ok',
+        'action': 'scan',
+        'provider': config.provider,
+        'results': results,
+        'aggregate': totals,
+    })
+
+
+@app.route('/settings/data-ingestion/rebuild', methods=['POST'])
+def rebuild_ingestion_database():
+    """Clear ingestion collections and rebuild them from mounted directories."""
+
+    config, api_key = _ingestion_default_config()
+    if config.provider == 'openai' and not api_key:
+        # Added explicit error so rebuild cannot start without the required API credentials.
+        return jsonify({'status': 'error', 'message': 'Configure an OpenAI API key before rebuilding mounts.'}), 400
+
+    # Added wipe of ingestion-related collections prior to reprocessing.
+    documents.delete_many({})
+    unique_terms_collection.delete_many({})
+    field_structure_collection.delete_many({})
+
+    totals = _blank_ingestion_totals()
+    results: List[Dict[str, object]] = []
+
+    for source, target in get_mounted_paths():
+        target_path = Path(target)
+        entry: Dict[str, object] = {
+            'source': source,
+            'target': str(target_path),
+        }
+        if not target_path.exists():
+            entry['status'] = 'missing'
+            results.append(entry)
+            continue
+
+        try:
+            summary = image_ingestion.process_directory(
+                target_path,
+                config,
+                reprocess_existing=True,
+                api_key=api_key,
+            )
+            summary_dict = summary.as_dict()
+            entry.update(summary_dict)
+            entry['status'] = 'ok'
+            _merge_ingestion_totals(totals, summary_dict)
+        except image_ingestion.IngestionError as exc:
+            entry['status'] = 'error'
+            entry['message'] = str(exc)
+        except Exception as exc:  # pragma: no cover - depends on external services
+            logger.exception('Mount rebuild failed for %s', target_path)
+            entry['status'] = 'error'
+            entry['message'] = str(exc)
+
+        results.append(entry)
+
+    return jsonify({
+        'status': 'ok',
+        'action': 'rebuild',
+        'provider': config.provider,
+        'results': results,
+        'aggregate': totals,
+        'collections_cleared': ['documents', 'unique_terms', 'field_structure'],
+    })
+
 
 @app.route('/settings/data-ingestion/options', methods=['GET'])
 def data_ingestion_options():

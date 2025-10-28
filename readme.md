@@ -30,7 +30,7 @@ The Historical Document Reader is a Flask application that helps historians and 
 ```
 nosql_reader/
 ├── app/
-│   ├── app.py                # Flask app factory, session setup, caching, and configuration loading
+│   ├── main.py               # Flask app factory, session setup, caching, and configuration loading  # renamed to avoid package shadowing
 │   ├── routes.py             # All HTTP routes including Historian Agent APIs and UI endpoints
 │   ├── historian_agent/      # LangChain integration, retrieval utilities, and pipeline cache helpers
 │   ├── database_setup.py     # MongoDB client helpers, ingestion utilities, and schema discovery logic
@@ -238,6 +238,10 @@ Following this convention ensures the `/images/<path:filename>` route can resolv
 - Use `/app/bootstrap_data.sh` (inside the container) to run the end-to-end ingestion pipeline. It hashes archive files, loads new documents, recalculates unique term statistics, and runs enrichment scripts.
 - You can invoke the bootstrap at container startup by setting `RUN_BOOTSTRAP=1` in `.env`. The script exits gracefully if the archives directory is empty, so it is safe to keep the flag enabled in development.
 - Additional helper scripts such as `backup_db.py` and `restore_db.py` are available for database maintenance. Execute them from the repository root or inside the running container using `docker compose exec`.
+- <!-- Added description of the redesigned ingestion settings panel. -->
+- The **Settings → Data ingestion** panel now lists Docker volume mounts read-only, including a short folder tree for each target.
+- Use **Scan for new images** to process any new media under those mounts with the default ingestion configuration.
+- Use **Rebuild database** to clear and repopulate MongoDB documents from the mounted archives in one step.
 
 ## Troubleshooting
 
