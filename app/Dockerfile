@@ -62,4 +62,4 @@ RUN chmod +x /app/entrypoint.sh /app/bootstrap_data.sh
 ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Command to run the Flask app
-CMD ["python", "main.py"]  # Updated entrypoint to match renamed main module
+CMD ["python", "main.py"]  
