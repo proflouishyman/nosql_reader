@@ -1,5 +1,6 @@
-# File: app.py
-# Path: railroad_documents_project/app.py
+# File: main.py
+# Path: railroad_documents_project/main.py
+# Renamed from app.py to prevent shadowing the app package during imports.  # rename avoids ModuleNotFoundError
 
 import os
 import json

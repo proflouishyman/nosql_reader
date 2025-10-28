@@ -30,7 +30,7 @@ The Historical Document Reader is a Flask application that helps historians and 
 ```
 nosql_reader/
 ├── app/
-│   ├── app.py                # Flask app factory, session setup, caching, and configuration loading
+│   ├── main.py               # Flask app factory, session setup, caching, and configuration loading  # renamed to avoid package shadowing
 │   ├── routes.py             # All HTTP routes including Historian Agent APIs and UI endpoints
 │   ├── historian_agent/      # LangChain integration, retrieval utilities, and pipeline cache helpers
 │   ├── database_setup.py     # MongoDB client helpers, ingestion utilities, and schema discovery logic
