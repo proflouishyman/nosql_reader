@@ -1176,6 +1176,11 @@ def scan_mounted_images():
             'source': source,
             'target': str(target_path),
         }
+
+        if not target_path.is_dir():
+            # Skip non-directory mounts (like docker-compose.yml file)
+            continue
+
         if not target_path.exists():
             entry['status'] = 'missing'
             results.append(entry)
@@ -1234,6 +1239,13 @@ def rebuild_ingestion_database():
             'source': source,
             'target': str(target_path),
         }
+
+
+        if not target_path.is_dir():
+            # Skip non-directory mounts (like docker-compose.yml file)
+            continue
+
+        
         if not target_path.exists():
             entry['status'] = 'missing'
             results.append(entry)

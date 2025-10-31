@@ -70,6 +70,10 @@ services:
       - type: bind
         source: ${SESSION_HOST_PATH:-../flask_session}
         target: ${SESSION_PATH:-/app/flask_session}
+      - type: bind
+        source: ./docker-compose.yml
+        target: /app/docker-compose.yml
+        read_only: true
     depends_on:
       mongodb:
         condition: service_healthy
