@@ -23,6 +23,10 @@ from database_setup import (
 )
 
 LOGGER = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 DEFAULT_PROVIDER = "ollama"
 DEFAULT_OLLAMA_MODEL = "llama3.2-vision:11b"
@@ -218,45 +222,157 @@ def _image_to_base64(path: Path) -> Tuple[str, str]:
     return encoded, mime
 
 
+
 def _call_ollama(image_path: Path, config: ModelConfig) -> str:
+    """
+    Call Ollama API with detailed verbose logging.
+    
+    According to Ollama API docs, the correct format is:
+    {
+      "model": "llama3.2-vision",
+      "messages": [
+        {
+          "role": "user",
+          "content": "text prompt",
+          "images": ["base64_string"]  # At message level, not nested
+        }
+      ]
+    }
+    """
+    LOGGER.info("="*60)
+    LOGGER.info(f"STARTING OLLAMA PROCESSING")
+    LOGGER.info(f"  Image: {image_path.name}")
+    LOGGER.info(f"  Full path: {image_path}")
+    LOGGER.info(f"  Model: {config.model}")
+    LOGGER.info(f"  Provider: {config.provider}")
+    
+    # Build URL
     base_url = (config.base_url or DEFAULT_OLLAMA_BASE_URL or "http://localhost:11434").rstrip("/")
     url = f"{base_url}{OLLAMA_CHAT_ENDPOINT}"
-    encoded, mime = _image_to_base64(image_path)
+    LOGGER.info(f"  Target URL: {url}")
+    
+    # Check if file exists and is readable
+    if not image_path.exists():
+        LOGGER.error(f"  ❌ FILE NOT FOUND: {image_path}")
+        raise IngestionError(f"Image file not found: {image_path}")
+    
+    file_size = image_path.stat().st_size
+    LOGGER.info(f"  ✅ File exists, size: {file_size:,} bytes ({file_size/1024/1024:.2f} MB)")
+    
+    # Encode image
+    LOGGER.info(f"  Encoding image to base64...")
+    try:
+        encoded, mime = _image_to_base64(image_path)
+        encoded_size = len(encoded)
+        LOGGER.info(f"  ✅ Image encoded: {encoded_size:,} characters")
+        LOGGER.info(f"  MIME type: {mime}")
+    except Exception as e:
+        LOGGER.error(f"  ❌ ENCODING FAILED: {e}")
+        raise IngestionError(f"Failed to encode image: {e}")
+    
+    # Build payload - CORRECT FORMAT per Ollama docs
+    LOGGER.info(f"  Building API payload...")
     payload = {
         "model": config.model,
         "messages": [
             {"role": "system", "content": config.prompt},
             {
                 "role": "user",
-                "content": [
-                    {"type": "text", "text": "Process this document and return JSON only."},
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": mime,
-                            "data": encoded,
-                        },
-                    },
-                ],
+                "content": "Process this document and return JSON only.",
+                "images": [encoded]  # Images at message level per Ollama API docs
             },
         ],
         "stream": False,
+        "format": "json",
         "options": {
             "temperature": config.temperature,
             "num_ctx": 8192,
         },
     }
-    response = requests.post(url, json=payload, timeout=120)
-    response.raise_for_status()
-    payload = response.json()
-    message = payload.get("message") or {}
-    content = message.get("content")
-    if not content:
-        raise IngestionError("Ollama response did not contain any content.")
-    if isinstance(content, list):
-        return "".join(part.get("text", "") for part in content)
-    return str(content)
+    
+    LOGGER.info(f"  ✅ Payload built:")
+    LOGGER.info(f"    - System prompt length: {len(config.prompt)} chars")
+    LOGGER.info(f"    - User message: 'Process this document and return JSON only.'")
+    LOGGER.info(f"    - Images array: 1 image ({encoded_size:,} chars)")
+    LOGGER.info(f"    - Stream: False")
+    LOGGER.info(f"    - Temperature: {config.temperature}")
+    
+    # Make API call
+    LOGGER.info(f"  📡 Sending request to Ollama...")
+    LOGGER.info(f"  (This may take 30-120 seconds for vision models)")
+    
+    try:
+        import time
+        start_time = time.time()
+        
+        response = requests.post(url, json=payload, timeout=120)
+        
+        elapsed = time.time() - start_time
+        LOGGER.info(f"  ⏱️  Request completed in {elapsed:.2f} seconds")
+        LOGGER.info(f"  HTTP Status: {response.status_code}")
+        
+        # Log response details
+        if response.status_code != 200:
+            LOGGER.error(f"  ❌ HTTP ERROR: {response.status_code}")
+            LOGGER.error(f"  Response body: {response.text[:500]}")
+            response.raise_for_status()
+        
+        # Parse response
+        LOGGER.info(f"  ✅ Got 200 OK response")
+        result = response.json()
+        
+        # Log response structure
+        LOGGER.info(f"  Response keys: {list(result.keys())}")
+        
+        message = result.get("message") or {}
+        content = message.get("content")
+        
+        if not content:
+            LOGGER.error(f"  ❌ NO CONTENT in response")
+            LOGGER.error(f"  Full response: {result}")
+            raise IngestionError("Ollama response did not contain any content.")
+        
+        content_length = len(str(content))
+        LOGGER.info(f"  ✅ Got content: {content_length:,} characters")
+        LOGGER.info(f"  Content preview: {str(content)[:200]}...")
+        
+        # Return content
+        if isinstance(content, list):
+            final = "".join(part.get("text", "") for part in content)
+            LOGGER.info(f"  Content was list, joined to {len(final)} chars")
+            return final
+        
+        LOGGER.info(f"  ✅ PROCESSING COMPLETE for {image_path.name}")
+        LOGGER.info("="*60)
+        return str(content)
+        
+    except requests.exceptions.Timeout:
+        LOGGER.error(f"  ❌ REQUEST TIMEOUT (>120 seconds)")
+        LOGGER.error(f"  Image: {image_path.name}")
+        LOGGER.error(f"  This usually means:")
+        LOGGER.error(f"    1. Model is still loading")
+        LOGGER.error(f"    2. Image is too large")
+        LOGGER.error(f"    3. System resources exhausted")
+        raise IngestionError(f"Ollama request timed out for {image_path.name}")
+        
+    except requests.exceptions.ConnectionError as e:
+        LOGGER.error(f"  ❌ CONNECTION ERROR")
+        LOGGER.error(f"  Cannot reach: {url}")
+        LOGGER.error(f"  Error: {e}")
+        raise IngestionError(f"Cannot connect to Ollama at {url}")
+        
+    except requests.exceptions.HTTPError as e:
+        LOGGER.error(f"  ❌ HTTP ERROR: {e}")
+        LOGGER.error(f"  Status code: {response.status_code}")
+        LOGGER.error(f"  Response: {response.text[:500]}")
+        raise IngestionError(f"Ollama API error: {e}")
+        
+    except Exception as e:
+        LOGGER.error(f"  ❌ UNEXPECTED ERROR: {type(e).__name__}")
+        LOGGER.error(f"  Message: {e}")
+        LOGGER.error(f"  Image: {image_path.name}")
+        raise IngestionError(f"Unexpected error processing {image_path.name}: {e}")
+
 
 def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
     from openai import OpenAI  # Imported lazily to keep optional dependency optional
@@ -375,40 +491,89 @@ def process_directory(
     reprocess_existing: bool = False,
     api_key: Optional[str] = None,
 ) -> IngestionSummary:
-    """Process images under ``directory`` and ingest generated JSON documents."""
-
+    """Process images under directory with detailed verbose logging."""
+    
+    LOGGER.info("")
+    LOGGER.info("🚀 " + "="*70)
+    LOGGER.info("🚀 STARTING IMAGE INGESTION BATCH")
+    LOGGER.info("🚀 " + "="*70)
+    LOGGER.info(f"  Directory: {directory}")
+    LOGGER.info(f"  Model: {config.model} ({config.provider})")
+    LOGGER.info(f"  Reprocess existing: {reprocess_existing}")
+    
     if not directory.exists() or not directory.is_dir():
+        LOGGER.error(f"  ❌ Directory does not exist: {directory}")
         raise IngestionError(f"Directory does not exist: {directory}")
-
+    
+    LOGGER.info(f"  ✅ Directory exists")
+    
+    # Initialize summary
     summary = IngestionSummary()
+    
+    # Find all images
+    LOGGER.info(f"  📁 Scanning for images...")
     images: List[Path] = [
-        path for path in directory.rglob("*") if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
+        path for path in directory.rglob("*") 
+        if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
     ]
     summary.images_total = len(images)
-
+    
+    LOGGER.info(f"  ✅ Found {summary.images_total} images")
     if not images:
+        LOGGER.warning(f"  ⚠️  No images found in {directory}")
         return summary
-
+    
+    # Log breakdown by extension
+    from collections import Counter
+    extensions = Counter(p.suffix.lower() for p in images)
+    LOGGER.info(f"  📊 Image breakdown:")
+    for ext, count in extensions.most_common():
+        LOGGER.info(f"     {ext}: {count} files")
+    
     json_targets: List[Path] = []
-
+    
+    # Initialize DB connection
     client = get_client()
     db = get_db(client)
-
     data_processing.root_directory = str(directory)
-    data_processing.db = db  # type: ignore[attr-defined]
-
-    for image_path in images:
+    data_processing.db = db
+    
+    LOGGER.info("")
+    LOGGER.info("📝 Processing images...")
+    LOGGER.info("-" * 70)
+    
+    # Process each image
+    for idx, image_path in enumerate(images, 1):
+        LOGGER.info("")
+        LOGGER.info(f"[{idx}/{summary.images_total}] {image_path.name}")
+        
         json_path = _json_path_for_image(image_path)
         relative_path = _archives_relative(json_path, directory)
-        if json_path.exists() and not reprocess_existing:
-            if _document_exists(db, relative_path):
-                summary.skipped_existing += 1
-                continue
-            json_targets.append(json_path)
-            summary.queued_existing += 1
-            continue
-
+        
+        # Check if JSON already exists
+        if json_path.exists():
+            LOGGER.info(f"  📄 JSON file exists: {json_path.name}")
+            
+            if not reprocess_existing:
+                # Check if in database
+                if _document_exists(db, relative_path):
+                    LOGGER.info(f"  ⏭️  Already in database, skipping")
+                    summary.skipped_existing += 1
+                    continue
+                else:
+                    LOGGER.info(f"  📥 Not in database, queuing for ingestion")
+                    json_targets.append(json_path)
+                    summary.queued_existing += 1
+                    continue
+            else:
+                LOGGER.info(f"  🔄 Reprocessing (reprocess_existing=True)")
+        else:
+            LOGGER.info(f"  🆕 No JSON file, processing from scratch")
+        
+        # Process the image
         try:
+            LOGGER.info(f"  🤖 Calling AI model...")
+            
             if config.provider == "ollama":
                 output_text = _call_ollama(image_path, config)
             elif config.provider == "openai":
@@ -417,18 +582,71 @@ def process_directory(
                 output_text = _call_openai(image_path, config, api_key)
             else:
                 raise IngestionError(f"Unsupported provider: {config.provider}")
-
+            
+            LOGGER.info(f"  ✅ AI processing complete")
+            LOGGER.info(f"  💾 Writing JSON file...")
+            
+            # Parse and validate JSON
             payload = _serialise_json(output_text)
-            json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+            LOGGER.info(f"  ✅ JSON validated")
+            
+            # Write JSON file
+            json_path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2), 
+                encoding="utf-8"
+            )
+            LOGGER.info(f"  ✅ JSON saved: {json_path.name}")
+            
             json_targets.append(json_path)
             summary.generated += 1
-        except Exception as exc:  # pragma: no cover - depends on external services
-            LOGGER.exception("Failed to process image %s", image_path)
+            
+            LOGGER.info(f"  ✅ SUCCESS")
+            
+        except Exception as exc:
+            LOGGER.exception(f"  ❌ FAILED: {exc}")
             summary.failed += 1
-            summary.errors.append({"path": str(image_path), "error": str(exc)})
-
-    _ingest_json_documents(db, json_targets, directory, summary)
+            summary.errors.append({
+                "path": str(image_path), 
+                "error": str(exc)
+            })
+    
+    # Summary so far
+    LOGGER.info("")
+    LOGGER.info("="*70)
+    LOGGER.info("📊 PROCESSING SUMMARY")
+    LOGGER.info("="*70)
+    LOGGER.info(f"  Total images: {summary.images_total}")
+    LOGGER.info(f"  ✅ Generated new JSON: {summary.generated}")
+    LOGGER.info(f"  📥 Queued existing JSON: {summary.queued_existing}")
+    LOGGER.info(f"  ⏭️  Skipped (already in DB): {summary.skipped_existing}")
+    LOGGER.info(f"  ❌ Failed: {summary.failed}")
+    
+    # Ingest JSON files into MongoDB
+    LOGGER.info("")
+    LOGGER.info("💾 Ingesting JSON into MongoDB...")
+    LOGGER.info(f"  Files to ingest: {len(json_targets)}")
+    
+    if json_targets:
+        _ingest_json_documents(db, json_targets, directory, summary)
+        LOGGER.info(f"  ✅ Ingested: {summary.ingested}")
+        LOGGER.info(f"  🔄 Updated: {summary.updated}")
+        LOGGER.info(f"  ❌ Ingest failures: {summary.ingest_failures}")
+    else:
+        LOGGER.info(f"  ⏭️  Nothing to ingest")
+    
+    LOGGER.info("")
+    LOGGER.info("="*70)
+    LOGGER.info("🎉 BATCH COMPLETE")
+    LOGGER.info("="*70)
+    LOGGER.info(f"  Total: {summary.images_total} images")
+    LOGGER.info(f"  Generated: {summary.generated}")
+    LOGGER.info(f"  Ingested: {summary.ingested}")
+    LOGGER.info(f"  Failed: {summary.failed}")
+    LOGGER.info("="*70)
+    LOGGER.info("")
+    
     return summary
+
 
 
 def expand_directory(path_str: str) -> Path:

@@ -1317,23 +1317,45 @@ def rebuild_ingestion_database():
 
 @app.route('/settings/data-ingestion/options', methods=['GET'])
 def data_ingestion_options():
-    """Return configuration details for the image ingestion pipeline."""
+    """Return environment-driven defaults for the image ingestion pipeline."""
 
-    base_url = request.args.get('ollama_base_url') or image_ingestion.DEFAULT_OLLAMA_BASE_URL
-    models = image_ingestion.ollama_models(base_url)
+    import requests
+
+    def get_ollama_model_list(base_url: str):
+        """Query Ollama runtime for available models."""
+        try:
+            r = requests.get(f"{base_url.rstrip('/')}/api/tags", timeout=2)
+            if r.ok:
+                data = r.json()
+                return [m["name"] for m in data.get("models", [])]
+        except Exception:
+            pass
+        return []
+
+    # Pull from .env first, fall back to defaults from image_ingestion
+    env_provider = os.getenv("HISTORIAN_AGENT_MODEL_PROVIDER", image_ingestion.DEFAULT_PROVIDER)
+    env_prompt = os.getenv("HISTORIAN_AGENT_PROMPT", image_ingestion.DEFAULT_PROMPT)
+    env_ollama_base = os.getenv("HISTORIAN_AGENT_OLLAMA_BASE_URL", image_ingestion.DEFAULT_OLLAMA_BASE_URL)
+    env_ollama_model = os.getenv("HISTORIAN_AGENT_MODEL", image_ingestion.DEFAULT_OLLAMA_MODEL)
+    env_openai_model = os.getenv("OPENAI_DEFAULT_MODEL", image_ingestion.DEFAULT_OPENAI_MODEL)
+
+    # Fetch model list from running Ollama instance
+    models = get_ollama_model_list(env_ollama_base)
+
     return jsonify({
-        'default_provider': image_ingestion.DEFAULT_PROVIDER,
-        'default_prompt': image_ingestion.DEFAULT_PROMPT,
-        'ollama': {
-            'base_url': base_url,
-            'default_model': image_ingestion.DEFAULT_OLLAMA_MODEL,
-            'models': models,
+        "default_provider": env_provider,
+        "default_prompt": env_prompt,
+        "ollama": {
+            "base_url": env_ollama_base,
+            "default_model": env_ollama_model,
+            "models": models,
         },
-        'openai': {
-            'default_model': image_ingestion.DEFAULT_OPENAI_MODEL,
-            'key_configured': image_ingestion.read_api_key() is not None,
+        "openai": {
+            "default_model": env_openai_model,
+            "key_configured": image_ingestion.read_api_key() is not None,
         },
     })
+
 
 
 @app.route('/settings/data-ingestion/run', methods=['POST'])
