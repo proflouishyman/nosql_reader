@@ -164,12 +164,22 @@ The following table maps each environment variable or UI control to its behaviou
 | --- | --- | --- |
 | Provider | `HISTORIAN_AGENT_MODEL_PROVIDER` | `ollama` for local models, `openai` for cloud models. Determines which configuration fields are required. |
 | Model name | `HISTORIAN_AGENT_MODEL` | Identifier passed to the underlying provider (e.g., `llama2`, `gpt-4o-mini`). |
-| Ollama base URL | `HISTORIAN_AGENT_OLLAMA_BASE_URL` | Base HTTP endpoint for a local Ollama server. Ignored when using OpenAI. |
+| Ollama base URL | `HISTORIAN_AGENT_OLLAMA_BASE_URL` / `OLLAMA_BASE_URL` | Base HTTP endpoint for a local Ollama server. Ignored when using OpenAI. | <!-- Clarified both env names because the backend now reads either for compatibility. -->
 | OpenAI API key | `OPENAI_API_KEY` | Credential for OpenAI requests. May be provided through the UI so keys are not stored on disk. |
 | Temperature | `HISTORIAN_AGENT_TEMPERATURE` | Controls response creativity. Lower values produce deterministic summaries. |
-| Max documents | `HISTORIAN_AGENT_MAX_DOCS` | Number of retrieved documents to feed into the RAG pipeline per question. |
-| Field whitelist | `HISTORIAN_AGENT_SOURCE_FIELDS` | Comma-separated list of document fields eligible for retrieval context. |
+| Max documents | `HISTORIAN_AGENT_CONTEXT_K` | Number of retrieved documents to feed into the RAG pipeline per question. |
+| Field whitelist | `HISTORIAN_AGENT_CONTEXT_FIELDS` | Comma-separated list of document fields eligible for retrieval context. |
 | Prompt prefix | `HISTORIAN_AGENT_SYSTEM_PROMPT` | System message prepended to every conversation for tone/behaviour guidance. |
+
+### Semantic retrieval controls (new)
+
+- `HISTORIAN_AGENT_USE_VECTOR_RETRIEVAL` – Enables the hybrid retriever that blends keyword search with vector similarity. Leave this `false` until the migration script has populated embeddings.
+- `HISTORIAN_AGENT_EMBEDDING_PROVIDER` / `HISTORIAN_AGENT_EMBEDDING_MODEL` – Select the embedding backend (`local` → HuggingFace, `openai` → OpenAI API) and model used for chunk vectors.
+- `HISTORIAN_AGENT_CHUNK_SIZE` / `HISTORIAN_AGENT_CHUNK_OVERLAP` – Mirror the chunker configuration so retrieval respects the intended context window.
+- `HISTORIAN_AGENT_VECTOR_STORE` / `CHROMA_PERSIST_DIRECTORY` – Choose the vector store implementation (currently `chroma`) and its persistence path.
+- `HISTORIAN_AGENT_HYBRID_ALPHA` – Weight applied to vector results when combining with keyword matches (0 = keyword only, 1 = vector only).
+
+Run `python scripts/embed_existing_documents.py` to generate the initial chunk embeddings before turning the feature flag on. The script adds a `document_chunks` collection, writes vectors to ChromaDB, and can be resumed safely if interrupted.
 
 When an override is active, the sidebar displays a badge showing the active provider and highlights any values that differ from the environment defaults. The backend validates keys and endpoints before accepting a change and responds with descriptive error messages for invalid combinations.
 

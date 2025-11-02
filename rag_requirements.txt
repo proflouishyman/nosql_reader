@@ -1,0 +1,23 @@
+# RAG System Enhancement Dependencies
+# Add these to your existing app/requirements.txt
+
+# Core RAG dependencies
+sentence-transformers>=2.2.0  # Local embeddings (384MB download on first use)
+chromadb>=0.4.0               # Vector database
+tiktoken>=0.5.0               # Token counting for context management
+
+# Text processing
+langchain>=0.1.0              # Document processing utilities
+langchain-core>=0.1.0         # Core LangChain functionality
+
+# Optional but recommended
+tqdm>=4.65.0                  # Progress bars for migration scripts
+rank-bm25>=0.2.2              # BM25 scoring (for future keyword improvements)
+
+# For OpenAI embeddings (optional)
+# openai>=1.0.0               # Already in requirements if using OpenAI LLM
+
+# For advanced features (Phase 3)
+# torch>=2.0.0                # GPU acceleration for embeddings (large, optional)
+# faiss-cpu>=1.7.4            # Alternative vector store (faster than ChromaDB)
+# transformers>=4.30.0        # For cross-encoder reranking

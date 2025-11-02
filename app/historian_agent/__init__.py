@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+import logging  # Added to log vector fallback events for RAG mode.
 import os
-import re
 import threading
 
 from langchain_core.documents import Document
@@ -13,6 +13,7 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import Runnable, RunnableLambda, RunnableSerializable
+from langchain_core.retrievers import BaseRetriever  # Added to type annotate pluggable retrievers.
 
 try:  # Import lazily to keep optional dependencies optional during runtime init
     from langchain_openai import ChatOpenAI
@@ -23,6 +24,18 @@ try:
     from langchain_community.chat_models import ChatOllama
 except Exception:  # pragma: no cover - handled dynamically
     ChatOllama = None  # type: ignore
+
+from .embeddings import EmbeddingService  # Added to construct embedding client when semantic search is enabled.
+from .retrievers import (  # Added hybrid/vector retrievers per RAG design.
+    HybridRetriever,
+    KeywordRetriever,
+    MongoKeywordRetriever,
+    VectorRetriever,
+)
+from .vector_store import get_vector_store  # Switched to factory helper to honour configuration defaults per design docs.
+
+
+logger = logging.getLogger(__name__)  # Added module-level logger for diagnostics.
 
 
 def _coerce_bool(value: Any) -> bool:
@@ -55,6 +68,14 @@ class HistorianAgentConfig:
     allow_general_fallback: bool = True
     ollama_base_url: Optional[str] = None
     openai_api_key: Optional[str] = None
+    use_vector_retrieval: bool = False  # Added to toggle hybrid/vector retrieval pipeline.
+    embedding_provider: str = "local"  # Added to choose between local and OpenAI embeddings.
+    embedding_model: str = "all-MiniLM-L6-v2"  # Added to configure embedding model selection.
+    chunk_size: int = 1000  # Added to propagate chunking settings to dependent services.
+    chunk_overlap: int = 200  # Added to keep overlap consistent with chunker defaults.
+    vector_store_type: str = "chroma"  # Added to allow switching vector backend implementations.
+    chroma_persist_directory: Optional[str] = None  # Added to configure Chroma persistence path.
+    hybrid_alpha: float = 0.5  # Added to balance vector vs keyword contributions in hybrid search.
 
     @classmethod
     def from_env(
@@ -124,13 +145,56 @@ class HistorianAgentConfig:
             env["ollama_base_url"] = None
         env.setdefault(
             "ollama_base_url",
-            os.environ.get("OLLAMA_BASE_URL") or None,
-        )
+            os.environ.get("HISTORIAN_AGENT_OLLAMA_BASE_URL")
+            or os.environ.get("OLLAMA_BASE_URL")
+            or None,
+        )  # Added legacy env fallback so older deployments using HISTORIAN_AGENT_OLLAMA_BASE_URL keep working.
         if "openai_api_key" in env and env["openai_api_key"] == "":
             env["openai_api_key"] = None
         env.setdefault(
             "openai_api_key",
             os.environ.get("OPENAI_API_KEY") or None,
+        )
+        env.setdefault(
+            "use_vector_retrieval",
+            _coerce_bool(
+                os.environ.get("HISTORIAN_AGENT_USE_VECTOR_RETRIEVAL", "false")
+            ),
+        )
+        env["use_vector_retrieval"] = _coerce_bool(env["use_vector_retrieval"])
+        env.setdefault(
+            "embedding_provider",
+            os.environ.get("HISTORIAN_AGENT_EMBEDDING_PROVIDER", "local"),
+        )
+        env.setdefault(
+            "embedding_model",
+            os.environ.get("HISTORIAN_AGENT_EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
+        )
+        if "chunk_size" in env:
+            env["chunk_size"] = int(env["chunk_size"])
+        env.setdefault(
+            "chunk_size",
+            int(os.environ.get("HISTORIAN_AGENT_CHUNK_SIZE", "1000")),
+        )
+        if "chunk_overlap" in env:
+            env["chunk_overlap"] = int(env["chunk_overlap"])
+        env.setdefault(
+            "chunk_overlap",
+            int(os.environ.get("HISTORIAN_AGENT_CHUNK_OVERLAP", "200")),
+        )
+        env.setdefault(
+            "vector_store_type",
+            os.environ.get("HISTORIAN_AGENT_VECTOR_STORE", "chroma"),
+        )
+        env.setdefault(
+            "chroma_persist_directory",
+            os.environ.get("CHROMA_PERSIST_DIRECTORY") or None,
+        )
+        if "hybrid_alpha" in env:
+            env["hybrid_alpha"] = float(env["hybrid_alpha"])
+        env.setdefault(
+            "hybrid_alpha",
+            float(os.environ.get("HISTORIAN_AGENT_HYBRID_ALPHA", "0.5")),
         )
         return cls(**env)
 
@@ -139,62 +203,13 @@ class HistorianAgentError(RuntimeError):
     """Raised when the Historian Agent cannot respond."""
 
 
-class MongoKeywordRetriever:
-    """Simple keyword-based retriever over a Mongo collection."""
-
-    def __init__(self, collection, config: HistorianAgentConfig):
-        self._collection = collection
-        self._config = config
-
-    def get_relevant_documents(self, query: str) -> List[Document]:
-        """Return a list of LangChain ``Document`` objects that match ``query``."""
-
-        if not query:
-            return []
-
-        regex = re.compile(re.escape(query), re.IGNORECASE)
-        filters = [
-            {field: {"$regex": regex}}
-            for field in self._config.context_fields
-        ]
-        mongo_query = {"$or": filters} if filters else {}
-        cursor = self._collection.find(mongo_query).limit(self._config.max_context_documents)
-        documents: List[Document] = []
-
-        for record in cursor:
-            metadata = {
-                "_id": str(record.get("_id")),
-                "title": record.get("title") or record.get("name") or record.get("document_title"),
-            }
-            content_segments: List[str] = []
-            for field in self._config.context_fields:
-                value = record.get(field)
-                if isinstance(value, str):
-                    content_segments.append(value)
-                elif isinstance(value, Iterable) and not isinstance(value, (bytes, dict)):
-                    # Flatten iterable values into joined text
-                    content_segments.append(" ".join(map(str, value)))
-                elif isinstance(value, dict):
-                    content_segments.append(" ".join(map(str, value.values())))
-            page_content = "\n".join(seg for seg in content_segments if seg)
-            if not page_content and self._config.allow_general_fallback:
-                summary_candidate = record.get(self._config.summary_field)
-                if isinstance(summary_candidate, str):
-                    page_content = summary_candidate
-            if not page_content:
-                continue
-            documents.append(Document(page_content=page_content, metadata=metadata))
-
-        return documents
-
-
 class HistorianAgent:
     """Wrapper around a LangChain Runnable that orchestrates retrieval + response."""
 
     def __init__(
         self,
         config: HistorianAgentConfig,
-        retriever: MongoKeywordRetriever,
+        retriever: BaseRetriever,  # Broadened to accept keyword/vector/hybrid retrievers.
         chain: RunnableSerializable,
     ) -> None:
         self._config = config
@@ -308,9 +323,11 @@ def _build_llm(config: HistorianAgentConfig) -> Runnable:
         if ChatOllama is None:
             raise HistorianAgentError(
                 "langchain-community with Ollama support is not available. Install it or choose another provider.")
-        base_url = config.ollama_base_url or os.environ.get(
-            "OLLAMA_BASE_URL", "http://localhost:11434"
-        )
+        base_url = (
+            config.ollama_base_url
+            or os.environ.get("HISTORIAN_AGENT_OLLAMA_BASE_URL")
+            or os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+        )  # Added HISTORIAN_AGENT_OLLAMA_BASE_URL fallback so runtime respects both env names documented elsewhere.
         return ChatOllama(
             model=config.model_name,
             temperature=config.temperature,
@@ -351,6 +368,14 @@ def _config_signature(config: HistorianAgentConfig) -> tuple:
         config.allow_general_fallback,
         config.ollama_base_url,
         config.openai_api_key,
+        config.use_vector_retrieval,  # Added to bust cache when semantic retrieval toggles.
+        config.embedding_provider,  # Added to reflect embedding backend changes.
+        config.embedding_model,  # Added to refresh agent when model swaps.
+        config.chunk_size,  # Added to ensure chunking adjustments rebuild components.
+        config.chunk_overlap,  # Added to cover overlap changes.
+        config.vector_store_type,  # Added to capture backend selection.
+        config.chroma_persist_directory,  # Added to reinitialise vector store on path change.
+        config.hybrid_alpha,  # Added to account for retrieval weighting tweaks.
     )
 
 
@@ -361,7 +386,74 @@ def get_agent(collection, overrides: Optional[Dict[str, Any]] = None) -> Histori
         signature = _config_signature(config)
         if _cached_agent is not None and _cached_signature == signature:
             return _cached_agent
-        retriever = MongoKeywordRetriever(collection, config)
+        fallback_retriever = MongoKeywordRetriever(collection, config)
+        retriever: BaseRetriever = fallback_retriever  # Default to keyword search for safety.
+        if config.enabled and config.use_vector_retrieval:
+            try:
+                provider = (config.embedding_provider or "").strip().lower()
+                if provider in {"local", "huggingface"}:
+                    provider_name = "huggingface"
+                    provider_kwargs = {}
+                elif provider == "openai":
+                    provider_name = "openai"
+                    provider_kwargs = {"api_key": config.openai_api_key}
+                else:
+                    raise HistorianAgentError(
+                        f"Unsupported embedding provider for vector retrieval: {config.embedding_provider}"
+                    )
+
+                embedding_service = EmbeddingService(  # Build embedding client for semantic search.
+                    provider=provider_name,
+                    model_name=config.embedding_model,
+                    **provider_kwargs,
+                )
+
+                if config.vector_store_type.lower() != "chroma":
+                    raise HistorianAgentError(
+                        f"Unsupported vector store type: {config.vector_store_type}"
+                    )
+
+                persist_directory = (
+                    config.chroma_persist_directory
+                    or os.environ.get("CHROMA_PERSIST_DIRECTORY")
+                    or "/home/claude/chroma_db"
+                )
+
+                chunks_collection = collection.database.get_collection("document_chunks")  # Added to query chunk-level material for semantic retrieval.
+                if chunks_collection.estimated_document_count() == 0:
+                    raise HistorianAgentError("document_chunks collection is empty; run the embedding migration before enabling vector mode")  # Added guard so we fall back when migration has not been executed.
+
+                vector_store = get_vector_store(  # Use shared factory to ensure consistent collection naming + caching.
+                    store_type=config.vector_store_type,
+                    persist_directory=persist_directory,
+                    collection_name="historian_document_chunks",
+                )
+
+                vector_retriever = VectorRetriever(
+                    vector_store=vector_store,
+                    embedding_service=embedding_service,
+                    mongo_collection=chunks_collection,
+                    top_k=max(1, config.max_context_documents * 2),  # Increased recall for fusion by fetching extra chunk candidates.
+                )
+                keyword_retriever = KeywordRetriever(
+                    mongo_collection=chunks_collection,
+                    config=config,
+                    top_k=max(1, config.max_context_documents * 2),  # Keep keyword pool size aligned with vector retriever for RRF.
+                )
+                alpha = max(0.0, min(1.0, config.hybrid_alpha))
+                retriever = HybridRetriever(
+                    vector_retriever=vector_retriever,
+                    keyword_retriever=keyword_retriever,
+                    vector_weight=alpha,
+                    keyword_weight=1.0 - alpha,
+                    top_k=config.max_context_documents,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Vector retrieval initialisation failed; reverting to keyword search: %s",
+                    exc,
+                )
+                retriever = fallback_retriever
         if not config.enabled:
             chain = RunnableLambda(lambda _: "Historian agent is currently disabled.")
             _cached_agent = HistorianAgent(config=config, retriever=retriever, chain=chain)
@@ -386,6 +478,9 @@ __all__ = [
     "HistorianAgentConfig",
     "HistorianAgentError",
     "MongoKeywordRetriever",
+    "KeywordRetriever",  # Added to expose new keyword retriever implementation.
+    "VectorRetriever",  # Added to expose semantic retriever for external callers.
+    "HybridRetriever",  # Added to expose hybrid retriever for integrations.
     "get_agent",
     "reset_agent",
 ]
