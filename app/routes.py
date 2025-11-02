@@ -194,6 +194,35 @@ def _merge_ingestion_totals(target: Dict[str, object], summary: Dict[str, object
     target['errors'] = errors
 
 
+# Added payload parser so both ingestion endpoints can accept client-supplied configuration.
+def _ingestion_config_from_payload(payload: Dict[str, object]) -> Tuple[image_ingestion.ModelConfig, Optional[str], Optional[Tuple[Response, int]]]:
+    provider = image_ingestion.provider_from_string(payload.get('provider', image_ingestion.DEFAULT_PROVIDER))  # Added provider normalisation for robustness.
+    prompt = str(payload.get('prompt') or image_ingestion.DEFAULT_PROMPT)  # Added prompt fallback so old clients still work.
+    base_url = payload.get('ollama_base_url') or payload.get('base_url') or image_ingestion.DEFAULT_OLLAMA_BASE_URL  # Added base URL merging so both keys are accepted.
+
+    model_value = str(payload.get('model') or '').strip()  # Added local variable so we can reuse the submitted model.
+    if provider == 'ollama':
+        model = model_value or image_ingestion.DEFAULT_OLLAMA_MODEL  # Added fallback so Ollama still works without explicit selection.
+    else:
+        candidate = payload.get('openai_model') or model_value or image_ingestion.DEFAULT_OPENAI_MODEL  # Added OpenAI model precedence to favour provider-specific field.
+        model = str(candidate).strip() or image_ingestion.DEFAULT_OPENAI_MODEL  # Added guard so whitespace does not blank the model.
+
+    api_key: Optional[str] = None
+    if provider == 'openai':
+        api_key = image_ingestion.ensure_api_key(payload.get('api_key'))  # Added API key resolver so keys can be supplied or reused.
+        if not api_key:
+            error_body = jsonify({'status': 'error', 'message': 'Configure an OpenAI API key before running ingestion.', 'code': 'missing_api_key'})  # Added friendly error response when the key is absent.
+            return image_ingestion.ModelConfig(provider=provider, model=model, prompt=prompt, base_url=None), None, (error_body, 400)  # Added early return so endpoints can stop processing.
+
+    config = image_ingestion.ModelConfig(  # Added config assembly to share between scan and rebuild flows.
+        provider=provider,
+        model=model,
+        prompt=prompt,
+        base_url=(base_url or None) if provider == 'ollama' else None,
+    )
+    return config, api_key, None  # Added tuple return so callers get both config and optional API key.
+
+
 def _process_archive_uploads(
     uploads: List[Any],
     subdirectory: Optional[str],
@@ -1162,10 +1191,11 @@ def list_data_ingestion_tree():
 def scan_mounted_images():
     """Scan each mount for new images and ingest any unprocessed files."""
 
-    config, api_key = _ingestion_default_config()
-    if config.provider == 'openai' and not api_key:
-        # Added explicit error so users know an API key is required before scanning.
-        return jsonify({'status': 'error', 'message': 'Configure an OpenAI API key before scanning mounts.'}), 400
+    payload = request.get_json(silent=True) or {}  # Added payload extraction so frontend configuration can be honoured.
+    config, api_key, error = _ingestion_config_from_payload(payload)  # Added parser call to derive provider, model, and key from the request.
+    if error:
+        return error  # Added early exit so validation errors propagate to the client.
+    logger.info('Scanning mounts with %s provider using %s', config.provider, config.model)  # Added log entry to aid debugging of ingestion selections.
 
     totals = _blank_ingestion_totals()
     results: List[Dict[str, object]] = []
@@ -1211,6 +1241,7 @@ def scan_mounted_images():
         'status': 'ok',
         'action': 'scan',
         'provider': config.provider,
+        'model': config.model,  # Added model echo so the UI can confirm the selection used.
         'results': results,
         'aggregate': totals,
     })
@@ -1220,10 +1251,11 @@ def scan_mounted_images():
 def rebuild_ingestion_database():
     """Clear ingestion collections and rebuild them from mounted directories."""
 
-    config, api_key = _ingestion_default_config()
-    if config.provider == 'openai' and not api_key:
-        # Added explicit error so rebuild cannot start without the required API credentials.
-        return jsonify({'status': 'error', 'message': 'Configure an OpenAI API key before rebuilding mounts.'}), 400
+    payload = request.get_json(silent=True) or {}  # Added payload extraction so rebuild honours frontend configuration.
+    config, api_key, error = _ingestion_config_from_payload(payload)  # Added parser reuse to avoid duplicating validation logic.
+    if error:
+        return error  # Added early return so rebuild stops when configuration is invalid.
+    logger.warning('Rebuilding ingestion data with %s provider using %s', config.provider, config.model)  # Added log entry to audit destructive rebuild operations.
 
     # Added wipe of ingestion-related collections prior to reprocessing.
     documents.delete_many({})
@@ -1276,6 +1308,7 @@ def rebuild_ingestion_database():
         'status': 'ok',
         'action': 'rebuild',
         'provider': config.provider,
+        'model': config.model,  # Added model echo so rebuild responses mirror scan payloads.
         'results': results,
         'aggregate': totals,
         'collections_cleared': ['documents', 'unique_terms', 'field_structure'],
