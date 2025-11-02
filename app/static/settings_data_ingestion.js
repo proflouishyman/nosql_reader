@@ -41,6 +41,15 @@
         const scanButton = root.querySelector('[data-scan-mounts]');
         const rebuildButton = root.querySelector('[data-rebuild-mounts]');
 
+        let ingestionConfig = null; // Added cache so the latest selector payload can be reused for API calls.
+        const selectorAvailable = typeof window.IngestionModelSelector !== 'undefined'; // Added flag so behaviour falls back gracefully when the selector is absent.
+
+        if (selectorAvailable) {
+            document.addEventListener('ingestionConfigChange', function(event) {
+                ingestionConfig = event.detail; // Added listener so updates from the selector are captured here.
+            });
+        }
+
         function setStatus(message, type) {
             // Added status helper so both scan and rebuild share consistent messaging.
             if (!statusNode) return;
@@ -179,15 +188,39 @@
                 return;
             }
 
+            let options = { method: 'POST' }; // Added default fetch options so legacy behaviour still posts without a body.
+            if (selectorAvailable && window.IngestionModelSelector) {
+                const validation = window.IngestionModelSelector.validateConfig(); // Added validation call to prevent invalid requests.
+                if (!validation.valid) {
+                    window.IngestionModelSelector.showStatus(validation.message, 'error'); // Added selector feedback when validation fails.
+                    setStatus(validation.message, 'error'); // Added main status update to mirror the selector error.
+                    return;
+                }
+                const configPayload = window.IngestionModelSelector.getConfig(); // Added retrieval of the current selector configuration.
+                ingestionConfig = configPayload; // Added cache update so later operations reuse the confirmed payload.
+                options = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(configPayload),
+                }; // Added JSON payload so the backend receives provider and model data.
+                window.IngestionModelSelector.showStatus(startMessage, 'info'); // Added selector status so users see progress near the form.
+            }
+
             try {
                 setStatus(startMessage, 'info');
-                const result = await fetchJson(url, { method: 'POST' });
+                const result = await fetchJson(url, options);
                 renderSummary(result.aggregate);
                 renderErrors(result.results);
                 const message = successBuilder(result);
                 setStatus(message, 'success');
+                if (selectorAvailable && window.IngestionModelSelector) {
+                    window.IngestionModelSelector.showStatus(message, 'success'); // Added selector success message for parity with page status.
+                }
             } catch (error) {
                 setStatus(error.message, 'error');
+                if (selectorAvailable && window.IngestionModelSelector) {
+                    window.IngestionModelSelector.showStatus(error.message, 'error'); // Added selector error message to keep feedback consistent.
+                }
             }
         }
 
