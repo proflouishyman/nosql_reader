@@ -28,10 +28,17 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-DEFAULT_PROVIDER = "ollama"
-DEFAULT_OLLAMA_MODEL = "llama3.2-vision:11b"
-DEFAULT_OPENAI_MODEL = os.environ.get("OPENAI_DEFAULT_MODEL", "gpt-4o-mini")
-DEFAULT_PROMPT = """Perform OCR on the document to extract all text. Then, analyze the text to provide a summary of the content. Structure the extracted data into a STRICT JSON format. Use double quotes for strings. Remove trailing commas. Ensure all braces and brackets are correctly closed. Correctly structure nested elements. In the JSON arrays, each element should be separated by a comma. The document may contain multiple types of bureaucratic forms with printed or handwritten information. Each line of tabular information, if available, should be accurately categorized and linked to relevant information. Use null values for any categories where no relevant information is found. If any other information is necessary, include it in the "other" category. Return the extracted information as a JSON object with the following structure:
+# Added helper to normalise the ingestion provider pulled from the environment.
+def _env_provider_default() -> str:
+    candidate = os.environ.get("HISTORIAN_AGENT_MODEL_PROVIDER", "ollama").strip().lower()  # Updated to respect .env default provider while keeping Ollama as the fallback.
+    return candidate if candidate in {"ollama", "openai"} else "ollama"
+
+
+DEFAULT_PROVIDER = _env_provider_default()  # Updated to source the default provider from .env so UI and backend stay aligned.
+_SHARED_MODEL_DEFAULT = os.environ.get("HISTORIAN_AGENT_MODEL", "").strip()  # Added shared model lookup so both providers can reuse the same .env value.
+DEFAULT_OLLAMA_MODEL = _SHARED_MODEL_DEFAULT or os.environ.get("OLLAMA_DEFAULT_MODEL", "llama3.2-vision:latest")  # Updated Ollama default to honour the historian model override when present.
+DEFAULT_OPENAI_MODEL = os.environ.get("OPENAI_DEFAULT_MODEL", _SHARED_MODEL_DEFAULT or "gpt-4o-mini")  # Updated OpenAI default to fall back to historian model when provider switches.
+_PROMPT_FALLBACK = """Perform OCR on the document to extract all text. Then, analyze the text to provide a summary of the content. Structure the extracted data into a STRICT JSON format. Use double quotes for strings. Remove trailing commas. Ensure all braces and brackets are correctly closed. Correctly structure nested elements. In the JSON arrays, each element should be separated by a comma. The document may contain multiple types of bureaucratic forms with printed or handwritten information. Each line of tabular information, if available, should be accurately categorized and linked to relevant information. Use null values for any categories where no relevant information is found. If any other information is necessary, include it in the "other" category. Return the extracted information as a JSON object with the following structure:
 {
     "ocr_text": "string",
     "summary": "string",
@@ -132,7 +139,8 @@ DEFAULT_PROMPT = """Perform OCR on the document to extract all text. Then, analy
         }
     ]
 }
-"""
+"""  # Added fallback constant so environment overrides can reuse the legacy prompt text.
+DEFAULT_PROMPT = os.environ.get("HISTORIAN_AGENT_PROMPT") or _PROMPT_FALLBACK  # Updated prompt default to allow .env customisation without losing the existing template.
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tiff", ".tif", ".bmp", ".gif", ".webp"}
 OLLAMA_TAGS_ENDPOINT = "/api/tags"

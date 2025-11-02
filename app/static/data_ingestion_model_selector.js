@@ -24,6 +24,9 @@
         openai_model: openaiModelSelect ? openaiModelSelect.value : '',
         api_key: ''
     };
+    if (currentConfig.provider === 'openai' && currentConfig.openai_model) {
+        currentConfig.model = currentConfig.openai_model; // Added initial sync so OpenAI defaults propagate before the first fetch.
+    }
     let lastLoadedBaseUrl = null; // Added cache marker so we only fetch models when necessary.
 
     if (!form) { // Added guard so script exits cleanly on pages without the selector.

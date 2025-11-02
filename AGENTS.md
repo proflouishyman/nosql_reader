@@ -10,11 +10,13 @@ GENERAL WORKFLOW RULES
    - If the file does not exist, create it automatically.
    - Each entry must include:
      [YYYY-MM-DD HH:MM] <filename(s)> edited — <short description>
+   - Record when ingestion defaults or selector behaviour changes so operators understand why the UI shifted. <!-- Added reminder to log ingestion-facing updates. -->
 
 2. Connection Integrity Check
    - Before finishing any task, verify that:
-       • All MongoDB connections still work.
+       • All MongoDB connections still work (use the existing quick_check.sh helper when available). <!-- Clarified how to perform the connection check. -->
        • All environment variables (.env, docker-compose.yml, etc.) are present and correctly referenced.
+       • Ingestion defaults still honour `HISTORIAN_AGENT_MODEL_PROVIDER` and `HISTORIAN_AGENT_MODEL`. <!-- Added ingestion alignment requirement. -->
 
 3. Minimal Edits Only
    - Perform the smallest change necessary to satisfy the prompt.
@@ -28,6 +30,7 @@ GENERAL WORKFLOW RULES
    - If your change affects configuration, setup steps, or usage:
        • Revise README.md as needed.
        • Revise setup.md as needed.
+       • Update ingestion design docs when the selector workflow, defaults, or error handling change. <!-- Added doc sync note for ingestion features. -->
    - Do not delete or rewrite unrelated sections.
 
 6. When in Doubt, Stop
@@ -66,6 +69,7 @@ ADDITIONAL RULES
 • Environment variables must not contain quotes or inline comments.
 • Ensure .env, docker-compose.yml, and app configuration files stay synchronized.
 • Codex agents must not introduce, rename, or delete environment variables without verifying parity across all dependent files.
+• Maintain Ollama/OpenAI selector defaults so the UI bootstraps from .env values and displays ingestion errors both on the page and in server logs. <!-- Added rule connecting UI expectations from the latest change. -->
 • Before commit or build, validate Mongo credentials exist:
     if [ -z "$MONGO_ROOT_USERNAME" ] || [ -z "$MONGO_ROOT_PASSWORD" ]; then
         echo "❌ Missing MongoDB credentials in environment"
