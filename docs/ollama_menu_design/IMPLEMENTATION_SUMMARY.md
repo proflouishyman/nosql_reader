@@ -8,6 +8,8 @@ This implementation adds a dynamic Ollama model selector to your data ingestion 
 2. **Select from available Ollama models** dynamically fetched from the Ollama API
 3. **Configure model settings** (base URL, prompts) before running scans/rebuilds
 4. **Validate configuration** before operations start
+5. **Start with sane defaults pulled from `.env`** so the selector mirrors `HISTORIAN_AGENT_MODEL_PROVIDER` and `HISTORIAN_AGENT_MODEL`, keeping UI and automation in sync. <!-- Added note about new environment-driven defaults. -->
+6. **See ingestion errors inline** in the settings page while the same details remain in the Flask logs. <!-- Added bullet covering dual-surface error reporting. -->
 
 ## Architecture
 
@@ -98,6 +100,7 @@ This implementation adds a dynamic Ollama model selector to your data ingestion 
   - `/settings/data-ingestion/scan` - Accept config from POST body
   - `/settings/data-ingestion/rebuild` - Accept config from POST body
   - Both endpoints now use dynamic model configuration
+  - `/settings/data-ingestion/options` normalises provider defaults using `HISTORIAN_AGENT_MODEL_PROVIDER`/`HISTORIAN_AGENT_MODEL` and honours a query-supplied Ollama base URL. <!-- Added backend note covering .env-driven defaults and new override. -->
 
 ### 3. Documentation
 

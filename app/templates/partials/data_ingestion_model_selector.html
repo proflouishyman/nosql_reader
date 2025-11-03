@@ -50,7 +50,11 @@
             <div class="form-field">
                 <label for="openaiModel">OpenAI model</label>
                 <select id="openaiModel" name="openai_model" class="form-select">
-                    <!-- Added conditional selections so the OpenAI dropdown mirrors stored defaults. -->
+                    <!-- Added fallback option so unexpected .env defaults still appear in the dropdown. -->
+                    {% set preset_models = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'] %}
+                    {% if ingestion_default_openai_model and ingestion_default_openai_model not in preset_models %}
+                        <option value="{{ ingestion_default_openai_model }}" selected>{{ ingestion_default_openai_model }}</option>
+                    {% endif %}
                     <option value="gpt-4o" {% if ingestion_default_openai_model == 'gpt-4o' %}selected{% endif %}>GPT-4o</option>
                     <option value="gpt-4o-mini" {% if ingestion_default_openai_model == 'gpt-4o-mini' %}selected{% endif %}>GPT-4o Mini</option>
                     <option value="gpt-4-turbo" {% if ingestion_default_openai_model == 'gpt-4-turbo' %}selected{% endif %}>GPT-4 Turbo</option>

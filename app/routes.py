@@ -1333,11 +1333,15 @@ def data_ingestion_options():
         return []
 
     # Pull from .env first, fall back to defaults from image_ingestion
-    env_provider = os.getenv("HISTORIAN_AGENT_MODEL_PROVIDER", image_ingestion.DEFAULT_PROVIDER)
-    env_prompt = os.getenv("HISTORIAN_AGENT_PROMPT", image_ingestion.DEFAULT_PROMPT)
-    env_ollama_base = os.getenv("HISTORIAN_AGENT_OLLAMA_BASE_URL", image_ingestion.DEFAULT_OLLAMA_BASE_URL)
-    env_ollama_model = os.getenv("HISTORIAN_AGENT_MODEL", image_ingestion.DEFAULT_OLLAMA_MODEL)
-    env_openai_model = os.getenv("OPENAI_DEFAULT_MODEL", image_ingestion.DEFAULT_OPENAI_MODEL)
+    env_provider = image_ingestion.provider_from_string(os.getenv("HISTORIAN_AGENT_MODEL_PROVIDER", image_ingestion.DEFAULT_PROVIDER))  # Updated to normalise the provider default using shared helper.
+    env_prompt = os.getenv("HISTORIAN_AGENT_PROMPT") or image_ingestion.DEFAULT_PROMPT  # Updated to ignore blank env overrides and fall back cleanly.
+    env_ollama_base = os.getenv("HISTORIAN_AGENT_OLLAMA_BASE_URL") or image_ingestion.DEFAULT_OLLAMA_BASE_URL  # Updated to treat empty strings as unset for stability.
+    env_ollama_model = os.getenv("HISTORIAN_AGENT_MODEL") or image_ingestion.DEFAULT_OLLAMA_MODEL  # Updated to reuse the shared historian model default when env is empty.
+    env_openai_model = os.getenv("OPENAI_DEFAULT_MODEL") or image_ingestion.DEFAULT_OPENAI_MODEL  # Updated to reuse baked-in defaults if env override is missing or blank.
+
+    requested_base = (request.args.get('ollama_base_url') or '').strip()  # Added override so the UI can probe alternate Ollama hosts without editing .env.
+    if requested_base:
+        env_ollama_base = requested_base  # Updated to honour query-supplied base URL when fetching models.
 
     # Fetch model list from running Ollama instance
     models = get_ollama_model_list(env_ollama_base)
