@@ -11,6 +11,7 @@ from flask import (
     session,
     abort,
     Response,
+    stream_with_context,  # Added for SSE streaming responses.
     send_file,
     Flask,
     has_request_context,
@@ -1187,64 +1188,68 @@ def list_data_ingestion_tree():
     return jsonify(tree)
 
 
-@app.route('/settings/data-ingestion/scan', methods=['POST'])
+@app.route('/settings/data-ingestion/scan', methods=['GET', 'POST'])
 def scan_mounted_images():
-    """Scan each mount for new images and ingest any unprocessed files."""
+    """Scan mounts and stream progress via SSE."""
 
-    payload = request.get_json(silent=True) or {}  # Added payload extraction so frontend configuration can be honoured.
-    config, api_key, error = _ingestion_config_from_payload(payload)  # Added parser call to derive provider, model, and key from the request.
+    if request.method == 'POST':  # Added handshake branch so the UI can validate config before opening SSE.
+        payload = request.get_json(silent=True) or {}  # Added payload capture to reuse the selected provider/model across the stream.
+        config, _api_key, error = _ingestion_config_from_payload(payload)  # Reused helper to keep validation identical to legacy behaviour.
+        if error:
+            return error  # Preserved error flow so clients still receive structured validation responses.
+        session['scan_payload'] = payload  # Added session storage so the subsequent GET stream can reference the chosen config.
+        return jsonify({'status': 'accepted'})  # Added acknowledgement letting the frontend know it can start listening for events.
+
+    payload = session.get('scan_payload', {})  # Added fallback payload retrieval for GET requests that stream events.
+    config, api_key, error = _ingestion_config_from_payload(payload)  # Rebuilt config during GET to honour any saved selector overrides.
     if error:
-        return error  # Added early exit so validation errors propagate to the client.
-    logger.info('Scanning mounts with %s provider using %s', config.provider, config.model)  # Added log entry to aid debugging of ingestion selections.
+        return error  # Reused guard so GET responses surface validation issues immediately.
 
-    totals = _blank_ingestion_totals()
-    results: List[Dict[str, object]] = []
-
-    for source, target in get_mounted_paths():
-        target_path = Path(target)
-        entry: Dict[str, object] = {
-            'source': source,
-            'target': str(target_path),
-        }
-
-        if not target_path.is_dir():
-            # Skip non-directory mounts (like docker-compose.yml file)
-            continue
-
-        if not target_path.exists():
-            entry['status'] = 'missing'
-            results.append(entry)
-            continue
+    def generate():
+        """Generator that yields SSE-formatted messages."""
 
         try:
-            summary = image_ingestion.process_directory(
-                target_path,
-                config,
-                reprocess_existing=False,
-                api_key=api_key,
-            )
-            summary_dict = summary.as_dict()
-            entry.update(summary_dict)
-            entry['status'] = 'ok'
-            _merge_ingestion_totals(totals, summary_dict)
-        except image_ingestion.IngestionError as exc:
-            entry['status'] = 'error'
-            entry['message'] = str(exc)
-        except Exception as exc:  # pragma: no cover - depends on external services
-            logger.exception('Mount scan failed for %s', target_path)
-            entry['status'] = 'error'
-            entry['message'] = str(exc)
+            yield f"data: {json.dumps({'type': 'start', 'message': 'Starting scan...'})}\n\n"  # Added start event so the frontend can show immediate feedback.
 
-        results.append(entry)
+            for source, target in get_mounted_paths():  # Reused mount discovery to keep parity with the previous implementation.
+                target_path = Path(target)
 
-    return jsonify({
-        'status': 'ok',
-        'action': 'scan',
-        'provider': config.provider,
-        'model': config.model,  # Added model echo so the UI can confirm the selection used.
-        'results': results,
-        'aggregate': totals,
-    })
+                if not target_path.is_dir():
+                    continue  # Maintained skip for non-directories to avoid noisy SSE entries.
+
+                if not target_path.exists():
+                    yield f"data: {json.dumps({'type': 'warning', 'message': f'Path missing: {target}'})}\n\n"  # Added warning stream when a mount is missing so operators can react in real-time.
+                    continue
+
+                yield f"data: {json.dumps({'type': 'info', 'message': f'Scanning: {target_path.name}'})}\n\n"  # Added informational event announcing each mount being processed.
+
+                try:
+                    for progress in image_ingestion.process_directory_streaming(  # Added streaming hook so image-level updates reach the UI live.
+                        target_path,
+                        config,
+                        reprocess_existing=False,
+                        api_key=api_key,
+                    ):
+                        yield f"data: {json.dumps(progress)}\n\n"  # Relayed backend progress dicts directly to SSE consumers.
+
+                except Exception as exc:  # pragma: no cover - depends on external services
+                    logger.exception('Mount scan failed for %s', target_path)  # Retained logging to aid troubleshooting on backend.
+                    yield f"data: {json.dumps({'type': 'error', 'message': str(exc)})}\n\n"  # Added error event so the frontend displays failures inline.
+
+            yield f"data: {json.dumps({'type': 'complete', 'message': 'Scan complete!'})}\n\n"  # Added final completion event to close out the SSE stream cleanly.
+
+        except Exception as exc:  # pragma: no cover - depends on runtime conditions
+            logger.exception('Scan streaming failed')  # Added catch-all log to highlight unexpected generator failures.
+            yield f"data: {json.dumps({'type': 'error', 'message': f'Fatal error: {str(exc)}'})}\n\n"  # Added fatal error event to keep UI informed about catastrophic issues.
+
+    return Response(
+        stream_with_context(generate()),  # Added stream wrapper so Flask handles generator lifecycle safely.
+        mimetype='text/event-stream',  # Added SSE mimetype to ensure browsers treat the response as an event stream.
+        headers={
+            'Cache-Control': 'no-cache',  # Added headers to disable buffering and keep events real-time.
+            'X-Accel-Buffering': 'no'
+        }
+    )
 
 
 @app.route('/settings/data-ingestion/rebuild', methods=['POST'])

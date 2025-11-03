@@ -685,6 +685,118 @@ def process_directory(
 
 
 
+def process_directory_streaming(
+    directory: Path,
+    config: ModelConfig,
+    reprocess_existing: bool = False,
+    api_key: Optional[str] = None,
+):
+    """Process directory and yield progress updates for SSE streaming."""
+
+    if not directory.exists() or not directory.is_dir():
+        raise IngestionError(f"Directory does not exist: {directory}")  # Added guard so streaming callers get an immediate failure.
+
+    images: List[Path] = [
+        path for path in directory.rglob("*")
+        if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
+    ]  # Added filtered listing so SSE mirrors the batch ingestion scope.
+
+    yield {
+        'type': 'scan_start',
+        'total_images': len(images),
+        'directory': str(directory)
+    }  # Added initial payload so the UI knows how many files will be processed.
+
+    client = get_client()  # Added DB bootstrap to reuse existing ingestion helpers.
+    db = get_db(client)  # Added DB handle for duplicate detection and inserts.
+    data_processing.root_directory = str(directory)  # Aligned data_processing helpers with the active directory.
+    data_processing.db = db  # Stored DB reference for downstream validators expecting it.
+
+    processed = 0  # Added counters so we can report totals incrementally.
+    skipped = 0
+    errors = 0
+
+    for idx, image_path in enumerate(images, 1):
+        yield {
+            'type': 'image_start',
+            'image': image_path.name,
+            'index': idx,
+            'total': len(images)
+        }  # Added image start event to drive the live progress list.
+
+        json_path = _json_path_for_image(image_path)  # Reused helper so file naming matches batch ingestion.
+        relative_path = _archives_relative(json_path, directory)  # Added relative path reuse for DB lookups.
+
+        if not reprocess_existing and _document_exists(db, relative_path):
+            skipped += 1
+            yield {
+                'type': 'image_skip',
+                'image': image_path.name,
+                'reason': 'Already in database'
+            }  # Added skip event so operators see which files were ignored.
+            continue
+
+        try:
+            if json_path.exists():
+                yield {
+                    'type': 'image_info',
+                    'image': image_path.name,
+                    'message': 'Loading from JSON file'
+                }  # Added info event when an existing JSON payload is reused.
+            else:
+                yield {
+                    'type': 'image_processing',
+                    'image': image_path.name,
+                    'message': f'Calling {config.provider} model...'
+                }  # Added processing event to indicate a model invocation is in flight.
+
+                if config.provider == 'ollama':
+                    output_text = _call_ollama(image_path, config)  # Reused provider-specific ingestion path.
+                elif config.provider == 'openai':
+                    if not api_key:
+                        raise IngestionError('OpenAI API key is required for ChatGPT ingestion.')  # Added explicit API key guard to prevent silent failures.
+                    output_text = _call_openai(image_path, config, api_key)  # Reused OpenAI ingestion path for parity.
+                else:
+                    raise IngestionError(f"Unknown provider: {config.provider}")  # Added defensive branch for unsupported providers.
+
+                payload = _serialise_json(output_text)  # Added JSON normalisation so downstream ingestion receives valid data.
+                json_path.write_text(
+                    json.dumps(payload, ensure_ascii=False, indent=2),
+                    encoding='utf-8'
+                )  # Added write step so subsequent ingestion steps can reuse the stored JSON.
+
+            temp_summary = IngestionSummary()  # Added throwaway summary so existing ingest helper can run without refactor.
+            _ingest_json_documents(db, [json_path], directory, temp_summary)  # Reused ingestion helper to keep DB operations consistent.
+            processed += 1
+
+            yield {
+                'type': 'image_complete',
+                'image': image_path.name,
+                'processed': processed,
+                'skipped': skipped,
+                'errors': errors
+            }  # Added completion event summarising running totals for the UI.
+
+        except Exception as exc:
+            errors += 1
+            LOGGER.exception('Failed to process %s', image_path)  # Added logging to preserve existing troubleshooting signals.
+            yield {
+                'type': 'image_error',
+                'image': image_path.name,
+                'error': str(exc),
+                'processed': processed,
+                'skipped': skipped,
+                'errors': errors
+            }  # Added error event so failures appear inline during the stream.
+
+    yield {
+        'type': 'scan_complete',
+        'processed': processed,
+        'skipped': skipped,
+        'errors': errors,
+        'total': len(images)
+    }  # Added final summary event so the frontend can re-enable controls.
+
 def expand_directory(path_str: str) -> Path:
     return Path(path_str).expanduser().resolve()
 
