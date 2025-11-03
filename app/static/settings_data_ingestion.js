@@ -224,13 +224,190 @@
             }
         }
 
+        async function triggerScan() {
+            // Added dedicated SSE trigger so scans stream logs live into the page.
+            if (!scanUrl) {
+                setStatus('Scan endpoint not available.', 'error');
+                return;
+            }
+
+            if (!statusNode) {
+                console.warn('Scan status node missing.');  // Added guard so the function fails safely when required DOM nodes are absent.
+                return;
+            }
+
+            if (selectorAvailable) {
+                const validation = window.IngestionModelSelector.validateConfig();  // Added validation call to prevent SSE from starting with invalid settings.
+                if (!validation.valid) {
+                    setStatus(validation.message, 'error');  // Added UI feedback mirroring selector validation errors.
+                    return;
+                }
+                ingestionConfig = window.IngestionModelSelector.getConfig();  // Added cache update so POST + SSE share the same payload.
+            }
+
+            if (scanButton) {
+                scanButton.disabled = true;  // Added lock so users cannot trigger overlapping scans.
+            }
+            if (rebuildButton) {
+                rebuildButton.disabled = true;  // Added disable to avoid rebuilds while scanning is active.
+            }
+
+            statusNode.textContent = '';  // Added reset to remove stale status text before appending logs.
+            if (summaryNode) {
+                summaryNode.innerHTML = '';  // Added summary clear because SSE replaces aggregate metrics with a log stream.
+                summaryNode.hidden = true;  // Added hide to collapse the old summary block during live streaming.
+            }
+            if (errorsNode) {
+                errorsNode.innerHTML = '';  // Added error clear so previous run issues do not linger.
+                errorsNode.hidden = true;  // Added hide to collapse previous error list while streaming.
+            }
+
+            const logContainer = document.createElement('div');  // Added container to hold individual SSE log entries.
+            logContainer.className = 'scan-logs';
+            logContainer.style.cssText = `
+                margin-top: 1rem;
+                padding: 1rem;
+                background: #f5f5f5;
+                border-radius: 4px;
+                font-family: monospace;
+                font-size: 0.875rem;
+                max-height: 400px;
+                overflow-y: auto;
+            `;  // Added inline styling so the streaming log is easy to read without extra CSS files.
+            statusNode.appendChild(logContainer);  // Added mounting of the log container into the existing status area.
+            statusNode.hidden = false;  // Added ensure the status panel is visible while streaming events.
+
+            function addLog(message, type = 'info') {
+                const logEntry = document.createElement('div');
+                logEntry.style.cssText = `padding: 0.25rem 0;`;  // Added spacing to keep log messages readable.
+
+                const colors = {
+                    info: '#666',
+                    success: '#2d5',
+                    warning: '#f80',
+                    error: '#d22',
+                    processing: '#37f'
+                };  // Added palette to differentiate message types visually.
+
+                const icons = {
+                    info: 'ℹ️',
+                    success: '✓',
+                    warning: '⚠️',
+                    error: '✗',
+                    processing: '⏳'
+                };  // Added icon set to match backend event types.
+
+                logEntry.innerHTML = `<span style="color: ${colors[type] || colors.info}">${icons[type] || icons.info} ${message}</span>`;  // Added fallback handling so unknown types still render.
+                logContainer.appendChild(logEntry);
+                logContainer.scrollTop = logContainer.scrollHeight;  // Added auto-scroll so the latest message stays in view.
+            }
+
+            try {
+                const response = await fetch(scanUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ingestionConfig || {})
+                });  // Added POST to kick off the backend scan using the selected configuration.
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);  // Added explicit HTTP error propagation for failed handshakes.
+                }
+
+                const eventSource = new EventSource(scanUrl);  // Added SSE connection so progress events stream without polling.
+
+                eventSource.onmessage = function(event) {
+                    // Added unified handler so each backend event updates the live log area.
+                    try {
+                        const data = JSON.parse(event.data);  // Added JSON parsing so payloads can be pattern-matched cleanly.
+
+                        switch (data.type) {
+                            case 'start':
+                                addLog(data.message, 'info');
+                                break;
+                            case 'scan_start':
+                                addLog(`Found ${data.total_images} images in ${data.directory}`, 'info');
+                                break;
+                            case 'image_start':
+                                addLog(`[${data.index}/${data.total}] ${data.image}`, 'info');
+                                break;
+                            case 'image_processing':
+                                addLog(`  ⏳ ${data.message}`, 'processing');
+                                break;
+                            case 'image_info':
+                                addLog(`  ${data.message}`, 'info');
+                                break;
+                            case 'image_skip':
+                                addLog(`  ⏭️ ${data.reason}`, 'warning');
+                                break;
+                            case 'image_complete':
+                                addLog(`  ✓ Complete (${data.processed} processed, ${data.skipped} skipped, ${data.errors} errors)`, 'success');
+                                break;
+                            case 'image_error':
+                                addLog(`  ✗ Error: ${data.error}`, 'error');
+                                break;
+                            case 'scan_complete':
+                                addLog(`\n✓ Scan complete: ${data.processed} processed, ${data.skipped} skipped, ${data.errors} errors`, 'success');
+                                eventSource.close();  // Added close call to stop listening once the scan finishes.
+                                if (scanButton) {
+                                    scanButton.disabled = false;  // Added re-enable so the button becomes clickable again post-scan.
+                                }
+                                if (rebuildButton) {
+                                    rebuildButton.disabled = false;  // Added re-enable for rebuild after the scan completes.
+                                }
+                                break;
+                            case 'error':
+                                addLog(`Error: ${data.message}`, 'error');
+                                eventSource.close();
+                                if (scanButton) {
+                                    scanButton.disabled = false;
+                                }
+                                if (rebuildButton) {
+                                    rebuildButton.disabled = false;
+                                }
+                                break;
+                            case 'warning':
+                                addLog(`⚠️ ${data.message}`, 'warning');
+                                break;
+                            case 'complete':
+                                addLog(data.message, 'success');  // Added fallback for backend completion messages outside scan_complete.
+                                break;
+                            default:
+                                addLog(JSON.stringify(data), 'info');
+                                break;
+                        }
+                    } catch (err) {
+                        console.error('Failed to parse SSE data:', err, event.data);  // Added console diagnostic to help debug malformed events.
+                    }
+                };
+
+                eventSource.onerror = function(error) {
+                    // Added error hook so connection failures unlock the UI and surface an alert.
+                    console.error('SSE error:', error);  // Added console logging for network or server-side stream issues.
+                    addLog('Connection error - scan may have completed or failed', 'error');
+                    eventSource.close();
+                    if (scanButton) {
+                        scanButton.disabled = false;
+                    }
+                    if (rebuildButton) {
+                        rebuildButton.disabled = false;
+                    }
+                };
+
+            } catch (error) {
+                console.error('Scan failed:', error);  // Added console output to aid debugging handshake failures.
+                addLog(`Fatal error: ${error.message}`, 'error');
+                if (scanButton) {
+                    scanButton.disabled = false;
+                }
+                if (rebuildButton) {
+                    rebuildButton.disabled = false;
+                }
+            }
+        }
+
         if (scanButton) {
             scanButton.addEventListener('click', function() {
-                // Added event binding so users can scan mounts for new images.
-                triggerAction(scanUrl, 'Scanning mounts for new images…', function(result) {
-                    const aggregate = result && result.aggregate ? result.aggregate : {};
-                    return `Scan complete. ${aggregate.generated || 0} JSON files generated.`;
-                });
+                triggerScan();  // Added SSE-based handler so the scan button now streams logs instead of waiting for a JSON payload.
             });
         }
 
