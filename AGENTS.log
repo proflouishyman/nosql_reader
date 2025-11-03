@@ -1,1 +1,2 @@
 [2025-11-02 20:18] app/image_ingestion.py, app/routes.py, app/static/data_ingestion_model_selector.js, app/templates/partials/data_ingestion_model_selector.html, docs/ollama_menu_design/IMPLEMENTATION_SUMMARY.md, readme.md, AGENTS.md edited — Synced ingestion defaults with .env, surfaced selector errors, and updated guidelines/docs per UI changes.
+[2025-11-03 13:35] app/routes.py, app/image_ingestion.py, app/static/settings_data_ingestion.js edited — Enabled SSE streaming for image scans with live frontend logs.
