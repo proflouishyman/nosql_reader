@@ -6,11 +6,13 @@ import base64
 import json
 import logging
 import os
+import tempfile  # Added to support temporary files for image preprocessing so large originals stay untouched.
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import requests
+from PIL import Image, ImageOps  # Added to downscale and normalise images ahead of model ingestion to avoid GPU timeouts.
 from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
@@ -230,6 +232,22 @@ def _image_to_base64(path: Path) -> Tuple[str, str]:
     return encoded, mime
 
 
+def _preprocess_image(image_path: Path, max_side: int = 1600) -> Path:  # Added helper to resize, normalise, and compress images pre-ingestion.
+    try:  # Added guard so we gracefully fall back to the original image if preprocessing fails.
+        with Image.open(image_path) as img:  # Added safe image open to ensure we can manipulate various colour profiles.
+            rgb_img = img.convert("RGB")  # Added conversion to RGB to unify colour space expected by downstream models.
+            enhanced_img = ImageOps.autocontrast(rgb_img)  # Added auto-contrast to boost OCR clarity before ingestion.
+            enhanced_img.thumbnail((max_side, max_side))  # Added thumbnail resize so the longest side stays within GPU-friendly bounds.
+
+            with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as handle:  # Added temp file to hold the optimised JPEG for encoding.
+                temp_path = Path(handle.name)  # Added Path wrapper for the temporary file to stay consistent with existing helpers.
+            enhanced_img.save(temp_path, format="JPEG", optimize=True, quality=85)  # Added optimised save to cut VRAM spikes while preserving quality.
+            return temp_path  # Added explicit return of the new optimised image so callers can encode the smaller asset.
+    except Exception as exc:  # Added broad exception to avoid blocking ingestion if Pillow encounters an unsupported format.
+        LOGGER.warning("Image preprocessing failed, using original asset: %s", exc)  # Added log to highlight when preprocessing is skipped.
+        return image_path  # Added fallback to original image to maintain ingestion continuity on errors.
+
+
 
 def _call_ollama(image_path: Path, config: ModelConfig) -> str:
     """
@@ -267,16 +285,22 @@ def _call_ollama(image_path: Path, config: ModelConfig) -> str:
     file_size = image_path.stat().st_size
     LOGGER.info(f"  ✅ File exists, size: {file_size:,} bytes ({file_size/1024/1024:.2f} MB)")
     
+    processed_path = _preprocess_image(image_path)  # Added preprocessing call to shrink and normalise the image before encoding.
+    cleanup_path = processed_path if processed_path != image_path else None  # Added tracker so temporary optimised files get deleted later.
+
     # Encode image
     LOGGER.info(f"  Encoding image to base64...")
     try:
-        encoded, mime = _image_to_base64(image_path)
-        encoded_size = len(encoded)
+        encoded, mime = _image_to_base64(processed_path)  # Added encoding step to use the optimised image asset instead of the bulky original.
+        encoded_size = len(encoded)  # Added recalculation of encoded size to reflect the smaller payload.
         LOGGER.info(f"  ✅ Image encoded: {encoded_size:,} characters")
         LOGGER.info(f"  MIME type: {mime}")
     except Exception as e:
         LOGGER.error(f"  ❌ ENCODING FAILED: {e}")
         raise IngestionError(f"Failed to encode image: {e}")
+    finally:
+        if cleanup_path and cleanup_path.exists():  # Added guard to ensure we only clean up when a temp file was created.
+            cleanup_path.unlink(missing_ok=True)  # Added removal of the temporary JPEG to avoid polluting the filesystem.
     
     # Build payload - CORRECT FORMAT per Ollama docs
     LOGGER.info(f"  Building API payload...")
@@ -386,7 +410,11 @@ def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
     from openai import OpenAI  # Imported lazily to keep optional dependency optional
 
     client = OpenAI(api_key=api_key)
-    encoded, mime = _image_to_base64(image_path)
+    processed_path = _preprocess_image(image_path)  # Added preprocessing before OpenAI calls to mirror the Ollama protection.
+    cleanup_path = processed_path if processed_path != image_path else None  # Added cleanup tracker for temporary optimised files.
+    encoded, mime = _image_to_base64(processed_path)  # Added encoding of the optimised asset to reduce payload size for OpenAI.
+    if cleanup_path and cleanup_path.exists():  # Added immediate cleanup since OpenAI payload is already prepared.
+        cleanup_path.unlink(missing_ok=True)  # Added removal of the temporary JPEG once base64 encoding finishes.
     image_url = f"data:{mime};base64,{encoded}"
     completion = client.chat.completions.create(
         model=config.model,
