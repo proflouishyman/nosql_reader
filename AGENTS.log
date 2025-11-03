@@ -1,2 +1,3 @@
 [2025-11-02 20:18] app/image_ingestion.py, app/routes.py, app/static/data_ingestion_model_selector.js, app/templates/partials/data_ingestion_model_selector.html, docs/ollama_menu_design/IMPLEMENTATION_SUMMARY.md, readme.md, AGENTS.md edited — Synced ingestion defaults with .env, surfaced selector errors, and updated guidelines/docs per UI changes.
 [2025-11-03 14:45] app/image_ingestion.py, app/requirements.in, app/requirements.txt edited — Added Pillow-powered preprocessing to downscale images before Ollama/OpenAI ingestion.
+[2025-11-03 15:30] requirements.txt, readme.md edited — Documented how the root dependency set cascades into app/requirements for local installs.

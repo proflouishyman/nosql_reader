@@ -1,4 +1,4 @@
-# Reuse the application dependency set by default so local installs match the Docker image.
+# Reuse the application dependency set by default so local installs match the Docker image.  # Documenting that root installs cascade into the app bundle for parity.
 -r app/requirements.txt
 # Added semantic search dependencies to align base install with RAG modules.  # change rationale comment
 sentence-transformers>=2.2.2

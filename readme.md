@@ -50,6 +50,7 @@ nosql_reader/
 1. **Install prerequisites**
    - Docker Engine 24+ and Docker Compose Plugin 2+
    - Git and Python 3.10+ (optional for running scripts outside the container)
+   - `pip install -r requirements.txt` to mirror the container build; this top-level file pulls in `app/requirements.txt` so both environments share the same pins. <!-- Documenting the relationship between dependency manifests per maintainer request. -->
 
 2. **Clone the repository**
    ```bash
