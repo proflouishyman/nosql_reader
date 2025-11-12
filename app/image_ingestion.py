@@ -305,22 +305,20 @@ def _call_ollama(image_path: Path, config: ModelConfig) -> str:
     # Build payload - CORRECT FORMAT per Ollama docs
     LOGGER.info(f"  Building API payload...")
     payload = {
-        "model": config.model,
-        "messages": [
-            {"role": "system", "content": config.prompt},
-            {
-                "role": "user",
-                "content": "Process this document and return JSON only.",
-                "images": [encoded]  # Images at message level per Ollama API docs
-            },
-        ],
-        "stream": False,
-        "format": "json",
-        "options": {
-            "temperature": config.temperature,
-            "num_ctx": 8192,
-        },
-    }
+    "model": config.model,
+    "messages": [
+        {
+            "role": "user",
+            "content": f"{config.prompt}\n\nProcess this document and return JSON only.",  #  Simple string
+            "images": [encoded]  #  Simple array of base64 strings
+        }
+    ],
+    "stream": False,
+    "options": {
+        "temperature": config.temperature,
+        "num_ctx": 8192,
+    },
+}
     
     LOGGER.info(f"  ✅ Payload built:")
     LOGGER.info(f"    - System prompt length: {len(config.prompt)} chars")
