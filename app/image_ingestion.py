@@ -250,34 +250,15 @@ def _preprocess_image(image_path: Path, max_side: int = 1600) -> Path:  # Added 
 
 
 def _call_ollama(image_path: Path, config: ModelConfig) -> str:
-    """
-    Call Ollama API with detailed verbose logging.
+    """Two-stage pipeline: Vision for OCR, then text model for JSON structuring."""
+    import ollama
     
-    According to Ollama API docs, the correct format is:
-    {
-      "model": "llama3.2-vision",
-      "messages": [
-        {
-          "role": "user",
-          "content": "text prompt",
-          "images": ["base64_string"]  # At message level, not nested
-        }
-      ]
-    }
-    """
     LOGGER.info("="*60)
-    LOGGER.info(f"STARTING OLLAMA PROCESSING")
+    LOGGER.info(f"TWO-STAGE OLLAMA PROCESSING")
     LOGGER.info(f"  Image: {image_path.name}")
-    LOGGER.info(f"  Full path: {image_path}")
-    LOGGER.info(f"  Model: {config.model}")
-    LOGGER.info(f"  Provider: {config.provider}")
+    LOGGER.info(f"  Stage 1: {config.model} (OCR)")
+    LOGGER.info(f"  Stage 2: llama3.1:8b (JSON structuring)")
     
-    # Build URL
-    base_url = (config.base_url or DEFAULT_OLLAMA_BASE_URL or "http://localhost:11434").rstrip("/")
-    url = f"{base_url}{OLLAMA_CHAT_ENDPOINT}"
-    LOGGER.info(f"  Target URL: {url}")
-    
-    # Check if file exists and is readable
     if not image_path.exists():
         LOGGER.error(f"  ❌ FILE NOT FOUND: {image_path}")
         raise IngestionError(f"Image file not found: {image_path}")
@@ -285,123 +266,98 @@ def _call_ollama(image_path: Path, config: ModelConfig) -> str:
     file_size = image_path.stat().st_size
     LOGGER.info(f"  ✅ File exists, size: {file_size:,} bytes ({file_size/1024/1024:.2f} MB)")
     
-    processed_path = _preprocess_image(image_path)  # Added preprocessing call to shrink and normalise the image before encoding.
-    cleanup_path = processed_path if processed_path != image_path else None  # Added tracker so temporary optimised files get deleted later.
-
-    # Encode image
-    LOGGER.info(f"  Encoding image to base64...")
-    try:
-        encoded, mime = _image_to_base64(processed_path)  # Added encoding step to use the optimised image asset instead of the bulky original.
-        encoded_size = len(encoded)  # Added recalculation of encoded size to reflect the smaller payload.
-        LOGGER.info(f"  ✅ Image encoded: {encoded_size:,} characters")
-        LOGGER.info(f"  MIME type: {mime}")
-    except Exception as e:
-        LOGGER.error(f"  ❌ ENCODING FAILED: {e}")
-        raise IngestionError(f"Failed to encode image: {e}")
-    finally:
-        if cleanup_path and cleanup_path.exists():  # Added guard to ensure we only clean up when a temp file was created.
-            cleanup_path.unlink(missing_ok=True)  # Added removal of the temporary JPEG to avoid polluting the filesystem.
-    
-    # Build payload - CORRECT FORMAT per Ollama docs
-    LOGGER.info(f"  Building API payload...")
-    payload = {
-    "model": config.model,
-    "messages": [
-        {
-            "role": "user",
-            "content": f"{config.prompt}\n\nProcess this document and return JSON only.",  #  Simple string
-            "images": [encoded]  #  Simple array of base64 strings
-        }
-    ],
-    "stream": False,
-    "options": {
-        "temperature": config.temperature,
-        "num_ctx": 8192,
-    },
-}
-    
-    LOGGER.info(f"  ✅ Payload built:")
-    LOGGER.info(f"    - System prompt length: {len(config.prompt)} chars")
-    LOGGER.info(f"    - User message: 'Process this document and return JSON only.'")
-    LOGGER.info(f"    - Images array: 1 image ({encoded_size:,} chars)")
-    LOGGER.info(f"    - Stream: False")
-    LOGGER.info(f"    - Temperature: {config.temperature}")
-    
-    # Make API call
-    LOGGER.info(f"  📡 Sending request to Ollama...")
-    LOGGER.info(f"  (This may take 30-120 seconds for vision models)")
+    # Preprocess image
+    processed_path = _preprocess_image(image_path)
+    cleanup_path = processed_path if processed_path != image_path else None
     
     try:
+        # Create client with correct host for Docker networking
+        base_url = config.base_url or DEFAULT_OLLAMA_BASE_URL or "http://localhost:11434"
+        LOGGER.info(f"  Using Ollama host: {base_url}")
+        client = ollama.Client(host=base_url)
+        
+        # ============================================================
+        # STAGE 1: Vision Model - OCR Only
+        # ============================================================
+        LOGGER.info(f"  📸 STAGE 1: Running vision model for OCR...")
+        
         import time
-        start_time = time.time()
+        stage1_start = time.time()
         
-        response = requests.post(url, json=payload, timeout=120)
+        ocr_response = client.chat(
+            model=config.model,
+            messages=[{
+                'role': 'user',
+                'content': """Extract ALL visible text from this document. 
+Read every word, number, date, and handwritten note you can see.
+Maintain the original layout and structure as much as possible.
+Include form labels, field values, stamps, signatures - everything readable.
+Return only the extracted text, no commentary.""",
+                'images': [str(processed_path)]
+            }]
+        )
         
-        elapsed = time.time() - start_time
-        LOGGER.info(f"  ⏱️  Request completed in {elapsed:.2f} seconds")
-        LOGGER.info(f"  HTTP Status: {response.status_code}")
+        stage1_elapsed = time.time() - stage1_start
+        ocr_text = ocr_response['message']['content']
         
-        # Log response details
-        if response.status_code != 200:
-            LOGGER.error(f"  ❌ HTTP ERROR: {response.status_code}")
-            LOGGER.error(f"  Response body: {response.text[:500]}")
-            response.raise_for_status()
+        if not ocr_text or len(ocr_text.strip()) < 50:
+            LOGGER.error(f"  ❌ STAGE 1 FAILED: Insufficient OCR text")
+            raise IngestionError("Vision model returned insufficient OCR text")
         
-        # Parse response
-        LOGGER.info(f"  ✅ Got 200 OK response")
-        result = response.json()
+        LOGGER.info(f"  ✅ STAGE 1 complete in {stage1_elapsed:.2f}s")
+        LOGGER.info(f"  Extracted {len(ocr_text):,} characters of text")
+        LOGGER.info(f"  Preview: {ocr_text[:150]}...")
         
-        # Log response structure
-        LOGGER.info(f"  Response keys: {list(result.keys())}")
+        # ============================================================
+        # STAGE 2: Text Model - JSON Structuring
+        # ============================================================
+        LOGGER.info(f"  🔧 STAGE 2: Running text model for JSON structuring...")
         
-        message = result.get("message") or {}
-        content = message.get("content")
+        stage2_start = time.time()
         
-        if not content:
-            LOGGER.error(f"  ❌ NO CONTENT in response")
-            LOGGER.error(f"  Full response: {result}")
-            raise IngestionError("Ollama response did not contain any content.")
+        # Build structured prompt with original schema
+        structuring_prompt = f"""{config.prompt}
+
+Raw OCR text extracted from document:
+{ocr_text}
+
+Based on the above text, create a properly structured JSON response following the schema provided.
+Return ONLY valid JSON, no markdown code blocks, no explanation."""
+
+        structure_response = client.chat(
+            model='llama3.1:8b',
+            messages=[{
+                'role': 'user',
+                'content': structuring_prompt
+            }],
+            options={
+                'temperature': 0.0,
+                'num_ctx': 8192,
+            }
+        )
         
-        content_length = len(str(content))
-        LOGGER.info(f"  ✅ Got content: {content_length:,} characters")
-        LOGGER.info(f"  Content preview: {str(content)[:200]}...")
+        stage2_elapsed = time.time() - stage2_start
+        json_content = structure_response['message']['content']
         
-        # Return content
-        if isinstance(content, list):
-            final = "".join(part.get("text", "") for part in content)
-            LOGGER.info(f"  Content was list, joined to {len(final)} chars")
-            return final
+        LOGGER.info(f"  ✅ STAGE 2 complete in {stage2_elapsed:.2f}s")
+        LOGGER.info(f"  Generated {len(json_content):,} characters of JSON")
         
+        total_elapsed = stage1_elapsed + stage2_elapsed
+        LOGGER.info(f"  ⏱️  Total pipeline time: {total_elapsed:.2f}s")
+        LOGGER.info(f"  Content preview: {json_content[:200]}...")
         LOGGER.info(f"  ✅ PROCESSING COMPLETE for {image_path.name}")
         LOGGER.info("="*60)
-        return str(content)
         
-    except requests.exceptions.Timeout:
-        LOGGER.error(f"  ❌ REQUEST TIMEOUT (>120 seconds)")
-        LOGGER.error(f"  Image: {image_path.name}")
-        LOGGER.error(f"  This usually means:")
-        LOGGER.error(f"    1. Model is still loading")
-        LOGGER.error(f"    2. Image is too large")
-        LOGGER.error(f"    3. System resources exhausted")
-        raise IngestionError(f"Ollama request timed out for {image_path.name}")
-        
-    except requests.exceptions.ConnectionError as e:
-        LOGGER.error(f"  ❌ CONNECTION ERROR")
-        LOGGER.error(f"  Cannot reach: {url}")
-        LOGGER.error(f"  Error: {e}")
-        raise IngestionError(f"Cannot connect to Ollama at {url}")
-        
-    except requests.exceptions.HTTPError as e:
-        LOGGER.error(f"  ❌ HTTP ERROR: {e}")
-        LOGGER.error(f"  Status code: {response.status_code}")
-        LOGGER.error(f"  Response: {response.text[:500]}")
-        raise IngestionError(f"Ollama API error: {e}")
+        return json_content
         
     except Exception as e:
-        LOGGER.error(f"  ❌ UNEXPECTED ERROR: {type(e).__name__}")
-        LOGGER.error(f"  Message: {e}")
-        LOGGER.error(f"  Image: {image_path.name}")
-        raise IngestionError(f"Unexpected error processing {image_path.name}: {e}")
+        LOGGER.error(f"  ❌ ERROR: {type(e).__name__}: {e}")
+        raise IngestionError(f"Ollama two-stage processing failed: {e}")
+        
+    finally:
+        if cleanup_path and cleanup_path.exists():
+            cleanup_path.unlink(missing_ok=True)
+            LOGGER.info(f"  🧹 Cleaned up temporary file")
 
 
 def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
