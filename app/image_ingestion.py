@@ -1,4 +1,7 @@
 """Image-to-JSON ingestion pipeline utilities.
+
+Ollama runs but openai does not work.
+
 This cleaned-up version:
 
 Moves all constants to the top - Including DEFAULT_OLLAMA_STAGE2_MODEL, file suffixes, and configuration values
