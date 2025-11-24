@@ -1,0 +1,101 @@
+Then, analyze this OCR text to provide a summary of the content. Structure the extracted data into a STRICT JSON format. Use double quotes for strings. Remove trailing commas. Ensure all braces and brackets are correctly closed. Correctly structure nested elements. In the JSON arrays, each element should be separated by a comma. The document may contain multiple types of bureaucratic forms with printed or handwritten information. Each line of tabular information, if available, should be accurately categorized and linked to relevant information. Use null values for any categories where no relevant information is found. If any other information is necessary, include it in the "other" category. Return the extracted information as a JSON object with the following structure:
+{
+    "ocr_text": "string",
+    "summary": "string",
+    "sections": [
+        {
+            "section_name": "string",
+            "fields": [
+                {
+                    "field_name": "string",
+                    "value": "string",
+                    "linked_information": {
+                        "personal_information": {
+                            "name": "string",
+                            "date_of_birth": "string",
+                            "social_security_no": "string",
+                            "employee_no": "string",
+                            "id_no": "string",
+                            "rp_certificate_no": "string"
+                        },
+                        "named_entities": [
+                            {
+                                "entity": "string",
+                                "type": "string"
+                            }
+                        ],
+                        "dates": [
+                            {
+                                "date": "string",
+                                "category": "string"
+                            }
+                        ],
+                        "monetary_amounts": [
+                            {
+                                "amount": "string",
+                                "category": "string"
+                            }
+                        ],
+                        "relationships": [
+                            {
+                                "entity1": "string",
+                                "relationship": "string",
+                                "entity2": "string"
+                            }
+                        ],
+                        "medical_information": [
+                            {
+                                "info": "string",
+                                "category": "string"
+                            }
+                        ],
+                        "family_information": [
+                            {
+                                "name": "string",
+                                "relationship": "string",
+                                "event": "string"
+                            }
+                        ],
+                        "employment_history": [
+                            {
+                                "date": "string",
+                                "position_description": "string",
+                                "division": "string",
+                                "department": "string",
+                                "location": "string",
+                                "rate_of_pay": "string",
+                                "remarks": "string"
+                            }
+                        ],
+                        "employment_events": [
+                            {
+                                "date": "string",
+                                "location": "string",
+                                "incident": "string",
+                                "action_taken": "string",
+                                "reference_numbers": [
+                                    "string"
+                                ]
+                            }
+                        ],
+                        "geographical_information": [
+                            "string"
+                        ],
+                        "document_specific_information": [
+                            "string"
+                        ],
+                        "other": [
+                            "string"
+                        ],
+                        "metadata": {
+                            "document_type": "string",
+                            "period": "string",
+                            "context": "string"
+                        },
+                        "sentiment": "string"
+                    }
+                }
+            ]
+        }
+    ]
+}
