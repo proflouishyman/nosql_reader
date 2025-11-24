@@ -1,0 +1,23 @@
+# Python dependencies for Image Ingestion CLI tools
+# Install with: pip install -r requirements.txt
+
+# Core dependencies
+requests>=2.31.0
+Pillow>=10.0.0
+pymongo>=4.5.0
+
+# AI Providers (at least one required)
+ollama>=0.1.0          # For local Ollama processing
+openai>=1.0.0          # For OpenAI GPT-4 Vision
+
+# Data processing
+python-dotenv>=1.0.0   # For .env file support
+
+# Optional but recommended
+# For improved JSON cleaning and validation
+# jsonschema>=4.19.0
+
+# Development/Testing (optional)
+# pytest>=7.4.0
+# black>=23.0.0
+# mypy>=1.5.0

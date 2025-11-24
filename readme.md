@@ -2,7 +2,10 @@
 
 The Historical Document Reader is a Flask application that helps historians and researchers ingest, explore, and analyse large collections of digitised material. It combines a traditional search-and-browse interface backed by MongoDB with a LangChain-powered Historian Agent that can answer questions conversationally while citing primary sources.
 
-Updated October 28
+## Development notes: November
+Attempted to include in-web updating of database. I think it is just too complex. It would be best served by being outside of the web service. It should have an option for local Ollama and another script for Cloud. The database should be setup by checking a set of directories for new materials, both image and JSON, and when present updating. But this online system is too cumbersome. 
+
+I need to revert to the old system where the setup was offline and the running was online. It will be more robust and easy to setup. There is no need for this complexity. 
 
 ## Table of contents
 

@@ -1,30 +1,12 @@
 """Image-to-JSON ingestion pipeline utilities.
 
-Ollama runs but openai does not work.
+Architecture:
+- Ollama: Two-stage pipeline (Vision OCR → Text structuring)
+- OpenAI: Single-stage pipeline (Direct to JSON)
 
-This cleaned-up version:
-
-Moves all constants to the top - Including DEFAULT_OLLAMA_STAGE2_MODEL, file suffixes, and configuration values
-Removes duplicate process_directory - Keeps the better two-stage implementation
-Fixes missing _call_ollama() - Replaced with proper stage-specific functions
-Implements proper reprocessing logic:
-When reprocess_existing=False: Reuses existing OCR files
-When reprocess_existing=True: Regenerates both OCR and JSON files
-Separates Ollama and OpenAI processing into clear helper functions
-Fixes temporary file cleanup - Consistent cleanup in finally blocks
-Updates streaming function to support two-stage Ollama processing
-Adds proper error handling with specific error messages for each stage
-Maintains OCR files for debugging and avoiding repeated expensive calls
-The architecture is now clear:
-
-Ollama: Two-stage (Vision OCR → Text structuring)
-OpenAI: Single-stage (Direct to JSON)
-All configuration values are at the top for easy modification
-
-
-
-
-
+File outputs:
+- image.jpg → image.jpg.ocr.txt (intermediate OCR for Ollama)
+- image.jpg → image.jpg.json (final structured data)
 """
 
 from __future__ import annotations
@@ -52,16 +34,7 @@ from database_setup import (
 )
 
 # ============================================================
-# HELPER FOR PROVIDER DEFAULT (needed before constants)
-# ============================================================
-
-def _env_provider_default() -> str:
-    candidate = os.environ.get("HISTORIAN_AGENT_MODEL_PROVIDER", "ollama").strip().lower()
-    return candidate if candidate in {"ollama", "openai"} else "ollama"
-
-
-# ============================================================
-# CONSTANTS - All configuration at the top for easy updating
+# LOGGING SETUP
 # ============================================================
 
 LOGGER = logging.getLogger(__name__)
@@ -69,6 +42,10 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+
+# ============================================================
+# CONSTANTS - All configuration at the top
+# ============================================================
 
 # File extensions
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tiff", ".tif", ".bmp", ".gif", ".webp"}
@@ -87,9 +64,13 @@ OLLAMA_STAGE2_CONTEXT_SIZE = 8192
 # OpenAI configuration
 OPENAI_KEY_FILE_ENV = "OPENAI_API_KEY_FILE"
 FALLBACK_KEY_PATH = Path.home() / ".config" / "nosql_reader" / "openai_api_key.txt"
-DEFAULT_OPENAI_VISION_MODEL = "gpt-4.1-mini"  # Add this line
 
 # Model defaults
+def _env_provider_default() -> str:
+    """Get default provider from environment."""
+    candidate = os.environ.get("HISTORIAN_AGENT_MODEL_PROVIDER", "ollama").strip().lower()
+    return candidate if candidate in {"ollama", "openai"} else "ollama"
+
 DEFAULT_PROVIDER = _env_provider_default()
 _SHARED_MODEL_DEFAULT = os.environ.get("HISTORIAN_AGENT_MODEL", "").strip()
 DEFAULT_OLLAMA_MODEL = _SHARED_MODEL_DEFAULT or os.environ.get("OLLAMA_DEFAULT_MODEL", "llama3.2-vision:latest")
@@ -209,13 +190,8 @@ DEFAULT_PROMPT = os.environ.get("HISTORIAN_AGENT_PROMPT") or _PROMPT_FALLBACK
 
 
 # ============================================================
-# HELPER FUNCTIONS
+# DATA CLASSES
 # ============================================================
-
-def _env_provider_default() -> str:
-    candidate = os.environ.get("HISTORIAN_AGENT_MODEL_PROVIDER", "ollama").strip().lower()
-    return candidate if candidate in {"ollama", "openai"} else "ollama"
-
 
 @dataclass
 class ModelConfig:
@@ -230,6 +206,7 @@ class ModelConfig:
 
 @dataclass
 class IngestionSummary:
+    """Summary statistics for an ingestion run."""
     images_total: int = 0
     generated: int = 0
     skipped_existing: int = 0
@@ -281,6 +258,7 @@ def ollama_models(base_url: Optional[str] = None) -> List[str]:
 
 
 def _image_to_base64(path: Path) -> Tuple[str, str]:
+    """Convert image to base64 with MIME type."""
     suffix = path.suffix.lower()
     mime_map = {
         ".png": "image/png",
@@ -299,7 +277,7 @@ def _image_to_base64(path: Path) -> Tuple[str, str]:
 
 
 def _preprocess_image(image_path: Path, max_side: int = MAX_IMAGE_SIDE) -> Path:
-    """Resize, normalise, and compress images pre-ingestion."""
+    """Resize, normalize, and compress images pre-ingestion."""
     try:
         with Image.open(image_path) as img:
             rgb_img = img.convert("RGB")
@@ -438,6 +416,7 @@ Return ONLY valid JSON, no markdown code blocks, no explanation."""
 # ============================================================
 # OPENAI FUNCTIONS
 # ============================================================
+
 def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
     """Single-stage OpenAI processing: image to structured JSON."""
     from openai import OpenAI
@@ -456,7 +435,7 @@ def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
         start = time.time()
         
         completion = client.chat.completions.create(
-            model=DEFAULT_OPENAI_VISION_MODEL,  # Use the constant here
+            model=config.model,
             messages=[
                 {"role": "system", "content": config.prompt},
                 {
@@ -469,7 +448,6 @@ def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
             ],
             max_tokens=config.max_tokens,
             temperature=config.temperature,
-            response_format={"type": "json_object"}
         )
         
         elapsed = time.time() - start
@@ -485,11 +463,13 @@ def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
         if cleanup_path and cleanup_path.exists():
             cleanup_path.unlink(missing_ok=True)
 
+
 # ============================================================
 # API KEY MANAGEMENT
 # ============================================================
 
 def _ensure_api_key_path() -> Path:
+    """Get path to OpenAI API key file."""
     configured = os.environ.get(OPENAI_KEY_FILE_ENV)
     if configured:
         return Path(configured).expanduser()
@@ -497,6 +477,7 @@ def _ensure_api_key_path() -> Path:
 
 
 def read_api_key() -> Optional[str]:
+    """Read OpenAI API key from file."""
     path = _ensure_api_key_path()
     if path.exists():
         return path.read_text(encoding="utf-8").strip() or None
@@ -504,6 +485,7 @@ def read_api_key() -> Optional[str]:
 
 
 def write_api_key(value: str) -> Path:
+    """Write OpenAI API key to file."""
     path = _ensure_api_key_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(value.strip(), encoding="utf-8")
@@ -836,7 +818,7 @@ def _process_openai_single_stage(
             LOGGER.exception(f"  ❌ FAILED: {exc}")
             summary.failed += 1
             summary.errors.append({
-                "path": str(image_path), #BREAK
+                "path": str(image_path),
                 "error": str(exc)
             })
     
@@ -1027,4 +1009,3 @@ def ensure_api_key(value: Optional[str]) -> Optional[str]:
         write_api_key(value)
         return value.strip()
     return read_api_key()
-                
