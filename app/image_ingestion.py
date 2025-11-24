@@ -249,42 +249,23 @@ def _preprocess_image(image_path: Path, max_side: int = 1600) -> Path:  # Added 
 
 
 
-def _call_ollama(image_path: Path, config: ModelConfig) -> str:
-    """Two-stage pipeline: Vision for OCR, then text model for JSON structuring."""
+def _call_ollama_stage1_ocr(image_path: Path, config: ModelConfig) -> str:
+    """Stage 1: Vision model extracts text only."""
     import ollama
     
-    LOGGER.info("="*60)
-    LOGGER.info(f"TWO-STAGE OLLAMA PROCESSING")
-    LOGGER.info(f"  Image: {image_path.name}")
-    LOGGER.info(f"  Stage 1: {config.model} (OCR)")
-    LOGGER.info(f"  Stage 2: llama3.1:8b (JSON structuring)")
+    LOGGER.info(f"  📸 STAGE 1 (OCR): {image_path.name}")
     
-    if not image_path.exists():
-        LOGGER.error(f"  ❌ FILE NOT FOUND: {image_path}")
-        raise IngestionError(f"Image file not found: {image_path}")
-    
-    file_size = image_path.stat().st_size
-    LOGGER.info(f"  ✅ File exists, size: {file_size:,} bytes ({file_size/1024/1024:.2f} MB)")
-    
-    # Preprocess image
     processed_path = _preprocess_image(image_path)
     cleanup_path = processed_path if processed_path != image_path else None
     
     try:
-        # Create client with correct host for Docker networking
         base_url = config.base_url or DEFAULT_OLLAMA_BASE_URL or "http://localhost:11434"
-        LOGGER.info(f"  Using Ollama host: {base_url}")
         client = ollama.Client(host=base_url)
         
-        # ============================================================
-        # STAGE 1: Vision Model - OCR Only
-        # ============================================================
-        LOGGER.info(f"  📸 STAGE 1: Running vision model for OCR...")
-        
         import time
-        stage1_start = time.time()
+        start = time.time()
         
-        ocr_response = client.chat(
+        response = client.chat(
             model=config.model,
             messages=[{
                 'role': 'user',
@@ -297,26 +278,27 @@ Return only the extracted text, no commentary.""",
             }]
         )
         
-        stage1_elapsed = time.time() - stage1_start
-        ocr_text = ocr_response['message']['content']
+        elapsed = time.time() - start
+        ocr_text = response['message']['content']
         
-        if not ocr_text or len(ocr_text.strip()) < 50:
-            LOGGER.error(f"  ❌ STAGE 1 FAILED: Insufficient OCR text")
-            raise IngestionError("Vision model returned insufficient OCR text")
+        LOGGER.info(f"    ✅ OCR complete in {elapsed:.2f}s ({len(ocr_text):,} chars)")
+        return ocr_text
         
-        LOGGER.info(f"  ✅ STAGE 1 complete in {stage1_elapsed:.2f}s")
-        LOGGER.info(f"  Extracted {len(ocr_text):,} characters of text")
-        LOGGER.info(f"  Preview: {ocr_text[:150]}...")
-        
-        # ============================================================
-        # STAGE 2: Text Model - JSON Structuring
-        # ============================================================
-        LOGGER.info(f"  🔧 STAGE 2: Running text model for JSON structuring...")
-        
-        stage2_start = time.time()
-        
-        # Build structured prompt with original schema
-        structuring_prompt = f"""{config.prompt}
+    finally:
+        if cleanup_path and cleanup_path.exists():
+            cleanup_path.unlink(missing_ok=True)
+
+
+def _call_ollama_stage2_structure(ocr_text: str, config: ModelConfig, image_name: str) -> str:
+    """Stage 2: Text model structures OCR into JSON."""
+    import ollama
+    
+    LOGGER.info(f"  🔧 STAGE 2 (JSON): {image_name}")
+    
+    base_url = config.base_url or DEFAULT_OLLAMA_BASE_URL or "http://localhost:11434"
+    client = ollama.Client(host=base_url)
+    
+    structuring_prompt = f"""{config.prompt}
 
 Raw OCR text extracted from document:
 {ocr_text}
@@ -324,40 +306,225 @@ Raw OCR text extracted from document:
 Based on the above text, create a properly structured JSON response following the schema provided.
 Return ONLY valid JSON, no markdown code blocks, no explanation."""
 
-        structure_response = client.chat(
-            model='llama3.1:8b',
-            messages=[{
-                'role': 'user',
-                'content': structuring_prompt
-            }],
-            options={
-                'temperature': 0.0,
-                'num_ctx': 8192,
-            }
-        )
+    import time
+    start = time.time()
+    
+    response = client.chat(
+        model='llama3.1:8b',
+        messages=[{
+            'role': 'user',
+            'content': structuring_prompt
+        }],
+        options={
+            'temperature': 0.0,
+            'num_ctx': 8192,
+        }
+    )
+    
+    elapsed = time.time() - start
+    json_content = response['message']['content']
+    
+    LOGGER.info(f"    ✅ Structuring complete in {elapsed:.2f}s ({len(json_content):,} chars)")
+    return json_content
+
+
+def _ocr_path_for_image(image_path: Path) -> Path:
+    """Get intermediate OCR text file path."""
+    return image_path.with_suffix(image_path.suffix + ".ocr.txt")
+
+
+def process_directory(
+    directory: Path,
+    config: ModelConfig,
+    reprocess_existing: bool = False,
+    api_key: Optional[str] = None,
+) -> IngestionSummary:
+    """Process images with batched two-stage pipeline."""
+    
+    LOGGER.info("")
+    LOGGER.info("🚀 " + "="*70)
+    LOGGER.info("🚀 STARTING BATCHED TWO-STAGE IMAGE INGESTION")
+    LOGGER.info("🚀 " + "="*70)
+    LOGGER.info(f"  Directory: {directory}")
+    LOGGER.info(f"  Model: {config.model} ({config.provider})")
+    LOGGER.info(f"  Stage 1: Vision OCR | Stage 2: llama3.1:8b structuring")
+    LOGGER.info(f"  Reprocess existing: {reprocess_existing}")
+    
+    if not directory.exists() or not directory.is_dir():
+        LOGGER.error(f"  ❌ Directory does not exist: {directory}")
+        raise IngestionError(f"Directory does not exist: {directory}")
+    
+    summary = IngestionSummary()
+    
+    # Find all images
+    LOGGER.info(f"  📁 Scanning for images...")
+    images: List[Path] = [
+        path for path in directory.rglob("*") 
+        if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
+    ]
+    summary.images_total = len(images)
+    
+    LOGGER.info(f"  ✅ Found {summary.images_total} images")
+    if not images:
+        LOGGER.warning(f"  ⚠️  No images found")
+        return summary
+    
+    # Initialize DB
+    client = get_client()
+    db = get_db(client)
+    data_processing.root_directory = str(directory)
+    data_processing.db = db
+    
+    # ============================================================
+    # STAGE 1: OCR - Process all images to text
+    # ============================================================
+    LOGGER.info("")
+    LOGGER.info("=" * 70)
+    LOGGER.info("📸 STAGE 1: BATCH OCR EXTRACTION")
+    LOGGER.info("=" * 70)
+    
+    ocr_needed: List[Path] = []
+    
+    for image_path in images:
+        ocr_path = _ocr_path_for_image(image_path)
+        json_path = _json_path_for_image(image_path)
         
-        stage2_elapsed = time.time() - stage2_start
-        json_content = structure_response['message']['content']
+        # Skip if final JSON exists and we're not reprocessing
+        if not reprocess_existing and json_path.exists():
+            relative_path = _archives_relative(json_path, directory)
+            if _document_exists(db, relative_path):
+                LOGGER.info(f"  ⏭️  Skip: {image_path.name} (already in DB)")
+                summary.skipped_existing += 1
+                continue
         
-        LOGGER.info(f"  ✅ STAGE 2 complete in {stage2_elapsed:.2f}s")
-        LOGGER.info(f"  Generated {len(json_content):,} characters of JSON")
+        # Skip if OCR already done and we're not reprocessing
+        if not reprocess_existing and ocr_path.exists():
+            LOGGER.info(f"  📄 Reuse OCR: {image_path.name}")
+            continue
         
-        total_elapsed = stage1_elapsed + stage2_elapsed
-        LOGGER.info(f"  ⏱️  Total pipeline time: {total_elapsed:.2f}s")
-        LOGGER.info(f"  Content preview: {json_content[:200]}...")
-        LOGGER.info(f"  ✅ PROCESSING COMPLETE for {image_path.name}")
-        LOGGER.info("="*60)
+        ocr_needed.append(image_path)
+    
+    LOGGER.info(f"  Need OCR for {len(ocr_needed)} images")
+    
+    # Run OCR on needed images
+    for idx, image_path in enumerate(ocr_needed, 1):
+        LOGGER.info(f"  [{idx}/{len(ocr_needed)}] {image_path.name}")
         
-        return json_content
+        try:
+            if config.provider == "ollama":
+                ocr_text = _call_ollama_stage1_ocr(image_path, config)
+            elif config.provider == "openai":
+                if not api_key:
+                    raise IngestionError("OpenAI API key required")
+                ocr_text = _call_openai(image_path, config, api_key)
+            else:
+                raise IngestionError(f"Unsupported provider: {config.provider}")
+            
+            # Write intermediate OCR file
+            ocr_path = _ocr_path_for_image(image_path)
+            ocr_path.write_text(ocr_text, encoding="utf-8")
+            LOGGER.info(f"    💾 Saved OCR to {ocr_path.name}")
+            
+        except Exception as exc:
+            LOGGER.exception(f"  ❌ OCR FAILED: {exc}")
+            summary.failed += 1
+            summary.errors.append({"path": str(image_path), "error": str(exc)})
+    
+    # ============================================================
+    # STAGE 2: JSON Structuring - Process all OCR texts
+    # ============================================================
+    LOGGER.info("")
+    LOGGER.info("=" * 70)
+    LOGGER.info("🔧 STAGE 2: BATCH JSON STRUCTURING")
+    LOGGER.info("=" * 70)
+    
+    # Find all OCR files that need structuring
+    json_targets: List[Path] = []
+    
+    for image_path in images:
+        ocr_path = _ocr_path_for_image(image_path)
+        json_path = _json_path_for_image(image_path)
         
-    except Exception as e:
-        LOGGER.error(f"  ❌ ERROR: {type(e).__name__}: {e}")
-        raise IngestionError(f"Ollama two-stage processing failed: {e}")
+        # Skip if no OCR file
+        if not ocr_path.exists():
+            continue
         
-    finally:
-        if cleanup_path and cleanup_path.exists():
-            cleanup_path.unlink(missing_ok=True)
-            LOGGER.info(f"  🧹 Cleaned up temporary file")
+        # Skip if JSON exists and we're not reprocessing
+        if not reprocess_existing and json_path.exists():
+            relative_path = _archives_relative(json_path, directory)
+            if _document_exists(db, relative_path):
+                continue
+            else:
+                # JSON exists but not in DB - queue for ingestion
+                json_targets.append(json_path)
+                summary.queued_existing += 1
+                continue
+        
+        # Need to structure this one
+        LOGGER.info(f"  Processing: {image_path.name}")
+        
+        try:
+            # Read OCR text
+            ocr_text = ocr_path.read_text(encoding="utf-8")
+            
+            if len(ocr_text.strip()) < 50:
+                LOGGER.warning(f"    ⚠️  OCR text too short, skipping")
+                summary.failed += 1
+                continue
+            
+            # Structure with text model
+            if config.provider == "ollama":
+                json_content = _call_ollama_stage2_structure(ocr_text, config, image_path.name)
+            elif config.provider == "openai":
+                # For OpenAI, use the OCR text directly (already structured)
+                json_content = ocr_text
+            else:
+                raise IngestionError(f"Unsupported provider: {config.provider}")
+            
+            # Validate and write JSON
+            payload = _serialise_json(json_content)
+            json_path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2),
+                encoding="utf-8"
+            )
+            LOGGER.info(f"    ✅ JSON saved: {json_path.name}")
+            
+            json_targets.append(json_path)
+            summary.generated += 1
+            
+        except Exception as exc:
+            LOGGER.exception(f"  ❌ STRUCTURING FAILED: {exc}")
+            summary.failed += 1
+            summary.errors.append({"path": str(image_path), "error": str(exc)})
+    
+    # ============================================================
+    # STAGE 3: MongoDB Ingestion
+    # ============================================================
+    LOGGER.info("")
+    LOGGER.info("=" * 70)
+    LOGGER.info("💾 STAGE 3: MONGODB INGESTION")
+    LOGGER.info("=" * 70)
+    LOGGER.info(f"  Files to ingest: {len(json_targets)}")
+    
+    if json_targets:
+        _ingest_json_documents(db, json_targets, directory, summary)
+        LOGGER.info(f"  ✅ Ingested: {summary.ingested}")
+        LOGGER.info(f"  🔄 Updated: {summary.updated}")
+        LOGGER.info(f"  ❌ Failures: {summary.ingest_failures}")
+    
+    LOGGER.info("")
+    LOGGER.info("=" * 70)
+    LOGGER.info("🎉 BATCH COMPLETE")
+    LOGGER.info("=" * 70)
+    LOGGER.info(f"  Total: {summary.images_total} images")
+    LOGGER.info(f"  Generated: {summary.generated}")
+    LOGGER.info(f"  Queued: {summary.queued_existing}")
+    LOGGER.info(f"  Skipped: {summary.skipped_existing}")
+    LOGGER.info(f"  Ingested: {summary.ingested}")
+    LOGGER.info(f"  Failed: {summary.failed}")
+    LOGGER.info("=" * 70)
+    
+    return summary
 
 
 def _call_openai(image_path: Path, config: ModelConfig, api_key: str) -> str:
