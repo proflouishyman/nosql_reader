@@ -10,7 +10,7 @@ import threading
 import queue
 
 # Variables
-MODEL = "llama3.2-vision:11b"
+MODEL = "qwen3-vl:8b"
 ROOT_DIRECTORY = "/data/lhyman6/nosql_project/nosql/archives/"
 EXTENSIONS = [".jpg", ".jpeg", ".png", ".JPG", ".JPEG", ".PNG"]
 RESUME = True
