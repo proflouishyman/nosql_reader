@@ -5,14 +5,20 @@ import json
 import base64
 import requests
 from datetime import datetime
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("requests").setLevel(logging.DEBUG)
+logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
 # Variables
 MODEL = "qwen3-vl:8b"
 ROOT_DIRECTORY = "/data/lhyman6/nosql_project/nosql/archives/"
 EXTENSIONS = [".jpg", ".jpeg", ".png", ".JPG", ".JPEG", ".PNG"]
 RESUME = True
-TIMEOUT = 40
-RETRY_ATTEMPTS = 2  # Number of retry attempts for timeouts
+TIMEOUT = 60
+RETRY_ATTEMPTS = 1  # Number of retry attempts for timeouts
 RETRY_DELAY = 5  # Seconds to wait between retries
 
 def image_to_base64(image_path):
@@ -27,19 +33,46 @@ def extract_text_from_image(image_path, attempt=1):
     try:
         print(f" (attempt {attempt})", end="", flush=True)
         
+        request_json = {
+            "model": MODEL,
+            "prompt": "Extract ALL text from this image with high accuracy, preserving the original layout and formatting. Return only the text content, nothing else.",
+            "images": [image_base64],
+            "stream": True
+        }
+        logging.debug(f"Request JSON: {request_json}")
+        
         response = requests.post(
             "http://localhost:11434/api/generate",
-            json={
-                "model": MODEL,
-                "prompt": "Extract ALL text from this image with high accuracy, preserving the original layout and formatting. Return only the text content, nothing else.",
-                "images": [image_base64],
-                "stream": False
-            },
-            timeout=TIMEOUT
+            json=request_json,
+            timeout=TIMEOUT,
+            stream=True
         )
         
+        logging.debug(f"Response Status Code: {response.status_code}")
+        logging.debug(f"Response Headers: {response.headers}")
+        
         if response.status_code == 200:
-            return response.json()['response'], None
+            base_name = os.path.splitext(os.path.basename(image_path))[0]
+            output_path = os.path.join(os.path.dirname(image_path), f"{base_name}_ocr.txt")
+            log_path = os.path.join(os.path.dirname(image_path), f"{base_name}_ocr_log.txt")
+            
+            with open(output_path, "w", encoding="utf-8") as f, open(log_path, "w", encoding="utf-8") as log:
+                for line in response.iter_lines():
+                    if line:
+                        try:
+                            json_line = json.loads(line.decode('utf-8').strip())
+                            log.write(f"Received JSON: {json_line}\n")
+                            if 'response' in json_line:
+                                f.write(json_line['response'])
+                                print(json_line['response'], end="", flush=True)  # Print the response as it's received
+                                log.write(f"Response: {json_line['response']}\n")
+                            if 'done' in json_line and json_line['done']:
+                                log.write("Done processing response\n")
+                                break  # Stop processing when done is True
+                        except json.JSONDecodeError as e:
+                            logging.error(f"Error decoding JSON: {e} - Line: {line.decode('utf-8')}")
+                            log.write(f"Error decoding JSON: {e} - Line: {line.decode('utf-8')}\n")
+            return None, None
         else:
             error_detail = f"Status {response.status_code}"
             try:
@@ -139,14 +172,10 @@ def process_directory(directory_path):
                 file_size_mb = os.path.getsize(image_path) / (1024 * 1024)
                 
                 start = time.time()
-                extracted_text, error = extract_text_from_image(image_path)
+                _, error = extract_text_from_image(image_path)
                 elapsed = time.time() - start
                 
-                if extracted_text and not error:
-                    # Save text
-                    with open(output_path, "w", encoding="utf-8") as f:
-                        f.write(extracted_text)
-                    
+                if not error:
                     processed += 1
                     print(f" ✓ ({elapsed:.1f}s, {file_size_mb:.1f}MB)")
                     log.write(f"SUCCESS: {image_path} - {elapsed:.1f}s - {file_size_mb:.1f}MB\n")
