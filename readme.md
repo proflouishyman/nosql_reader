@@ -7,6 +7,11 @@ Attempted to include in-web updating of database. I think it is just too complex
 
 I need to revert to the old system where the setup was offline and the running was online. It will be more robust and easy to setup. There is no need for this complexity. 
 
+
+What I need to do:
+1. Make ingestion scripts for HPC
+2. 
+
 ## Table of contents
 
 1. [Core capabilities](#core-capabilities)
