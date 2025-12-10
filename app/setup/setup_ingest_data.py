@@ -1,26 +1,24 @@
-# data_processing.py
+"""
+data_processing.py - Self-contained document ingestion script
+
+Process and validate JSON and TXT files for the railroad documents database.
+Handles file ingestion with hash checking to avoid duplicate processing.
+
+Usage:
+    docker compose exec app python app/data_processing.py /data/archives/borr_data
+"""
 
 import os
 import json
 import re
 import hashlib
-from database_setup import (
-    insert_document,
-    update_field_structure,
-    get_db,
-    is_file_ingested,
-    get_client,
-)
-from dotenv import load_dotenv
-from pymongo import UpdateOne
-
-from multiprocessing import Pool, cpu_count
-from tqdm import tqdm
 import time
 import logging
 import argparse
 from collections import Counter
-import pymongo
+from pymongo import MongoClient, ASCENDING, DESCENDING, UpdateOne
+from bson import ObjectId
+from tqdm import tqdm
 
 # =======================
 # Logging Configuration
@@ -45,9 +43,135 @@ if not logger.handlers:
 # =======================
 # Global Variables
 # =======================
-
 root_directory = None
 db = None  # Will be initialized in each process
+
+# =======================
+# Database Functions
+# =======================
+
+def get_client():
+    """Initialize and return a new MongoDB client."""
+    try:
+        # Try APP_MONGO_URI first (used in docker-compose), fall back to MONGO_URI
+        mongo_uri = os.environ.get('APP_MONGO_URI') or os.environ.get('MONGO_URI')
+        
+        if not mongo_uri:
+            raise ValueError("Neither APP_MONGO_URI nor MONGO_URI environment variable is set")
+        
+        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        # Test connection
+        client.admin.command('ping')
+        logger.info("Successfully connected to MongoDB.")
+        return client
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        raise e
+
+def get_db(client):
+    """Return the database instance."""
+    return client['railroad_documents']
+
+def init_db():
+    """Initialize a new MongoDB connection for the process."""
+    global db
+    try:
+        client = get_client()
+        db = get_db(client)
+        logger.debug("Database connection initialized.")
+    except Exception as e:
+        logger.exception("Failed to initialize database connection")
+        raise e
+
+def insert_document(db, document):
+    """Insert a document into the 'documents' collection."""
+    try:
+        documents = db['documents']
+        documents.insert_one(document)
+        logger.debug(f"Inserted document: {document.get('filename', 'unknown')}")
+    except Exception as e:
+        logger.error(f"Error inserting document: {e}")
+        raise e
+
+def discover_fields(document):
+    """
+    Recursively discover fields in a document.
+    :param document: The document to analyze
+    :return: A dictionary representing the field structure
+    """
+    structure = {}
+    for key, value in document.items():
+        if isinstance(value, dict):
+            structure[key] = discover_fields(value)
+        elif isinstance(value, list):
+            if value:
+                if isinstance(value[0], dict):
+                    structure[key] = [discover_fields(value[0])]
+                else:
+                    structure[key] = [type(value[0]).__name__]
+            else:
+                structure[key] = []
+        else:
+            structure[key] = type(value).__name__
+    return structure
+
+def merge_structures(existing, new):
+    """
+    Merge two field structures.
+    :param existing: The existing field structure
+    :param new: The new field structure to merge
+    :return: The merged field structure
+    """
+    for key, value in new.items():
+        if key not in existing:
+            existing[key] = value
+        elif isinstance(value, dict) and isinstance(existing[key], dict):
+            merge_structures(existing[key], value)
+        elif isinstance(value, list) and isinstance(existing[key], list):
+            if value and existing[key]:
+                if isinstance(value[0], dict) and isinstance(existing[key][0], dict):
+                    merge_structures(existing[key][0], value[0])
+    return existing
+
+def update_field_structure(db, document):
+    """
+    Update the field structure based on a new document.
+    :param db: Database instance
+    :param document: The new document to analyze
+    """
+    field_structure_collection = db['field_structure']
+    new_structure = discover_fields(document)
+    merged_structure = {}
+
+    # Attempt to retrieve the existing structure
+    existing_structure = field_structure_collection.find_one({"_id": "current_structure"})
+
+    if existing_structure:
+        # Merge the new structure with the existing one
+        merged_structure = merge_structures(existing_structure['structure'], new_structure)
+    else:
+        # If no existing structure, use the new structure
+        merged_structure = new_structure
+
+    # Perform an upsert operation to update or insert the structure
+    field_structure_collection.update_one(
+        {"_id": "current_structure"},
+        {"$set": {"structure": merged_structure}},
+        upsert=True
+    )
+
+def is_file_ingested(db, file_hash):
+    """Check if a file has already been ingested based on its hash."""
+    if not file_hash:
+        return False
+    try:
+        documents = db['documents']
+        ingested = documents.find_one({'file_hash': file_hash}) is not None
+        logger.debug(f"File ingestion check for hash {file_hash}: {ingested}")
+        return ingested
+    except Exception as e:
+        logger.error(f"Error checking ingestion status for hash {file_hash}: {e}")
+        return False
 
 # =======================
 # Utility Functions
@@ -134,24 +258,27 @@ def store_combined_hash(db, combined_hash):
     )
 
 def total_hash_check(directory_path):
+    """Check if the archive directory has changed since last processing."""
     files = get_all_files(directory_path)
     total = len(files)
 
     logger.info(f"Found {total} files to process.")
+    print(f"Found {total} files to process.")
 
     if total == 0:
         logger.warning("No files found to process. Exiting.")
-        return
+        print("No .json or .txt files found to process.")
+        return False
 
     # Calculate the combined hash of all files
     logger.info("Calculating combined hash of all files...")
+    print("Calculating combined hash of all files...")
     combined_hash = calculate_combined_hash(files)
     logger.debug(f"Combined Hash: {combined_hash}")
 
-
-
     # Initialize database connection
-    init_db()
+    if db is None:
+        init_db()
 
     # Retrieve the stored combined hash
     stored_hash = get_stored_combined_hash(db)
@@ -160,29 +287,15 @@ def total_hash_check(directory_path):
     if combined_hash == stored_hash:
         logger.info("No changes detected. Skipping processing.")
         print("No changes detected. Skipping processing.")
-        flag = False
-        return
+        return False
     else:
         logger.info("Changes detected. Proceeding with processing.")
         print("Changes detected. Proceeding with processing.")
-        flag = True
-
-    return flag 
+        return True
 
 # =======================
 # Processing Functions
 # =======================
-
-def init_db():
-    """Initialize a new MongoDB connection for each process."""
-    global db
-    try:
-        client = get_client()
-        db = get_db(client)
-        logger.debug("Database connection initialized.")
-    except Exception as e:
-        logger.exception("Failed to initialize database connection")
-        raise e
 
 def process_file(file_path):
     """
@@ -205,8 +318,8 @@ def process_file(file_path):
         json_data, error = load_and_validate_json_file(file_path)
         if json_data:
             try:
-                update_field_structure(db, json_data)  # Pass 'db' here
-                insert_document(db, json_data)         # Pass 'db' here
+                update_field_structure(db, json_data)
+                insert_document(db, json_data)
                 logger.debug(f"Processed and inserted document: {filename}")
                 result['processed'].append(file_path)
             except Exception as e:
@@ -237,7 +350,7 @@ def get_all_files(directory):
 # Sequential Processing
 # =======================
 def process_directory(directory_path):
-    """Process all files in a directory and its subdirectories sequentially for debugging."""
+    """Process all files in a directory and its subdirectories sequentially."""
     global root_directory
     root_directory = directory_path
 
@@ -249,6 +362,7 @@ def process_directory(directory_path):
 
     if total == 0:
         logger.warning("No files found to process. Exiting.")
+        print("No .json or .txt files found.")
         return
 
     # Initialize results_dict in the main process
@@ -258,6 +372,7 @@ def process_directory(directory_path):
         'skipped': []
     }
 
+    print(f"\nProcessing {total} files...")
     with tqdm(total=total, desc="Processing files") as pbar:
         for idx, file_path in enumerate(files, 1):
             result, _ = process_file(file_path)
@@ -270,6 +385,14 @@ def process_directory(directory_path):
         init_db()
         logger.debug("Initialized main process database connection.")
 
+    print("\n" + "="*60)
+    print("Processing Summary:")
+    print("="*60)
+    print(f"Total files found: {total}")
+    print(f"Successfully processed: {len(results_dict['processed'])}")
+    print(f"Skipped (already ingested): {len(results_dict['skipped'])}")
+    print(f"Failed to process: {len(results_dict['failed'])}")
+
     logger.info("\nProcessing Summary:")
     logger.info(f"Total files found: {total}")
     logger.info(f"Successfully processed: {len(results_dict['processed'])}")
@@ -277,41 +400,71 @@ def process_directory(directory_path):
     logger.info(f"Failed to process: {len(results_dict['failed'])}")
 
     if results_dict['failed']:
+        print("\nFailed files:")
         logger.info("\nFailed files:")
         for file_path, error in results_dict['failed']:
+            print(f"- {file_path}: {error}")
             logger.error(f"- {file_path}: {error}")
 
     duration = time.time() - start_time
+    print(f"\nTotal processing time: {duration:.2f} seconds.")
     logger.info(f"\nTotal processing time: {duration:.2f} seconds.")
 
 # =======================
 # Main Execution
 # =======================
 if __name__ == "__main__":
-    print("Starting data_processing.py")
+    print("="*60)
+    print("Data Processing Script")
+    print("="*60)
     logger.info("Starting data_processing.py")
-    parser = argparse.ArgumentParser(description="Process and validate JSON and TXT files for the railroad documents database.")
-    parser.add_argument("data_directory", nargs='?', default='/app/archives',
-                        help="Path to the root directory containing JSON and/or text files to process (default: '/app/archives')")
+    
+    parser = argparse.ArgumentParser(
+        description="Process and validate JSON and TXT files for the railroad documents database."
+    )
+    parser.add_argument(
+        "data_directory", 
+        nargs='?', 
+        default='/data/archives',
+        help="Path to the root directory containing JSON and/or text files to process (default: '/data/archives')"
+    )
+    parser.add_argument(
+        '--force',
+        action='store_true',
+        help="Force reprocessing even if no changes detected (clears hash)"
+    )
     args = parser.parse_args()
     
     data_directory = args.data_directory
-    print(data_directory)
+    print(f"Target directory: {data_directory}")
+    
     if not os.path.exists(data_directory):
         logger.error(f"Error: The specified directory does not exist: {data_directory}")
-        logger.info(f"Creating directory: {data_directory}")
+        print(f"Error: Directory does not exist: {data_directory}")
+        print(f"Creating directory: {data_directory}")
         try:
             os.makedirs(data_directory)
             logger.info(f"Directory created successfully: {data_directory}")
+            print(f"Directory created successfully.")
         except Exception as e:
             logger.exception("Failed to create directory")
+            print(f"Failed to create directory: {e}")
             exit(1)
 
-    #hash check for archive file change
-    logger.info("Checking to see if archive has changed")
-    archives_file_change = total_hash_check(data_directory) #should return a boolean
+    # Force option - clear hash
+    if args.force:
+        print("\n--force flag detected. Clearing stored hash...")
+        logger.info("Force flag set. Clearing stored hash.")
+        init_db()
+        db.metadata.delete_one({'type': 'combined_hash'})
+        print("Hash cleared. Will reprocess all files.\n")
 
-    if archives_file_change == True:
+    # Hash check for archive file change
+    logger.info("Checking to see if archive has changed")
+    print("\nChecking for changes in archive...")
+    archives_file_change = total_hash_check(data_directory)
+
+    if archives_file_change:
         logger.info(f"Processing directory: {data_directory}")
         process_directory(data_directory)
 
@@ -319,5 +472,8 @@ if __name__ == "__main__":
         new_combined_hash = calculate_combined_hash(get_all_files(data_directory))
         store_combined_hash(db, new_combined_hash)
         logger.info("Updated stored hash after processing.")
+        print("\nHash updated. Future runs will skip unchanged files.")
     else:
         logger.info("No change in archives")
+        print("\nNo processing needed.")
+        print("Use --force flag to reprocess all files.")

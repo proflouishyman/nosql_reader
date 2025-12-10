@@ -23,7 +23,7 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+#load_dotenv()
 
 # Configure logging
 logger = logging.getLogger('DatabaseSetupLogger')

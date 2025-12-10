@@ -76,6 +76,11 @@ services:
       - "5000:5000"
     volumes:
       - type: bind
+        source: ./app
+        target: /app
+        # For development, we want read-write access to the app code.
+        # In production, consider making this read-only for security.
+      - type: bind
         source: ${ARCHIVES_HOST_PATH:-../archives}
         target: ${ARCHIVES_PATH:-/data/archives}
       - type: bind

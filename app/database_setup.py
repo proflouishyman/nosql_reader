@@ -1,15 +1,17 @@
 # database_setup.py
+#This module handles CRUD operations but not setup, that is in the setup directory. The files need to be refactored and renamed.
+
 
 from pymongo import MongoClient, ASCENDING, DESCENDING, UpdateOne
 from bson import ObjectId
 import logging
 import os
-from dotenv import load_dotenv
 import pymongo
 from pymongo import UpdateOne
 
-# Load environment variables from .env file
-load_dotenv()
+
+
+
 
 # =======================
 # Logging Configuration
@@ -43,14 +45,13 @@ logger.addHandler(file_handler)
 def get_client():
     """Initialize and return a new MongoDB client."""
     try:
+        # Try APP_MONGO_URI first (docker-compose), fall back to MONGO_URI
+        mongo_uri = os.environ.get('APP_MONGO_URI') or os.environ.get('MONGO_URI')
         
-        mongo_uri = os.environ.get('MONGO_URI') # this SHOULD read from .env file but sometimes does not.
-        #mongo_uri= "mongodb://admin:secret@mongodb:27017/admin" # this is correct and needs the /admin for the administrative db. REMOVE before prduction
-        #print(mongo_uri)
-
         if not mongo_uri:
-            raise ValueError("MONGO_URI environment variable not set")
-        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=1000)
+            raise ValueError("Neither APP_MONGO_URI nor MONGO_URI environment variable is set")
+        
+        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
         # Test connection
         client.admin.command('ping')
         logger.info("Successfully connected to MongoDB.")
@@ -220,6 +221,7 @@ def is_file_ingested(db, file_hash):
     except Exception as e:
         logger.error(f"Error checking ingestion status for hash {file_hash}: {e}")
         return False
+
 def save_unique_terms(db, unique_terms_counter):
     """
     Save the unique terms counter to the database as individual documents.
@@ -264,10 +266,6 @@ def save_unique_terms(db, unique_terms_counter):
             raise e
     else:
         logger.warning("No unique terms to upsert.")
-
-
-
-
 
 
 def update_document(db, document_id, update_data):
