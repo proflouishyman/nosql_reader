@@ -833,13 +833,6 @@ def document_detail(doc_id):
         
 
 
-
-
-
-
-
-
-
         # Retrieve the ordered list from cache
         ordered_ids = cache.get(f'search_{search_id}')
         if not ordered_ids:
@@ -865,11 +858,12 @@ def document_detail(doc_id):
             logger.debug(f"Document ID: {doc_id}, Image path: {image_path}")
 
             # Check if the image file exists
-            absolute_image_path = os.path.join('/app/archives', image_path)
+            archives_root = os.environ.get("ARCHIVES_PATH", "/data/archives")
+            absolute_image_path = os.path.join(archives_root, image_path)
             image_exists = os.path.exists(absolute_image_path)
 
             if not image_exists:
-                logger.warning(f"Image not found at: {absolute_image_path}")
+                logger.warning(f"Image not found at: {absolute_image_path}. The absolute path was constructed from relative path: {relative_path}")
         else:
             # Log an error if relative_path is None or not found
             logger.error(f"Error: No relative_path found for document ID: {doc_id}. Document content: {document}")
@@ -891,18 +885,30 @@ def document_detail(doc_id):
         abort(500)
 
 
+#more attempts to fix image serving
+ARCHIVES_ROOT = os.environ.get("ARCHIVES_PATH", "/data/archives")
 
+@app.route("/archives/<path:relpath>")
+def archives_file(relpath):
+    # Prevent path traversal
+    abs_path = safe_join(ARCHIVES_ROOT, relpath)
+    if not abs_path or not os.path.isfile(abs_path):
+        abort(404)
+    return send_file(abs_path)
 
 
 @app.route('/images/<path:filename>')
 def serve_image(filename):
-    image_path = os.path.join('/app/archives', filename)
+    archive_root = _archives_root()  # Pull archive root from configuration for consistent serving
+    image_path = archive_root / filename  # Build absolute path using configured archive root
     logger.debug(f"Serving image from: {image_path}")
-    if os.path.exists(image_path):
+    
+    if image_path.exists():
         return send_file(image_path)
     else:
-        logger.warning(f"Image not found at: {image_path}")
+        logger.warning(f"Image not found at: {image_path}. also tried {archive_root / filename}")
         abort(404)
+
 
 def get_top_unique_terms(db, field, term_type, query='', limit=1000, skip=0):
     """
