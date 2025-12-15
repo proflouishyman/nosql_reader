@@ -19,7 +19,8 @@ from pathlib import Path
 import sys
 
 # Configuration
-MONGO_URI = os.environ.get('APP_MONGO_URI') or os.environ.get('MONGO_URI')
+# Use APP_MONGO_URI first (Docker), fallback to MONGO_URI (local)
+MONGO_URI = os.environ.get('APP_MONGO_URI') or os.environ.get('MONGO_URI') or "mongodb://admin:secret@mongodb:27017/admin"
 DB_NAME = 'railroad_documents'
 OLLAMA_URL = "http://host.docker.internal:11434/api/generate"
 MODEL = "llama3.1:8b"
@@ -29,6 +30,25 @@ DRY_RUN = False  # Set to True to test without modifying database
 MAX_PERSONS = 10  # Set to number to limit processing (e.g., 10 for testing), None for all
 VERBOSE = True
 DEBUG = False  # Set to True to save prompts and responses for inspection
+
+def print_startup_diagnostics():
+    """Print detailed startup diagnostics"""
+    print("="*70)
+    print("STARTUP DIAGNOSTICS")
+    print("="*70)
+    print(f"MongoDB URI: {MONGO_URI.replace('secret', '***')}")
+    print(f"Target Database: {DB_NAME}")
+    print(f"Ollama URL: {OLLAMA_URL}")
+    print(f"Model: {MODEL}")
+    print(f"\nEnvironment Variables:")
+    print(f"  APP_MONGO_URI: {'✓ SET' if os.environ.get('APP_MONGO_URI') else '✗ NOT SET'}")
+    print(f"  MONGO_URI: {'✓ SET' if os.environ.get('MONGO_URI') else '✗ NOT SET'}")
+    print(f"\nControl Flags:")
+    print(f"  DRY_RUN: {DRY_RUN}")
+    print(f"  MAX_PERSONS: {MAX_PERSONS}")
+    print(f"  VERBOSE: {VERBOSE}")
+    print(f"  DEBUG: {DEBUG}")
+    print("="*70 + "\n")
 
 class PersonSynthesizer:
     """Generate and store person syntheses"""
@@ -77,28 +97,28 @@ class PersonSynthesizer:
             print(f"    🐛 Saved debug file: {filepath.name}")
         
     def get_all_person_folders(self):
-      """Get list of all unique person folders, sorted by document count (ascending)"""
-      # Get all folders with their document counts
-      pipeline = [
-          {'$match': {'person_folder': {'$exists': True, '$ne': None}}},
-          {'$group': {
-              '_id': '$person_folder',
-              'doc_count': {'$sum': 1}
-          }},
-          {'$sort': {'doc_count': 1}}  # Sort ascending (smallest first)
-      ]
-      
-      results = list(self.documents.aggregate(pipeline))
-      
-      # Extract folder names
-      folders = [r['_id'] for r in results]
-      
-      if VERBOSE:
-          print("\nFolder sizes (first 10):")
-          for r in results[:10]:
-              print(f"  {r['_id']}: {r['doc_count']} documents")
-      
-      return folders
+        """Get list of all unique person folders, sorted by document count (ascending)"""
+        # Get all folders with their document counts
+        pipeline = [
+            {'$match': {'person_folder': {'$exists': True, '$ne': None}}},
+            {'$group': {
+                '_id': '$person_folder',
+                'doc_count': {'$sum': 1}
+            }},
+            {'$sort': {'doc_count': 1}}  # Sort ascending (smallest first)
+        ]
+        
+        results = list(self.documents.aggregate(pipeline))
+        
+        # Extract folder names
+        folders = [r['_id'] for r in results]
+        
+        if VERBOSE:
+            print("\nFolder sizes (first 10):")
+            for r in results[:10]:
+                print(f"  {r['_id']}: {r['doc_count']} documents")
+        
+        return folders
     
     def get_documents_for_person(self, person_folder):
         """Retrieve all documents for a person folder"""
@@ -399,6 +419,11 @@ Begin your response with { and end with }. Return ONLY the JSON object.
             print(f"    [DRY RUN] Would save synthesis to person_syntheses collection")
             return 'dry-run-id'
         
+        # Debug: Verify we're using the right database
+        if VERBOSE:
+            print(f"    Database: {self.db.name}")
+            print(f"    Collection: {self.person_syntheses.name}")
+        
         try:
             # Delete any existing first (like your test does)
             delete_result = self.person_syntheses.delete_many({'person_folder': person_folder})
@@ -413,6 +438,12 @@ Begin your response with { and end with }. Return ONLY the JSON object.
             if found:
                 if VERBOSE:
                     print(f"    ✓ Verified synthesis saved (ID: {insert_result.inserted_id})")
+                    
+                # Double-check by querying by person_folder
+                found_by_folder = self.person_syntheses.find_one({'person_folder': person_folder})
+                if not found_by_folder:
+                    print(f"    ⚠️  WARNING: Saved but can't find by person_folder!")
+                    
                 return insert_result.inserted_id
             else:
                 print(f"    ❌ Error: Could not verify saved synthesis")
@@ -420,6 +451,8 @@ Begin your response with { and end with }. Return ONLY the JSON object.
                 
         except Exception as e:
             print(f"    ❌ Error saving synthesis: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def add_synthesis_to_documents(self, person_folder, synthesis):
@@ -644,7 +677,7 @@ Begin your response with { and end with }. Return ONLY the JSON object.
         print(f"  ✓ Loaded {len(documents)} documents")
         
         # HIERARCHICAL SYNTHESIS
-        BATCH_SIZE = 25
+        BATCH_SIZE = 25  # Smaller batches = faster processing, less timeout risk
         
         if len(documents) <= BATCH_SIZE:
             # Small enough - single synthesis
@@ -762,6 +795,9 @@ Begin your response with { and end with }. Return ONLY the JSON object.
 def main():
     """Main entry point"""
     
+    # Print startup diagnostics FIRST
+    print_startup_diagnostics()
+    
     # Check for command line flags
     global DRY_RUN, MAX_PERSONS, DEBUG
     
@@ -780,10 +816,38 @@ def main():
     
     # Initialize synthesizer
     try:
+        print("Connecting to MongoDB...")
         synthesizer = PersonSynthesizer()
         print("✓ Connected to MongoDB")
+        
+        # Verify database and collections
+        print(f"\nDatabase Verification:")
+        print(f"  Connected to database: {synthesizer.db.name}")
+        print(f"  Available collections: {', '.join(synthesizer.db.list_collection_names())}")
+        
+        # Check if we can count documents
+        doc_count = synthesizer.documents.count_documents({})
+        synth_count = synthesizer.person_syntheses.count_documents({})
+        print(f"\nCollection Stats:")
+        print(f"  Documents in 'documents': {doc_count:,}")
+        print(f"  Documents in 'person_syntheses': {synth_count:,}")
+        
+        # Test write/read to verify permissions
+        print(f"\nPermissions Check:")
+        test_id = synthesizer.person_syntheses.insert_one({'_test': True, 'timestamp': datetime.now()})
+        found = synthesizer.person_syntheses.find_one({'_id': test_id.inserted_id})
+        synthesizer.person_syntheses.delete_one({'_id': test_id.inserted_id})
+        if found:
+            print(f"  ✓ Write/Read/Delete permissions verified")
+        else:
+            print(f"  ⚠️  Warning: Write succeeded but read failed!")
+        
+        print()  # Extra line before continuing
+        
     except Exception as e:
         print(f"❌ Failed to connect to MongoDB: {e}")
+        import traceback
+        traceback.print_exc()
         print("\nMake sure MongoDB is running:")
         print("  sudo systemctl start mongod")
         return 1
