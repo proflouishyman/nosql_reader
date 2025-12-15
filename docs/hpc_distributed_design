@@ -1,0 +1,263 @@
+HPC Accelerated Person Synthesis
+
+This system utilizes a hybrid approach to accelerate person synthesis by leveraging the computational power of a High-Performance Computing (HPC) server. The process involves the following steps:
+
+Data Preparation: Prepare the data locally, including extracting relevant information from the database and formatting it for processing.
+Data Transfer: Transfer the prepared data to the HPC server using a secure method such as SFTP or SCP.
+HPC Processing: Process the data on the HPC server using GPU-accelerated computing resources, executing a job that performs person synthesis.
+Result Transfer: Transfer the processed results back to the local instance using a secure method such as SFTP or SCP.
+Database Update: Update the local database with the processed results, integrating the new information into the existing dataset.
+
+
+
+
+
+# Person Synthesis System - Session Summary
+
+## What We Built
+
+Created a hierarchical AI synthesis system for Baltimore & Ohio Railroad historical documents that:
+
+1. **Processes documents in batches** (25 docs per batch for large folders)
+2. **Generates biographical syntheses** using Ollama (local LLM)
+3. **Saves to MongoDB** in two places:
+   - `person_syntheses` collection (master synthesis)
+   - Embedded in each `documents` entry (for quick access)
+4. **Starts with smallest folders first** (sorted by document count)
+5. **Includes comprehensive debugging** (saves prompts/responses/syntheses)
+
+## Current Configuration
+
+```python
+# File: person_synthesis.py
+MONGO_URI = "mongodb://admin:secret@mongodb:27017/admin"
+DB_NAME = "railroad_documents"
+MODEL = "llama3.1:8b"  # Currently using
+BATCH_SIZE = 25  # Documents per batch
+```
+
+## Key Discovery
+
+**Database issue resolved:** Syntheses were saving correctly all along - we were just querying the wrong database (`admin` instead of `railroad_documents`).
+
+```javascript
+// In mongosh, must use:
+use railroad_documents
+db.person_syntheses.find()
+```
+
+## System Status
+
+- **Total person folders**: 250
+- **Documents**: 9,642
+- **Syntheses generated**: 4 (testing phase)
+- **Working correctly**: ✅ Yes
+
+## Performance Benchmarks
+
+### Current Setup: M4 Pro (128GB RAM) + llama3.1:8b
+- Small folders (1-3 docs): ~20 seconds each
+- Medium folders (25 docs): ~5 minutes each
+- Large folders (93 docs): ~25 minutes each
+- **Estimated total time**: 60-80 hours for all 250 folders
+
+### Recommended: M4 Pro + qwen2.5:32b
+```bash
+ollama pull qwen2.5:32b
+# Change: MODEL = "qwen2.5:32b"
+```
+- **Benefits**: 
+  - Better JSON generation (trained for structured output)
+  - Higher quality narratives
+  - Better reasoning about relationships
+  - Slightly faster (~15 min for 93 docs)
+- **Drawback**: Uses 20GB RAM (but you have 128GB)
+- **Estimated total time**: 40-60 hours for all 250 folders
+
+### Alternative: HPC with L40S GPU
+- **L40S specs**: 48GB VRAM, 864 GB/s bandwidth
+- **Speed improvement**: 5-6x faster than M4 Pro
+- **Large folders (93 docs)**: ~3-4 minutes each
+- **Estimated total time**: 10-15 hours for all 250 folders
+- **Could run**: Even larger models (qwen2.5:72b, llama3.3:70b)
+- **Setup needed**: 
+  - Install Ollama on HPC
+  - Copy MongoDB data OR remote connection
+  - Transfer person_synthesis.py script
+
+## Synthesis Output Structure
+
+```javascript
+{
+  person_folder: "205133-Riegel",
+  person_id: "205133",
+  person_name: "Riegel",
+  num_documents: 93,
+  generated_date: ISODate("2025-12-15T13:56:30.920Z"),
+  model: "llama3.1:8b",
+  version: "1.0",
+  synthesis: {
+    person_identity: {
+      canonical_name: "...",
+      name_variations: [...],
+      employee_id: "...",
+      birth_year: 1895,
+      confidence_notes: "..."
+    },
+    biographical_narrative: "2-4 paragraph summary of career...",  // ← Key field
+    family: {
+      spouse: {...},
+      parents: [...],
+      children: [...]
+    },
+    addresses: [...],
+    employment_timeline: [...],
+    injury_history: [...],
+    medical_examiners: [...],
+    administrative_events: [...],
+    document_analysis: {
+      total_documents: 93,
+      date_range: {...},
+      completeness_assessment: "...",
+      data_quality_notes: [...]
+    },
+    historical_significance: {
+      key_insights: [...],
+      comparative_questions: [...],
+      research_value: "High/Medium/Low"
+    },
+    confidence_scores: {
+      identity_resolution: 0.95,
+      employment_timeline: 0.85,
+      injury_details: 0.90,
+      overall: 0.88
+    }
+  }
+}
+```
+
+## Usage Commands
+
+```bash
+# Process with debugging (saves prompts/responses)
+python person_synthesis.py --debug --limit=10
+
+# Process without debugging (production)
+python person_synthesis.py --limit=50
+
+# Dry run (test without saving)
+python person_synthesis.py --dry-run --limit=5
+
+# Process all 250 folders
+python person_synthesis.py
+```
+
+## Debug Files Location
+
+When `--debug` flag is used:
+```
+/home/claude/synthesis_debug/
+├── 665592-Anderson/
+│   ├── 20251215_135613_prompt.txt
+│   ├── 20251215_135630_raw_response.txt
+│   └── 20251215_135630_synthesis.txt
+└── [other folders]/
+```
+
+## MongoDB Queries
+
+```javascript
+use railroad_documents
+
+// Count syntheses
+db.person_syntheses.countDocuments()
+
+// View specific person
+db.person_syntheses.findOne({'person_folder': '205133-Riegel'})
+
+// Get just the narrative
+db.person_syntheses.findOne(
+  {'person_folder': '205133-Riegel'},
+  {'synthesis.biographical_narrative': 1}
+)
+
+// Find people with medical disputes
+db.person_syntheses.find({
+  'synthesis.injury_history.medical_dispute.disputed': true
+})
+
+// Check if document has embedded synthesis
+db.documents.findOne(
+  {'person_folder': '205133-Riegel'},
+  {'person_synthesis': 1}
+)
+```
+
+## Startup Diagnostics Output
+
+The script shows comprehensive diagnostics:
+```
+STARTUP DIAGNOSTICS
+======================================================================
+MongoDB URI: mongodb://admin:***@mongodb:27017/admin
+Target Database: railroad_documents
+Ollama URL: http://host.docker.internal:11434/api/generate
+Model: llama3.1:8b
+Environment Variables:
+  APP_MONGO_URI: ✓ SET
+  MONGO_URI: ✗ NOT SET
+Control Flags:
+  DRY_RUN: False
+  MAX_PERSONS: 10
+  VERBOSE: True
+  DEBUG: False
+
+Database Verification:
+  Connected to database: railroad_documents
+  Available collections: documents, document_chunks, person_syntheses, ...
+Collection Stats:
+  Documents in 'documents': 9,642
+  Documents in 'person_syntheses': 4
+Permissions Check:
+  ✓ Write/Read/Delete permissions verified
+```
+
+## Next Steps / Open Questions
+
+1. **Model Choice**: Switch to qwen2.5:32b for better quality?
+2. **HPC Usage**: Worth setting up on HPC with L40S GPU for 5-6x speedup?
+3. **Processing Strategy**: 
+   - Process all 250 locally over a few days?
+   - Use HPC to finish in 10-15 hours?
+   - Process in phases (smallest 100, then evaluate)?
+
+## Technical Details
+
+### Hierarchical Synthesis Process
+1. Split large folders into 25-doc batches
+2. Generate synthesis for each batch
+3. Combine batch syntheses into meta-synthesis
+4. Save to database (both collections)
+
+### Error Handling
+- Timeouts: 300 seconds per batch (may need increase)
+- JSON parse errors: Saved to `/home/claude/synthesis_errors/`
+- Failed batches: Continue with remaining batches
+- Graceful degradation: Works even if some batches fail
+
+### Why Hierarchical?
+- Original 400-doc folder = 570K character prompt = timeout/failure
+- 25-doc batches = manageable prompt size = reliable processing
+- Meta-synthesis combines all insights = comprehensive final product
+
+## Files
+
+- **Main script**: `/home/claude/person_synthesis.py`
+- **Debug output**: `/home/claude/synthesis_debug/`
+- **Error logs**: `/home/claude/synthesis_errors/`
+
+## Contact Claude Next Session With
+
+"I have a person synthesis system running on M4 Pro (128GB RAM) processing 250 folders of railroad documents. Currently using llama3.1:8b, considering switching to qwen2.5:32b for better quality or moving to HPC with L40S GPU for 5-6x speedup. What's the best approach for [your specific goal]?"
+
+Or reference this summary file for full context.

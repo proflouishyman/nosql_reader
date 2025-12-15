@@ -1,0 +1,232 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records from the early 20th century.
+
+EMPLOYEE FOLDER: 665596-Todd
+EMPLOYEE ID: 665596
+FOLDER NAME: Todd
+NUMBER OF DOCUMENTS: 3
+
+Below are ALL documents from this employee's personnel file. Read carefully and generate a comprehensive biographical synthesis.
+
+
+======================================================================
+DOCUMENT 1 of 3: RDApp-665596Todd001.jpg.json
+======================================================================
+
+OCR TEXT:
+The Baltimore & Ohio R. R. Co.
+RELIEF DEPARTMENT
+APPLICATION FOR FULL MEMBERSHIP IN THE RELIEF FEATURE
+Division Toledo
+Department M. P.
+Name V. J. Todd
+No. 665596
+Filed-1
+R. P. Form 1.
+CERTIFICATE GRANTED
+MAY 8 1923.
+The execution of the within contract by my _______________(Son, Daughter or Ward) ______________ is approved, and in consideration of employment by The Baltimore & Ohio Railroad Company, I hereby ratify the same and consent for and on behalf of my______________________________ and myself to all the conditions thereof.
+(Son, Daughter or Ward)
+Witness: _______________________________________________           ____________________________________ (Parent or Guardian)
+All signatures must be written with pen and ink, not pencil.
+NOTE FOR EXAMINERS.
+The above form is to be filled up when application is made by a minor, and if the father is living, is to be signed by him alone; if the father is dead, the mother must sign; and if she has married again, the step-father, if living, 
+... [truncated for length]
+
+SUMMARY:
+This document is an application form for full membership in the Relief Department of the Baltimore & Ohio Railroad Company. The form collects information about the applicant’s division, department, name, and number, and requires signatures from a parent, guardian, or legal representative if the applicant is a minor. The form specifies that consent and ratification by the relevant guardian is required. The 'Note for Examiners' gives instructions on who must sign the form depending on the family situation of the minor applicant.
+
+
+======================================================================
+DOCUMENT 2 of 3: RDApp-665596Todd002.jpg.json
+======================================================================
+
+OCR TEXT:
+The Baltimore and Ohio Railroad Co. RELIEF DEPARTMENT. APPLICATION FOR FULL MEMBERSHIP IN THE RELIEF FEATURE. To the Superintendent of the Relief Department: I, William (First Name) Todd (Surname) of Cincinnati, in the County of Hamilton and State of OHIO an employe in the service of The Baltimore & Ohio Railroad Company, as Laborer in the MOTIVE POWER Department, CINCINNATI TERMINAL Division, do hereby apply for membership in the Relief Feature of the Relief Department, and consent and agree to be bound by all the Regulations of the Relief Department now in force, and by any other Regulations of said Department hereafter adopted, applicable to the Relief Feature; for which Regulations now if force, reference is hereby had to any copy of the last edition of the Book of Regulations of said Department, issued by the Superintendent. I Also Agree to pay, on the first pay day of each month, the sum of $ .50 as a contribution to the Relief Feature of said Department, as a condition precedent
+... [truncated for length]
+
+SUMMARY:
+This document is a formal application for full membership to the Relief Feature of The Baltimore and Ohio Railroad Company Relief Department, filled out by a railroad employee named William Todd from Cincinnati, Ohio. He applies for relief membership, designates a beneficiary, agrees to the payment terms and contractual conditions, and certifies his age and health. The form is signed on February 26, 1923, and accepted by the department superintendent on February 28, 1923.
+
+
+======================================================================
+DOCUMENT 3 of 3: RDApp-665596Todd003.jpg.json
+======================================================================
+
+OCR TEXT:
+QUESTIONS TO BE ASKED THE APPLICANT.
+1. Were you ever employed by either The Baltimore & Ohio, Baltimore & Ohio Southwestern, Pittsburgh & Western, Pittsburgh Junction, Cleveland Terminal & Valley, or Baltimore & Ohio Chicago Terminal R. R. Companies? Yes. No.
+If so, give Division_________________________ Department_______________________and Occupation_____________________
+
+2. Are you now in good health, and without infirmity or weakness? Yes. (X)
+
+3. Have you ever had:
+(a) Apoplexy, Paralysis, Vertigo, Fits, or any Disorder of the Brain or Nervous System? Yes. No. (X)
+(b) Hay Fever, Asthma, Consumption, Spitting of Blood, Habitual Cough, Palpitation, or any Disease of the Heart or Lungs? Yes. No. (X)
+(c) Appendicitis, Cancer, Chronic Diarrhoea, Discharge from the Ear, Dropsy, Swelling of Ankles, Rheumatism, Gout, Syphilis or Disease of the Liver, Kidneys or Bladder? Yes. No. (X)
+If applicant has had any of the above, give details:________________________________________________
+
+4. Ha
+... [truncated for length]
+
+SUMMARY:
+This document is an insurance application and medical questionnaire, including personal and family medical history. The applicant, born October 16, 1895, is unmarried, has no children, and reports no significant personal or family medical issues, except siblings who died in infancy from gas bronchitis. The application was certified by a clerk and a medical examiner in Cincinnati, Ohio in 1923, with an insurance risk acceptance recommendation.
+
+
+{'='*70}
+YOUR TASK: GENERATE COMPREHENSIVE BIOGRAPHICAL SYNTHESIS
+{'='*70}
+
+Create a structured JSON synthesis with the following schema. Be thorough and evidence-based.
+
+{
+  "person_identity": {
+    "canonical_name": "Full official name based on most common/official usage",
+    "name_variations": [
+      {
+        "name": "Variation as it appears",
+        "confidence": "high/medium/low",
+        "sources": ["list document filenames where this variation appears"]
+      }
+    ],
+    "employee_id": "Employee ID number",
+    "birth_year": 1895,
+    "confidence_notes": "Brief assessment of identity certainty"
+  },
+  
+  "biographical_narrative": "Write 2-4 paragraphs summarizing this person's railroad career. Include: when they started, positions held, major events (injuries, promotions, disputes), family situation, and any notable circumstances. Write in past tense as a professional historian would. Make it readable and informative.",
+  
+  "family": {
+    "spouse": {
+      "name": "Spouse name or null",
+      "evidence": "How we know this",
+      "sources": ["document filenames"]
+    },
+    "parents": [
+      {
+        "name": "Parent name",
+        "relationship": "father/mother",
+        "evidence": "How mentioned",
+        "sources": ["document filenames"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Full address as stated",
+      "date_range": "When associated with this address or 'unknown'",
+      "context": "Why this address appears (residence, beneficiary address, etc.)",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Job title",
+      "department": "Department name or null",
+      "division": "Division name or null",
+      "details": "Brief description of what happened",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "YYYY-MM-DD or best available",
+      "injury_type": "Description of injury",
+      "body_part": "Affected body part(s)",
+      "narrative": "2-3 sentence description of injury, treatment, and outcome",
+      "medical_examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "examiner": "Dr. Name",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Key details from examination",
+          "sources": ["document filenames"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"},
+          "days": 10,
+          "amount": 50.00,
+          "check_number": "Check number if available",
+          "sources": ["document filenames"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true or false,
+        "narrative": "If disputed, explain the conflict between doctors or administrators",
+        "resolution": "How was it resolved or 'unclear'"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Name",
+      "district": "District number if available",
+      "examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "finding": "Brief finding"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event": "What happened",
+      "significance": "Why this matters",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "YYYY-MM-DD or best guess",
+      "latest": "YYYY-MM-DD or best guess"
+    },
+    "completeness_assessment": "1-2 sentences: How complete is this record? What's well-documented? What's missing?",
+    "data_quality_notes": [
+      "List observations about OCR quality, contradictions, clarity, etc."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "What does this case reveal about railroad labor, medical practices, administration, etc.?"
+    ],
+    "comparative_questions": [
+      "What questions could be explored by comparing this case to others?"
+    ],
+    "research_value": "High/Medium/Low"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON - no preamble, no markdown fences, no explanation
+2. Use exact schema above - include all fields even if some are empty/null
+3. Always include "sources" arrays with actual document filenames for evidence
+4. Be thorough but concise
+5. Note contradictions or uncertainties explicitly
+6. Assign realistic confidence scores (0.0-1.0) based on evidence quality
+7. Write biographical_narrative in clear, professional prose
+8. If information is missing, use null or empty arrays - don't invent data
+9. For dates, use best available format (prefer YYYY-MM-DD, but accept what documents provide)
+10. Document filenames should match the filename shown in DOCUMENT headers above
+
+Begin your response with { and end with }. Return ONLY the JSON object.
