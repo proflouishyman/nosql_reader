@@ -41,6 +41,14 @@
         const contextFieldsInput = document.getElementById('agentContextFields');
         const summaryFieldInput = document.getElementById('agentSummaryField');
         const fallbackToggle = document.getElementById('agentAllowFallback');
+        const useVectorToggle = document.getElementById('agentUseVector');
+        const embeddingProviderSelect = document.getElementById('agentEmbeddingProvider');
+        const embeddingModelInput = document.getElementById('agentEmbeddingModel');
+        const chunkSizeInput = document.getElementById('agentChunkSize');
+        const chunkOverlapInput = document.getElementById('agentChunkOverlap');
+        const hybridAlphaInput = document.getElementById('agentHybridAlpha');
+        const vectorStoreSelect = document.getElementById('agentVectorStore');
+        const chromaPathInput = document.getElementById('agentChromaPath');
         const resetConfigButton = document.getElementById('agentSettingsReset');
 
         const configEndpoint = agentSettingsRoot ? agentSettingsRoot.dataset.configEndpoint : null;
@@ -178,6 +186,30 @@
             if (typeof payload.allow_general_fallback !== 'undefined' && fallbackToggle) {
                 fallbackToggle.checked = Boolean(payload.allow_general_fallback);
             }
+            if (typeof payload.use_vector_retrieval !== 'undefined' && useVectorToggle) {
+                useVectorToggle.checked = Boolean(payload.use_vector_retrieval); // Added to hydrate the RAG toggle from backend state.
+            }
+            if (payload.embedding_provider && embeddingProviderSelect) {
+                embeddingProviderSelect.value = payload.embedding_provider; // Added to align embedding provider dropdown with config.
+            }
+            if (typeof payload.embedding_model !== 'undefined' && embeddingModelInput) {
+                embeddingModelInput.value = payload.embedding_model || ''; // Added to reflect embedding model selection in the form.
+            }
+            if (typeof payload.chunk_size !== 'undefined' && chunkSizeInput) {
+                chunkSizeInput.value = payload.chunk_size; // Added to prefill chunk size control for RAG chunking.
+            }
+            if (typeof payload.chunk_overlap !== 'undefined' && chunkOverlapInput) {
+                chunkOverlapInput.value = payload.chunk_overlap; // Added to keep overlap input synced with session overrides.
+            }
+            if (typeof payload.hybrid_alpha !== 'undefined' && hybridAlphaInput) {
+                hybridAlphaInput.value = Number(payload.hybrid_alpha).toFixed(2); // Added to display hybrid weighting consistently.
+            }
+            if (payload.vector_store_type && vectorStoreSelect) {
+                vectorStoreSelect.value = payload.vector_store_type; // Added to persist vector store selection in UI.
+            }
+            if (typeof payload.chroma_persist_directory !== 'undefined' && chromaPathInput) {
+                chromaPathInput.value = payload.chroma_persist_directory || ''; // Added to show custom Chroma path when provided.
+            }
         }
 
         function hydrateFromConfig() {
@@ -238,6 +270,7 @@
             });
             payload.enabled = settingsForm.querySelector('#agentEnabled')?.checked;
             payload.allow_general_fallback = settingsForm.querySelector('#agentAllowFallback')?.checked;
+            payload.use_vector_retrieval = settingsForm.querySelector('#agentUseVector')?.checked; // Added to send explicit RAG toggle state.
             return payload;
         }
 
