@@ -353,6 +353,14 @@ def _historian_agent_overrides(include_session: bool = True) -> dict:
             'allow_general_fallback',
             'ollama_base_url',
             'openai_api_key',
+            'use_vector_retrieval',  # Added to let persisted UI settings toggle RAG mode without env edits.
+            'embedding_provider',  # Added to persist embedding backend choice from the settings form.
+            'embedding_model',  # Added so the selected embedding model survives reloads.
+            'chunk_size',  # Added to mirror UI chunk settings back into the agent config.
+            'chunk_overlap',  # Added to persist overlap changes for downstream retrievers.
+            'vector_store_type',  # Added to surface vector store selection through session overrides.
+            'chroma_persist_directory',  # Added so custom Chroma paths can be reused across sessions.
+            'hybrid_alpha',  # Added to keep hybrid weighting stable when users tweak sliders.
         }
         overrides.update({key: value for key, value in settings.items() if key in allowed})
     if include_session:
@@ -375,6 +383,14 @@ def _serialise_agent_config(config: HistorianAgentConfig) -> Dict[str, Any]:
         'allow_general_fallback': config.allow_general_fallback,
         'ollama_base_url': config.ollama_base_url or '',
         'openai_api_key_present': bool(config.openai_api_key),
+        'use_vector_retrieval': config.use_vector_retrieval,  # Added to expose the RAG toggle to the UI payload.
+        'embedding_provider': config.embedding_provider,  # Added so embedding provider dropdown hydrates correctly.
+        'embedding_model': config.embedding_model,  # Added to prefill the embedding model input.
+        'chunk_size': config.chunk_size,  # Added so chunk sizing controls reflect current config.
+        'chunk_overlap': config.chunk_overlap,  # Added to keep overlap slider in sync with backend.
+        'vector_store_type': config.vector_store_type,  # Added to mirror the selected vector store implementation.
+        'chroma_persist_directory': config.chroma_persist_directory or '',  # Added to show custom Chroma path when set.
+        'hybrid_alpha': config.hybrid_alpha,  # Added so hybrid weighting slider reports the active value.
     }
 
 
@@ -550,6 +566,48 @@ def _parse_agent_config_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     if 'openai_api_key' in payload:
         api_key = str(payload['openai_api_key']).strip()
         overrides['openai_api_key'] = api_key or None
+    if 'use_vector_retrieval' in payload:
+        overrides['use_vector_retrieval'] = _is_truthy(payload['use_vector_retrieval'])  # Added to accept the UI RAG toggle.
+    if 'embedding_provider' in payload:
+        provider = str(payload['embedding_provider']).strip().lower()
+        if provider and provider not in {'local', 'huggingface', 'openai'}:
+            raise ValueError('Unsupported embedding provider selected.')  # Added guard to prevent invalid providers from breaking RAG init.
+        overrides['embedding_provider'] = provider or None  # Added to persist supported provider choices.
+    if 'embedding_model' in payload:
+        model = str(payload['embedding_model']).strip()
+        overrides['embedding_model'] = model  # Added to carry embedding model selection from the form.
+    if 'chunk_size' in payload and payload['chunk_size'] != '':
+        try:
+            chunk_size = int(payload['chunk_size'])
+        except (TypeError, ValueError) as exc:
+            raise ValueError('Chunk size must be a whole number.') from exc  # Added validation to keep chunk sizing numeric.
+        if chunk_size < 1:
+            raise ValueError('Chunk size must be at least 1.')  # Added lower bound to avoid empty chunks.
+        overrides['chunk_size'] = chunk_size  # Added to save validated chunk size.
+    if 'chunk_overlap' in payload and payload['chunk_overlap'] != '':
+        try:
+            chunk_overlap = int(payload['chunk_overlap'])
+        except (TypeError, ValueError) as exc:
+            raise ValueError('Chunk overlap must be a whole number.') from exc  # Added validation to keep overlap numeric.
+        if chunk_overlap < 0:
+            raise ValueError('Chunk overlap cannot be negative.')  # Added guard so overlap stays sane.
+        overrides['chunk_overlap'] = chunk_overlap  # Added to persist validated overlap.
+    if 'vector_store_type' in payload:
+        store_type = str(payload['vector_store_type']).strip().lower()
+        if store_type and store_type not in {'chroma'}:
+            raise ValueError('Unsupported vector store selected.')  # Added validation to match backend factory support.
+        overrides['vector_store_type'] = store_type or None  # Added to save the chosen vector store type.
+    if 'chroma_persist_directory' in payload:
+        directory = str(payload['chroma_persist_directory']).strip()
+        overrides['chroma_persist_directory'] = directory or None  # Added to pass custom persistence path through the config.
+    if 'hybrid_alpha' in payload and payload['hybrid_alpha'] != '':
+        try:
+            hybrid_alpha = float(payload['hybrid_alpha'])
+        except (TypeError, ValueError) as exc:
+            raise ValueError('Hybrid alpha must be a number.') from exc  # Added validation to keep weighting numeric.
+        if not 0 <= hybrid_alpha <= 1:
+            raise ValueError('Hybrid alpha must be between 0 and 1.')  # Added bound to align with retriever expectations.
+        overrides['hybrid_alpha'] = hybrid_alpha  # Added to store validated weighting.
     return overrides
 
 

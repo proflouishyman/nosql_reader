@@ -1,2 +1,10 @@
 [2025-11-02 20:18] app/image_ingestion.py, app/routes.py, app/static/data_ingestion_model_selector.js, app/templates/partials/data_ingestion_model_selector.html, docs/ollama_menu_design/IMPLEMENTATION_SUMMARY.md, readme.md, AGENTS.md edited — Synced ingestion defaults with .env, surfaced selector errors, and updated guidelines/docs per UI changes.
 [2025-11-03 13:35] app/routes.py, app/image_ingestion.py, app/static/settings_data_ingestion.js edited — Enabled SSE streaming for image scans with live frontend logs.
+[2025-12-15 14:49] app/templates/document-detail.html edited — Displayed person synthesis at bottom of document detail
+[2025-12-15 14:56] app/templates/document-detail.html edited — Styled person synthesis using nested renderer to match other JSON sections
+[2025-12-15 15:04] app/templates/document-detail.html edited — Truncated common file extensions in document title display for cleaner UI.
+[2025-12-15 15:32] app/templates/settings.html edited — removed ingestion controls from settings page
+[2025-12-15 16:20] docs/rag_llm_design/RAG_WIRING_STATUS.md created — Summarised outstanding RAG wiring tasks for UI/server/migration gaps.
+[2025-12-15 17:27] app/routes.py, app/templates/partials/historian_agent_settings.html, app/static/historian_agent.js, docs/rag_llm_design/RAG_WIRING_STATUS.md, readme.md edited — Wired vector retrieval settings through UI/API and documented rollout notes.
+[2025-12-15 18:19] app/historian_agent/__init__.py edited — Stop silent vector fallback when document_chunks is missing so DB issues surface
+[2025-12-15 19:12] app/historian_agent/retrievers.py edited — Synced vector search results with Mongo chunk metadata so citations carry parent IDs and text

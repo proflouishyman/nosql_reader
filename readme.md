@@ -192,6 +192,8 @@ The following table maps each environment variable or UI control to its behaviou
 
 Run `python scripts/embed_existing_documents.py` to generate the initial chunk embeddings before turning the feature flag on. The script adds a `document_chunks` collection, writes vectors to ChromaDB, and can be resumed safely if interrupted.
 
+You can now toggle vector retrieval, pick embedding providers/models, and adjust chunk sizing directly from **Settings → ChatBot configuration**, which persists overrides in your session without editing `.env`. <!-- Added to reflect newly wired UI controls for RAG. -->
+
 When an override is active, the sidebar displays a badge showing the active provider and highlights any values that differ from the environment defaults. The backend validates keys and endpoints before accepting a change and responds with descriptive error messages for invalid combinations.
 
 ## Docker operations cheat-sheet

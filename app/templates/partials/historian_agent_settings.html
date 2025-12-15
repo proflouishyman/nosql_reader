@@ -71,6 +71,63 @@
             </label>
             <p class="form-field__hint">Use the summary field when direct snippets are unavailable.</p>
         </div>
+        <div class="form-field form-field--toggle">
+            <label for="agentUseVector">
+                <span>Enable vector retrieval (RAG)</span>
+                <input type="checkbox" id="agentUseVector" name="use_vector_retrieval" {% if agent_config_payload.use_vector_retrieval %}checked{% endif %}>
+            </label>
+            <p class="form-field__hint">Turn on hybrid keyword + vector search once document chunks have been embedded.</p>
+            <!-- Added explicit toggle so users can activate semantic retrieval from the UI. -->
+        </div>
+        <div class="form-field">
+            <label for="agentEmbeddingProvider">Embedding provider</label>
+            <select id="agentEmbeddingProvider" name="embedding_provider">
+                <option value="local" {% if agent_config_payload.embedding_provider == 'local' %}selected{% endif %}>Local (HuggingFace)</option>
+                <option value="openai" {% if agent_config_payload.embedding_provider == 'openai' %}selected{% endif %}>OpenAI</option>
+            </select>
+            <p class="form-field__hint">Choose which service should generate chunk embeddings for vector search.</p>
+            <!-- Added provider dropdown so the backend can build the correct embedding client. -->
+        </div>
+        <div class="form-field">
+            <label for="agentEmbeddingModel">Embedding model</label>
+            <input type="text" id="agentEmbeddingModel" name="embedding_model" value="{{ agent_config_payload.embedding_model }}" placeholder="all-MiniLM-L6-v2">
+            <p class="form-field__hint">Set the embedding model name supported by your chosen provider.</p>
+            <!-- Added model input to keep embedding selection in sync with RAG components. -->
+        </div>
+        <div class="form-field form-field--grid">
+            <div>
+                <label for="agentChunkSize">Chunk size</label>
+                <input type="number" id="agentChunkSize" name="chunk_size" min="1" value="{{ agent_config_payload.chunk_size }}">
+                <p class="form-field__hint">Characters per chunk when building embeddings.</p>
+            </div>
+            <div>
+                <label for="agentChunkOverlap">Chunk overlap</label>
+                <input type="number" id="agentChunkOverlap" name="chunk_overlap" min="0" value="{{ agent_config_payload.chunk_overlap }}">
+                <p class="form-field__hint">Number of characters shared between adjacent chunks.</p>
+            </div>
+            <!-- Added chunk controls to align retrieval with embedding boundaries. -->
+        </div>
+        <div class="form-field form-field--grid">
+            <div>
+                <label for="agentHybridAlpha">Hybrid weighting (alpha)</label>
+                <input type="number" id="agentHybridAlpha" name="hybrid_alpha" min="0" max="1" step="0.05" value="{{ '%.2f'|format(agent_config_payload.hybrid_alpha) }}">
+                <p class="form-field__hint">0 uses keyword only; 1 uses vector only.</p>
+            </div>
+            <div>
+                <label for="agentVectorStore">Vector store</label>
+                <select id="agentVectorStore" name="vector_store_type">
+                    <option value="chroma" {% if agent_config_payload.vector_store_type == 'chroma' %}selected{% endif %}>Chroma</option>
+                </select>
+                <p class="form-field__hint">Currently limited to Chroma; storage path configurable below.</p>
+            </div>
+            <!-- Added hybrid weighting + store selection to mirror backend capabilities. -->
+        </div>
+        <div class="form-field">
+            <label for="agentChromaPath">Chroma persist directory</label>
+            <input type="text" id="agentChromaPath" name="chroma_persist_directory" value="{{ agent_config_payload.chroma_persist_directory }}" placeholder="/home/claude/chroma_db">
+            <p class="form-field__hint">Override the default vector store path if using a shared volume.</p>
+            <!-- Added path override so deployments can target persistent storage. -->
+        </div>
         <div class="agent-settings__actions">
             <button type="submit">Save configuration</button>
             <button type="button" id="agentSettingsReset" class="secondary">Reset to defaults</button>

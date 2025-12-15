@@ -448,6 +448,12 @@ def get_agent(collection, overrides: Optional[Dict[str, Any]] = None) -> Histori
                     keyword_weight=1.0 - alpha,
                     top_k=config.max_context_documents,
                 )
+            except HistorianAgentError as exc:
+                logger.error(
+                    "Vector retrieval prerequisites failed; surface configuration error to caller: %s",
+                    exc,
+                )  # Added to propagate missing chunk migrations instead of silently falling back.
+                raise
             except Exception as exc:
                 logger.warning(
                     "Vector retrieval initialisation failed; reverting to keyword search: %s",
