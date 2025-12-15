@@ -13,8 +13,6 @@ Features:
 - Metadata filtering
 """
 
-# Added to unlock hybrid retrieval while keeping keyword fallback.  # change rationale comment
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -183,17 +181,11 @@ class KeywordRetriever(BaseRetriever):
         try:
             # Build regex query
             regex = re.compile(re.escape(query), re.IGNORECASE)
-
-            search_fields = list(self.config.context_fields)  # Copy to extend with chunk-aware aliases.
-            if "chunk_text" not in search_fields:
-                search_fields.append("chunk_text")  # Added chunk_text so new chunk collection remains searchable.
-            if "content" not in search_fields:
-                search_fields.append("content")  # Added legacy content alias used by migration indexes.
-
+            
             # Search across configured fields
             filters = [
                 {field: {"$regex": regex}}
-                for field in search_fields
+                for field in self.config.context_fields
             ]
             mongo_query = {"$or": filters} if filters else {}
             
@@ -225,10 +217,8 @@ class KeywordRetriever(BaseRetriever):
     def _extract_content(self, record: Dict[str, Any]) -> str:
         """Extract content from MongoDB record."""
         # Try to use chunk content if available
-        if "chunk_text" in record:
-            return record["chunk_text"]  # Added priority for chunk_text stored by new chunk pipeline.
         if "content" in record:
-            return record["content"]  # Preserve compatibility with legacy keyword search fields.
+            return record["content"]
         
         # Otherwise combine configured fields
         content_segments: List[str] = []
@@ -261,13 +251,11 @@ class KeywordRetriever(BaseRetriever):
         # Add chunk-specific metadata if available
         if "chunk_id" in record:
             metadata["chunk_id"] = record["chunk_id"]
-        if "source_document_id" in record:
-            metadata["source_document_id"] = record["source_document_id"]  # Added to expose parent references for chunked docs.
         if "parent_doc_id" in record:
-            metadata["parent_doc_id"] = record["parent_doc_id"]  # Retained alias for migration parity.
+            metadata["parent_doc_id"] = record["parent_doc_id"]
         if "chunk_index" in record:
             metadata["chunk_index"] = record["chunk_index"]
-
+        
         return metadata
 
 

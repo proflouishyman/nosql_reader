@@ -90,7 +90,7 @@ services:
       # Added Chroma persistence volume for vector database durability.  # change rationale comment
       - type: bind
         source: ${CHROMA_HOST_PATH:-../chroma_db}
-        target: ${CHROMA_PERSIST_DIRECTORY:-/home/claude/chroma_db}
+        target: ${CHROMA_PERSIST_DIRECTORY:-/data/chroma_db}
       - type: bind
         source: ./docker-compose.yml
         target: /app/docker-compose.yml

@@ -5,7 +5,7 @@ This script processes all existing documents in MongoDB:
 1. Chunks documents intelligently
 2. Generates vector embeddings
 3. Stores chunks in MongoDB collection
-4. Indexes embeddings in vector store (ChromaDB/MongoDB)
+4. Indexes embeddings in vector store (ChromaDB)
 
 Usage:
     python embed_existing_documents.py --batch-size 100 --provider local
@@ -28,10 +28,10 @@ sys.path.insert(0, str(app_dir))
 from pymongo import MongoClient
 from tqdm import tqdm
 
-# Import RAG components (these will be in app/historian_agent/)
-from app.historian_agent.chunking import DocumentChunker, Chunk
-from app.historian_agent.embeddings import EmbeddingService
-from app.historian_agent.vector_store import get_vector_store
+# Import RAG components
+from chunking import DocumentChunker, Chunk
+from embeddings import EmbeddingService
+from vector_store import get_vector_store
 
 # Setup logging
 logging.basicConfig(
@@ -45,20 +45,31 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+# Configuration constants
+DEFAULT_MONGO_URI = os.environ.get('APP_MONGO_URI') or os.environ.get('MONGO_URI') or "mongodb://admin:secret@mongodb:27017/admin"
+DEFAULT_DB_NAME = 'railroad_documents'
+DEFAULT_BATCH_SIZE = 100
+DEFAULT_PROVIDER = 'local'
+DEFAULT_MODEL = 'Alibaba-NLP/gte-Qwen2-1.5B-instruct'
+DEFAULT_CHUNK_SIZE = 1000
+DEFAULT_CHUNK_OVERLAP = 200
+DEFAULT_VECTOR_STORE = 'chroma'
+
+
 class DocumentEmbeddingMigration:
     """Handles migration of existing documents to chunked+embedded format."""
     
     def __init__(
         self,
         mongo_uri: str,
-        db_name: str = "railroad_documents",
-        batch_size: int = 100,
-        embedding_provider: str = "local",
-        embedding_model: str = "all-MiniLM-L6-v2",
-        chunk_size: int = 1000,
-        chunk_overlap: int = 200,
+        db_name: str = DEFAULT_DB_NAME,
+        batch_size: int = DEFAULT_BATCH_SIZE,
+        embedding_provider: str = DEFAULT_PROVIDER,
+        embedding_model: str = DEFAULT_MODEL,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
+        chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
         openai_api_key: Optional[str] = None,
-        vector_store_type: str = "chroma",
+        vector_store_type: str = DEFAULT_VECTOR_STORE,
     ):
         """
         Initialize migration.
@@ -74,21 +85,27 @@ class DocumentEmbeddingMigration:
             openai_api_key: OpenAI API key (if using OpenAI)
             vector_store_type: 'chroma' or 'mongo'
         """
+        logger.info("="*60)
+        logger.info("Initializing Document Embedding Migration")
+        logger.info("="*60)
+        
         # MongoDB setup
         self.client = MongoClient(mongo_uri)
         self.db = self.client[db_name]
         self.documents_collection = self.db["documents"]
-        self.chunks_collection = self.db.get_collection("document_chunks")
+        self.chunks_collection = self.db["document_chunks"]
         
         # Create indexes on chunks collection
         self._create_indexes()
         
         # Initialize RAG components
+        logger.info(f"Initializing document chunker (size={chunk_size}, overlap={chunk_overlap})")
         self.chunker = DocumentChunker(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
         )
         
+        logger.info(f"Initializing embedding service (provider={embedding_provider}, model={embedding_model})")
         self.embedding_service = EmbeddingService(
             provider=embedding_provider,
             model=embedding_model,
@@ -96,6 +113,7 @@ class DocumentEmbeddingMigration:
             batch_size=batch_size,
         )
         
+        logger.info(f"Initializing vector store (type={vector_store_type})")
         self.vector_store = get_vector_store(
             store_type=vector_store_type,
             collection=self.chunks_collection if vector_store_type == "mongo" else None,
@@ -104,9 +122,8 @@ class DocumentEmbeddingMigration:
         self.batch_size = batch_size
         
         logger.info(
-            f"Migration initialized: "
-            f"db={db_name}, "
-            f"batch_size={batch_size}, "
+            f"Migration initialized successfully: "
+            f"db={db_name}, batch_size={batch_size}, "
             f"embeddings={embedding_provider}/{embedding_model}, "
             f"vector_store={vector_store_type}"
         )
@@ -114,12 +131,12 @@ class DocumentEmbeddingMigration:
     def _create_indexes(self):
         """Create necessary indexes on chunks collection."""
         try:
-            # Index on parent_doc_id for fast lookup
-            self.chunks_collection.create_index("parent_doc_id")
+            # Index on document_id for fast lookup
+            self.chunks_collection.create_index("document_id")
             # Index on chunk_id for fast lookup
             self.chunks_collection.create_index("chunk_id", unique=True)
-            # Text index on content for keyword search
-            self.chunks_collection.create_index([("content", "text")])
+            # Text index on text field for keyword search
+            self.chunks_collection.create_index([("text", "text")])
             logger.info("Created indexes on document_chunks collection")
         except Exception as e:
             logger.warning(f"Error creating indexes (may already exist): {e}")
@@ -158,15 +175,18 @@ class DocumentEmbeddingMigration:
         if skip_existing:
             # Find documents that don't have chunks yet
             existing_parent_ids = set(
-                self.chunks_collection.distinct("parent_doc_id")
+                self.chunks_collection.distinct("document_id")
             )
-            query["_id"] = {"$nin": list(existing_parent_ids)}
+            if existing_parent_ids:
+                query["_id"] = {"$nin": list(existing_parent_ids)}
+                logger.info(f"Skipping {len(existing_parent_ids)} documents that already have chunks")
         
         total_docs = self.documents_collection.count_documents(query)
         stats["total_documents"] = total_docs
         
         if limit:
             total_docs = min(total_docs, limit)
+            logger.info(f"Limiting processing to {limit} documents")
         
         logger.info(f"Found {total_docs} documents to process")
         
@@ -177,7 +197,7 @@ class DocumentEmbeddingMigration:
         # Process in batches
         cursor = self.documents_collection.find(query).limit(limit or 0)
         
-        with tqdm(total=total_docs, desc="Processing documents") as pbar:
+        with tqdm(total=total_docs, desc="Processing documents", unit="docs") as pbar:
             batch = []
             
             for document in cursor:
@@ -235,11 +255,12 @@ class DocumentEmbeddingMigration:
         all_chunks = []
         
         # Step 1: Chunk all documents in batch
+        logger.debug(f"Chunking {len(documents)} documents...")
         for document in documents:
             doc_id = str(document["_id"])
             
             try:
-                # Chunk document
+                # Chunk document - use content_fields parameter name
                 chunks = self.chunker.chunk_document(
                     document,
                     content_fields=("title", "content", "ocr_text", "summary")
@@ -268,8 +289,12 @@ class DocumentEmbeddingMigration:
         
         # Step 2: Generate embeddings for all chunks
         try:
-            logger.debug(f"Generating embeddings for {len(all_chunks)} chunks")
+            logger.debug(f"Generating embeddings for {len(all_chunks)} chunks...")
+            
+            # Extract text from chunks (use .content property)
             chunk_texts = [chunk.content for chunk in all_chunks]
+            
+            # Generate embeddings
             embeddings = self.embedding_service.embed_documents(
                 chunk_texts,
                 show_progress=False,
@@ -278,6 +303,8 @@ class DocumentEmbeddingMigration:
             # Attach embeddings to chunks
             for chunk, embedding in zip(all_chunks, embeddings):
                 chunk.embedding = embedding
+            
+            logger.debug(f"Generated {len(embeddings)} embeddings")
                 
         except Exception as e:
             logger.error(f"Error generating embeddings: {e}", exc_info=True)
@@ -294,7 +321,7 @@ class DocumentEmbeddingMigration:
         try:
             chunk_dicts = [chunk.to_dict() for chunk in all_chunks]
             if chunk_dicts:
-                self.chunks_collection.insert_many(chunk_dicts)
+                self.chunks_collection.insert_many(chunk_dicts, ordered=False)
                 logger.debug(f"Inserted {len(chunk_dicts)} chunks into MongoDB")
         except Exception as e:
             logger.error(f"Error inserting chunks into MongoDB: {e}", exc_info=True)
@@ -332,47 +359,47 @@ def main():
     )
     parser.add_argument(
         "--mongo-uri",
-        default=os.environ.get("MONGO_URI", "mongodb://admin:secret@mongodb:27017/admin"),
+        default=DEFAULT_MONGO_URI,
         help="MongoDB connection URI"
     )
     parser.add_argument(
         "--db-name",
-        default="railroad_documents",
+        default=DEFAULT_DB_NAME,
         help="Database name"
     )
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=100,
+        default=DEFAULT_BATCH_SIZE,
         help="Number of documents to process at once"
     )
     parser.add_argument(
         "--provider",
         choices=["local", "openai"],
-        default=os.environ.get("HISTORIAN_AGENT_EMBEDDING_PROVIDER", "local"),
+        default=os.environ.get("HISTORIAN_AGENT_EMBEDDING_PROVIDER", DEFAULT_PROVIDER),
         help="Embedding provider"
     )
     parser.add_argument(
         "--model",
-        default=os.environ.get("HISTORIAN_AGENT_EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
+        default=os.environ.get("HISTORIAN_AGENT_EMBEDDING_MODEL", DEFAULT_MODEL),
         help="Embedding model name"
     )
     parser.add_argument(
         "--chunk-size",
         type=int,
-        default=1000,
+        default=DEFAULT_CHUNK_SIZE,
         help="Characters per chunk"
     )
     parser.add_argument(
         "--chunk-overlap",
         type=int,
-        default=200,
+        default=DEFAULT_CHUNK_OVERLAP,
         help="Overlap between chunks"
     )
     parser.add_argument(
         "--vector-store",
         choices=["chroma", "mongo"],
-        default="chroma",
+        default=DEFAULT_VECTOR_STORE,
         help="Vector store type"
     )
     parser.add_argument(
@@ -380,6 +407,12 @@ def main():
         action="store_true",
         default=True,
         help="Skip documents that already have chunks"
+    )
+    parser.add_argument(
+        "--no-skip-existing",
+        dest="skip_existing",
+        action="store_false",
+        help="Process all documents (reprocess existing)"
     )
     parser.add_argument(
         "--limit",
@@ -394,25 +427,46 @@ def main():
     
     args = parser.parse_args()
     
+    logger.info("Starting migration with parameters:")
+    logger.info(f"  MongoDB URI: {args.mongo_uri[:50]}...")
+    logger.info(f"  Database: {args.db_name}")
+    logger.info(f"  Batch size: {args.batch_size}")
+    logger.info(f"  Provider: {args.provider}")
+    logger.info(f"  Model: {args.model}")
+    logger.info(f"  Chunk size: {args.chunk_size}")
+    logger.info(f"  Chunk overlap: {args.chunk_overlap}")
+    logger.info(f"  Vector store: {args.vector_store}")
+    logger.info(f"  Skip existing: {args.skip_existing}")
+    if args.limit:
+        logger.info(f"  Limit: {args.limit} documents")
+    
     # Initialize migration
-    migration = DocumentEmbeddingMigration(
-        mongo_uri=args.mongo_uri,
-        db_name=args.db_name,
-        batch_size=args.batch_size,
-        embedding_provider=args.provider,
-        embedding_model=args.model,
-        chunk_size=args.chunk_size,
-        chunk_overlap=args.chunk_overlap,
-        openai_api_key=os.environ.get("OPENAI_API_KEY"),
-        vector_store_type=args.vector_store,
-    )
+    try:
+        migration = DocumentEmbeddingMigration(
+            mongo_uri=args.mongo_uri,
+            db_name=args.db_name,
+            batch_size=args.batch_size,
+            embedding_provider=args.provider,
+            embedding_model=args.model,
+            chunk_size=args.chunk_size,
+            chunk_overlap=args.chunk_overlap,
+            openai_api_key=os.environ.get("OPENAI_API_KEY"),
+            vector_store_type=args.vector_store,
+        )
+    except Exception as e:
+        logger.error(f"Failed to initialize migration: {e}", exc_info=True)
+        sys.exit(1)
     
     # Reset if requested
     if args.reset:
-        logger.warning("Resetting vector store...")
-        if hasattr(migration.vector_store, 'reset'):
-            migration.vector_store.reset()
-        logger.info("Vector store reset complete")
+        logger.warning("⚠️  RESETTING VECTOR STORE - All existing embeddings will be deleted!")
+        try:
+            if hasattr(migration.vector_store, 'reset'):
+                migration.vector_store.reset()
+            logger.info("✅ Vector store reset complete")
+        except Exception as e:
+            logger.error(f"Failed to reset vector store: {e}")
+            sys.exit(1)
     
     # Run migration
     try:
@@ -421,14 +475,17 @@ def main():
             limit=args.limit,
         )
         
-        # Exit with success
-        sys.exit(0 if stats["failed"] == 0 else 1)
+        # Exit with success if no failures
+        exit_code = 0 if stats["failed"] == 0 else 1
+        logger.info(f"Migration exiting with code: {exit_code}")
+        sys.exit(exit_code)
         
     except KeyboardInterrupt:
-        logger.warning("Migration interrupted by user")
+        logger.warning("Migration interrupted by user (Ctrl+C)")
+        logger.info("Progress has been saved. You can resume with --skip-existing")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"Migration failed: {e}", exc_info=True)
+        logger.error(f"Migration failed with unexpected error: {e}", exc_info=True)
         sys.exit(1)
 
 

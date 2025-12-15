@@ -56,34 +56,6 @@
         </form>
     </section>
 
-    <section id="data-ingestion" class="settings-section">
-        <div class="settings-section__header">
-            <h2>Data ingestion</h2>
-            <p>The mounted archive folders below are defined in <code>docker-compose.yml</code> and surfaced read-only for review.</p>
-        </div>
-        <!-- Added ingestion model selector partial so providers can configure models before running ingestion. -->
-        {% include 'partials/data_ingestion_model_selector.html' %}
-
-        <div class="settings-subsection settings-ingestion__automation"
-             data-ingestion-root
-             data-mounts-url="{{ url_for('list_data_ingestion_mounts') }}"
-             data-tree-url="{{ url_for('list_data_ingestion_tree') }}"
-             data-scan-url="{{ url_for('scan_mounted_images') }}"
-             data-rebuild-url="{{ url_for('rebuild_ingestion_database') }}">
-            <!-- Added read-only mount explorer so users cannot edit ingestion paths from the UI. -->
-            <h3>Mounted data directories</h3>
-            <p>Review the bound directories and inspect a short folder tree before triggering ingestion tasks.</p>
-            <div class="mounts-container" data-mounts>Loading mount information…</div>
-            <div class="settings-actions">
-                <button type="button" class="button" data-scan-mounts>Scan for new images</button>
-                <button type="button" class="button button--secondary" data-rebuild-mounts>Rebuild database</button>
-            </div>
-            <div class="ingestion-status" data-ingestion-status hidden></div>
-            <dl class="ingestion-summary" data-ingestion-summary hidden></dl>
-            <div class="ingestion-errors" data-ingestion-errors hidden></div>
-        </div>
-
-    </section>
 
     <section id="chatbot-settings" class="settings-section">
         <div class="settings-section__header">
@@ -124,7 +96,6 @@
 })();
 </script>
 <!-- Added script include so the model selector logic loads on the settings page. -->
-<script src="{{ url_for('static', filename='data_ingestion_model_selector.js') }}"></script>
-<script src="{{ url_for('static', filename='settings_data_ingestion.js') }}"></script>
+
 <script src="{{ url_for('static', filename='historian_agent.js') }}"></script>
 {% endblock %}
