@@ -1,0 +1,105 @@
+{
+  "person_identity": {
+    "canonical_name": "Burns Andrew Applegate",
+    "name_variations": [
+      {
+        "name": "B. A. Colclough",
+        "confidence": "low",
+        "sources": [
+          "RDApp-667123Applegate001.jpg.json"
+        ]
+      },
+      {
+        "name": "Burns Andrew Applegate",
+        "confidence": "high",
+        "sources": [
+          "RDApp-667123Applegate002.jpg.json",
+          "RDApp-667123Applegate003.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "667123",
+    "birth_year": 1895,
+    "confidence_notes": "The canonical name is based on the consistent use in documents, while 'B. A. Colclough' appears to be a potential error or confusion."
+  },
+  "biographical_narrative": "Burns Andrew Applegate began his career with the Baltimore & Ohio Railroad Company as a laborer in the Maintenance of Way Department around March 1923. His application for membership in the Relief Feature, dated March 16, 1923, indicates he was employed at that time and sought additional benefits through the company's relief program. Applegate was from Morgantown, West Virginia, but his application process took place in Fairmont, suggesting a possible relocation or temporary assignment. His health status was noted as good with no significant medical conditions, though scars were mentioned during the medical examination. No major injuries or disputes are documented within these records.",
+  "family": {
+    "spouse": null,
+    "parents": [
+      {
+        "name": "Parent or Guardian (illegible signature)",
+        "relationship": "parent",
+        "evidence": "Witnessed consent for minor application, but name is illegible and context unclear if this pertains to Applegate.",
+        "sources": [
+          "RDApp-667123Applegate001.jpg.json"
+        ]
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Morgantown, in the County of Monongalia and State of West Virginia",
+      "date_range": "March 1923 or unknown",
+      "context": "Residence at time of application for Relief Feature membership.",
+      "sources": [
+        "RDApp-667123Applegate002.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "March 16, 1923",
+      "event_type": "application",
+      "position": "Laborer",
+      "department": "Maintenance of Way Department",
+      "division": null,
+      "details": "Application for membership in the Relief Feature.",
+      "sources": [
+        "RDApp-667123Applegate002.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [
+    {
+      "name": "Dr. Name (unspecified)",
+      "district": null,
+      "examinations": [
+        {
+          "date": "March 1923",
+          "finding": "Good health with scars noted."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 3,
+    "date_range": {
+      "earliest": "March 16, 1923",
+      "latest": "March 24, 1923"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered but lacks detailed information on Applegate's career progression or personal life beyond his application and health status.",
+    "data_quality_notes": [
+      "OCR quality varies; some signatures are illegible, affecting parent identification."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "Applegate's case highlights the importance of company-sponsored relief programs for railroad workers in providing additional security and benefits.",
+      "The application process underscores the detailed health assessments required by employers to ensure worker fitness and eligibility for insurance."
+    ],
+    "comparative_questions": [
+      "How did the availability and terms of Relief Features vary between different railroads?",
+      "What was the typical age range and demographic profile of workers applying for such benefits?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 1.0,
+    "overall": 0.88
+  }
+}

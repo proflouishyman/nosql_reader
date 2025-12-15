@@ -1,0 +1,126 @@
+{
+  "person_identity": {
+    "canonical_name": "William Todd",
+    "name_variations": [
+      {
+        "name": "V. J. Todd",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-665596Todd001.jpg.json"
+        ]
+      },
+      {
+        "name": "William (First Name) Todd (Surname)",
+        "confidence": "high",
+        "sources": [
+          "RDApp-665596Todd002.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "665596",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is clearly stated in the medical questionnaire, but there's a slight discrepancy between 'V. J.' and 'William' as first names."
+  },
+  "biographical_narrative": "William Todd was employed by the Baltimore & Ohio Railroad Company starting at least by February 1923 when he applied for full membership in the Relief Department. He worked as a laborer in the Motive Power Department of the Cincinnati Terminal Division, indicating his role involved physical work around trains and railway equipment. By May 8, 1923, Todd had successfully completed an application process that required parental consent, suggesting he was still relatively young at the time. His career with B&O appears to have been stable without any noted injuries or disputes in the records provided.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "The medical questionnaire and application forms indicate that Todd is unmarried.",
+      "sources": [
+        "RDApp-665596Todd003.jpg.json",
+        "RDApp-665596Todd002.jpg.json"
+      ]
+    },
+    "parents": [
+      {
+        "name": null,
+        "relationship": null,
+        "evidence": "The application form requires parental consent, but no names are provided.",
+        "sources": [
+          "RDApp-665596Todd001.jpg.json"
+        ]
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Cincinnati, in the County of Hamilton and State of OHIO",
+      "date_range": "unknown",
+      "context": "Residence at time of application for Relief Feature membership.",
+      "sources": [
+        "RDApp-665596Todd002.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1923-02-26",
+      "event_type": "application",
+      "position": "Laborer",
+      "department": "Motive Power Department",
+      "division": "Cincinnati Terminal Division",
+      "details": "William Todd applied for membership in the Relief Feature of the Relief Department.",
+      "sources": [
+        "RDApp-665596Todd002.jpg.json"
+      ]
+    },
+    {
+      "date": "1923-05-08",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application for full membership in the Relief Department was granted.",
+      "sources": [
+        "RDApp-665596Todd001.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [
+    {
+      "name": null,
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1923-05-08",
+      "event": "Certificate granted for Relief Feature membership application.",
+      "significance": "Indicates successful completion of the application process and eligibility for benefits under the Relief Department's provisions.",
+      "sources": [
+        "RDApp-665596Todd001.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 3,
+    "date_range": {
+      "earliest": "1923-02-26",
+      "latest": "1923-05-08"
+    },
+    "completeness_assessment": "The records are complete for the application process and membership in the Relief Department but lack details on Todd's career progression or any injuries.",
+    "data_quality_notes": [
+      "OCR quality is generally good, though some documents were truncated."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case reveals the importance of parental consent for young employees and the structure of benefits provided by B&O Railroad.",
+      "It highlights the process of applying for membership in the Relief Department, which included a medical questionnaire."
+    ],
+    "comparative_questions": [
+      "How did the application processes vary between different railroad companies?",
+      "What were the typical health conditions that disqualified employees from relief benefits?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 1.0,
+    "overall": 0.88
+  }
+}

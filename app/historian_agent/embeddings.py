@@ -2,10 +2,8 @@
 Embedding service for the Historian Agent RAG system.
 
 This module handles embedding generation for documents and queries using
-multiple providers (OpenAI, HuggingFace, etc.).
+multiple providers (local sentence-transformers or OpenAI).
 """
-
-# Added to supply vector representations required for hybrid retrieval.  # change rationale comment
 
 from __future__ import annotations
 
@@ -28,51 +26,68 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+# Configuration constants
+DEFAULT_PROVIDER = "local"
+DEFAULT_LOCAL_MODEL = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+DEFAULT_OPENAI_MODEL = "text-embedding-3-small"
+DEFAULT_BATCH_SIZE = 32
+DEFAULT_DIMENSION_LOCAL = 1536  # For gte-Qwen2-1.5B-instruct
+DEFAULT_DIMENSION_OPENAI = 1536
+
+
 class EmbeddingService:
     """
     Service for generating document and query embeddings.
     
     Supports multiple embedding providers:
-    - OpenAI (text-embedding-3-large, text-embedding-3-small, ada-002)
-    - HuggingFace Sentence Transformers (local models)
+    - local: HuggingFace Sentence Transformers (gte-Qwen2-1.5B-instruct by default)
+    - openai: OpenAI embeddings API
     """
     
     def __init__(
         self,
-        provider: str = "openai",
-        model_name: str = "text-embedding-3-large",
+        provider: str = DEFAULT_PROVIDER,
+        model: str = None,
         api_key: Optional[str] = None,
         dimension: Optional[int] = None,
-        batch_size: int = 100,
+        batch_size: int = DEFAULT_BATCH_SIZE,
     ):
         """
         Initialize the embedding service.
         
         Args:
-            provider: Embedding provider ("openai" or "huggingface")
-            model_name: Name of the embedding model
-            api_key: API key for provider (OpenAI)
-            dimension: Target embedding dimension (for OpenAI only)
+            provider: Embedding provider ("local" or "openai")
+            model: Name of the embedding model (defaults based on provider)
+            api_key: API key for provider (OpenAI only)
+            dimension: Target embedding dimension (optional, inferred from model)
             batch_size: Batch size for processing multiple texts
         """
         self.provider = provider.lower()
-        self.model_name = model_name
-        self.dimension = dimension
         self.batch_size = batch_size
+        
+        # Set model defaults based on provider
+        if model is None:
+            self.model_name = DEFAULT_LOCAL_MODEL if self.provider == "local" else DEFAULT_OPENAI_MODEL
+        else:
+            self.model_name = model
+        
+        self.dimension = dimension
+        self.api_key = api_key
         
         # Initialize provider-specific client
         if self.provider == "openai":
-            self._init_openai_client(api_key)
-        elif self.provider == "huggingface":
-            self._init_huggingface_model()
+            self._init_openai_client()
+        elif self.provider == "local":
+            self._init_local_model()
         else:
-            raise ValueError(f"Unsupported embedding provider: {provider}")
+            raise ValueError(f"Unsupported embedding provider: {provider}. Use 'local' or 'openai'")
         
         logger.info(
-            f"Initialized {self.provider} embedding service with model {self.model_name}"
+            f"Initialized {self.provider} embedding service: "
+            f"model={self.model_name}, dimension={self.dimension}, batch_size={batch_size}"
         )
     
-    def _init_openai_client(self, api_key: Optional[str]) -> None:
+    def _init_openai_client(self) -> None:
         """Initialize OpenAI client."""
         if OpenAI is None:
             raise ImportError(
@@ -81,7 +96,7 @@ class EmbeddingService:
             )
         
         # Get API key from parameter or environment
-        api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        api_key = self.api_key or os.environ.get("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OpenAI API key is required but not provided")
         
@@ -94,128 +109,51 @@ class EmbeddingService:
                 "text-embedding-3-small": 1536,
                 "text-embedding-ada-002": 1536,
             }
-            self.dimension = dimension_map.get(self.model_name, 1536)
+            self.dimension = dimension_map.get(self.model_name, DEFAULT_DIMENSION_OPENAI)
         
-        logger.info(f"OpenAI client initialized with dimension={self.dimension}")
+        logger.info(f"OpenAI client initialized: model={self.model_name}, dimension={self.dimension}")
     
-    def _init_huggingface_model(self) -> None:
-        """Initialize HuggingFace Sentence Transformer model."""
+    def _init_local_model(self) -> None:
+        """Initialize local Sentence Transformer model."""
         if SentenceTransformer is None:
             raise ImportError(
-                "sentence-transformers is required for HuggingFace embeddings. "
+                "sentence-transformers is required for local embeddings. "
                 "Install with: pip install sentence-transformers"
             )
         
         try:
-            self.model = SentenceTransformer(self.model_name)
-            self.dimension = self.model.get_sentence_embedding_dimension()
+            # Load model with trust_remote_code for Qwen2 models
+            self.model = SentenceTransformer(
+                self.model_name,
+                trust_remote_code=True
+            )
+            
+            # Get dimension from model
+            if self.dimension is None:
+                self.dimension = self.model.get_sentence_embedding_dimension()
+            
             logger.info(
-                f"HuggingFace model loaded: {self.model_name}, "
+                f"Local model loaded: {self.model_name}, "
                 f"dimension={self.dimension}"
             )
         except Exception as e:
-            logger.error(f"Failed to load HuggingFace model: {e}")
+            logger.error(f"Failed to load local model {self.model_name}: {e}")
             raise
     
-    def generate_embedding(
-        self,
-        text: str,
-        prefix: Optional[str] = None
-    ) -> np.ndarray:
-        """
-        Generate embedding for a single text.
-        
-        Args:
-            text: Text to embed
-            prefix: Optional prefix to add (e.g., "query: " or "passage: ")
-            
-        Returns:
-            Numpy array of embedding vector
-        """
-        if not text or not text.strip():
-            logger.warning("Empty text provided for embedding")
-            return np.zeros(self.dimension)
-        
-        # Add prefix if provided
-        if prefix:
-            text = f"{prefix}{text}"
-        
-        try:
-            if self.provider == "openai":
-                return self._generate_openai_embedding(text)
-            elif self.provider == "huggingface":
-                return self._generate_huggingface_embedding(text)
-        except Exception as e:
-            logger.error(f"Error generating embedding: {e}")
-            raise
-
-    # Added wrappers so retrievers/scripts can request prefixed embeddings easily.  # change rationale comment
-    def embed_query(self, query: str) -> np.ndarray:
-        """Convenience wrapper for query embeddings."""
-
-        return self.generate_embedding(query, prefix="query: ")
-
-    def embed_document(self, text: str) -> np.ndarray:
-        """Convenience wrapper for single document embeddings."""
-
-        return self.generate_embedding(text, prefix="passage: ")
-
+    # Primary interface methods (used by migration script)
+    
     def embed_documents(
-        self,
-        texts: List[str],
-        show_progress: bool = False,
-    ) -> np.ndarray:
-        """Generate embeddings for multiple documents."""
-
-        return self.generate_embeddings_batch(
-            texts,
-            prefix="passage: ",
-            show_progress=show_progress,
-        )
-    
-    def _generate_openai_embedding(self, text: str) -> np.ndarray:
-        """Generate embedding using OpenAI API."""
-        try:
-            # Call OpenAI embeddings API
-            response = self.client.embeddings.create(
-                model=self.model_name,
-                input=text,
-                dimensions=self.dimension if self.dimension else None,
-            )
-            
-            # Extract embedding vector
-            embedding = response.data[0].embedding
-            return np.array(embedding, dtype=np.float32)
-            
-        except Exception as e:
-            logger.error(f"OpenAI embedding generation failed: {e}")
-            raise
-    
-    def _generate_huggingface_embedding(self, text: str) -> np.ndarray:
-        """Generate embedding using HuggingFace model."""
-        try:
-            embedding = self.model.encode(
-                text,
-                convert_to_numpy=True,
-                show_progress_bar=False,
-            )
-            return embedding.astype(np.float32)
-        except Exception as e:
-            logger.error(f"HuggingFace embedding generation failed: {e}")
-            raise
-    
-    def generate_embeddings_batch(
         self, 
         texts: List[str],
-        prefix: Optional[str] = None,
         show_progress: bool = False,
     ) -> np.ndarray:
         """
-        Generate embeddings for multiple texts efficiently.
+        Generate embeddings for multiple documents (batch).
+        
+        This is the primary method used by the migration script.
         
         Args:
             texts: List of texts to embed
-            prefix: Optional prefix to add to all texts
             show_progress: Whether to show progress bar
             
         Returns:
@@ -225,17 +163,88 @@ class EmbeddingService:
             logger.warning("Empty text list provided for batch embedding")
             return np.array([])
         
-        # Add prefix if provided
-        if prefix:
-            texts = [f"{prefix}{text}" for text in texts]
-        
         try:
             if self.provider == "openai":
                 return self._generate_openai_embeddings_batch(texts, show_progress)
-            elif self.provider == "huggingface":
-                return self._generate_huggingface_embeddings_batch(texts, show_progress)
+            elif self.provider == "local":
+                return self._generate_local_embeddings_batch(texts, show_progress)
         except Exception as e:
             logger.error(f"Error generating batch embeddings: {e}")
+            raise
+    
+    def embed_query(self, text: str) -> np.ndarray:
+        """
+        Generate embedding for a single query.
+        
+        This is used by retrievers for search queries.
+        
+        Args:
+            text: Query text to embed
+            
+        Returns:
+            Numpy array of embedding vector
+        """
+        if not text or not text.strip():
+            logger.warning("Empty text provided for embedding")
+            return np.zeros(self.dimension, dtype=np.float32)
+        
+        try:
+            if self.provider == "openai":
+                return self._generate_openai_embedding(text)
+            elif self.provider == "local":
+                return self._generate_local_embedding(text)
+        except Exception as e:
+            logger.error(f"Error generating embedding: {e}")
+            raise
+    
+    # Legacy interface methods (for backward compatibility)
+    
+    def generate_embedding(self, text: str, prefix: Optional[str] = None) -> np.ndarray:
+        """Legacy method name - calls embed_query."""
+        if prefix:
+            text = f"{prefix}{text}"
+        return self.embed_query(text)
+    
+    def generate_embeddings_batch(
+        self, 
+        texts: List[str],
+        prefix: Optional[str] = None,
+        show_progress: bool = False,
+    ) -> np.ndarray:
+        """Legacy method name - calls embed_documents."""
+        if prefix:
+            texts = [f"{prefix}{text}" for text in texts]
+        return self.embed_documents(texts, show_progress)
+    
+    # Internal implementation methods
+    
+    def _generate_openai_embedding(self, text: str) -> np.ndarray:
+        """Generate single embedding using OpenAI API."""
+        try:
+            response = self.client.embeddings.create(
+                model=self.model_name,
+                input=text,
+                dimensions=self.dimension if self.dimension else None,
+            )
+            
+            embedding = response.data[0].embedding
+            return np.array(embedding, dtype=np.float32)
+            
+        except Exception as e:
+            logger.error(f"OpenAI embedding generation failed: {e}")
+            raise
+    
+    def _generate_local_embedding(self, text: str) -> np.ndarray:
+        """Generate single embedding using local model."""
+        try:
+            embedding = self.model.encode(
+                text,
+                convert_to_numpy=True,
+                show_progress_bar=False,
+            )
+            return embedding.astype(np.float32)
+        except Exception as e:
+            logger.error(f"Local embedding generation failed: {e}")
             raise
     
     def _generate_openai_embeddings_batch(
@@ -273,12 +282,12 @@ class EmbeddingService:
         
         return np.array(embeddings, dtype=np.float32)
     
-    def _generate_huggingface_embeddings_batch(
+    def _generate_local_embeddings_batch(
         self, 
         texts: List[str],
         show_progress: bool = False,
     ) -> np.ndarray:
-        """Generate embeddings for batch using HuggingFace model."""
+        """Generate embeddings for batch using local model."""
         try:
             embeddings = self.model.encode(
                 texts,
@@ -288,8 +297,10 @@ class EmbeddingService:
             )
             return embeddings.astype(np.float32)
         except Exception as e:
-            logger.error(f"HuggingFace batch embedding failed: {e}")
+            logger.error(f"Local batch embedding failed: {e}")
             raise
+    
+    # Utility methods
     
     def get_embedding_dimension(self) -> int:
         """Get the dimension of embeddings produced by this service."""
@@ -355,53 +366,53 @@ class EmbeddingService:
 
 def get_recommended_embedding_model(
     use_case: str = "general",
-    prefer_local: bool = False,
+    prefer_local: bool = True,
 ) -> Dict[str, Any]:
     """
     Get recommended embedding model configuration for a use case.
     
     Args:
         use_case: Type of use case ("general", "semantic", "speed")
-        prefer_local: Prefer local models over API-based ones
+        prefer_local: Prefer local models over API-based ones (default: True for this project)
         
     Returns:
-        Dictionary with provider and model_name
+        Dictionary with provider and model configuration
     """
     if prefer_local:
-        # Local HuggingFace models
+        # Local models (free, private, no API costs)
         recommendations = {
             "general": {
-                "provider": "huggingface",
-                "model_name": "sentence-transformers/all-mpnet-base-v2",
-                "dimension": 768,
+                "provider": "local",
+                "model": "Alibaba-NLP/gte-Qwen2-1.5B-instruct",
+                "dimension": 1536,
             },
             "semantic": {
-                "provider": "huggingface",
-                "model_name": "sentence-transformers/all-MiniLM-L12-v2",
-                "dimension": 384,
+                "provider": "local",
+                "model": "sentence-transformers/all-mpnet-base-v2",
+                "dimension": 768,
             },
             "speed": {
-                "provider": "huggingface",
-                "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+                "provider": "local",
+                "model": "sentence-transformers/all-MiniLM-L6-v2",
                 "dimension": 384,
             },
         }
     else:
-        # OpenAI models
+        # OpenAI models (paid, but potentially faster)
         recommendations = {
             "general": {
                 "provider": "openai",
-                "model_name": "text-embedding-3-large",
+                "model": "text-embedding-3-large",
                 "dimension": 3072,
             },
             "semantic": {
                 "provider": "openai",
-                "model_name": "text-embedding-3-large",
+                "model": "text-embedding-3-large",
                 "dimension": 1536,  # Reduced dimension for speed
             },
             "speed": {
                 "provider": "openai",
-                "model_name": "text-embedding-3-small",
+                "model": "text-embedding-3-small",
                 "dimension": 1536,
             },
         }

@@ -4,7 +4,7 @@ Person Synthesis System
 Generate AI-powered biographical syntheses and embed them in each person's documents
 
 Features:
-- Hierarchical synthesis for large document collections (batches of 50)
+- Hierarchical synthesis for large document collections (batches of 25)
 - Debug mode to save prompts and responses
 - Improved progress indicators
 - Fixed database save with verification
@@ -18,18 +18,40 @@ from pymongo import MongoClient
 from pathlib import Path
 import sys
 
-# Configuration
-# Use APP_MONGO_URI first (Docker), fallback to MONGO_URI (local)
+# ============================================================================
+# CONFIGURATION - Edit these variables as needed
+# ============================================================================
+
+# MongoDB Configuration
 MONGO_URI = os.environ.get('APP_MONGO_URI') or os.environ.get('MONGO_URI') or "mongodb://admin:secret@mongodb:27017/admin"
 DB_NAME = 'railroad_documents'
-OLLAMA_URL = "http://host.docker.internal:11434/api/generate"
-MODEL = "llama3.1:8b"
 
-# Control flags
+# Ollama Configuration
+OLLAMA_URL = "http://host.docker.internal:11434/api/generate"
+MODEL = "qwen2.5:32b"  # Options: llama3.1:8b, qwen2.5:32b, llama3.3:70b
+
+# Processing Configuration
+BATCH_SIZE = 25  # Documents per batch (smaller = faster, less timeout risk)
+TIMEOUT_SECONDS = 300  # Ollama timeout in seconds (increase for larger models)
+
+# Model Parameters
+TEMPERATURE = 0.3  # Lower = more deterministic (0.0-1.0)
+NUM_PREDICT = 6000  # Max tokens to generate
+TOP_P = 0.9  # Nucleus sampling threshold
+
+# Control Flags
 DRY_RUN = False  # Set to True to test without modifying database
-MAX_PERSONS = 10  # Set to number to limit processing (e.g., 10 for testing), None for all
-VERBOSE = True
-DEBUG = False  # Set to True to save prompts and responses for inspection
+MAX_PERSONS = None  # Set to number to limit processing (e.g., 10 for testing), None for all
+VERBOSE = True  # Show detailed progress messages
+DEBUG = False  # Save prompts and responses to disk
+
+# Directory Paths
+DEBUG_DIR = "./synthesis_debug"  # Where to save debug files
+ERROR_DIR = "./synthesis_errors"  # Where to save error files
+
+# ============================================================================
+# END CONFIGURATION
+# ============================================================================
 
 def print_startup_diagnostics():
     """Print detailed startup diagnostics"""
@@ -40,6 +62,8 @@ def print_startup_diagnostics():
     print(f"Target Database: {DB_NAME}")
     print(f"Ollama URL: {OLLAMA_URL}")
     print(f"Model: {MODEL}")
+    print(f"Batch Size: {BATCH_SIZE} documents")
+    print(f"Timeout: {TIMEOUT_SECONDS} seconds")
     print(f"\nEnvironment Variables:")
     print(f"  APP_MONGO_URI: {'✓ SET' if os.environ.get('APP_MONGO_URI') else '✗ NOT SET'}")
     print(f"  MONGO_URI: {'✓ SET' if os.environ.get('MONGO_URI') else '✗ NOT SET'}")
@@ -48,6 +72,10 @@ def print_startup_diagnostics():
     print(f"  MAX_PERSONS: {MAX_PERSONS}")
     print(f"  VERBOSE: {VERBOSE}")
     print(f"  DEBUG: {DEBUG}")
+    print(f"\nModel Parameters:")
+    print(f"  Temperature: {TEMPERATURE}")
+    print(f"  Max Tokens: {NUM_PREDICT}")
+    print(f"  Top-P: {TOP_P}")
     print("="*70 + "\n")
 
 class PersonSynthesizer:
@@ -61,7 +89,7 @@ class PersonSynthesizer:
         
         # Create debug directory if needed
         if DEBUG:
-            self.debug_dir = Path("/home/claude/synthesis_debug")
+            self.debug_dir = Path(DEBUG_DIR)
             self.debug_dir.mkdir(exist_ok=True, parents=True)
             print(f"🐛 DEBUG mode enabled - saving to {self.debug_dir}")
     
@@ -354,9 +382,9 @@ Begin your response with { and end with }. Return ONLY the JSON object.
             "prompt": prompt,
             "stream": False,
             "options": {
-                "temperature": 0.3,
-                "num_predict": 6000,
-                "top_p": 0.9
+                "temperature": TEMPERATURE,
+                "num_predict": NUM_PREDICT,
+                "top_p": TOP_P
             }
         }
         
@@ -364,14 +392,14 @@ Begin your response with { and end with }. Return ONLY the JSON object.
             if VERBOSE:
                 print(f"    Calling Ollama (model: {model})...")
             
-            response = requests.post(OLLAMA_URL, json=payload, timeout=300)
+            response = requests.post(OLLAMA_URL, json=payload, timeout=TIMEOUT_SECONDS)
             response.raise_for_status()
             result = response.json()
             
             return result.get('response', '')
             
         except requests.exceptions.Timeout:
-            print(f"    ⚠️  Ollama timeout after 300 seconds")
+            print(f"    ⚠️  Ollama timeout after {TIMEOUT_SECONDS} seconds")
             return None
         except Exception as e:
             print(f"    ❌ Ollama error: {e}")
@@ -506,7 +534,7 @@ Begin your response with { and end with }. Return ONLY the JSON object.
         if not synthesis:
             print(f"  ❌ Failed to parse JSON")
             # Error case - always save for debugging (even if DEBUG=False)
-            error_dir = Path("/home/claude/synthesis_errors")
+            error_dir = Path(ERROR_DIR)
             error_dir.mkdir(exist_ok=True, parents=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             safe_folder = person_folder.replace('/', '_').replace(' ', '_')
@@ -566,7 +594,7 @@ Begin your response with { and end with }. Return ONLY the JSON object.
             else:
                 print(f"    ❌ Parse failed")
                 # Save error
-                error_dir = Path("/home/claude/synthesis_errors")
+                error_dir = Path(ERROR_DIR)
                 error_dir.mkdir(exist_ok=True, parents=True)
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 safe_folder = person_folder.replace('/', '_').replace(' ', '_')
@@ -637,7 +665,7 @@ Begin your response with { and end with }. Return ONLY the JSON object.
         if not synthesis:
             print(f"    ❌ Parse failed")
             # Save error
-            error_dir = Path("/home/claude/synthesis_errors")
+            error_dir = Path(ERROR_DIR)
             error_dir.mkdir(exist_ok=True, parents=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             safe_folder = person_folder.replace('/', '_').replace(' ', '_')
@@ -676,9 +704,7 @@ Begin your response with { and end with }. Return ONLY the JSON object.
         
         print(f"  ✓ Loaded {len(documents)} documents")
         
-        # HIERARCHICAL SYNTHESIS
-        BATCH_SIZE = 25  # Smaller batches = faster processing, less timeout risk
-        
+        # Use BATCH_SIZE from configuration
         if len(documents) <= BATCH_SIZE:
             # Small enough - single synthesis
             print(f"  📝 Creating synthesis prompt...")

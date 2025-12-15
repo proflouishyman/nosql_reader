@@ -22,15 +22,11 @@
       </div>
 
       <!-- Document Title -->
-      {# Strip common file extensions for a cleaner display without altering the stored filename #}
-      {% set raw_filename = document.get('filename', 'Untitled Document') %}
-      {% set display_filename = raw_filename %}
-      {% for ext in ['.json', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.pdf'] %}
-        {% if display_filename.lower().endswith(ext) %}
-          {% set display_filename = display_filename[:-ext|length] %}
-        {% endif %}
-      {% endfor %}
-      <h1>{{ display_filename }}</h1>
+       <h1>{{ display_filename }}</h1>
+      
+
+    
+      
 
       <div class="info-container">
         <!-- Render Summary -->
@@ -80,6 +76,8 @@
             </div>
           </div>
         {% endif %}
+
+
       </div>
     </div>
 

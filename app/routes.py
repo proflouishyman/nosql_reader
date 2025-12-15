@@ -889,7 +889,21 @@ def document_detail(doc_id):
             # Clean the document to remove empty fields
             document = clean_data(document)
         
+        # Strip common file extensions for display
+        # Strip all common file extensions from right to left
+        display_filename = document.get('filename', 'Untitled Document')
+        extensions = ['.json', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.pdf']
 
+        # Keep stripping extensions until none are found
+        while True:
+            stripped = False
+            for ext in extensions:
+                if display_filename.lower().endswith(ext):
+                    display_filename = display_filename[:-len(ext)]
+                    stripped = True
+                    break  # Start over to check for more extensions
+            if not stripped:
+                break  # No more extensions found
 
         # Retrieve the ordered list from cache
         ordered_ids = cache.get(f'search_{search_id}')
@@ -932,6 +946,7 @@ def document_detail(doc_id):
         return render_template(
             'document-detail.html',
             document=document,
+            display_filename=display_filename,
             prev_id=prev_id,
             next_id=next_id,
             search_id=search_id,
@@ -944,17 +959,6 @@ def document_detail(doc_id):
 
 
 #more attempts to fix image serving
-ARCHIVES_ROOT = os.environ.get("ARCHIVES_PATH", "/data/archives")
-
-@app.route("/archives/<path:relpath>")
-def archives_file(relpath):
-    # Prevent path traversal
-    abs_path = safe_join(ARCHIVES_ROOT, relpath)
-    if not abs_path or not os.path.isfile(abs_path):
-        abort(404)
-    return send_file(abs_path)
-
-
 @app.route('/images/<path:filename>')
 def serve_image(filename):
     archive_root = _archives_root()  # Pull archive root from configuration for consistent serving

@@ -1,6 +1,0 @@
-{
-  "employee_folder": "634855-Ponder",
-  "employee_id": "634855",
-  "folder_name": "Ponder",
-  "number_of_documents": 2
-}
