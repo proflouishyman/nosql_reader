@@ -1,99 +1,152 @@
-"""
-setup_rag_database.py - Initialize RAG system (ChromaDB + MongoDB chunks)
+# 2025-12-15 13:53 America/New_York
+# Purpose: Initialize RAG system for Qwen3 embeddings (MongoDB chunk indexes + Chroma collection sized to the embedding model's default dimension via Ollama).
 
-This script sets up the vector database and RAG infrastructure for semantic search.
+"""
+setup_rag_database.py - Initialize RAG system (ChromaDB + MongoDB chunks), Qwen3 via Ollama
+
 Run this AFTER setup_databases.py.
 
 Usage:
     docker compose exec app python scripts/setup_rag_database.py
 
-Creates:
-- ChromaDB collection (historian_documents) with 1536D embeddings
+Creates / verifies:
 - MongoDB document_chunks collection indexes
-- Verifies gte-Qwen2-1.5B-instruct model can load
-- Tests integration between MongoDB and ChromaDB
+- ChromaDB collection sized to the embedding model's DEFAULT dimension (qwen3-embedding:0.6b -> 1024)
+- Tests integration between MongoDB and ChromaDB using a real embedding from Ollama
 
-Requirements:
-- MongoDB must be running (setup_databases.py completed)
-- sentence-transformers, chromadb installed
-- CHROMA_PERSIST_DIRECTORY environment variable set
+Key points:
+- Uses Ollama for embeddings to avoid container CPU torch OOM.
+- You provided OLLAMA_URL as /api/generate, this script derives /api/embeddings automatically.
+- Chroma doesn't require you to declare dimension at creation, but it WILL enforce consistency at upsert.
+  This script creates a fresh collection (or optionally resets) and then asserts the dimension on test upsert.
+
+Env:
+- APP_MONGO_URI or MONGO_URI
+- CHROMA_PERSIST_DIRECTORY
+- OLLAMA_URL (optional), default: http://host.docker.internal:11434/api/generate
 """
 
 import sys
 import os
-from pathlib import Path
-import logging
-from pymongo import MongoClient, ASCENDING
-from dotenv import load_dotenv
 import time
+import json
+import logging
+from pathlib import Path
+from typing import Optional
 
-# Configure logging
+import requests
+from pymongo import MongoClient
+
+
+# -------------------------
+# Defaults (Qwen3 small model)
+# -------------------------
+DEFAULT_DB_NAME = os.environ.get("MONGO_DB_NAME", "railroad_documents")
+DEFAULT_COLLECTION_NAME = os.environ.get("CHROMA_COLLECTION_NAME", "historian_documents_qwen3_0p6b")
+DEFAULT_EMBED_MODEL = os.environ.get("HISTORIAN_AGENT_EMBEDDING_MODEL", "qwen3-embedding:0.6b")
+
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://host.docker.internal:11434/api/generate")
+DEFAULT_TIMEOUT_S = int(os.environ.get("OLLAMA_TIMEOUT_S", "120"))
+
+
+# -------------------------
+# Logging
+# -------------------------
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('setup_rag_database.log'),
-        logging.StreamHandler()
-    ]
+        logging.FileHandler("setup_rag_database.log"),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
 
+def derive_ollama_embeddings_url(ollama_url: str) -> str:
+    u = (ollama_url or "").strip().rstrip("/")
+    if not u:
+        u = "http://host.docker.internal:11434/api/generate"
+    if u.endswith("/api/generate"):
+        return u[: -len("/api/generate")] + "/api/embeddings"
+    if u.endswith("/api/embeddings"):
+        return u
+    if "/api/" not in u:
+        return u + "/api/embeddings"
+    if u.endswith("/generate"):
+        return u[: -len("/generate")] + "embeddings"
+    return u + "/embeddings"
+
+
+def ollama_embed_once(model: str, text: str, embeddings_url: str, timeout_s: int) -> list:
+    payload = {"model": model, "prompt": text}
+    r = requests.post(embeddings_url, json=payload, timeout=timeout_s)
+    if r.status_code != 200:
+        raise RuntimeError(f"Ollama embeddings HTTP {r.status_code}: {r.text[:500]}")
+    data = r.json()
+    emb = data.get("embedding")
+    if not isinstance(emb, list) or len(emb) == 0:
+        raise RuntimeError(f"Ollama returned invalid embedding payload keys={list(data.keys())}")
+    return emb
+
+
 class RAGDatabaseSetup:
-    """Handles RAG database initialization."""
-    
+    """Handles RAG database initialization for Ollama Qwen3 embeddings."""
+
     def __init__(self):
-        self.mongo_client = None
+        self.mongo_client: Optional[MongoClient] = None
         self.db = None
         self.chroma_client = None
         self.chroma_collection = None
-        self.embedding_model = None
-        
-    def connect_mongodb(self):
-        """Connect to MongoDB."""
+
+        self.db_name = DEFAULT_DB_NAME
+        self.collection_name = DEFAULT_COLLECTION_NAME
+        self.embed_model = DEFAULT_EMBED_MODEL
+        self.ollama_embeddings_url = derive_ollama_embeddings_url(OLLAMA_URL)
+
+        self.embedding_dimension: Optional[int] = None
+
+    def connect_mongodb(self) -> bool:
         print("\n🔧 Connecting to MongoDB...")
         try:
-            mongo_uri = os.environ.get('MONGO_URI') or os.environ.get('APP_MONGO_URI')
+            mongo_uri = os.environ.get("MONGO_URI") or os.environ.get("APP_MONGO_URI")
             if not mongo_uri:
-                raise ValueError("APP_MONGO_URI environment variable not set")
-            
+                raise ValueError("APP_MONGO_URI or MONGO_URI environment variable not set")
+
             self.mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-            self.mongo_client.admin.command('ping')
-            self.db = self.mongo_client['railroad_documents']
-            
+            self.mongo_client.admin.command("ping")
+            self.db = self.mongo_client[self.db_name]
+
             print("   ✅ MongoDB connected")
-            logger.info("Connected to MongoDB")
+            logger.info(f"Connected to MongoDB db={self.db_name}")
             return True
-            
+
         except Exception as e:
             print(f"   ❌ MongoDB connection failed: {e}")
-            logger.error(f"MongoDB connection failed: {e}")
+            logger.error(f"MongoDB connection failed: {e}", exc_info=True)
             return False
-    
-    def verify_mongodb_collections(self):
-        """Verify required MongoDB collections exist."""
+
+    def verify_mongodb_collections(self) -> bool:
         print("\n🔍 Verifying MongoDB collections...")
-        required = ['documents', 'document_chunks']
+        required = ["documents", "document_chunks"]
         existing = self.db.list_collection_names()
-        
+
         missing = [c for c in required if c not in existing]
         if missing:
             print(f"   ❌ Missing collections: {missing}")
             print("   💡 Run setup_databases.py first!")
             return False
-        
+
         print("   ✅ All required collections exist")
         return True
-    
-    def create_chunks_indexes(self):
-        """Create indexes for document_chunks collection."""
+
+    def create_chunks_indexes(self) -> bool:
         print("\n📇 Creating document_chunks indexes...")
-        chunks = self.db['document_chunks']
+        chunks = self.db["document_chunks"]
         existing_indexes = chunks.index_information()
-        
+
         indexes_created = 0
-        
-        # Unique index on chunk_id
+
         if "chunk_id_1" not in existing_indexes:
             chunks.create_index([("chunk_id", 1)], unique=True)
             print("   ✅ Created unique index: chunk_id")
@@ -101,8 +154,7 @@ class RAGDatabaseSetup:
             indexes_created += 1
         else:
             print("   ✓ Index exists: chunk_id")
-        
-        # Index on document_id for lookups
+
         if "document_id_1" not in existing_indexes:
             chunks.create_index([("document_id", 1)])
             print("   ✅ Created index: document_id")
@@ -110,8 +162,7 @@ class RAGDatabaseSetup:
             indexes_created += 1
         else:
             print("   ✓ Index exists: document_id")
-        
-        # Compound index on document_id + chunk_index
+
         if "document_id_1_chunk_index_1" not in existing_indexes:
             chunks.create_index([("document_id", 1), ("chunk_index", 1)])
             print("   ✅ Created compound index: document_id + chunk_index")
@@ -119,255 +170,208 @@ class RAGDatabaseSetup:
             indexes_created += 1
         else:
             print("   ✓ Index exists: document_id + chunk_index")
-        
-        if indexes_created > 0:
+
+        if indexes_created:
             print(f"\n   📊 Created {indexes_created} new indexes")
-        
+
         return True
-    
-    def verify_embedding_model(self):
-        """Verify gte-Qwen2-1.5B-instruct can be loaded."""
-        print("\n🤖 Verifying embedding model...")
-        
+
+    def verify_embedding_provider(self) -> bool:
+        """
+        Verify we can obtain an embedding from Ollama and record its dimension.
+        """
+        print("\n🤖 Verifying embedding provider (Ollama)...")
         try:
-            from sentence_transformers import SentenceTransformer
-            
-            model_name = os.environ.get(
-                'HISTORIAN_AGENT_EMBEDDING_MODEL',
-                'Alibaba-NLP/gte-Qwen2-1.5B-instruct'
+            print(f"   Model: {self.embed_model}")
+            print(f"   Ollama embeddings URL: {self.ollama_embeddings_url}")
+
+            test_text = "Integration test, verify embedding dimension."
+            t0 = time.time()
+            emb = ollama_embed_once(
+                model=self.embed_model,
+                text=test_text,
+                embeddings_url=self.ollama_embeddings_url,
+                timeout_s=DEFAULT_TIMEOUT_S,
             )
-            
-            print(f"   Loading: {model_name}")
-            start_time = time.time()
-            
-            self.embedding_model = SentenceTransformer(
-                model_name,
-                trust_remote_code=True
-            )
-            
-            load_time = time.time() - start_time
-            dimension = self.embedding_model.get_sentence_embedding_dimension()
-            
-            print(f"   ✅ Model loaded successfully")
-            print(f"      Dimension: {dimension}")
-            print(f"      Load time: {load_time:.2f}s")
-            
-            if dimension != 1536:
-                print(f"   ⚠️  Warning: Expected 1536 dimensions, got {dimension}")
-                logger.warning(f"Unexpected dimension: {dimension}")
-            
-            logger.info(f"Embedding model verified: {model_name}, {dimension}D")
+            dt = time.time() - t0
+            self.embedding_dimension = len(emb)
+
+            print("   ✅ Ollama embedding call successful")
+            print(f"      Dimension (default): {self.embedding_dimension}")
+            print(f"      Time: {dt:.2f}s")
+
+            logger.info(f"Ollama embeddings verified model={self.embed_model} dim={self.embedding_dimension} time_s={dt:.2f}")
             return True
-            
-        except ImportError as e:
-            print(f"   ❌ Missing dependency: {e}")
-            print("   💡 Install with: pip install sentence-transformers transformers")
-            logger.error(f"Import error: {e}")
-            return False
+
         except Exception as e:
-            print(f"   ❌ Model load failed: {e}")
-            logger.error(f"Model load failed: {e}")
+            print(f"   ❌ Ollama embedding failed: {e}")
+            logger.error(f"Ollama embedding failed: {e}", exc_info=True)
             return False
-    
-    def initialize_chromadb(self):
-        """Initialize ChromaDB collection."""
+
+    def initialize_chromadb(self) -> bool:
         print("\n🗄️  Initializing ChromaDB...")
-        
         try:
             import chromadb
             from chromadb.config import Settings
-            
-            # Get persist directory from environment
-            persist_dir = os.environ.get(
-                'CHROMA_PERSIST_DIRECTORY',
-                '/home/claude/chroma_db'
-            )
-            
-            # Ensure directory exists
+
+            persist_dir = os.environ.get("CHROMA_PERSIST_DIRECTORY", "/data/chroma_db/persist")
             Path(persist_dir).mkdir(parents=True, exist_ok=True)
-            
+
             print(f"   Persist directory: {persist_dir}")
-            
-            # Initialize client
+
             self.chroma_client = chromadb.PersistentClient(
                 path=persist_dir,
                 settings=Settings(
                     anonymized_telemetry=False,
                     allow_reset=True,
-                )
+                ),
             )
-            
             print("   ✅ ChromaDB client initialized")
-            
-            # Get or create collection
-            collection_name = "historian_documents"
-            
+
+            # Optional reset
+            if os.environ.get("RESET_CHROMA", "").lower() in ("1", "true", "yes"):
+                print("   ⚠️  RESET_CHROMA enabled, resetting Chroma client...")
+                self.chroma_client.reset()
+                print("   ✅ Chroma reset complete")
+
+            # Create or get collection
             try:
-                self.chroma_collection = self.chroma_client.get_collection(
-                    name=collection_name
-                )
-                print(f"   ✅ Collection exists: {collection_name}")
-                
-                # Get stats
+                self.chroma_collection = self.chroma_client.get_collection(name=self.collection_name)
                 count = self.chroma_collection.count()
+                print(f"   ✅ Collection exists: {self.collection_name}")
                 print(f"      Current vectors: {count}")
-                
             except Exception:
-                # Create new collection
                 self.chroma_collection = self.chroma_client.create_collection(
-                    name=collection_name,
-                    metadata={"hnsw:space": "cosine"}
+                    name=self.collection_name,
+                    metadata={"hnsw:space": "cosine"},
                 )
-                print(f"   ✅ Created collection: {collection_name}")
-                logger.info(f"Created ChromaDB collection: {collection_name}")
-            
-            logger.info("ChromaDB initialized successfully")
+                print(f"   ✅ Created collection: {self.collection_name}")
+                logger.info(f"Created ChromaDB collection: {self.collection_name}")
+
+            logger.info(f"ChromaDB initialized collection={self.collection_name} persist_dir={persist_dir}")
             return True
-            
+
         except ImportError as e:
             print(f"   ❌ Missing dependency: {e}")
-            print("   💡 Install with: pip install chromadb")
-            logger.error(f"Import error: {e}")
+            logger.error(f"Import error: {e}", exc_info=True)
             return False
         except Exception as e:
             print(f"   ❌ ChromaDB initialization failed: {e}")
-            logger.error(f"ChromaDB init failed: {e}")
+            logger.error(f"ChromaDB init failed: {e}", exc_info=True)
             return False
-    
-    def test_integration(self):
-        """Test integration between MongoDB and ChromaDB."""
-        print("\n🧪 Testing integration...")
-        
+
+    def test_integration(self) -> bool:
+        print("\n🧪 Testing integration (MongoDB + ChromaDB + Ollama embeddings)...")
         try:
-            import numpy as np
-            
-            # Create test data
+            if self.embedding_dimension is None:
+                raise RuntimeError("Embedding dimension not set, run verify_embedding_provider first")
+
             test_chunk_id = "test_integration_chunk_0"
-            test_text = "This is a test document for verifying RAG system integration."
-            
-            print("   1. Generating test embedding...")
-            embedding = self.embedding_model.encode([test_text])[0]
-            print(f"      ✅ Generated {len(embedding)}-dimensional vector")
-            
-            # Test MongoDB insertion
-            print("   2. Testing MongoDB insertion...")
+            test_text = "This is a test document for verifying RAG system integration with Qwen3 embeddings."
+
+            print("   1. Generating test embedding via Ollama...")
+            embedding = ollama_embed_once(
+                model=self.embed_model,
+                text=test_text,
+                embeddings_url=self.ollama_embeddings_url,
+                timeout_s=DEFAULT_TIMEOUT_S,
+            )
+            got_dim = len(embedding)
+
+            if got_dim != self.embedding_dimension:
+                raise RuntimeError(f"Dimension changed within run: expected {self.embedding_dimension}, got {got_dim}")
+
+            print(f"      ✅ Generated {got_dim}-dimensional vector")
+
+            print("   2. Testing MongoDB upsert...")
             test_chunk = {
                 "chunk_id": test_chunk_id,
                 "document_id": "test_doc_id",
                 "chunk_index": 0,
                 "text": test_text,
-                "token_count": 12,
-                "metadata": {
-                    "source_file": "integration_test.txt",
-                    "test": True
-                }
+                "token_count": 0,
+                "metadata": {"source_file": "integration_test.txt", "test": True, "embedding_dim": got_dim},
             }
-            
-            # Insert or update
-            self.db['document_chunks'].update_one(
-                {"chunk_id": test_chunk_id},
-                {"$set": test_chunk},
-                upsert=True
-            )
-            print("      ✅ MongoDB insert successful")
-            
-            # Test ChromaDB insertion
-            print("   3. Testing ChromaDB insertion...")
+            self.db["document_chunks"].update_one({"chunk_id": test_chunk_id}, {"$set": test_chunk}, upsert=True)
+            print("      ✅ MongoDB upsert successful")
+
+            print("   3. Testing ChromaDB upsert (dimension enforcement)...")
             self.chroma_collection.upsert(
                 ids=[test_chunk_id],
-                embeddings=[embedding.tolist()],
+                embeddings=[embedding],
                 documents=[test_text],
-                metadatas=[{"test": True, "source": "integration_test"}]
+                metadatas=[{"test": True, "source": "integration_test", "embedding_dim": got_dim}],
             )
-            print("      ✅ ChromaDB insert successful")
-            
-            # Test retrieval
+            print("      ✅ ChromaDB upsert successful")
+
             print("   4. Testing vector search...")
-            results = self.chroma_collection.query(
-                query_embeddings=[embedding.tolist()],
-                n_results=1
-            )
-            
-            if results['ids'] and results['ids'][0] and results['ids'][0][0] == test_chunk_id:
+            results = self.chroma_collection.query(query_embeddings=[embedding], n_results=1)
+
+            ok = bool(results.get("ids")) and bool(results["ids"][0]) and (results["ids"][0][0] == test_chunk_id)
+            if ok:
                 print("      ✅ Vector search successful")
             else:
                 print("      ⚠️  Vector search returned unexpected results")
-            
-            # Cleanup test data
+                logger.warning(f"Unexpected query results: {json.dumps(results)[:500]}")
+
             print("   5. Cleaning up test data...")
-            self.db['document_chunks'].delete_one({"chunk_id": test_chunk_id})
+            self.db["document_chunks"].delete_one({"chunk_id": test_chunk_id})
             self.chroma_collection.delete(ids=[test_chunk_id])
             print("      ✅ Test data cleaned up")
-            
+
             print("\n   ✅ Integration test PASSED")
             logger.info("Integration test passed")
             return True
-            
+
         except Exception as e:
             print(f"\n   ❌ Integration test FAILED: {e}")
             logger.error(f"Integration test failed: {e}", exc_info=True)
             return False
-    
-    def print_summary(self):
-        """Print setup summary."""
-        print("\n" + "="*60)
-        print("✅ RAG Database Setup Complete!")
-        print("="*60)
-        
+
+    def print_summary(self) -> None:
+        print("\n" + "=" * 70)
+        print("✅ RAG Database Setup Complete (Qwen3 via Ollama)")
+        print("=" * 70)
+
         print("\n📊 Summary:")
-        print("   • MongoDB: document_chunks indexes created")
-        print("   • ChromaDB: historian_documents collection ready")
-        print("   • Embedding model: gte-Qwen2-1.5B-instruct verified")
-        print("   • Dimension: 1536")
-        print("   • Integration: Tested and working")
-        
+        print("   • MongoDB: document_chunks indexes created/verified")
+        print(f"   • ChromaDB: {self.collection_name} collection ready")
+        print(f"   • Embedding provider: Ollama ({self.ollama_embeddings_url})")
+        print(f"   • Embedding model: {self.embed_model}")
+        print(f"   • Dimension (default): {self.embedding_dimension}")
+
         print("\n📝 Next Steps:")
-        print("\n   1. Run migration to embed existing documents:")
+        print("   1. Reset and re-embed using the Ollama pipeline:")
         print("      docker compose exec app python scripts/embed_existing_documents.py \\")
-        print("        --batch-size 100 \\")
-        print("        --provider local")
+        print("        --batch 20 \\")
+        print("        --provider ollama \\")
+        print(f"        --model {self.embed_model} \\")
+        print("        --reset")
         print()
-        print("   2. Monitor progress:")
-        print("      tail -f embed_migration.log")
+        print("   2. Tail logs:")
+        print("      tail -f embed_migration.ollama.log")
         print()
-        print("   3. Verify migration:")
-        print("      docker compose exec app python scripts/verify_rag_setup.py")
+        print("   3. If you need to change embedding model later, use a new collection name")
+        print("      (or reset Chroma) to avoid dimension mismatch.")
         print()
-        print("   4. Test semantic search:")
-        print("      docker compose exec app python -c \"")
-        print("        from app.historian_agent import get_agent")
-        print("        from app.database_setup import get_client, get_db")
-        print("        client = get_client()")
-        print("        db = get_db(client)")
-        print("        agent = get_agent(db['documents'])")
-        print("        result = agent.invoke('train accidents')")
-        print("        print(result['answer'])")
-        print("      \"")
+        print("Chroma persist dir: " + os.environ.get("CHROMA_PERSIST_DIRECTORY", "N/A"))
         print()
-        
-        print("💡 Tips:")
-        print("   • Estimated migration time: ~30-60 minutes for 50k docs")
-        print("   • M4 Mac Pro will use Neural Engine for acceleration")
-        print("   • You can resume migration if interrupted (--resume flag)")
-        print("   • ChromaDB data stored in: " + os.environ.get('CHROMA_PERSIST_DIRECTORY', 'N/A'))
-        print()
-    
-    def run(self):
-        """Run complete RAG database setup."""
-        print("="*60)
+
+    def run(self) -> bool:
+        print("=" * 70)
         print("RAG Database Setup - Historical Document Reader")
-        print("Embedding Model: gte-Qwen2-1.5B-instruct (1536D)")
-        print("="*60)
-        
+        print("Embeddings: Qwen3 via Ollama (default dimension enforced by test upsert)")
+        print("=" * 70)
+
         steps = [
             ("Connect to MongoDB", self.connect_mongodb),
             ("Verify MongoDB collections", self.verify_mongodb_collections),
             ("Create document_chunks indexes", self.create_chunks_indexes),
-            ("Verify embedding model", self.verify_embedding_model),
+            ("Verify embedding provider", self.verify_embedding_provider),
             ("Initialize ChromaDB", self.initialize_chromadb),
             ("Test integration", self.test_integration),
         ]
-        
+
         for step_name, step_func in steps:
             try:
                 if not step_func():
@@ -377,17 +381,16 @@ class RAGDatabaseSetup:
                 print(f"\n❌ Unexpected error in {step_name}: {e}")
                 logger.error(f"Error in {step_name}: {e}", exc_info=True)
                 return False
-        
+
         self.print_summary()
         return True
 
 
 def main():
-    """Entry point."""
     setup = RAGDatabaseSetup()
     success = setup.run()
     sys.exit(0 if success else 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
