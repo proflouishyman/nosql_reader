@@ -22,7 +22,11 @@
       </div>
 
       <!-- Document Title -->
-      <h1>{{ document.get('filename', 'Untitled Document') }}</h1>
+      <!-- Document Title -->
+      
+
+      <h1>{{ display_filename }}</h1>
+      
 
       <div class="info-container">
         <!-- Render Summary -->
@@ -62,6 +66,18 @@
             {% endfor %}
           </div>
         {% endif %}
+
+        {% if document.person_synthesis %}
+          <!-- Render person synthesis with nested formatting so it matches the other structured JSON blocks -->
+          <div class="info-section">
+            <h2>Person Synthesis</h2>
+            <div class="nested-block">
+              {{ render_nested_value(document.person_synthesis) }}
+            </div>
+          </div>
+        {% endif %}
+
+
       </div>
     </div>
 
