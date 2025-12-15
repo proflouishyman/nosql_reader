@@ -6,7 +6,7 @@ and creates a linked entity graph for cross-document queries.
 
 Usage:
     docker compose exec app python app/ner_entity_processor.py
-    docker compose exec app python app/ner_entity_processor.py --limit 100  # Test on 100 docs
+    docker compose exec app python setup/ner_processor_llm.py --limit 100  # Test on 100 docs
     docker compose exec app python app/ner_entity_processor.py --force  # Reprocess all
 """
 
@@ -68,7 +68,7 @@ def get_db(client):
 # LLM Helper Functions
 # =======================
 
-def call_ollama(prompt: str, model: str = "llama3.2:latest") -> Optional[str]:
+def call_ollama(prompt: str, model: str = "llama3.1:8b") -> Optional[str]:
     """Call local Ollama instance for entity normalization."""
     ollama_url = os.environ.get('OLLAMA_BASE_URL', 'http://host.docker.internal:11434')
     
@@ -102,7 +102,7 @@ Name: "{name}"
 Return format:
 {{"last": "LastName", "first": "FirstName", "middle": "MiddleInitial", "full": "FirstName MiddleInitial LastName"}}
 
-If middle name is missing, set it to empty string. Only return the JSON, nothing else."""
+If middle name is missing, set it to empty string. OReturn ONLY valid JSON with no markdown, no explanation, no extra text."""
 
     response = call_ollama(prompt)
     if not response:
@@ -167,8 +167,9 @@ def extract_employee_ids(text: str, sections: List[Dict]) -> List[str]:
     pattern = r'\b[A-Z]*\d{3,5}[A-Z]?\b'
     
     # From OCR text
-    matches = re.findall(pattern, text)
-    ids.extend(matches)
+    if text and isinstance(text, str):
+        matches = re.findall(pattern, text)
+        ids.extend(matches)
     
     # From sections
     for section in sections:
@@ -467,7 +468,7 @@ def process_document(db, doc: Dict, force: bool = False) -> bool:
                 context = {
                     'document_id': doc_id,
                     'mention': value,
-                    'summary': doc.get('summary', '')[:200]
+                    'summary': (doc.get('summary') or '')[:200]
                 }
                 
                 # Create or link entity

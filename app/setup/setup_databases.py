@@ -175,9 +175,32 @@ def create_linked_entities_indexes(db):
     print("\n📇 Creating linked_entities collection indexes...")
     linked_entities = db['linked_entities']
     existing_indexes = linked_entities.index_information()
-    if "term_1" not in existing_indexes:
-        linked_entities.create_index([("term", 1)], unique=True)
-        logger.info("Created unique index on 'term' in 'linked_entities' collection.")
+    
+    # Index on canonical_name for entity lookups
+    if "canonical_name_1" not in existing_indexes:
+        linked_entities.create_index([("canonical_name", 1)])
+        logger.info("Created index on 'canonical_name' in 'linked_entities' collection.")
+    
+    # Index on type for filtering by entity type
+    if "type_1" not in existing_indexes:
+        linked_entities.create_index([("type", 1)])
+        logger.info("Created index on 'type' in 'linked_entities' collection.")
+    
+    # Compound index for type + canonical_name queries
+    if "type_1_canonical_name_1" not in existing_indexes:
+        linked_entities.create_index([("type", 1), ("canonical_name", 1)])
+        logger.info("Created compound index on 'type' and 'canonical_name' in 'linked_entities' collection.")
+    
+    # Index on employee_ids for person linking
+    if "employee_ids_1" not in existing_indexes:
+        linked_entities.create_index([("employee_ids", 1)])
+        logger.info("Created index on 'employee_ids' in 'linked_entities' collection.")
+    
+    # Index on document_ids for finding entities in specific documents
+    if "document_ids_1" not in existing_indexes:
+        linked_entities.create_index([("document_ids", 1)])
+        logger.info("Created index on 'document_ids' in 'linked_entities' collection.")
+    
     return True
 
 def verify_setup(db):

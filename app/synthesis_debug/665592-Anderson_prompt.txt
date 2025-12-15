@@ -1,0 +1,10 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records.
+
+EMPLOYEE FOLDER: 665592-Anderson
+EMPLOYEE ID: 665592
+FOLDER NAME: Anderson
+NUMBER OF DOCUMENTS: 1
+
+[Rest of your prompt template...]
+
+Return ONLY valid JSON starting with { and ending with }.

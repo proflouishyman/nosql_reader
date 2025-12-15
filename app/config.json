@@ -5,7 +5,7 @@
     "sizes[h1]": "2em",
     "sizes[h2]": "1.5em",
     "sizes[h3]": "1.17em",
-    "colors[primary]": "#3109fb",
+    "colors[primary]": "#0061ff",
     "colors[secondary]": "#4f5459",
     "colors[background]": "#f5f5f4",
     "colors[text]": "#000000",
@@ -23,7 +23,7 @@
         "h3": "1.17em"
     },
     "colors": {
-        "primary": "#3109fb",
+        "primary": "#0061ff",
         "secondary": "#4f5459",
         "background": "#f5f5f4",
         "text": "#000000"
