@@ -14,6 +14,11 @@ import os
 import numpy as np
 
 try:
+    import requests
+except ImportError:
+    requests = None  # type: ignore
+
+try:
     from openai import OpenAI
 except ImportError:
     OpenAI = None  # type: ignore
@@ -27,12 +32,15 @@ logger = logging.getLogger(__name__)
 
 
 # Configuration constants
-DEFAULT_PROVIDER = "local"
+DEFAULT_PROVIDER = "ollama"  # Changed from "local" to avoid OOM
 DEFAULT_LOCAL_MODEL = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
 DEFAULT_OPENAI_MODEL = "text-embedding-3-small"
+DEFAULT_OLLAMA_MODEL = "qwen3-embedding:0.6b"
+DEFAULT_OLLAMA_URL = "http://host.docker.internal:11434"
 DEFAULT_BATCH_SIZE = 32
 DEFAULT_DIMENSION_LOCAL = 1536  # For gte-Qwen2-1.5B-instruct
 DEFAULT_DIMENSION_OPENAI = 1536
+DEFAULT_DIMENSION_OLLAMA = 1024  # Verified from ChromaDB collection
 
 
 class EmbeddingService:
@@ -51,36 +59,49 @@ class EmbeddingService:
         api_key: Optional[str] = None,
         dimension: Optional[int] = None,
         batch_size: int = DEFAULT_BATCH_SIZE,
+        ollama_url: Optional[str] = None,
+        timeout: int = 120,
     ):
         """
         Initialize the embedding service.
         
         Args:
-            provider: Embedding provider ("local" or "openai")
+            provider: Embedding provider ("local", "openai", or "ollama")
             model: Name of the embedding model (defaults based on provider)
             api_key: API key for provider (OpenAI only)
             dimension: Target embedding dimension (optional, inferred from model)
             batch_size: Batch size for processing multiple texts
+            ollama_url: Base URL for Ollama (e.g., "http://host.docker.internal:11434")
+            timeout: Request timeout in seconds (for Ollama)
         """
         self.provider = provider.lower()
         self.batch_size = batch_size
+        self.timeout = timeout
         
         # Set model defaults based on provider
         if model is None:
-            self.model_name = DEFAULT_LOCAL_MODEL if self.provider == "local" else DEFAULT_OPENAI_MODEL
+            if self.provider == "ollama":
+                self.model_name = DEFAULT_OLLAMA_MODEL
+            elif self.provider == "local":
+                self.model_name = DEFAULT_LOCAL_MODEL
+            else:
+                self.model_name = DEFAULT_OPENAI_MODEL
         else:
             self.model_name = model
         
         self.dimension = dimension
         self.api_key = api_key
+        self.ollama_url = ollama_url or os.environ.get("OLLAMA_URL", DEFAULT_OLLAMA_URL)
         
         # Initialize provider-specific client
         if self.provider == "openai":
             self._init_openai_client()
         elif self.provider == "local":
             self._init_local_model()
+        elif self.provider == "ollama":
+            self._init_ollama_client()
         else:
-            raise ValueError(f"Unsupported embedding provider: {provider}. Use 'local' or 'openai'")
+            raise ValueError(f"Unsupported embedding provider: {provider}. Use 'local', 'openai', or 'ollama'")
         
         logger.info(
             f"Initialized {self.provider} embedding service: "
@@ -140,6 +161,72 @@ class EmbeddingService:
             logger.error(f"Failed to load local model {self.model_name}: {e}")
             raise
     
+    def _init_ollama_client(self) -> None:
+        """Initialize Ollama client."""
+        if requests is None:
+            raise ImportError(
+                "requests is required for Ollama embeddings. "
+                "Install with: pip install requests"
+            )
+        
+        # Derive embeddings endpoint from base URL
+        self.ollama_embeddings_url = self._get_ollama_embeddings_url()
+        
+        # Test connection and get dimension
+        try:
+            test_response = requests.post(
+                self.ollama_embeddings_url,
+                json={"model": self.model_name, "prompt": "test"},
+                timeout=self.timeout
+            )
+            
+            if test_response.status_code != 200:
+                raise RuntimeError(
+                    f"Ollama connection failed: HTTP {test_response.status_code}\n"
+                    f"URL: {self.ollama_embeddings_url}\n"
+                    f"Make sure Ollama is running and model '{self.model_name}' is pulled.\n"
+                    f"Run: ollama pull {self.model_name}"
+                )
+            
+            data = test_response.json()
+            test_embedding = data.get("embedding")
+            
+            if test_embedding and isinstance(test_embedding, list):
+                if self.dimension is None:
+                    self.dimension = len(test_embedding)
+                logger.info(
+                    f"Ollama client initialized: url={self.ollama_embeddings_url}, "
+                    f"model={self.model_name}, dimension={self.dimension}"
+                )
+            else:
+                raise RuntimeError(f"Ollama returned invalid embedding: {list(data.keys())}")
+                
+        except requests.exceptions.RequestException as e:
+            raise RuntimeError(
+                f"Cannot connect to Ollama at {self.ollama_embeddings_url}\n"
+                f"Error: {e}\n"
+                f"Make sure Ollama is running on the host."
+            )
+    
+    def _get_ollama_embeddings_url(self) -> str:
+        """Derive embeddings endpoint from base URL or OLLAMA_URL."""
+        url = self.ollama_url.rstrip("/")
+        
+        # If it's already the embeddings endpoint, use as-is
+        if url.endswith("/api/embeddings"):
+            return url
+        
+        # If it's the generate endpoint, replace with embeddings
+        if url.endswith("/api/generate"):
+            return url[:-len("/api/generate")] + "/api/embeddings"
+        
+        # If it's just the base URL, append embeddings path
+        if "/api/" not in url:
+            return url + "/api/embeddings"
+        
+        # Default: append embeddings
+        return url + "/api/embeddings"
+    
     # Primary interface methods (used by migration script)
     
     def embed_documents(
@@ -168,6 +255,8 @@ class EmbeddingService:
                 return self._generate_openai_embeddings_batch(texts, show_progress)
             elif self.provider == "local":
                 return self._generate_local_embeddings_batch(texts, show_progress)
+            elif self.provider == "ollama":
+                return self._generate_ollama_embeddings_batch(texts, show_progress)
         except Exception as e:
             logger.error(f"Error generating batch embeddings: {e}")
             raise
@@ -193,6 +282,8 @@ class EmbeddingService:
                 return self._generate_openai_embedding(text)
             elif self.provider == "local":
                 return self._generate_local_embedding(text)
+            elif self.provider == "ollama":
+                return self._generate_ollama_embedding(text)
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
             raise
@@ -299,6 +390,60 @@ class EmbeddingService:
         except Exception as e:
             logger.error(f"Local batch embedding failed: {e}")
             raise
+    
+    def _generate_ollama_embedding(self, text: str) -> np.ndarray:
+        """Generate single embedding using Ollama API."""
+        try:
+            response = requests.post(
+                self.ollama_embeddings_url,
+                json={"model": self.model_name, "prompt": text},
+                timeout=self.timeout
+            )
+            
+            if response.status_code != 200:
+                raise RuntimeError(
+                    f"Ollama embedding failed: HTTP {response.status_code}\n"
+                    f"Response: {response.text[:500]}"
+                )
+            
+            data = response.json()
+            embedding = data.get("embedding")
+            
+            if not embedding or not isinstance(embedding, list):
+                raise RuntimeError(f"Invalid Ollama response: {list(data.keys())}")
+            
+            return np.array(embedding, dtype=np.float32)
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Ollama request failed: {e}")
+            raise
+    
+    def _generate_ollama_embeddings_batch(
+        self, 
+        texts: List[str],
+        show_progress: bool = False,
+    ) -> np.ndarray:
+        """Generate embeddings for batch using Ollama API (one request per text)."""
+        embeddings = []
+        
+        iterator = texts
+        if show_progress:
+            try:
+                from tqdm import tqdm
+                iterator = tqdm(texts, desc="Generating embeddings")
+            except ImportError:
+                pass
+        
+        for text in iterator:
+            try:
+                embedding = self._generate_ollama_embedding(text)
+                embeddings.append(embedding)
+            except Exception as e:
+                logger.error(f"Failed to generate embedding for text (len={len(text)}): {e}")
+                # Use zero vector as fallback
+                embeddings.append(np.zeros(self.dimension, dtype=np.float32))
+        
+        return np.array(embeddings, dtype=np.float32)
     
     # Utility methods
     

@@ -115,26 +115,13 @@ class VectorRetriever(BaseRetriever):
     ) -> List[Document]:
         """Convert search results to LangChain Document objects."""
         documents = []
-
+        
         for result in search_results:
             # Use chunk content as page_content
             page_content = result.get("content", "")
-            chunk_id = result.get("chunk_id")
-
-            chunk_record = None
-            if self.mongo_collection is not None and chunk_id:
-                chunk_record = self.mongo_collection.find_one({"chunk_id": chunk_id})  # Align vector hits with MongoDB chunk metadata for consistent citations.
-                if chunk_record and not page_content:
-                    page_content = chunk_record.get("chunk_text", "")  # Prefer DB chunk text when vector store omitted the body.
-
+            
             # Build metadata
             metadata = result.get("metadata", {}).copy()
-            if chunk_record:
-                chunk_metadata = chunk_record.get("metadata") or {}
-                metadata.update(chunk_metadata)  # Merge stored chunk metadata so parent IDs/titles survive vector round-trip.
-                metadata.setdefault("title", chunk_record.get("title"))  # Carry through title if present on the chunk doc.
-                metadata.setdefault("source_document_id", chunk_record.get("source_document_id"))  # Preserve parent ID for source rendering.
-            metadata.setdefault("_id", metadata.get("source_document_id") or metadata.get("parent_doc_id"))  # Populate citation ID from parent linkage when vector metadata lacked it.
             metadata.update({
                 "chunk_id": result.get("chunk_id"),
                 "score": result.get("score", 0.0),
