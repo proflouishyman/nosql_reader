@@ -43,7 +43,7 @@ TOP_P = 0.9  # Nucleus sampling threshold
 DRY_RUN = False  # Set to True to test without modifying database
 MAX_PERSONS = None  # Set to number to limit processing (e.g., 10 for testing), None for all
 VERBOSE = True  # Show detailed progress messages
-DEBUG = False  # Save prompts and responses to disk
+DEBUG = True  # Save prompts and responses to disk
 
 # Directory Paths
 DEBUG_DIR = "./synthesis_debug"  # Where to save debug files

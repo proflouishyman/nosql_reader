@@ -187,10 +187,10 @@ class VectorStoreManager:
         """
         Perform similarity search in the vector store.
         
-        Returns raw search results as dictionaries (used by retrievers).
+        TRUTHINESS-SAFE: Never tests arrays for truthiness.
         
         Args:
-            query_embedding: Query embedding vector
+            query_embedding: Query embedding vector (numpy array or list)
             k: Number of results to return
             filters: Optional metadata filters
             
@@ -198,7 +198,7 @@ class VectorStoreManager:
             List of dictionaries with keys: chunk_id, content, metadata, score, distance
         """
         try:
-            # Convert embedding to list if needed
+            # Convert numpy to list if needed
             if isinstance(query_embedding, np.ndarray):
                 query_embedding_list = query_embedding.tolist()
             else:
@@ -214,26 +214,32 @@ class VectorStoreManager:
                 query_embeddings=[query_embedding_list],
                 n_results=k,
                 where=where_clause,
+                include=["documents", "metadatas", "distances"],
             )
             
-            # Convert to dictionaries
-            search_results = []
-            if results["documents"] and results["documents"][0]:
-                for i, doc_text in enumerate(results["documents"][0]):
-                    metadata = results["metadatas"][0][i] if results["metadatas"] else {}
-                    distance = results["distances"][0][i] if results["distances"] else 0
-                    chunk_id = results["ids"][0][i]
-                    
-                    search_results.append({
-                        "chunk_id": chunk_id,
-                        "content": doc_text,
-                        "metadata": metadata,
-                        "score": 1 - distance,  # Convert distance to similarity
-                        "distance": distance,
-                    })
+            # TRUTHINESS-SAFE: Check length without testing truthiness
+            ids = results.get("ids")
+            docs = results.get("documents")
+            metas = results.get("metadatas")
+            dists = results.get("distances")
             
-            logger.debug(f"Retrieved {len(search_results)} results from vector search")
-            return search_results
+            # Safe check - no truthiness on arrays
+            if ids is None or len(ids) == 0 or len(ids[0]) == 0:
+                return []
+            
+            # Build output list
+            output = []
+            for i in range(len(ids[0])):
+                output.append({
+                    "chunk_id": ids[0][i],
+                    "content": docs[0][i] if docs is not None and len(docs) > 0 else None,
+                    "metadata": metas[0][i] if metas is not None and len(metas) > 0 else {},
+                    "score": 1.0 - dists[0][i] if dists is not None and len(dists) > 0 else 0.0,
+                    "distance": dists[0][i] if dists is not None and len(dists) > 0 else 0.0,
+                })
+            
+            logger.debug(f"Retrieved {len(output)} results from vector search")
+            return output
             
         except Exception as e:
             logger.error(f"Error performing similarity search: {e}")
@@ -335,7 +341,8 @@ class VectorStoreManager:
                 where={"document_id": {"$eq": document_id}}
             )
             
-            if results["ids"]:
+            # TRUTHINESS-SAFE: Check length directly
+            if len(results.get("ids", [])) > 0:
                 self.collection.delete(ids=results["ids"])
                 logger.info(
                     f"Deleted {len(results['ids'])} chunks for document {document_id}"
@@ -347,6 +354,8 @@ class VectorStoreManager:
     def get_chunk(self, chunk_id: str) -> Optional[Dict[str, Any]]:
         """
         Retrieve a specific chunk by ID.
+        
+        TRUTHINESS-SAFE: Never tests arrays for truthiness.
         
         Args:
             chunk_id: Chunk ID to retrieve
@@ -360,14 +369,26 @@ class VectorStoreManager:
                 include=["documents", "metadatas", "embeddings"]
             )
             
-            if results["ids"]:
-                return {
-                    "chunk_id": results["ids"][0],
-                    "content": results["documents"][0] if results["documents"] else None,
-                    "metadata": results["metadatas"][0] if results["metadatas"] else {},
-                    "embedding": results["embeddings"][0] if results["embeddings"] else None,
-                }
-            return None
+            # TRUTHINESS-SAFE: Check length directly - works for both list and numpy array
+            ids = results.get("ids")
+            if ids is None or len(ids) == 0:
+                return None
+            
+            docs = results.get("documents")
+            metas = results.get("metadatas")
+            embs = results.get("embeddings")
+            
+            # Safe extraction with length checks
+            content = docs[0] if docs is not None and len(docs) > 0 else None
+            metadata = metas[0] if metas is not None and len(metas) > 0 else {}
+            embedding = embs[0] if embs is not None and len(embs) > 0 else None
+            
+            return {
+                "chunk_id": ids[0],
+                "content": content,
+                "metadata": metadata,
+                "embedding": embedding,
+            }
             
         except Exception as e:
             logger.error(f"Error retrieving chunk {chunk_id}: {e}")
