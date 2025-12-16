@@ -62,6 +62,8 @@ class RAGSystemTest:
         print(f"Using embedding config:")
         print(f"  Provider: {self.embedding_provider}")
         print(f"  Model: {self.embedding_model}")
+        print(f"  MongoDB URI: {self.mongo_uri[:60]}...")
+        print(f"  Database: {self.db_name}")
         
     def print_header(self, text: str):
         """Print formatted test section header."""
@@ -71,7 +73,7 @@ class RAGSystemTest:
     
     def print_test(self, test_name: str, passed: bool, details: str = ""):
         """Print test result."""
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = "âœ… PASS" if passed else "âŒ FAIL"
         print(f"{status} | {test_name}")
         if details:
             print(f"       {details}")
@@ -511,7 +513,7 @@ class RAGSystemTest:
                 self.print_test(
                     "Results relevance",
                     relevant,
-                    f"Top score {top_score:.3f} {'>=0.5 ✓' if relevant else '<0.5 ✗'}"
+                    f"Top score {top_score:.3f} {'>=0.5 âœ“' if relevant else '<0.5 âœ—'}"
                 )
                 
                 return relevant
@@ -531,7 +533,7 @@ class RAGSystemTest:
         
         try:
             if not test_real_docs:
-                print("⏭️  Skipping real document test (use --full flag to enable)")
+                print("â­ï¸  Skipping real document test (use --full flag to enable)")
                 return True
             
             # Connect to MongoDB
@@ -562,14 +564,50 @@ class RAGSystemTest:
                     True,
                     "Skipping empty document"
                 )
-                # Try to find a document with content
+                # Try to find a document with SUBSTANTIAL content (>50 chars)
+                # Note: image documents may have nested structured_content
                 sample_doc = db['documents'].find_one({"$or": [
-                    {"content": {"$exists": True, "$ne": ""}},
-                    {"ocr_text": {"$exists": True, "$ne": ""}}
+                    {"content": {"$exists": True, "$regex": ".{50,}"}},  # At least 50 chars
+                    {"ocr_text": {"$exists": True, "$regex": ".{50,}"}},
+                    {"summary": {"$exists": True, "$regex": ".{50,}"}},
+                    {"description": {"$exists": True, "$regex": ".{50,}"}},
+                    {"image_metadata.structured_content.ocr_text": {"$exists": True, "$regex": ".{50,}"}}
                 ]})
                 if sample_doc:
-                    chunks = chunker.chunk_document(sample_doc)
                     doc_id = str(sample_doc['_id'])
+                    doc_fields = list(sample_doc.keys())
+                    logger.info(f"Found alternative document: {doc_id}")
+                    logger.info(f"  Document fields: {doc_fields}")
+                    
+                    # Check what text fields it has
+                    text_fields = ['content', 'ocr_text', 'summary', 'description']
+                    has_top_level = [f for f in text_fields if sample_doc.get(f)]
+                    logger.info(f"  Top-level text fields: {has_top_level}")
+                    
+                    # Log content lengths
+                    for field in text_fields:
+                        val = sample_doc.get(field, '')
+                        if val:
+                            logger.info(f"    {field}: {len(val)} chars")
+                    
+                    # For image documents, extract text from nested structure if needed
+                    if not any(len(str(sample_doc.get(f, ''))) > 50 for f in text_fields):
+                        logger.info("  No substantial top-level text fields, checking image_metadata...")
+                        # Extract from image_metadata if that's where the content is
+                        img_meta = sample_doc.get('image_metadata', {})
+                        struct_content = img_meta.get('structured_content', {})
+                        if struct_content:
+                            logger.info(f"  Found structured_content with keys: {list(struct_content.keys())}")
+                            # Flatten structured content to top level for chunking
+                            sample_doc['ocr_text'] = struct_content.get('ocr_text', '')
+                            sample_doc['summary'] = struct_content.get('summary', '')
+                            logger.info(f"  Extracted ocr_text: {len(sample_doc.get('ocr_text', ''))} chars")
+                            logger.info(f"  Extracted summary: {len(sample_doc.get('summary', ''))} chars")
+                    
+                    chunks = chunker.chunk_document(sample_doc)
+                    logger.info(f"  Generated {len(chunks)} chunks from alternative document")
+                else:
+                    logger.warning("  No documents found with any substantial text content (>50 chars)!")
                 
             self.print_test(
                 "Document chunked",
@@ -645,7 +683,7 @@ class RAGSystemTest:
     def test_rag_pipeline_integration(self) -> bool:
         """
         Test complete RAG pipeline matching the system architecture:
-        Query → Hybrid Retrieval → Result Fusion → Context Assembly → Response
+        Query â†’ Hybrid Retrieval â†’ Result Fusion â†’ Context Assembly â†’ Response
         """
         self.print_header("TEST 8: Complete RAG Pipeline Integration")
         
@@ -737,7 +775,7 @@ class RAGSystemTest:
             total_tokens = 0
             
             for doc in vector_docs[:10]:  # Top 10 results
-                # Estimate tokens (rough approximation: 1 token ≈ 4 chars)
+                # Estimate tokens (rough approximation: 1 token â‰ˆ 4 chars)
                 doc_tokens = len(doc.page_content) // 4
                 if total_tokens + doc_tokens <= MAX_TOKENS:
                     assembled_context.append(doc.page_content)
@@ -832,9 +870,9 @@ class RAGSystemTest:
             try:
                 passed = test_func()
                 if not passed and test_name != "End-to-End":
-                    print(f"\n⚠️  {test_name} test failed, but continuing...")
+                    print(f"\nâš ï¸  {test_name} test failed, but continuing...")
             except Exception as e:
-                print(f"\n❌ {test_name} test crashed: {e}")
+                print(f"\nâŒ {test_name} test crashed: {e}")
                 logger.exception(f"{test_name} test exception")
         
         # Print summary
@@ -845,19 +883,19 @@ class RAGSystemTest:
         failed = total - passed
         
         print(f"\nTotal Tests: {total}")
-        print(f"Passed: {passed} ✅")
-        print(f"Failed: {failed} ❌")
+        print(f"Passed: {passed} âœ…")
+        print(f"Failed: {failed} âŒ")
         print(f"Success Rate: {(passed/total*100):.1f}%")
         
         if failed == 0:
-            print("\n🎉 ALL TESTS PASSED! System ready for frontend integration.")
+            print("\nðŸŽ‰ ALL TESTS PASSED! System ready for frontend integration.")
             return True
         else:
-            print(f"\n⚠️  {failed} test(s) failed. Review errors above.")
+            print(f"\nâš ï¸  {failed} test(s) failed. Review errors above.")
             print("\nFailed tests:")
             for name, result in self.test_results.items():
                 if not result:
-                    print(f"  ❌ {name}")
+                    print(f"  âŒ {name}")
             return False
 
 
