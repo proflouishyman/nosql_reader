@@ -42,7 +42,7 @@ from pymongo import MongoClient
 # Defaults (Qwen3 small model)
 # -------------------------
 DEFAULT_DB_NAME = os.environ.get("MONGO_DB_NAME", "railroad_documents")
-DEFAULT_COLLECTION_NAME = os.environ.get("CHROMA_COLLECTION_NAME", "historian_documents_qwen3_0p6b")
+DEFAULT_COLLECTION_NAME = os.environ.get("CHROMA_COLLECTION_NAME", "historian_documents")
 DEFAULT_EMBED_MODEL = os.environ.get("HISTORIAN_AGENT_EMBEDDING_MODEL", "qwen3-embedding:0.6b")
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://host.docker.internal:11434/api/generate")

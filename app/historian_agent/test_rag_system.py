@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """
-RAG System Test Script
+RAG System Test Script - IMPROVED VERSION
 
 Tests all RAG components independently and together to verify the system
 is working correctly before frontend integration.
 
+FIXES:
+1. Reads embedding provider/model from environment variables
+2. Fixed array comparison bug in chunk retrieval test
+3. Added functional semantic search test with real queries
+
 Usage:
-    python scripts/test_rag_system.py [--full]
+    python test_rag_system_improved.py [--full]
 
 Options:
     --full    Run full test including actual document processing (slower)
@@ -20,13 +25,13 @@ import logging
 from typing import List, Dict, Any
 
 # Add app directory to path
-app_dir = Path(__file__).parent.parent
+app_dir = Path(__file__).parent.parent / "app"
 sys.path.insert(0, str(app_dir))
 
 import numpy as np
 from pymongo import MongoClient
 
-# Import RAG components
+# Import RAG components (all files in same directory)
 from chunking import DocumentChunker, Chunk
 from embeddings import EmbeddingService
 from vector_store import VectorStoreManager, get_vector_store
@@ -40,6 +45,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+# Get embedding config from environment
+EMBEDDING_PROVIDER = os.environ.get("HISTORIAN_AGENT_EMBEDDING_PROVIDER", "ollama")
+EMBEDDING_MODEL = os.environ.get("HISTORIAN_AGENT_EMBEDDING_MODEL", "qwen3-embedding:0.6b")
+
+
 class RAGSystemTest:
     """Comprehensive test suite for RAG system."""
     
@@ -47,6 +57,13 @@ class RAGSystemTest:
         self.mongo_uri = os.environ.get('APP_MONGO_URI') or os.environ.get('MONGO_URI') or "mongodb://admin:secret@mongodb:27017/admin"
         self.db_name = 'railroad_documents'
         self.test_results = {}
+        
+        self.embedding_provider = EMBEDDING_PROVIDER
+        self.embedding_model = EMBEDDING_MODEL
+        
+        print(f"Using embedding config:")
+        print(f"  Provider: {self.embedding_provider}")
+        print(f"  Model: {self.embedding_model}")
         
     def print_header(self, text: str):
         """Print formatted test section header."""
@@ -146,16 +163,15 @@ class RAGSystemTest:
         self.print_header("TEST 2: Embedding Generation")
         
         try:
-            # Initialize embedding service
             embedding_service = EmbeddingService(
-                provider="local",
-                model="Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+                provider=self.embedding_provider,
+                model=self.embedding_model
             )
             dimension = embedding_service.get_embedding_dimension()
             self.print_test(
                 "Embedding service initialization",
                 True,
-                f"Model loaded, dimension={dimension}"
+                f"Provider={self.embedding_provider}, Model={self.embedding_model}, Dimension={dimension}"
             )
             
             # Test single embedding
@@ -230,8 +246,10 @@ class RAGSystemTest:
                 f"Collection: {stats.get('collection_name')}, Count: {stats.get('total_chunks', 0)}"
             )
             
-            # Create test chunks with embeddings
-            embedding_service = EmbeddingService(provider="local")
+            embedding_service = EmbeddingService(
+                provider=self.embedding_provider,
+                model=self.embedding_model
+            )
             
             test_chunks = []
             test_texts = [
@@ -279,14 +297,27 @@ class RAGSystemTest:
             if search_valid:
                 print(f"       Top result: {results[0]['content'][:60]}...")
             
-            # Test retrieval
-            retrieved_chunk = vector_store.get_chunk(test_chunks[0].chunk_id)
-            retrieval_valid = retrieved_chunk is not None
-            self.print_test(
-                "Chunk retrieval by ID",
-                retrieval_valid,
-                f"Retrieved chunk: {test_chunks[0].chunk_id}"
-            )
+            # FIXED: Test retrieval with proper error handling
+            try:
+                retrieved_chunk = vector_store.get_chunk(test_chunks[0].chunk_id)
+                # Check if we got something back (could be dict or Chunk object)
+                retrieval_valid = (
+                    retrieved_chunk is not None and 
+                    (isinstance(retrieved_chunk, dict) or hasattr(retrieved_chunk, 'chunk_id'))
+                )
+                self.print_test(
+                    "Chunk retrieval by ID",
+                    retrieval_valid,
+                    f"Retrieved chunk: {test_chunks[0].chunk_id}"
+                )
+            except Exception as e:
+                logger.warning(f"Chunk retrieval test error: {e}")
+                retrieval_valid = False
+                self.print_test(
+                    "Chunk retrieval by ID",
+                    False,
+                    f"Error: {str(e)}"
+                )
             
             # Cleanup test chunks
             vector_store.delete_chunks([c.chunk_id for c in test_chunks])
@@ -341,7 +372,7 @@ class RAGSystemTest:
             self.print_test(
                 "Document chunks collection",
                 chunks_exist,
-                f"{chunk_count:,} chunks {'exist' if chunks_exist else 'will be created during migration'}"
+                f"{chunk_count:,} chunks exist"
             )
             
             # Check indexes
@@ -369,7 +400,10 @@ class RAGSystemTest:
         
         try:
             # Setup
-            embedding_service = EmbeddingService(provider="local")
+            embedding_service = EmbeddingService(
+                provider=self.embedding_provider,
+                model=self.embedding_model
+            )
             vector_store = get_vector_store(store_type="chroma")
             client = MongoClient(self.mongo_uri, serverSelectionTimeoutMS=5000)
             db = client[self.db_name]
@@ -431,11 +465,67 @@ class RAGSystemTest:
             logger.exception("Retriever test failed")
             return False
     
-    # ==================== Test 6: End-to-End ====================
+    # ==================== NEW Test 6: Functional Semantic Search ====================
+    
+    def test_functional_semantic_search(self) -> bool:
+        """Test semantic search with real queries on actual data."""
+        self.print_header("TEST 6: Functional Semantic Search")
+        
+        try:
+            # Initialize services using actual code structure
+            embedding_service = EmbeddingService(
+                provider=self.embedding_provider,
+                model=self.embedding_model
+            )
+            vector_store = get_vector_store(store_type="chroma")
+            
+            # Test query
+            test_query = "railroad accidents and safety violations"
+            
+            # Embed query
+            query_embedding = embedding_service.embed_query(test_query)
+            
+            # Search using vector_store.search() method
+            results = vector_store.search(query_embedding, k=3)
+            
+            search_works = len(results) > 0
+            self.print_test(
+                "Semantic search on real data",
+                search_works,
+                f"Found {len(results)} results for: '{test_query}'"
+            )
+            
+            if search_works:
+                for i, result in enumerate(results, 1):
+                    score = result.get("score", 0)
+                    text = result.get("content", "")[:100]
+                    print(f"       {i}. Score: {score:.3f}")
+                    print(f"          Text: {text}...")
+                    print()
+                
+                # Check relevance - top result should have good score
+                top_score = results[0].get("score", 0)
+                relevant = top_score > 0.5  # Reasonable threshold
+                self.print_test(
+                    "Results relevance",
+                    relevant,
+                    f"Top score {top_score:.3f} {'>=0.5 ✓' if relevant else '<0.5 ✗'}"
+                )
+                
+                return relevant
+            else:
+                return False
+            
+        except Exception as e:
+            self.print_test("Functional semantic search", False, f"Error: {str(e)}")
+            logger.exception("Functional search test failed")
+            return False
+    
+    # ==================== Test 7: End-to-End ====================
     
     def test_end_to_end(self, test_real_docs: bool = False) -> bool:
         """Test complete RAG pipeline end-to-end."""
-        self.print_header("TEST 6: End-to-End Pipeline")
+        self.print_header("TEST 7: End-to-End Pipeline")
         
         try:
             if not test_real_docs:
@@ -469,7 +559,10 @@ class RAGSystemTest:
             )
             
             # Step 2: Generate embeddings
-            embedding_service = EmbeddingService(provider="local")
+            embedding_service = EmbeddingService(
+                provider=self.embedding_provider,
+                model=self.embedding_model
+            )
             texts = [chunk.content for chunk in chunks]
             embeddings = embedding_service.embed_documents(texts[:5], show_progress=False)  # Just first 5
             
@@ -525,7 +618,7 @@ class RAGSystemTest:
     def run_all_tests(self, full: bool = False):
         """Run complete test suite."""
         print("\n" + "="*70)
-        print("  RAG SYSTEM TEST SUITE")
+        print("  RAG SYSTEM TEST SUITE - IMPROVED")
         print("="*70)
         print(f"Testing RAG components before frontend integration")
         print(f"Database: {self.db_name}")
@@ -538,6 +631,7 @@ class RAGSystemTest:
             ("Vector Store", lambda: self.test_vector_store()),
             ("MongoDB", lambda: self.test_mongodb()),
             ("Retrievers", lambda: self.test_retrievers()),
+            ("Functional Semantic Search", lambda: self.test_functional_semantic_search()),
             ("End-to-End", lambda: self.test_end_to_end(full)),
         ]
         
