@@ -1,0 +1,224 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O. D. Shoutfoot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood294.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto F. Grandtke",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood292.jpg.json"
+        ]
+      },
+      {
+        "name": "O. D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood297.jpg.json",
+          "RDApp-204801Proudfood293.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto D. Brandfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood295.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1864,
+    "confidence_notes": "The birth year is derived from the family Bible record, but there are conflicting names and variations in documents."
+  },
+  "biographical_narrative": "Otto D. Proudfoot began his career with the Baltimore & Ohio Railroad Company around the early 20th century. His employment spanned several decades during which he held various positions within the company's divisions, including Engineer and Trackman. He was a member of the Relief Department, securing benefits for himself and his family in case of death or disability. Proudfoot experienced health issues that led to changes in his employment status and benefit applications. In 1953, due to medical reasons, he retired from active service and received closure on his disability benefits. His career with B&O Railroad was marked by a series of administrative adjustments and personal challenges.",
+  "family": {
+    "spouse": {
+      "name": "Bertie L. Proudfoot",
+      "evidence": "Designation of beneficiary in the Relief Department application",
+      "sources": [
+        "RDApp-204801Proudfood293.jpg.json"
+      ]
+    },
+    "parents": [
+      {
+        "name": "Father",
+        "relationship": "father",
+        "evidence": "Medical examination form mentions father's death from typhoid at age 36.",
+        "sources": [
+          "RDApp-204801Proudfood296.jpg.json"
+        ]
+      },
+      {
+        "name": "Mother",
+        "relationship": "mother",
+        "evidence": "Medical examination form indicates mother's status is unknown.",
+        "sources": [
+          "RDApp-204801Proudfood296.jpg.json"
+        ]
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Cumberland, in the County of Allegany, and State of Maryland",
+      "date_range": "unknown",
+      "context": "Residence for Relief Department application purposes.",
+      "sources": [
+        "RDApp-204801Proudfood293.jpg.json"
+      ]
+    },
+    {
+      "address": "130 Seymour Street Cumberland, Maryland",
+      "date_range": "March 20, 1953",
+      "context": "Address for correspondence regarding disability benefits closure.",
+      "sources": [
+        "RDApp-204801Proudfood291.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "August 15, 1902",
+      "event_type": "application",
+      "position": null,
+      "department": "C. I.",
+      "division": "Cassel HW",
+      "details": "Application for full membership in the Relief Feature was cancelled.",
+      "sources": [
+        "RDApp-204801Proudfood297.jpg.json"
+      ]
+    },
+    {
+      "date": "May 3, 1913",
+      "event_type": "application",
+      "position": "Engineer",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Application for full membership in the Relief Feature was made.",
+      "sources": [
+        "RDApp-204801Proudfood295.jpg.json"
+      ]
+    },
+    {
+      "date": "May 8, 1919",
+      "event_type": "application",
+      "position": null,
+      "department": "Co T",
+      "division": "RBM",
+      "details": "Application for full membership in the Relief Feature was made.",
+      "sources": [
+        "RDApp-204801Proudfood294.jpg.json"
+      ]
+    },
+    {
+      "date": "March 20, 1953",
+      "event_type": "retirement",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Retired from active service due to disability.",
+      "sources": [
+        "RDApp-204801Proudfood291.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "unknown",
+      "injury_type": "Disability",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was disabled and received benefits until his retirement in March 1953.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "February 20, 1953",
+            "end": "February 23, 1953"
+          },
+          "days": 4,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204801Proudfood291.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Agostini",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "Medical Examiner (unnamed)",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "Health status and disability determination."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "November 20, 1939",
+      "event": "Correction of birth date to November 26, 1864.",
+      "significance": "Clarified insurance records for Otto F. Grandtke.",
+      "sources": [
+        "RDApp-204801Proudfood292.jpg.json"
+      ]
+    },
+    {
+      "date": "July 15, unknown",
+      "event": "Change of beneficiary to wife Bertie L.",
+      "significance": "Updated Relief Department membership benefits for Otto D. Proudfoot.",
+      "sources": [
+        "RDApp-204801Proudfood293.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 9,
+    "date_range": {
+      "earliest": "August 15, 1902",
+      "latest": "March 20, 1953"
+    },
+    "completeness_assessment": "The record is relatively complete for administrative and medical documentation but lacks detailed personal information or employment history beyond the Relief Department applications.",
+    "data_quality_notes": [
+      "There are inconsistencies in names across documents (e.g., Proudfoot vs. Brandfoot).",
+      "Some documents contain truncated text, which may affect completeness."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of employee benefits and disability support within railroad companies in the early 20th century.",
+      "It also underscores administrative processes for updating personal records and managing employment status changes due to health."
+    ],
+    "comparative_questions": [
+      "How did other employees' experiences with disability benefits compare during this period?",
+      "What were the typical durations of employment before retirement or disability in similar roles?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.9,
+    "overall": 0.82
+  }
+}

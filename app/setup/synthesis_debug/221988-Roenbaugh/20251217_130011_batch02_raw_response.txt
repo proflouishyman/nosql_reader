@@ -1,0 +1,292 @@
+{
+  "person_identity": {
+    "canonical_name": "Claud Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claud Roanbough",
+        "confidence": "medium",
+        "sources": ["RDApp-221988Roenbaugh011.jpg.json"]
+      },
+      {
+        "name": "Claud Koenbaugh",
+        "confidence": "low",
+        "sources": ["RDApp-221988Roenbaugh019.jpg.json"]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": null,
+    "confidence_notes": "Identity is fairly certain but there are slight variations in spelling of the name."
+  },
+  
+  "biographical_narrative": "Claud Roenbaugh was an engineer employed by the Baltimore & Ohio Railroad Company, working within the Wheeling Division's CT Department. His career with the railroad spanned several years during which he faced significant health challenges that led to multiple periods of disability. From June 1950 through January 1951, Roenbaugh experienced recurring bouts of sickness, each time leading to a period of total disablement and no wage allowance from his employer. These records suggest a prolonged struggle with Meniere's syndrome, as noted in a letter dated July 14, 1950, which advised that he should not return to duty until deemed safe by medical examiners.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "331 W. 27th Street, Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": ["RDApp-221988Roenbaugh019.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Whg Div'n",
+      "details": "No specific hire date provided, but Roenbaugh was employed as an engineer in the CT Department of the Wheeling Division.",
+      "sources": ["RDApp-221988Roenbaugh013.jpg.json"]
+    },
+    {
+      "date": "1950-06-03",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported disabled by sickness, beginning June 3, 1950.",
+      "sources": ["RDApp-221988Roenbaugh020.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1950-06-03",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claud Roenbaugh was reported disabled by sickness starting June 3, 1950. The condition was diagnosed as Meniere's syndrome and led to multiple periods of total disablement.",
+      "medical_examinations": [
+        {
+          "date": "1950-06-26",
+          "examiner": "D.A. Wiener",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh019.jpg.json"]
+        },
+        {
+          "date": "1950-07-14",
+          "examiner": "Dr. Wioner",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh018.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-07-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claud Roenbaugh was reported disabled by sickness from July 20 to August 19, 1950.",
+      "medical_examinations": [
+        {
+          "date": "1950-07-28",
+          "examiner": "E. B. Wiltshire",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh016.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-08-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claud Roenbaugh was reported disabled by sickness from August 20 to September 19, 1950.",
+      "medical_examinations": [
+        {
+          "date": "1950-08-25",
+          "examiner": "E. B. Wiltshire",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh015.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-09-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claud Roenbaugh was reported disabled by sickness from September 20 to October 19, 1950.",
+      "medical_examinations": [
+        {
+          "date": "1950-09-22",
+          "examiner": "D. A. Wiener",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh014.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-10-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claud Roenbaugh was reported disabled by sickness from October 20 to November 19, 1950.",
+      "medical_examinations": [
+        {
+          "date": "1950-11-10",
+          "examiner": "D. A. Wiener",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh013.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-11-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claud Roenbaugh was reported disabled by sickness from November 20 to December 19, 1950.",
+      "medical_examinations": [
+        {
+          "date": "1950-11-24",
+          "examiner": "D. A. Wiener",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh012.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-12-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claud Roenbaugh was reported disabled by sickness from December 20, 1950 to January 19, 1951.",
+      "medical_examinations": [
+        {
+          "date": "1951-01-12",
+          "examiner": "D. A. Wiener",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh011.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "D.A. Wiener",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "1950-06-26",
+          "finding": "disabled"
+        },
+        {
+          "date": "1950-07-28",
+          "finding": "disabled"
+        },
+        {
+          "date": "1950-08-25",
+          "finding": "disabled"
+        },
+        {
+          "date": "1950-09-22",
+          "finding": "disabled"
+        },
+        {
+          "date": "1950-11-10",
+          "finding": "disabled"
+        },
+        {
+          "date": "1950-11-24",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "E. B. Wiltshire",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1950-07-28",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1950-06-03",
+      "latest": "1951-01-19"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of sickness and disablement, but lacks information on his hiring date or any promotions.",
+    "data_quality_notes": [
+      "There are slight variations in spelling of Roenbaugh's name across documents.",
+      "Some documents have minor OCR errors."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the impact of chronic illness on railroad employees and the procedures for handling disability claims within a major railroad company in the early 20th century.",
+      "It also reveals the role of medical examiners in assessing fitness to return to duty, particularly concerning conditions like Meniere's syndrome."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases of chronic illness?",
+      "What were the broader trends in railroad labor and health practices during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

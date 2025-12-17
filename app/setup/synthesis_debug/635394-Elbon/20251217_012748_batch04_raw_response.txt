@@ -1,0 +1,176 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo V. Elbon",
+    "name_variations": [
+      {
+        "name": "L. V. Elbon",
+        "confidence": "high",
+        "sources": ["RDApp-635394Elbon031.jpg.json", "RDApp-635394Elbon032.jpg.json"]
+      },
+      {
+        "name": "Leo Verne Elber",
+        "confidence": "low",
+        "sources": ["RDApp-635394Elbon039.jpg.json"]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "Name variations are present, but 'Leo V. Elbon' is the most consistent across documents."
+  },
+  
+  "biographical_narrative": "Leo V. Elbon began his career with the Baltimore & Ohio Railroad in December of 1920 as a fireman on the Cumberland Division. His employment was marked by periods of furlough and medical examinations due to a faint systolic mitral murmur, which initially disqualified him from service in February 1940 upon returning from a long furlough starting July 8th, 1927. Despite this setback, Elbon sought re-examination and was eventually found fit for duty by Dr. Basil L. Page on March 3rd, 1941. However, the medical director advised that he be further examined to confirm his fitness before resuming service.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Cumberland in the County of Allegany and State of Maryland",
+      "date_range": "unknown",
+      "context": "Residence as stated in application for Relief Department membership.",
+      "sources": ["RDApp-635394Elbon039.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1920-12-01",
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": "Cumberland Division",
+      "details": "Started employment as a fireman.",
+      "sources": ["RDApp-635394Elbon032.jpg.json"]
+    },
+    {
+      "date": "1927-07-08",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Began a long furlough.",
+      "sources": ["RDApp-635394Elbon031.jpg.json"]
+    },
+    {
+      "date": "1940-02-19",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Rejected for membership in the Relief Department due to a heart murmur.",
+      "sources": ["RDApp-635394Elbon031.jpg.json", "RDApp-635394Elbon037.jpg.json"]
+    },
+    {
+      "date": "1941-03-03",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Re-examined and found fit for duty by Dr. Basil L. Page.",
+      "sources": ["RDApp-635394Elbon032.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Heart condition",
+      "body_part": "Heart",
+      "narrative": "Leo V. Elbon was found to have a faint systolic mitral murmur, which initially disqualified him from service in 1940.",
+      "medical_examinations": [
+        {
+          "date": "1940-02-19",
+          "examiner": "Dr. E. M. Guistwhite",
+          "finding": "disabled",
+          "notes": "Elbon was rejected for membership in the Relief Department due to a heart murmur.",
+          "sources": ["RDApp-635394Elbon031.jpg.json", "RDApp-635394Elbon037.jpg.json"]
+        },
+        {
+          "date": "1941-03-03",
+          "examiner": "Dr. Basil L. Page",
+          "finding": "able to return",
+          "notes": "Re-examined and found fit for duty.",
+          "sources": ["RDApp-635394Elbon032.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "The initial rejection was disputed by the Brotherhood of Locomotive Firemen and Enginemen, leading to a re-examination.",
+        "resolution": "Elbon was found fit for duty after further examination."
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. E. M. Guistwhite",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1940-02-19",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Basil L. Page",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1941-03-03",
+          "finding": "able to return"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1940-02-29",
+      "event": "Request for clarification on rejection of Elbon's application.",
+      "significance": "Highlighted the need for a second opinion on Elbon’s fitness to serve.",
+      "sources": ["RDApp-635394Elbon037.jpg.json"]
+    },
+    {
+      "date": "1941-05-06",
+      "event": "Arrangement for re-examination of Elbon by Dr. B. H. Gustwhite.",
+      "significance": "Indicated ongoing medical scrutiny and the Brotherhood's advocacy for its members.",
+      "sources": ["RDApp-635394Elbon031.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1927-07-08",
+      "latest": "1941-05-06"
+    },
+    "completeness_assessment": "The record is reasonably complete, with detailed medical examinations and employment history. However, there are some contradictions in name variations.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have minor errors."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the rigorous medical scrutiny of railroad employees and the role of labor unions in advocating for their members' health and employment rights.",
+      "It also reveals the complex interplay between medical opinions, administrative decisions, and union actions."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar medical cases?",
+      "What were the broader impacts on railroad operations due to such medical rejections?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

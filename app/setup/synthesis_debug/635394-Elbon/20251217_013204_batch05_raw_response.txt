@@ -1,0 +1,213 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo V. Elbon",
+    "name_variations": [
+      {
+        "name": "L.J. Alvin",
+        "confidence": "low",
+        "sources": ["RDApp-635394Elbon041.jpg.json"]
+      },
+      {
+        "name": "Leo W. Ellons",
+        "confidence": "medium",
+        "sources": ["RDApp-635394Elbon042.jpg.json"]
+      },
+      {
+        "name": "Leo Verna Ellor",
+        "confidence": "high",
+        "sources": ["RDApp-635394Elbon043.jpg.json"]
+      }
+    ],
+    "employee_id": 635394,
+    "birth_year": 1896,
+    "confidence_notes": "The identity is reasonably certain based on multiple documents, but there are some name variations that may indicate errors or aliases."
+  },
+  
+  "biographical_narrative": "Leo V. Elbon was a long-serving employee of the Baltimore & Ohio Railroad Company (B&O), beginning his career as early as 1927 in various capacities including Fireman and Personnel roles. His employment spanned several decades, during which he experienced multiple periods of disablement due to sickness, primarily influenza. These incidents occurred in 1927 and 1937, indicating a pattern of health issues that affected his ability to work. Despite these challenges, Elbon remained committed to his duties and resumed work after each period of disability. His career also included administrative roles within the company's personnel department, suggesting a progression from operational positions to more managerial responsibilities.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "106 Mulberry St",
+      "date_range": "unknown",
+      "context": "Residence of L.J. Alvin (possibly an alias for Elbon)",
+      "sources": ["RDApp-635394Elbon041.jpg.json"]
+    },
+    {
+      "address": "Keyser, W.Va.",
+      "date_range": "unknown",
+      "context": "Residence of Leo W. Ellons (possibly an alias for Elbon)",
+      "sources": ["RDApp-635394Elbon042.jpg.json"]
+    },
+    {
+      "address": "Grafton, WVa",
+      "date_range": "unknown",
+      "context": "Residence of Leo Verna Ellor (canonical name variant)",
+      "sources": ["RDApp-635394Elbon043.jpg.json", "RDApp-635394Elbon048.jpg.json"]
+    },
+    {
+      "address": "220 Thayer St",
+      "date_range": "unknown",
+      "context": "Residence of Leo V. Elbon (canonical name)",
+      "sources": ["RDApp-635394Elbon048.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1927",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Fireman",
+      "department": "DT Dept.",
+      "division": "CU Div'n",
+      "details": "Hired as a Fireman, experienced disablement due to influenza from February 22, 1927, to March 10, 1927.",
+      "sources": ["RDApp-635394Elbon045.jpg.json", "RDApp-635394Elbon048.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event_type": "promotion/transfer",
+      "position": "Personnel",
+      "department": "General Personnel",
+      "division": "Personnel",
+      "details": "Transferred to a personnel role within the General Personnel Department.",
+      "sources": ["RDApp-635394Elbon043.jpg.json"]
+    },
+    {
+      "date": "1937-03-11",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified to return to duty after a period of disablement.",
+      "sources": ["RDApp-635394Elbon049.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1927-02-22",
+      "injury_type": "Sickness (Influenza)",
+      "body_part": null,
+      "narrative": "Leo V. Elbon was disabled by influenza from February 22, 1927, to March 10, 1927. He was treated and returned to duty on March 11, 1927.",
+      "medical_examinations": [
+        {
+          "date": "1927-03-09",
+          "examiner": "Dr. Buddant",
+          "finding": "disabled",
+          "notes": "Diagnosed with influenza and expected recovery in about 3 weeks.",
+          "sources": ["RDApp-635394Elbon050.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1927-03-01", "end": "1927-10-27"},
+          "days": 9,
+          "amount": 36.27,
+          "check_number": "36227",
+          "sources": ["RDApp-635394Elbon044.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1937",
+      "injury_type": "Sickness (Influenza)",
+      "body_part": null,
+      "narrative": "Leo V. Elbon was again disabled by influenza in 1937, and he returned to duty on March 11, 1937.",
+      "medical_examinations": [
+        {
+          "date": "1937-03-10",
+          "examiner": "T. H. King",
+          "finding": "able_to_return",
+          "notes": null,
+          "sources": ["RDApp-635394Elbon049.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Buddant",
+      "district": "8",
+      "examinations": [
+        {
+          "date": "1927-03-09",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "T. H. King",
+      "district": "8",
+      "examinations": [
+        {
+          "date": "1937-03-10",
+          "finding": "able_to_return"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1928",
+      "event": "Contributions paid for insurance",
+      "significance": "Indicates active participation in the company's relief program.",
+      "sources": ["RDApp-635394Elbon043.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event": "Termination due to LaFSID (Reported Transferable)",
+      "significance": "Indicates a change in employment status, possibly related to transfer or reassignment.",
+      "sources": ["RDApp-635394Elbon043.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1927",
+      "latest": "1948"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from 1927 to 1948, with detailed information on employment and health. However, there are some inconsistencies in names and dates that require further investigation.",
+    "data_quality_notes": [
+      "Name variations (L.J. Alvin, Leo W. Ellons) may indicate errors or aliases.",
+      "Some documents contain illegible sections."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Leo V. Elbon provides insight into the health challenges faced by railroad employees in the early to mid-20th century, particularly with recurring influenza.",
+      "It also highlights the company's relief and medical examination processes for handling employee disabilities."
+    ],
+    "comparative_questions": [
+      "How common were flu-related absences among B&O Railroad employees during this period?",
+      "What was the typical duration of disability leave due to illness?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

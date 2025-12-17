@@ -1,0 +1,142 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {"name": "Charles R. Freeland", "confidence": "low", "sources": ["RDApp-222507Freeland132.jpg.json"]},
+      {"name": "Dr. B. Freeland", "confidence": "low", "sources": ["RDApp-222507Freeland133.jpg.json"]},
+      {"name": "Thomas D. Ireland", "confidence": "low", "sources": ["RDApp-222507Freeland136.jpg.json"]},
+      {"name": "J.B. Freeland", "confidence": "medium", "sources": ["RDApp-222507Freeland135.jpg.json"]}
+    ],
+    "employee_id": "222507",
+    "birth_year": null,
+    "confidence_notes": "Identity is primarily based on the most frequent name usage, Thomas B. Freeland, but there are multiple variations in documents."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland was a carman employed by the Baltimore & Ohio Railroad Company during the early 20th century. His career spanned several departments and divisions within the railroad company, including the Cow Division (MP Department) as of January 13, 1921. Freeland experienced multiple periods of disability due to both sickness and minor injuries, such as a hangnail infection in November 1928. These events were documented by medical examiners and the Relief Department, indicating that he was entitled to benefits during his periods of disablement.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "Wiley Ford W.Va.", "date_range": "unknown", "context": "Residence for medical examiner notifications", "sources": ["RDApp-222507Freeland132.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1921-01-13",
+      "event_type": "transfer",
+      "position": null,
+      "department": "cow Division, MP Department",
+      "division": null,
+      "details": "Transferred from the cow Division mgs Department to the cow Division, MP Department.",
+      "sources": ["RDApp-222507Freeland135.jpg.json"]
+    },
+    {
+      "date": "1928-11-17",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled by sickness from November 17, 1928 to November 28, 1928.",
+      "sources": ["RDApp-222507Freeland131.jpg.json", "RDApp-222507Freeland132.jpg.json"]
+    },
+    {
+      "date": "1928-11-17",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported disabled by a hangnail infection at the base of his right thumb.",
+      "sources": ["RDApp-222507Freeland134.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1928-11-17",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland was reported disabled by sickness from November 17, 1928 to November 28, 1928. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1928-11-30",
+          "examiner": "J.E. Newsham",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-222507Freeland131.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1928-11-17", "end": "1928-11-28"},
+          "days": 11,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland131.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1928-11-17",
+      "injury_type": "Hangnail infection",
+      "body_part": "Right thumb",
+      "narrative": "Freeland suffered a hangnail that became infected at the base of his right thumb. He was able to return to duty on November 29, 1928.",
+      "medical_examinations": [
+        {
+          "date": "1928-11-30",
+          "examiner": "JGSolby",
+          "finding": "able for duty",
+          "notes": null,
+          "sources": ["RDApp-222507Freeland134.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J.E. Newsham",
+      "district": "6",
+      "examinations": [{"date": "1928-11-30", "finding": "disabled"}]
+    },
+    {"name": "JGSolby", "district": null, "examinations": [{"date": "1928-11-30", "finding": "able for duty"}]}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1921-01-24",
+      "event": "Notice of transfer sent to Relief Department",
+      "significance": "Documented the administrative process of employee transfers.",
+      "sources": ["RDApp-222507Freeland135.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1917", "latest": "1928"},
+    "completeness_assessment": "The records are relatively complete for the period from 1921 to 1928, but there is a lack of information about earlier employment and personal details.",
+    "data_quality_notes": ["Multiple name variations exist without clear resolution.", "Some documents contain incomplete or truncated text."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the importance of medical documentation in railroad labor management, especially concerning disability claims and employee benefits.",
+      "They also illustrate the administrative processes involved in handling employee transfers and reporting injuries."
+    ],
+    "comparative_questions": ["How did injury rates compare across different divisions or departments?", "What were the typical durations and types of disabilities reported among employees?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

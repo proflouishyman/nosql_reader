@@ -1,0 +1,197 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo Verne Elbon",
+    "name_variations": [
+      {
+        "name": "Leo V. Elbon",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635394Elbon001.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Verne Eibon",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635394Elbon002.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Elben",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635394Elbon009.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "Name variations exist but are likely to be the same individual. Birth year is consistent across documents."
+  },
+  "biographical_narrative": "Leo Verne Elbon was an engineer employed by the Baltimore & Ohio Railroad Company in the early 20th century, working for the Cumberland Division. His career was marked by a significant off-duty accident on September 3, 1961, which resulted in lacerations to his nose and chin as well as a fracture of the left tibia. This injury led to a period of disability during which Elbon did not receive wages from October 20 through November 19, 1961. Despite initial uncertainty about his prognosis due to complications with treatment and medical opinions, he was eventually able to return to work on November 20, 1961.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "40 Sharpless Street, Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address as stated in multiple documents",
+      "sources": [
+        "RDApp-635394Elbon001.jpg.json",
+        "RDApp-635394Elbon002.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb. Divn.",
+      "details": "Began employment as an engineer in the CT Department of the Cumberland Division, but exact start date is not provided.",
+      "sources": []
+    },
+    {
+      "date": "1961-09-03",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained an off-duty accident resulting in lacerations and a fracture.",
+      "sources": [
+        "RDApp-635394Elbon007.jpg.json"
+      ]
+    },
+    {
+      "date": "1961-11-20",
+      "event_type": "resume duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed regular duties after a period of disability.",
+      "sources": [
+        "RDApp-635394Elbon003.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1961-09-03",
+      "injury_type": "Off-duty auto accident",
+      "body_part": "Nose, chin, left tibia",
+      "narrative": "Leo Verne Elbon was involved in an off-duty car accident on September 3, 1961. He suffered lacerations to his nose and chin as well as a fracture of the left tibia. The injury led to a period of disability during which he did not receive wages.",
+      "medical_examinations": [
+        {
+          "date": "1961-09-25",
+          "examiner": "Dr. Robert W. McCoy, Jr., M.D.",
+          "finding": "Disabled",
+          "notes": "Treated for lacerations and fracture at Potomac Valley Hospital.",
+          "sources": [
+            "RDApp-635394Elbon008.jpg.json"
+          ]
+        },
+        {
+          "date": "1961-10-02",
+          "examiner": "J. P. Hallinan, M.D.",
+          "finding": "Disabled",
+          "notes": "Examined and advised not to permit Elbon to resume duty until cleared by the office.",
+          "sources": [
+            "RDApp-635394Elbon007.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1961-10-20",
+            "end": "1961-11-14"
+          },
+          "days": 70,
+          "amount": 140.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-635394Elbon001.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J. P. Hallinan, M.D.",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1961-10-02",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Robert W. McCoy Jr., M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1961-09-25",
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1961-10-3",
+      "event": "Notice of Disablement sent to Relief Department and Medical Examiner.",
+      "significance": "Initiated the process for Elbon's disability benefits.",
+      "sources": [
+        "RDApp-635394Elbon005.jpg.json"
+      ]
+    },
+    {
+      "date": "1961-10-20",
+      "event": "Certificate of Disablement certified by Regional Accountant and Medical Examiner.",
+      "significance": "Confirmed Elbon's disability status and lack of wages during the period.",
+      "sources": [
+        "RDApp-635394Elbon002.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1961-09-03",
+      "latest": "1961-11-20"
+    },
+    "completeness_assessment": "The record is relatively complete for the period of disability and injury. However, there are no documents detailing Elbon's employment history prior to his injury or any family information.",
+    "data_quality_notes": [
+      "Name variations exist across documents but are likely referring to the same individual.",
+      "Some documents contain truncated text which may affect completeness."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Leo Verne Elbon provides insight into the medical and administrative processes surrounding railroad injuries in the early 20th century, including disability benefits and the role of medical examiners.",
+      "It highlights the challenges faced by employees due to off-duty accidents and the importance of thorough medical evaluations."
+    ],
+    "comparative_questions": [
+      "How did the treatment and compensation for off-duty injuries compare across different railroad companies?",
+      "What were the typical durations and amounts of disability benefits provided?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

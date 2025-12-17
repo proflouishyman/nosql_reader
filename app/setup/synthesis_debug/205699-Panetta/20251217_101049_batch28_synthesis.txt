@@ -1,0 +1,164 @@
+{
+  "person_identity": {
+    "canonical_name": "Mario Panetta",
+    "name_variations": [
+      {
+        "name": "Ilario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta272.jpg.json"
+        ]
+      },
+      {
+        "name": "J. Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta279.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the context of employment and medical documents. Variations in name spellings suggest possible misspellings or different forms of the same individual."
+  },
+  "biographical_narrative": "Mario Panetta began his career with the Baltimore & Ohio Railroad Company as a laborer in the Motive Power Department, Cumberland Division around the early 1900s. His application for full membership in the Relief Feature was dated December 11, 1918, indicating he had been working for the company for some time by then. Panetta's employment records show that he continued to work for the railroad into the mid-20th century. In May of 1935, a medical examination revealed that he was suffering from lumbar myalgia and beginning cataracts in both eyes. Despite these health issues, there is no evidence suggesting his employment was interrupted or terminated due to injury. By 1958, Panetta was still contributing to the Relief Department's fund, indicating ongoing employment with the company.",
+  "family": {
+    "spouse": {
+      "name": "Ersilia Panetta",
+      "evidence": "Designated as beneficiary in application for full membership",
+      "sources": [
+        "RDApp-205699Panetta276.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Keyser, Mineral County, West Virginia",
+      "date_range": "unknown",
+      "context": "Residence at the time of application for full membership in Relief Feature",
+      "sources": [
+        "RDApp-205699Panetta276.jpg.json"
+      ]
+    },
+    {
+      "address": "Carlonia Provincia De Reggio Calabrio, Italia",
+      "date_range": "unknown",
+      "context": "Location of family member mentioned in a telegram form",
+      "sources": [
+        "RDApp-205699Panetta278.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1918-12-11",
+      "event_type": "application",
+      "position": "laborer",
+      "department": "Motive Power Department",
+      "division": "Cumberland Division",
+      "details": "Applied for full membership in the Relief Feature of the Baltimore & Ohio Railroad Company's Relief Department.",
+      "sources": [
+        "RDApp-205699Panetta275.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-05-01",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Underwent a medical examination that noted lumbar myalgia and beginning cataracts in both eyes.",
+      "sources": [
+        "RDApp-205699Panetta272.jpg.json"
+      ]
+    },
+    {
+      "date": "1958-10-01",
+      "event_type": "administrative adjustment",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Monthly contribution rate to Relief Department was reduced from $4.00 to $3.15 per month.",
+      "sources": [
+        "RDApp-205699Panetta274.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Lumbar myalgia and beginning cataracts",
+      "body_part": "Lower back, eyes",
+      "narrative": "Mario Panetta was diagnosed with lumbar myalgia and the onset of cataracts in both eyes during a medical examination on May 1, 1935. The condition was noted as unchanged at that time.",
+      "medical_examinations": [
+        {
+          "date": "1935-05-01",
+          "examiner": null,
+          "finding": "Condition unchanged",
+          "notes": "Lumbar myalgia and beginning cataracts in both eyes were noted.",
+          "sources": [
+            "RDApp-205699Panetta272.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": null,
+      "district": "8",
+      "examinations": [
+        {
+          "date": "1935-05-01",
+          "finding": "Condition unchanged"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1958-10-01",
+      "event": "Reduction in monthly contribution rate to Relief Department from $4.00 to $3.15 per month.",
+      "significance": "Reflects changes in company policy or financial conditions affecting employee contributions.",
+      "sources": [
+        "RDApp-205699Panetta274.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1906",
+      "latest": "1959"
+    },
+    "completeness_assessment": "The record is fairly complete for Mario Panetta's employment and medical history, but lacks detailed information on his personal life or specific job roles beyond laborer. There are some inconsistencies in name spelling.",
+    "data_quality_notes": [
+      "Some documents have unclear handwriting or OCR errors, affecting the readability of certain entries."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case provides insight into the medical care and benefits provided to railroad workers in the early-to-mid-20th century, including the establishment of a Relief Feature for employees.",
+      "It also highlights the long-term employment relationship between workers like Mario Panetta and the Baltimore & Ohio Railroad Company."
+    ],
+    "comparative_questions": [
+      "How did the medical conditions and benefits provided to railroad laborers compare with those in other industries during this period?",
+      "What was the typical career trajectory for a laborer within the Baltimore & Ohio Railroad Company?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

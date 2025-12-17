@@ -1,0 +1,197 @@
+{
+  "person_identity": {
+    "canonical_name": "Ira E. Lowther",
+    "name_variations": [
+      {
+        "name": "Ira F. Lowther",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222427Lowther076.jpg.json"
+        ]
+      },
+      {
+        "name": "Ira H. Lowther",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222427Lowther078.jpg.json"
+        ]
+      },
+      {
+        "name": "Jas E. Gunther",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222427Lowther085.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222427",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is mostly consistent with variations in first initial."
+  },
+  "biographical_narrative": "Ira E. Lowther began his career with the Baltimore & Ohio Railroad Company as a machinist shop laborer on January 1, 1909, and later served as a hostler at Parkersburg, West Virginia. His tenure was marked by several medical examinations and disputes over vision standards that affected his employment status. Lowther faced challenges due to defective eyesight in 1914, which led to temporary removal from service but he successfully appealed for reinstatement. In February 1911, he suffered an injury when a coal chute fell on his foot while at work, leading to a brief period of disability and wage allowance. His career with the railroad company was characterized by these medical issues and occasional reassignments due to health concerns.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "1815 Fifth Avenue, Parkersburg, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address in correspondence",
+      "sources": [
+        "RDApp-222427Lowther078.jpg.json"
+      ]
+    },
+    {
+      "address": "1215 6th Ave South Phila",
+      "date_range": "unknown",
+      "context": "Residence for disability claims",
+      "sources": [
+        "RDApp-222427Lowther093.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1909-01-01",
+      "event_type": "hire",
+      "position": "Mach. Shop Laborer",
+      "department": null,
+      "division": "Ohio River Division",
+      "details": "First entry into service.",
+      "sources": [
+        "RDApp-222427Lowther086.jpg.json"
+      ]
+    },
+    {
+      "date": "1914-08-24",
+      "event_type": "transfer",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Removed from Hostler position due to vision issues.",
+      "sources": [
+        "RDApp-222427Lowther078.jpg.json"
+      ]
+    },
+    {
+      "date": "1914-10-26",
+      "event_type": "reinstatement",
+      "position": "Hostler",
+      "department": null,
+      "division": "Ohio River Division",
+      "details": "Re-instated after medical review.",
+      "sources": [
+        "RDApp-222427Lowther076.jpg.json"
+      ]
+    },
+    {
+      "date": "1911-02-23",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured foot due to a falling coal chute.",
+      "sources": [
+        "RDApp-222427Lowther085.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1911-02-23",
+      "injury_type": "Foot injury",
+      "body_part": "Left foot",
+      "narrative": "Ira E. Lowther was injured when a coal chute fell on his left foot while working as a hostler at Parkersburg, West Virginia. He was temporarily disabled and received wage allowances.",
+      "medical_examinations": [
+        {
+          "date": "1911-02-23",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Foot mashed due to coal chute falling.",
+          "sources": [
+            "RDApp-222427Lowther085.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1911-02-23",
+            "end": "unknown"
+          },
+          "days": 1,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-222427Lowther085.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Bauer",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "F. H. Henry",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1914-08-26",
+      "event": "Vision examination and reinstatement appeal",
+      "significance": "Shows the importance of medical standards in railroad employment.",
+      "sources": [
+        "RDApp-222427Lowther076.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1911-02-23",
+      "latest": "1914-10-26"
+    },
+    "completeness_assessment": "The records are fairly complete for employment and medical issues but lack details on personal life.",
+    "data_quality_notes": [
+      "Some documents have partial OCR text.",
+      "Names vary slightly across documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the stringent health standards in early 20th-century railroad employment, particularly vision requirements for hostlers."
+    ],
+    "comparative_questions": [
+      "How did medical standards and practices vary across different divisions of the B&O Railroad?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

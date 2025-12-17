@@ -1,0 +1,251 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "Lugg? Mancuso",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco021.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonis Manouil",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco022.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonius Manness",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco023.jpg.json"
+        ]
+      },
+      {
+        "name": "A. Minimus",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco025.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on Antonio Mancuso, with variations likely due to OCR errors or clerical mistakes."
+  },
+  "biographical_narrative": "Antonio Mancuso was a car repairer for the Baltimore & Ohio Railroad Company in the early 20th century. His career spanned several years and involved multiple injuries that temporarily disabled him from work. In May of 1915, he suffered two notable incidents: first, an injury to his left cheek on May 1st, which was a laceration about 3 1/4 inches long; secondly, on May 17th, he sustained another injury while tightening nuts on the end of a car, where a wrench slipped and struck him in the face. Both incidents required medical attention but did not result in prolonged disability. Mancuso was able to return to work within days after each incident.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No information on spouse found",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "111 Pulaski St., Connellsville, PA",
+      "date_range": "unknown",
+      "context": "Residence",
+      "sources": [
+        "RDApp-204897Manusco030.jpg.json"
+      ]
+    },
+    {
+      "address": "Colke, Pa.",
+      "date_range": "unknown",
+      "context": "Residence",
+      "sources": [
+        "RDApp-204897Manusco021.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "car repairer",
+      "department": "M.P.",
+      "division": "Carlisle Div.",
+      "details": "Began working as a car repairer for the Baltimore & Ohio Railroad Company. The exact date of hire is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1904-09-30",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported injury, but details are vague and the exact nature of disablement is not clear.",
+      "sources": [
+        "RDApp-204897Manusco021.jpg.json"
+      ]
+    },
+    {
+      "date": "1915-05-13",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a laceration to the left cheek while working as a car repairer.",
+      "sources": [
+        "RDApp-204897Manusco030.jpg.json"
+      ]
+    },
+    {
+      "date": "1915-05-17",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a laceration and contusion to the outer angle of his left eye while tightening nuts on a car.",
+      "sources": [
+        "RDApp-204897Manusco026.jpg.json",
+        "RDApp-204897Manusco029.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1915-05-13",
+      "injury_type": "Laceration to the left cheek",
+      "body_part": "left cheek",
+      "narrative": "Antonio Mancuso sustained a laceration about 3 1/4 inches long on his left cheek while working as a car repairer. The prognosis was good and he returned to duty shortly after.",
+      "medical_examinations": [
+        {
+          "date": "1915-05-01",
+          "examiner": "E.B. Edie, M.D.",
+          "finding": "Good prognosis",
+          "notes": "Laceration of left cheek about 3 1/4 inches long.",
+          "sources": [
+            "RDApp-204897Manusco030.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1915-05-13",
+            "end": null
+          },
+          "days": 3.3,
+          "amount": 3.3,
+          "check_number": "40346",
+          "sources": [
+            "RDApp-204897Manusco022.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1915-05-17",
+      "injury_type": "Laceration and contusion to the outer angle of left eye",
+      "body_part": "left eye",
+      "narrative": "Antonio Mancuso sustained a laceration and contusion to his left eye when a wrench slipped while he was tightening nuts on a car. He returned to duty after 4-5 days.",
+      "medical_examinations": [
+        {
+          "date": "1915-05-07",
+          "examiner": "M.K. Kohler, M.D.",
+          "finding": "Disabled for 4 or 5 days",
+          "notes": "Laceration and contusion to the outer angle of left eye while tightening nuts on end of car.",
+          "sources": [
+            "RDApp-204897Manusco029.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "M.H. Koehler",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "1904-09-30",
+          "finding": "Res 9/19"
+        }
+      ]
+    },
+    {
+      "name": "E.B. Edie, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1915-05-01",
+          "finding": "Good prognosis"
+        }
+      ]
+    },
+    {
+      "name": "M.K. Kohler",
+      "district": "13",
+      "examinations": [
+        {
+          "date": "1915-05-07",
+          "finding": "Disabled for 4 or 5 days"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1915-05-13",
+      "event": "Filed accident claim",
+      "significance": "Indicates the formal process of reporting and claiming benefits for work-related injuries.",
+      "sources": [
+        "RDApp-204897Manusco022.jpg.json"
+      ]
+    },
+    {
+      "date": "1915-05-18",
+      "event": "Returned to duty after injury",
+      "significance": "Marks the end of disability leave and return to work.",
+      "sources": [
+        "RDApp-204897Manusco027.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1904-09-30",
+      "latest": "1915-05-18"
+    },
+    "completeness_assessment": "The documents provide a detailed account of Antonio Mancuso's injuries and the process for claiming benefits. However, there is no information on his hiring date or any promotions.",
+    "data_quality_notes": [
+      "OCR errors in names (e.g., Lugg? Mancuso, A. Minimus) suggest potential inaccuracies.",
+      "Some documents contain conflicting dates and details."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the rigorous documentation required for work-related injuries in early 20th-century railroad employment.",
+      "It reveals the medical practices of the time, including detailed reporting by company surgeons and medical examiners."
+    ],
+    "comparative_questions": [
+      "How did injury claims and medical treatment vary across different railroads?",
+      "What were the typical durations of disability leave for similar injuries?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

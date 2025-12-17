@@ -1,0 +1,201 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": ["RDApp-635058Harris051.jpg.json", "RDApp-635058Harris054.jpg.json"]
+      },
+      {
+        "name": "Charly Janis",
+        "confidence": "low",
+        "sources": ["RDApp-635058Harris057.jpg.json"]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1893,
+    "confidence_notes": "High confidence in name and birth year due to multiple documents confirming these details."
+  },
+  
+  "biographical_narrative": "Charley Harris, a fireman for the Baltimore & Ohio Railroad Company, began his career with the company sometime before 1927. His employment records indicate several instances of disability due to illness, particularly influenza, which affected his work in early 1919 and again in 1927. Harris faced administrative challenges regarding the correct spelling of his name and discrepancies between different applications for membership. He was involved in a legal dispute against the railroad company in 1941, suggesting significant dissatisfaction with his treatment or working conditions.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [
+      {
+        "name": "Melissa Jane",
+        "relationship": "mother",
+        "evidence": "Clarification provided by Harris regarding name discrepancy in membership applications.",
+        "sources": ["RDApp-635058Harris054.jpg.json"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Ceredo, W. Va",
+      "date_range": "unknown",
+      "context": "Residence as stated in medical certification.",
+      "sources": ["RDApp-635058Harris062.jpg.json"]
+    },
+    {
+      "address": "P.O. Box 697, Kenova, W.Va",
+      "date_range": "unknown",
+      "context": "Correspondence address.",
+      "sources": ["RDApp-635058Harris064.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1927-02-29",
+      "event_type": "furlough",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Placed on relief due to illness.",
+      "sources": ["RDApp-635058Harris064.jpg.json"]
+    },
+    {
+      "date": "1927-03-31",
+      "event_type": "return_to_duty",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Claim closed and marked as able for duty.",
+      "sources": ["RDApp-635058Harris062.jpg.json"]
+    },
+    {
+      "date": "1941-07-10",
+      "event_type": "medical_services",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Professional services rendered by Dr. Carroll Lockard for court attendance.",
+      "sources": ["RDApp-635058Harris069.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1919-02-28",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Charley Harris was disabled due to influenza from February 27, 1919, receiving sickness payments.",
+      "medical_examinations": [
+        {
+          "date": "1919-03-14",
+          "examiner": "[illegible]",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-635058Harris056.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1919-02-27", "end": "1919-03-06"},
+          "days": 6,
+          "amount": 15.00,
+          "check_number": "89260",
+          "sources": ["RDApp-635058Harris056.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1927-02-28",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Charley Harris was disabled due to influenza from February 28, 1927, to March 13, 1927.",
+      "medical_examinations": [
+        {
+          "date": "1927-03-30",
+          "examiner": "J. W. Rife, M.D.",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-635058Harris062.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "Failed to produce a required certificate, leading to no recommendation for benefits.",
+        "resolution": "Case closed without benefits."
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. W. Funk",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1927-03-31",
+          "finding": "disabled"
+        },
+        {
+          "date": "1941-06-05",
+          "finding": "not disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. J.W. Rife, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1927-03-30",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1941-05-31",
+      "event": "Court case set for trial",
+      "significance": "Legal dispute against the railroad company.",
+      "sources": ["RDApp-635058Harris072.jpg.json", "RDApp-635058Harris074.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1919-02-27",
+      "latest": "1941-07-10"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing employment history and medical issues. However, there are some contradictions in names and positions.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors or illegible text.",
+      "Name variations exist between 'Charley' and 'Charles'."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Charley Harris highlights the challenges faced by railroad workers in terms of medical care, disability benefits, and legal disputes with employers.",
+      "It also reveals the administrative processes involved in handling employee health issues during the early to mid-20th century."
+    ],
+    "comparative_questions": [
+      "How did other employees' experiences compare in terms of disability claims?",
+      "What were the typical outcomes for railroad workers in legal disputes with their employers?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

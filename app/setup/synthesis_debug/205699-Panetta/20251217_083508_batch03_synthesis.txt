@@ -1,0 +1,190 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Eliss. Poncetto",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta021.jpg.json"
+        ]
+      },
+      {
+        "name": "Danio Panvila",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta022.jpg.json"
+        ]
+      },
+      {
+        "name": "Ilario Famotta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta028.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "Identity is primarily based on Ilario Panetta, but variations exist with lower confidence."
+  },
+  "biographical_narrative": "Ilario Panetta was a laborer for the Baltimore & Ohio Railroad Company. His employment records indicate he suffered an injury in March 1906, which caused him to be out of work until May 7th of that year when he returned to duty. In early 1934, Panetta experienced another disruption in his career, as evidenced by a furlough on April 13th and subsequent return to work on March 21st. Throughout the years, Panetta maintained membership in the company's mutual death benefits program, requiring regular contributions even during periods of non-employment.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No explicit mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "66 Vernon Street, Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "residence",
+      "sources": [
+        "RDApp-205699Panetta023.jpg.json",
+        "RDApp-205699Panetta024.jpg.json"
+      ]
+    },
+    {
+      "address": "Piedmont Street, Piedmont",
+      "date_range": "unknown",
+      "context": "residence at time of injury",
+      "sources": [
+        "RDApp-205699Panetta022.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1906-03",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured by being struck by an engine while on duty.",
+      "sources": [
+        "RDApp-205699Panetta022.jpg.json"
+      ]
+    },
+    {
+      "date": "1906-05-07",
+      "event_type": "return to work",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after being reported as injured.",
+      "sources": [
+        "RDApp-205699Panetta021.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-03-21",
+      "event_type": "return to work",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed duty after a period of absence.",
+      "sources": [
+        "RDApp-205699Panetta028.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-04-13",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed from work.",
+      "sources": [
+        "RDApp-205699Panetta024.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1906-03",
+      "injury_type": "bad back and gun contractions",
+      "body_part": "back",
+      "narrative": "On March 6, 1906, Ilario Panetta was injured by being struck by an engine while on duty. The injury resulted in a bad back condition with muscle contractions.",
+      "medical_examinations": [
+        {
+          "date": "1906-03-06",
+          "examiner": "Welman",
+          "finding": "disabled",
+          "notes": "Good prognosis.",
+          "sources": [
+            "RDApp-205699Panetta022.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Welman",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1906-03-06",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1934-05-28",
+      "event": "status inquiry response",
+      "significance": "Clarified Panetta's return to work date.",
+      "sources": [
+        "RDApp-205699Panetta026.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-03-27",
+      "event": "confirmation of resumption of duty",
+      "significance": "Confirmed Panetta resumed work on March 21st.",
+      "sources": [
+        "RDApp-205699Panetta030.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1906-03-06",
+      "latest": "1954-05-28"
+    },
+    "completeness_assessment": "The records are fairly complete for injury and administrative events, but lack detailed personal information such as birth year or family details.",
+    "data_quality_notes": [
+      "OCR quality is variable; some documents are difficult to read.",
+      "There are name variations that may refer to the same individual."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of mutual death benefits and insurance contributions for railroad workers, even during periods of non-employment.",
+      "It also illustrates the process of injury reporting and return-to-work procedures in early 20th-century railroading."
+    ],
+    "comparative_questions": [
+      "How did injury rates and response protocols vary across different divisions or departments within the Baltimore & Ohio Railroad Company?",
+      "What were the typical durations of workers' absences due to injuries, and how did this affect their employment status?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

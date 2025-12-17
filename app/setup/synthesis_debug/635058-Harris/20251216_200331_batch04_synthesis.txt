@@ -1,0 +1,192 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris092.jpg.json",
+          "RDApp-635058Harris094.jpg.json"
+        ]
+      },
+      {
+        "name": "Charly Harris",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635058Harris095.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 635058,
+    "birth_year": 1893,
+    "confidence_notes": "The birth year is derived from the document dated May 24, 1940 (Sterling Insurance Company), which states he was born on May 18, 1893."
+  },
+  "biographical_narrative": "Charley Harris began his career with the Baltimore and Ohio Railroad as a fireman. He worked in various capacities within the company until being furloughed due to health issues in March 1937. Harris was recalled to duty on October 10, 1939, but he failed to meet the medical standards required for his position and was rejected by the Medical Examiner on October 7, 1939. He was subsequently furloughed again on November 9, 1939, after being found totally disabled due to a heart condition. Harris's case became subject to legal proceedings in 1940-1941 as he sought benefits and compensation from the company.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "811 Hill St., Ceredo, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in the reference sheet dated May 24th, 1940.",
+      "sources": [
+        "RDApp-635058Harris098.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "unknown",
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Began working as a fireman for the Baltimore and Ohio Railroad.",
+      "sources": [
+        "RDApp-635058Harris094.jpg.json"
+      ]
+    },
+    {
+      "date": "March 22, 1937",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed from service.",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    },
+    {
+      "date": "October 10, 1939",
+      "event_type": "recall to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Recalled to service after being furloughed.",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    },
+    {
+      "date": "October 7, 1939",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Rejected by the Medical Examiner due to health issues.",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    },
+    {
+      "date": "November 9, 1939",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed due to total disability.",
+      "sources": [
+        "RDApp-635058Harris094.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "October 29, 1939",
+      "injury_type": "Slipped on a pin and fell on a water tank, puncturing his chest.",
+      "body_part": "Chest",
+      "narrative": "On October 29, 1939, Charley Harris slipped on a pin while working in the yards at Bado, West Virginia, and fell onto a water tank, resulting in a punctured chest. He was found totally disabled due to this injury.",
+      "medical_examinations": [
+        {
+          "date": "November 28th, 1939",
+          "examiner": null,
+          "finding": "Totally disabled",
+          "notes": "Harris was examined and found to be totally disabled following the accident on October 29, 1939.",
+          "sources": [
+            "RDApp-635058Harris094.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "There was a dispute regarding the extent of Harris's disability and whether he should receive benefits. Legal proceedings were initiated to resolve this issue.",
+        "resolution": "The case was taken up by an attorney, but the resolution is not documented in these records."
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. I. Clay Hicks",
+      "district": null,
+      "examinations": [
+        {
+          "date": "May 1949",
+          "finding": "Dilated heart (mitral regurgitation) and aortic stenosis, unable to do manual labor."
+        }
+      ]
+    },
+    {
+      "name": "Dr. H. W. Nimal",
+      "district": null,
+      "examinations": [
+        {
+          "date": "May 2019",
+          "finding": "Not specified in the documents provided."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "January 3, 1941",
+      "event": "Letter sent to attorney Connor Hall explaining Harris's membership status and benefits.",
+      "significance": "Clarified that Harris had not been a member since his furlough in March 1937.",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    },
+    {
+      "date": "May 24, 1940",
+      "event": "Sterling Insurance Company requested information about Harris's disability claim.",
+      "significance": "Indicates that Harris filed a disability claim with Sterling Insurance Company.",
+      "sources": [
+        "RDApp-635058Harris097.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 25,
+    "date_range": {
+      "earliest": "1940-01-03",
+      "latest": "1949-11-28"
+    },
+    "completeness_assessment": "The documents provide a detailed account of Harris's employment and disability status, but family details are not well-documented. The medical records and legal proceedings related to his disability claim are the most comprehensive sections.",
+    "data_quality_notes": [
+      "Some OCR text is truncated or incomplete, affecting full context in some cases.",
+      "There are minor contradictions between documents regarding names (e.g., Charley vs. Charles)."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Charley Harris highlights the challenges faced by railroad workers due to occupational injuries and the complex process involved in disability claims.",
+      "It also reveals the role of medical examiners in determining eligibility for employment and benefits within the railroad industry."
+    ],
+    "comparative_questions": [
+      "How did other railroad companies handle similar cases involving occupational health issues?",
+      "What were the typical outcomes for workers who filed disability claims during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

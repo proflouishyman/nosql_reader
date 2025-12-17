@@ -1,0 +1,193 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinacker",
+    "name_variations": [
+      {
+        "name": "Steinecker, William",
+        "confidence": "high",
+        "sources": ["RDApp-204722Steinecker153.jpg.json"]
+      },
+      {
+        "name": "Glenacker, William",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker157.jpg.json"]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1883,
+    "confidence_notes": "The birth year is derived from the document dated July 11, 1939."
+  },
+  
+  "biographical_narrative": "William Steinacker was a long-serving employee of the Baltimore and Ohio Railroad Company (B&O) with a career spanning several decades. His employment began in the early 20th century as a fireman, transitioning to roles such as brakeman and helper road. Throughout his tenure, he experienced multiple injuries, including burns from hot water at Curtis Bay on June 10, 1923. Steinacker's medical records indicate that he was physically qualified for work in various examinations conducted over the years by different medical examiners. Despite these incidents, there is no evidence of disputes or significant administrative issues affecting his employment status.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "9 Maryland Ave",
+      "date_range": "1923-06-10 to unknown",
+      "context": "Residence at the time of injury report",
+      "sources": ["RDApp-204722Steinecker153.jpg.json"]
+    },
+    {
+      "address": "101 3rd Ave. Braddock",
+      "date_range": "1929 to unknown",
+      "context": "Residence at the time of disablement notice",
+      "sources": ["RDApp-204722Steinecker160.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "unknown",
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "Baltimore and Ohio Maryland",
+      "details": "Began employment as a fireman, though the exact date is not specified in the records.",
+      "sources": ["RDApp-204722Steinecker158.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event_type": "promotion/transfer",
+      "position": "Brakeman",
+      "department": null,
+      "division": null,
+      "details": "Promoted to brakeman, though the exact date is not specified in the records.",
+      "sources": ["RDApp-204722Steinecker153.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event_type": "promotion/transfer",
+      "position": "Helper Road",
+      "department": null,
+      "division": "Balleo",
+      "details": "Promoted to helper road, though the exact date is not specified in the records.",
+      "sources": ["RDApp-204722Steinecker156.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1923-06-10",
+      "injury_type": "Burns from hot water",
+      "body_part": "left shoulder, arm, and half of chest",
+      "narrative": "William Steinacker was burned on his left shoulder, arm, and half of his chest by hot water from a fire hose while on duty at Curtis Bay. He was expected to be disabled for 10-15 days.",
+      "medical_examinations": [
+        {
+          "date": "1923-06-13",
+          "examiner": "F.H. Mathers",
+          "finding": "disabled",
+          "notes": "The injury was caused by hot water from a fire hose while on duty at Curtis Bay.",
+          "sources": ["RDApp-204722Steinecker153.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "unknown",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Steinacker was reported sick on July 17, 1911. The cause of sickness is not specified in the records.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1929-01-14",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Steinacker was reported sick on January 14, 1929. The cause of sickness is not specified in the records.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "F.H. Mathers",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1923-06-13",
+          "finding": "disabled"
+        },
+        {
+          "date": "1927-01-18",
+          "finding": "vision and hearing normal, physically qualified"
+        }
+      ]
+    },
+    {
+      "name": "E.H. Interes",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1931-05-11",
+          "finding": "physically qualified"
+        }
+      ]
+    },
+    {
+      "name": "A.J. Gaskins MD",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-07-11",
+          "finding": "physically qualified"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1911-07-17",
+      "latest": "1939-07-11"
+    },
+    "completeness_assessment": "The records are fairly complete, with detailed medical examinations and injury reports. However, there is a lack of information regarding family details and specific employment dates.",
+    "data_quality_notes": [
+      "Some OCR text was truncated or partially legible, leading to incomplete data in some documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the risks associated with railroad work during the early 20th century and the company's response through medical examinations and disability reports.",
+      "It also underscores the importance of physical health in maintaining employment within the railroad industry."
+    ],
+    "comparative_questions": [
+      "How did injury rates and medical responses vary across different divisions or departments within B&O?",
+      "What were the typical durations of disablement for injuries sustained by employees?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

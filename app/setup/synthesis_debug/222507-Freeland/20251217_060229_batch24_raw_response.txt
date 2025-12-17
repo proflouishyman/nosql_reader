@@ -1,0 +1,94 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {"name": "H.B. Freeland", "confidence": "low", "sources": ["RDApp-222507Freeland240.jpg.json"]},
+      {"name": "J. B. Freelund", "confidence": "medium", "sources": ["RDApp-222507Freeland237.jpg.json"]}
+    ],
+    "employee_id": "222507",
+    "birth_year": null,
+    "confidence_notes": "The name variations are present but the canonical name 'Thomas B. Freeland' appears most frequently and is consistent with employment records."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland served as a cleaner for the Baltimore & Ohio Railroad Company in Cumberland, Maryland during the early 20th century. His career was marked by several periods of disability due to illness and injury. In October 1903, he suffered from an unspecified condition that led to his disablement and subsequent receipt of sick benefits. Freeland's medical records indicate a further incident in October 1907 when he sustained injuries attributed to accidental snow-related incidents. Throughout these periods, the company provided him with financial support through its Relief Department, which managed claims for disability and sickness benefits.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct mention of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "39 Mary St.", "date_range": "10/7/1907 - unknown", "context": "Residence address for medical examiner notification", "sources": ["RDApp-222507Freeland238.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "10/6/1903", "event_type": "injury", "position": "Cleaner", "department": null, "division": "Cen", "details": "Became disabled due to an unspecified condition.", "sources": ["RDApp-222507Freeland231.jpg.json"]},
+    {"date": "10/8/1903", "event_type": "report", "position": null, "department": null, "division": null, "details": "Reported disability to the company.", "sources": ["RDApp-222507Freeland231.jpg.json"]},
+    {"date": "11/23/1903", "event_type": "return_to_work", "position": null, "department": null, "division": null, "details": "Certified able to return to duty.", "sources": ["RDApp-222507Freeland240.jpg.json"]},
+    {"date": "10/7/1907", "event_type": "injury", "position": "Early Chessia", "department": null, "division": "M", "details": "Sustained accidental injuries due to snow.", "sources": ["RDApp-222507Freeland238.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "10/6/1903",
+      "injury_type": "Unspecified condition",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland became disabled due to an unspecified medical condition on October 6, 1903, and was entitled to sick benefits until November 21, 1903.",
+      "medical_examinations": [
+        {"date": "1/1/1914", "examiner": "E. S. Dormont", "finding": "Totally disabled due to typhoid fever", "notes": null, "sources": ["RDApp-222507Freeland233.jpg.json"]}
+      ],
+      "payments": [
+        {"period": {"start": "10/15/1903", "end": "10/31/1903"}, "days": 15, "amount": 7.50, "check_number": "38891", "sources": ["RDApp-222507Freeland231.jpg.json"]},
+        {"period": {"start": "11/1/1903", "end": "11/21/1903"}, "days": 18, "amount": 9.00, "check_number": "40994", "sources": ["RDApp-222507Freeland231.jpg.json"]}
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "10/7/1907",
+      "injury_type": "Accidental injuries due to snow",
+      "body_part": null,
+      "narrative": "On October 7, 1907, Freeland was injured in an accident involving snow. He received wages until the following day and reported his injury on October 8.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "E. S. Dormont", "district": null, "examinations": [{"date": "1/1/1914", "finding": "Totally disabled due to typhoid fever"}]},
+    {"name": "Dr. J.A. Dopstien", "district": null, "examinations": []}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "12/12/1903",
+      "event": "Request for proof of disability",
+      "significance": "The company requested documentation to support Freeland's claim for benefits between November 1 and November 22, 1903.",
+      "sources": ["RDApp-222507Freeland234.jpg.json", "RDApp-222507Freeland235.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1/1/1914", "latest": "12/12/1903"},
+    "completeness_assessment": "The record is relatively complete for Freeland's disability claims and medical examinations, but lacks details on his family life or full employment history.",
+    "data_quality_notes": ["Name variations exist in the documents", "Some forms are incomplete with missing fields"]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Thomas B. Freeland provides insight into the medical and administrative practices of the Baltimore & Ohio Railroad Company, particularly regarding employee disability claims.",
+      "It highlights the company's structured approach to handling sick leave and injury compensation."
+    ],
+    "comparative_questions": ["How did other employees' experiences with disability claims compare?", "What were the common causes of injuries among cleaners?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

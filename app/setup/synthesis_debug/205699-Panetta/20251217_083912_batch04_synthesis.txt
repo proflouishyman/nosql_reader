@@ -1,0 +1,247 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Flavio Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta037.jpg.json"
+        ]
+      },
+      {
+        "name": "D. Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta036.jpg.json"
+        ]
+      },
+      {
+        "name": "I. Pannette",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta039.jpg.json"
+        ]
+      },
+      {
+        "name": "I. Permetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta040.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": 1895,
+    "confidence_notes": "The identity of Ilario Panetta is well-supported by multiple documents, but variations in name and potential confusion with Flavio Panetta exist."
+  },
+  "biographical_narrative": "Ilario Panetta was a laborer for the Baltimore & Ohio Railroad Company (B&O) from at least 1911. His career included periods of injury and furlough, as well as disputes over payroll deductions and membership dues in the company's relief department. In May 1912, he suffered an accident that disabled him temporarily. By March 1934, Panetta was working extra shifts but had also been involved in a dispute regarding his membership dues and death benefits payments. His employment history shows resilience through periods of economic hardship and the challenges of maintaining company membership during times of furlough.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "64 Norwood St, Keyser W. Va",
+      "date_range": "1934-03-19 to unknown",
+      "context": "Home address for payment of death benefit contributions",
+      "sources": [
+        "RDApp-205699Panetta033.jpg.json"
+      ]
+    },
+    {
+      "address": "86 Vernon Street, Keyser, W. Va.",
+      "date_range": "1934-03-24 to unknown",
+      "context": "Home address for membership dues and death benefit correspondence",
+      "sources": [
+        "RDApp-205699Panetta032.jpg.json"
+      ]
+    },
+    {
+      "address": "66 Vernon St, Wayne W. Va.",
+      "date_range": "1934-03-27 to unknown",
+      "context": "Home address for membership dues and death benefit correspondence",
+      "sources": [
+        "RDApp-205699Panetta031.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1911",
+      "event_type": "hire/application",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": null,
+      "details": "Began employment with the Baltimore & Ohio Railroad Company as a laborer, contributing to relief membership.",
+      "sources": [
+        "RDApp-205699Panetta037.jpg.json"
+      ]
+    },
+    {
+      "date": "1912-05-15",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": null,
+      "details": "Sustained an injury that temporarily disabled him from work.",
+      "sources": [
+        "RDApp-205699Panetta038.jpg.json",
+        "RDApp-205699Panetta039.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-01",
+      "event_type": "furlough",
+      "position": "Laborer",
+      "department": null,
+      "division": null,
+      "details": "Faced issues with payroll deductions and membership dues, indicating a period of furlough or reduced work.",
+      "sources": [
+        "RDApp-205699Panetta031.jpg.json",
+        "RDApp-205699Panetta032.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-03",
+      "event_type": "work_resumption",
+      "position": "Laborer",
+      "department": null,
+      "division": null,
+      "details": "Resumed working extra shifts and requested proper payroll deductions for his work.",
+      "sources": [
+        "RDApp-205699Panetta031.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1911",
+      "injury_type": "Shoulder injury",
+      "body_part": "Shoulder",
+      "narrative": "Injured his shoulder, leading to a temporary disability and receipt of relief benefits.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Daemer",
+          "finding": "Disabled due to shoulder injury",
+          "notes": "Received 6 days and 7/16th of a day in benefits at $1.00 per day.",
+          "sources": [
+            "RDApp-205699Panetta037.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": null,
+            "end": null
+          },
+          "days": 6.4375,
+          "amount": 6.4375,
+          "check_number": "44425",
+          "sources": [
+            "RDApp-205699Panetta037.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1912-05-15",
+      "injury_type": "Accident",
+      "body_part": null,
+      "narrative": "Sustained an accident that disabled him from May 15 to May 22, 1912. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1912-05-23",
+          "examiner": "A. Doerner, M.D.",
+          "finding": "Totally disabled by accident from May 15 to May 22, 1912",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta038.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Daemer",
+      "district": "6",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Disabled due to shoulder injury"
+        }
+      ]
+    },
+    {
+      "name": "A. Doerner, M.D.",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1912-05-23",
+          "finding": "Totally disabled by accident from May 15 to May 22, 1912"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1934-03-19",
+      "event": "Sent money order for death benefit contributions",
+      "significance": "Indicates ongoing membership and payment of dues.",
+      "sources": [
+        "RDApp-205699Panetta033.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-03-27",
+      "event": "Sent money order for January 1934 fund membership",
+      "significance": "Continued payment of dues and requested proper payroll deductions.",
+      "sources": [
+        "RDApp-205699Panetta031.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1911",
+      "latest": "1934-03-27"
+    },
+    "completeness_assessment": "The records provide a detailed account of Ilario Panetta's employment and injury history, but family details are missing. There is some inconsistency in the name variations.",
+    "data_quality_notes": [
+      "Name variations exist across documents, which may indicate potential confusion with another individual or typographical errors."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers during economic downturns and the importance of membership in company relief programs for financial security.",
+      "It also reveals the administrative processes involved in handling payroll deductions, injury claims, and maintaining employee benefits."
+    ],
+    "comparative_questions": [
+      "How did the experiences of other laborers compare to Ilario Panetta's during similar economic periods?",
+      "What were the typical durations and outcomes for workers who sustained injuries on the job?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

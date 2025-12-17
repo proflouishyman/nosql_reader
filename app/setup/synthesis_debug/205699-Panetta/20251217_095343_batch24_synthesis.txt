@@ -1,0 +1,187 @@
+{
+  "person_identity": {
+    "canonical_name": "Illario Panetta",
+    "name_variations": [
+      {
+        "name": "Mario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta231.jpg.json"
+        ]
+      },
+      {
+        "name": "Illerio Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta238.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist but Illario Panetta is the most consistent across documents."
+  },
+  "biographical_narrative": "Illario Panetta was a laborer for the Baltimore & Ohio Railroad Company, employed in Keyser, West Virginia. His employment began before September 1934 when he reported as disabled and ceased compensated service. In 1937, after the passage of the Railroad Retirement Act, Panetta applied for an annuity from the Railroad Retirement Board due to his disability status. Throughout this period, multiple medical examinations were conducted by various doctors to assess his condition and determine eligibility for benefits. The company's Relief Department provided him with advances while his application was processed, which he later had to repay upon receiving his annuity. Panetta\u2019s case highlights the complexities of navigating between railroad relief programs and federal retirement benefits during the early 20th century.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "66 Vernon St., Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in correspondence with attorney Ernest A. See",
+      "sources": [
+        "RDApp-205699Panetta232.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Laborer",
+      "department": "Motive Power Department",
+      "division": "Cumberland Division",
+      "details": "Started employment before September 1934.",
+      "sources": [
+        "RDApp-205699Panetta233.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-09-01",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported disabled and ceased compensated service.",
+      "sources": [
+        "RDApp-205699Panetta231.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-06-24",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Applied for disability annuity under the Railroad Retirement Act.",
+      "sources": [
+        "RDApp-205699Panetta235.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1934-09-01",
+      "injury_type": null,
+      "body_part": null,
+      "narrative": "Illario Panetta was reported disabled and ceased compensated service on September 1, 1934. The nature of the disability is not specified in the documents.",
+      "medical_examinations": [
+        {
+          "date": "1937-11-30",
+          "examiner": "Dr. B.H. Guistwhite",
+          "finding": null,
+          "notes": "Medical examination conducted for Railroad Retirement Board application.",
+          "sources": [
+            "RDApp-205699Panetta239.jpg.json"
+          ]
+        },
+        {
+          "date": "1937-12-30",
+          "examiner": "Dr. W.B. Baker",
+          "finding": null,
+          "notes": "Medical examination conducted for Railroad Retirement Board application.",
+          "sources": [
+            "RDApp-205699Panetta238.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1937-06-24",
+            "end": "1958-01-31"
+          },
+          "days": null,
+          "amount": 210.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta235.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. B.H. Guistwhite",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1937-11-30",
+          "finding": null
+        }
+      ]
+    },
+    {
+      "name": "Dr. W.B. Baker",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1937-12-30",
+          "finding": null
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1958-01-31",
+      "event": "Notification of annuity grant and repayment requirement.",
+      "significance": "Panetta was granted an annuity effective June 24, 1957, and required to repay benefits received after this date.",
+      "sources": [
+        "RDApp-205699Panetta235.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1937-11-18",
+      "latest": "1958-01-31"
+    },
+    "completeness_assessment": "The record is fairly complete regarding medical examinations and benefit payments. However, details about Panetta's family life and the nature of his disability are missing.",
+    "data_quality_notes": [
+      "Name variations exist but no clear resolution.",
+      "OCR quality varies; some documents have truncated text."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "Panetta\u2019s case illustrates the transition from company-sponsored relief programs to federal retirement benefits under the Railroad Retirement Act.",
+      "The process of applying for and receiving annuities involved complex interactions between railroad companies, medical examiners, and government agencies."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar transitions in their benefit systems?",
+      "What were the typical outcomes for employees like Panetta who applied for disability benefits?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

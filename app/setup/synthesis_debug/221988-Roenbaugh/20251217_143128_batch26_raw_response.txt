@@ -1,0 +1,101 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Claude Rosenbaugh", "confidence": "high", "sources": ["RDApp-221988Roenbaugh251.jpg.json"]},
+      {"name": "C. Rourbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh252.jpg.json"]},
+      {"name": "Claude Rosenbauer", "confidence": "high", "sources": ["RDApp-221988Roenbaugh253.jpg.json"]},
+      {"name": "Claude Rombaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh255.jpg.json"]},
+      {"name": "Claude Kersbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh259.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations exist, but 'Claude Roenbaugh' appears most consistently across documents."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh served the Baltimore & Ohio Railroad Company in various capacities from at least 1916 to 1938. Initially employed as a fireman and later promoted to engineer, his career was marked by several periods of disablement due to health issues such as herpes zoster and rheumatism. Despite these challenges, Roenbaugh demonstrated resilience, returning to duty after each period of illness. His employment record reflects the company's meticulous tracking of employee health and work status during this era.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No mention in documents", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "1238 East Erie", "date_range": "unknown", "context": "Residence as an engineer", "sources": ["RDApp-221988Roenbaugh253.jpg.json"]},
+    {"address": "122 8th St.", "date_range": "unknown", "context": "Residence for reporting duty", "sources": ["RDApp-221988Roenbaugh256.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "1916-03-20", "event_type": "injury", "position": "fireman", "department": null, "division": "Chan Div. Gen Dept.", "details": "Totally disabled by sickness from March 20 to April 22, 1916; no wages allowed during this period.", "sources": ["RDApp-221988Roenbaugh260.jpg.json"]},
+    {"date": "1918-01-11", "event_type": "injury", "position": "engineer", "department": null, "division": "C.H. Division Cleveland", "details": "Totally disabled by sickness from January 11 to January 19, 1918; no wages allowed during this period.", "sources": ["RDApp-221988Roenbaugh251.jpg.json"]},
+    {"date": "1938-10-07", "event_type": "medical examination", "position": "engineer", "department": null, "division": "Utbg Division", "details": "Physically qualified for duty following a comprehensive medical evaluation.", "sources": ["RDApp-221988Roenbaugh258.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1916-03-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was totally disabled by sickness from March 20 to April 22, 1916. No wages were allowed during this period.",
+      "medical_examinations": [
+        {"date": "1916-04-09", "examiner": "J.J. McCarrell", "finding": "disabled", "notes": null, "sources": ["RDApp-221988Roenbaugh260.jpg.json"]}
+      ],
+      "payments": [
+        {"period": {"start": "1916-03-11", "end": "1916-04-22"}, "days": 43, "amount": null, "check_number": null, "sources": ["RDApp-221988Roenbaugh259.jpg.json"]}
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1918-01-11",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was totally disabled by sickness from January 11 to January 19, 1918. No wages were allowed during this period.",
+      "medical_examinations": [
+        {"date": "1918-01-19", "examiner": null, "finding": "disabled", "notes": null, "sources": ["RDApp-221988Roenbaugh251.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "Dr. J.J. McCarrell", "district": "17", "examinations": [{"date": "1916-04-09", "finding": "disabled"}]},
+    {"name": "Dr. Adair", "district": null, "examinations": [{"date": "1918-01-19", "finding": "disabled"}]}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1938-10-07",
+      "event": "Medical examination for physical qualification",
+      "significance": "Indicates Roenbaugh was physically qualified to continue his duties as an engineer.",
+      "sources": ["RDApp-221988Roenbaugh258.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1916-03-20", "latest": "1938-10-07"},
+    "completeness_assessment": "The record is relatively complete for the period from 1916 to 1938, with detailed documentation of medical examinations and disability claims. However, there are some discrepancies in name spelling.",
+    "data_quality_notes": ["Name variations exist across documents.", "Some dates are handwritten and may have OCR errors."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of medical examinations and disability claims for railroad employees, reflecting the company's efforts to manage employee health and work status.",
+      "It also shows how sickness could significantly impact an employee’s earnings and job security."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad Company's policies on sick leave compare with other railroads of the same era?",
+      "What were the common causes of disability among railroad employees during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "person_identity": {
+    "canonical_name": "Mario Panetta",
+    "name_variations": [
+      {
+        "name": "Clario Panetta",
+        "confidence": "medium",
+        "sources": ["RDApp-205699Panetta096.jpg.json"]
+      },
+      {
+        "name": "Claric Pavetta",
+        "confidence": "low",
+        "sources": ["RDApp-205699Panetta092.jpg.json"]
+      },
+      {
+        "name": "Idario Panetta",
+        "confidence": "medium",
+        "sources": ["RDApp-205699Panetta099.jpg.json"]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "Identity is mostly certain but some name variations suggest potential confusion with other individuals."
+  },
+  
+  "biographical_narrative": "Mario Panetta was a laborer for the Baltimore & Ohio Railroad Company, primarily working in the Cumberland Division. His employment record indicates several instances of disability due to both accidents and sickness. In February 1916, he experienced an accident that led to his total disablement from February 5th to February 14th, during which no wages were allowed. He returned to duty on February 25th after being declared fit by a medical examiner. Panetta's records also show another period of disability due to acute bronchitis in January 1916, indicating he was likely susceptible to respiratory illnesses. His employment spanned at least from early 1916 through September 1922, with documentation showing his residence and payment details during this time.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "66 Vernon St., Keyser, W.Va.",
+      "date_range": "September 11, 1922",
+      "context": "Residence address for payment instructions",
+      "sources": ["RDApp-205699Panetta099.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Laborer",
+      "department": "M.C. Dept.",
+      "division": "Cumberland Division",
+      "details": "Started as a laborer in the Cumberland Division, M.C. Department.",
+      "sources": ["RDApp-205699Panetta091.jpg.json"]
+    },
+    {
+      "date": "1916-02-05",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Total disablement from an accident lasting until February 14th, 1916.",
+      "sources": ["RDApp-205699Panetta091.jpg.json"]
+    },
+    {
+      "date": "1916-02-25",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after medical clearance.",
+      "sources": ["RDApp-205699Panetta096.jpg.json", "RDApp-205699Panetta097.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1916-02-05",
+      "injury_type": "Accident",
+      "body_part": null,
+      "narrative": "Mario Panetta was totally disabled by an accident from February 5th to February 14th, 1916. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1916-02-15",
+          "examiner": "Dr. L.D. Norris",
+          "finding": "disabled",
+          "notes": "Certified total disability from accident.",
+          "sources": ["RDApp-205699Panetta091.jpg.json"]
+        },
+        {
+          "date": "1916-03-01",
+          "examiner": "Dr. L.D. Norris",
+          "finding": "able to return to duty",
+          "notes": "Certified fit for work on February 25th, 1916.",
+          "sources": ["RDApp-205699Panetta096.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 10,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-205699Panetta091.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1916-01-07",
+      "injury_type": "Sickness (Acute Bronchitis)",
+      "body_part": null,
+      "narrative": "Panetta was disabled by acute bronchitis from January 7th, 1916. The disability lasted for approximately two weeks.",
+      "medical_examinations": [
+        {
+          "date": "1916-01-05",
+          "examiner": "Dr. H.L. Norris",
+          "finding": "disabled",
+          "notes": "Diagnosed with acute bronchitis, expected duration of two weeks.",
+          "sources": ["RDApp-205699Panetta098.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. L.D. Norris",
+      "district": "78, 28",
+      "examinations": [
+        {"date": "1916-02-15", "finding": "disabled"},
+        {"date": "1916-03-01", "finding": "able to return to duty"}
+      ]
+    },
+    {
+      "name": "Dr. H.L. Norris",
+      "district": "31",
+      "examinations": [
+        {"date": "1916-01-05", "finding": "disabled"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1922-07-13",
+      "event": "Payroll record update",
+      "significance": "Indicates ongoing employment and payment details.",
+      "sources": ["RDApp-205699Panetta100.jpg.json"]
+    },
+    {
+      "date": "1922-09-11",
+      "event": "Payment instructions sent to residence address",
+      "significance": "Reflects administrative process for employee payments.",
+      "sources": ["RDApp-205699Panetta099.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1910-12-09", "latest": "1922-09-11"},
+    "completeness_assessment": "The record is relatively complete for injury and employment details but lacks personal information such as birth year or family details.",
+    "data_quality_notes": [
+      "Some documents are partially illegible, affecting the completeness of certain records.",
+      "Name variations suggest potential confusion with other individuals."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in terms of health and safety during the early 20th century.",
+      "It also reveals the administrative processes for handling worker injuries, including medical examinations and wage adjustments."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability claims among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

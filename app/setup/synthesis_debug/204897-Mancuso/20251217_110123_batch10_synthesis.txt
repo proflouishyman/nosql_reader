@@ -1,0 +1,200 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "Antoneas Manoussos",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco098.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonio Maycusco",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco097.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonio Marcus",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco100.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "Identity is reasonably certain, but variations in name spelling exist."
+  },
+  "biographical_narrative": "Antonio Mancuso was a worker for the Baltimore & Ohio Railroad Company (B&O) during the early 20th century. His career with B&O spanned several years and involved various positions including car repairman and clerk. In March of 1913, he suffered an injury to his left hand while holding a chisel when struck by another worker's hammer on duty. This incident led to a period of disability during which Mancuso did not receive wages but was eligible for benefits from the company\u2019s Relief Department. He returned to work in early March 1913, after being declared fit for duty by medical examiners. His career with B&O also included periods when he reported sick due to influenza and other illnesses.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No evidence of spouse in documents",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "118 East Fayette St",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-204897Manusco096.jpg.json",
+        "RDApp-204897Manusco097.jpg.json"
+      ]
+    },
+    {
+      "address": "131 Knight Ave",
+      "date_range": "unknown",
+      "context": "Residence address of another employee (Elmer E. Cyphers)",
+      "sources": [
+        "RDApp-204897Manusco092.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Exact date of hire is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1913-03-05",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": "Coville",
+      "details": "Injured left hand while holding a chisel when struck by another worker's hammer.",
+      "sources": [
+        "RDApp-204897Manusco100.jpg.json"
+      ]
+    },
+    {
+      "date": "1913-03-10",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Cleared to return to work after injury.",
+      "sources": [
+        "RDApp-204897Manusco098.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1913-03-05",
+      "injury_type": "Contusion",
+      "body_part": "Left hand",
+      "narrative": "Antonio Mancuso was injured on duty when a coworker struck his left hand with a hammer while he was holding a chisel. He was declared disabled and did not receive wages from March 5 to March 10, 1913.",
+      "medical_examinations": [
+        {
+          "date": "1913-03-08",
+          "examiner": "Dr. Miller",
+          "finding": "disabled",
+          "notes": "Hand was swollen and Mancuso was unable to work.",
+          "sources": [
+            "RDApp-204897Manusco095.jpg.json"
+          ]
+        },
+        {
+          "date": "1913-03-10",
+          "examiner": "Dr. W.A. White",
+          "finding": "able_to_return_to_duty",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco098.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1913-03-05",
+            "end": "1913-03-08"
+          },
+          "days": 3.5,
+          "amount": 3.9,
+          "check_number": "41679",
+          "sources": [
+            "RDApp-204897Manusco094.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Miller",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1913-03-08",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.A. White",
+      "district": "No. 13",
+      "examinations": [
+        {
+          "date": "1913-03-10",
+          "finding": "able_to_return_to_duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Return to duty notice sent",
+      "significance": "Indicates Mancuso's return to work after injury.",
+      "sources": [
+        "RDApp-204897Manusco093.jpg.json",
+        "RDApp-204897Manusco098.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1911-03-21",
+      "latest": "1913-03-17"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of injury and recovery, but lacks details on Mancuso's initial hiring or other aspects of his career.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents are partially handwritten.",
+      "Name variations exist across documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of workplace safety and the role of medical examiners in determining eligibility for disability benefits within railroad companies."
+    ],
+    "comparative_questions": [
+      "How did injury rates and benefit systems vary across different railroads during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

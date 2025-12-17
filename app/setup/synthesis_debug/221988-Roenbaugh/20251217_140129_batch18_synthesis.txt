@@ -1,0 +1,222 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Bombaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh172.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rembaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh175.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1862,
+    "confidence_notes": "Name variations exist, but 'Claude Roenbaugh' is the most consistent name used across documents."
+  },
+  "biographical_narrative": "Claude Roenbaugh was a fireman and later an engineman for the Baltimore & Ohio Railroad Company. His career spanned several decades, with records indicating his employment from at least the late 1920s into the early 1930s. Roenbaugh faced significant health challenges during his tenure, including multiple instances of injury or illness that required medical attention and temporary disability leave. In January 1927, he was reported disabled due to sickness, and again in January 1937 when he suffered from cellulitis affecting his left leg. Despite these setbacks, Roenbaugh's records suggest a determination to return to work after recovery periods. His career with the railroad appears to have been marked by both loyalty and resilience in overcoming health obstacles.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "381 W 21 St. Lorain, O",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in Notice of Disablement form.",
+      "sources": [
+        "RDApp-221988Roenbaugh175.jpg.json"
+      ]
+    },
+    {
+      "address": "331 W. 27th St., Lorain, O",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in medical leave record.",
+      "sources": [
+        "RDApp-221988Roenbaugh178.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": "CT",
+      "division": "Whe",
+      "details": "Roenbaugh was employed as a fireman, though the exact date of hire is not provided.",
+      "sources": [
+        "RDApp-221988Roenbaugh173.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "promotion",
+      "position": "Engineman",
+      "department": "CT",
+      "division": "Wheeling Div'n",
+      "details": "Promotion to Engineman is noted, but the exact date of promotion is not specified.",
+      "sources": [
+        "RDApp-221988Roenbaugh174.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1937-01-03",
+      "injury_type": "Cellulitis",
+      "body_part": "Left leg",
+      "narrative": "Roenbaugh was diagnosed with cellulitis in his left leg, which led to a temporary disability leave from January 2nd, 1937. He was expected to recover within 4-6 weeks.",
+      "medical_examinations": [
+        {
+          "date": "1937-02-15",
+          "examiner": "Dr. Krupp",
+          "finding": "Able To Resume Duty",
+          "notes": "Roenbaugh was found able to return to work on February 15th, 1937.",
+          "sources": [
+            "RDApp-221988Roenbaugh178.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1937-01-09",
+            "end": "1937-01-13"
+          },
+          "days": 37,
+          "amount": 69.6,
+          "check_number": "6053",
+          "sources": [
+            "RDApp-221988Roenbaugh173.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1929-01-10",
+      "injury_type": "Tearing of muscle fibers in the calf",
+      "body_part": "Right leg",
+      "narrative": "Roenbaugh sustained an injury to his right leg while boarding a moving engine on January 10th, 1929. He resumed duty but continued to experience discomfort.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. R. W. Locher",
+          "finding": "Positive prognosis with appropriate activity",
+          "notes": "The injury was diagnosed as tearing of muscle fibers in the calf, and Roenbaugh was advised to engage in specific activities for recovery.",
+          "sources": [
+            "RDApp-221988Roenbaugh171.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. R. W. Locher",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1950-05-07",
+          "finding": "Positive prognosis with appropriate activity"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Krupp",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1937-02-15",
+          "finding": "Able To Resume Duty"
+        }
+      ]
+    },
+    {
+      "name": "J.H. Minor",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "1937-02-01",
+          "finding": "Popliteal Cellulitis, probable duration 4-6 weeks"
+        }
+      ]
+    },
+    {
+      "name": "R. A. J. Morrison",
+      "district": "18",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Totally disabled by accident or sickness from January 2nd, 1937 to February 14th, 1937"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1930-04-26",
+      "event": "Request for medical examination in Baltimore due to Roenbaugh's leg injury.",
+      "significance": "Indicates the railroad company\u2019s commitment to ensuring employee health and safety through external referrals.",
+      "sources": [
+        "RDApp-221988Roenbaugh172.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-02-15",
+      "event": "Certificate of Disablement issued for Roenbaugh, confirming total disability from January 2nd to February 14th, 1937.",
+      "significance": "Reflects the formal process in place for documenting and managing employee disabilities.",
+      "sources": [
+        "RDApp-221988Roenbaugh174.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1930-04-26",
+      "latest": "1950-05-07"
+    },
+    "completeness_assessment": "The record is relatively complete, providing a detailed account of Roenbaugh's medical history and employment status. However, personal details such as family information are absent.",
+    "data_quality_notes": [
+      "Some documents have handwritten notes that are not fully legible in the OCR text.",
+      "There are minor inconsistencies in spelling variations of Roenbaugh\u2019s name."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the importance placed on employee health and safety within railroad operations, as well as the structured processes for managing disabilities and medical leave.",
+      "They also reflect the challenges faced by workers in physically demanding jobs like fireman and engineman."
+    ],
+    "comparative_questions": [
+      "How did Roenbaugh's experiences compare to other employees of similar rank and job roles?",
+      "What were the typical durations and types of injuries among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

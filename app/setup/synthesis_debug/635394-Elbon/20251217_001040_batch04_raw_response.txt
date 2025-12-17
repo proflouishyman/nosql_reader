@@ -1,0 +1,170 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo V. Elbon",
+    "name_variations": [
+      {
+        "name": "L. V. Elbon",
+        "confidence": "high",
+        "sources": ["RDApp-635394Elbon031.jpg.json", "RDApp-635394Elbon032.jpg.json"]
+      },
+      {
+        "name": "Leo Verne Elber",
+        "confidence": "medium",
+        "sources": ["RDApp-635394Elbon039.jpg.json"]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "Confidence is high based on consistent documentation, but name variations suggest some uncertainty."
+  },
+  
+  "biographical_narrative": "Leo V. Elbon began his career with the Baltimore & Ohio Railroad in December of 1920 as a fireman and served until at least February 1940. His employment was interrupted by a furlough from July 8, 1927, which he returned from on February 19, 1940. Upon his return, Elbon faced medical scrutiny due to a faint systolic mitral murmur detected during examination, leading to his rejection for membership in the Relief Department and employment as an engineer. Despite this setback, Elbon was not removed from the seniority roster but marked 'Incapacitated for train service.' In 1941, he sought re-examination to determine fitness for duty, indicating a desire to return to active service.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence or beneficiary address in Relief Department documents.",
+      "sources": ["RDApp-635394Elbon032.jpg.json", "RDApp-635394Elbon038.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1920-12-01",
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": "Third Division",
+      "details": "Hired as a fireman with seniority date of December 1st, 1920.",
+      "sources": ["RDApp-635394Elbon032.jpg.json"]
+    },
+    {
+      "date": "1927-07-08",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Began a furlough from July 8, 1927.",
+      "sources": ["RDApp-635394Elbon037.jpg.json"]
+    },
+    {
+      "date": "1940-02-19",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned from furlough and was rejected for membership in the Relief Department due to a heart murmur.",
+      "sources": ["RDApp-635394Elbon037.jpg.json", "RDApp-635394Elbon038.jpg.json"]
+    },
+    {
+      "date": "1941",
+      "event_type": "request for re-examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sought a re-examination to determine fitness for duty.",
+      "sources": ["RDApp-635394Elbon031.jpg.json", "RDApp-635394Elbon032.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Medical condition",
+      "body_part": "Heart",
+      "narrative": "Leo V. Elbon was found to have a faint systolic mitral murmur, which led to his rejection for employment as an engineer and membership in the Relief Department.",
+      "medical_examinations": [
+        {
+          "date": "1940-02-19",
+          "examiner": "Dr. E. M. Guistwhite",
+          "finding": "disabled",
+          "notes": "Detected a faint systolic mitral murmur, advising against employment.",
+          "sources": ["RDApp-635394Elbon033.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "The medical findings were disputed by Dr. Basil L. Page, who found Elbon fit for duty in March 1941.",
+        "resolution": "Unclear"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. E. M. Guistwhite",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1940-02-19",
+          "finding": "Detected a faint systolic mitral murmur, advising against employment."
+        }
+      ]
+    },
+    {
+      "name": "Dr. Basil L. Page",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1941-03-03",
+          "finding": "Found Elbon in good health and physically fit for duty."
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1940-02-29",
+      "event": "Rejected for membership in the Relief Department due to heart murmur.",
+      "significance": "This event led to Elbon's inability to be promoted and his continued presence on the seniority roster as 'incapacitated'.",
+      "sources": ["RDApp-635394Elbon037.jpg.json"]
+    },
+    {
+      "date": "1940-03-28",
+      "event": "Name retained on seniority roster marked 'Incapacitated for train service'.",
+      "significance": "This decision allowed Elbon to remain in the company's records despite his medical condition.",
+      "sources": ["RDApp-635394Elbon035.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1920-12-01",
+      "latest": "1941-05-06"
+    },
+    "completeness_assessment": "The record is fairly complete for medical and administrative events but lacks detailed personal information such as family details.",
+    "data_quality_notes": [
+      "Name variations exist between documents, which may indicate a need for further verification.",
+      "Some documents are truncated, leading to incomplete summaries."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the importance of medical fitness in railroad employment and the challenges faced by employees with health conditions that could impact their ability to perform certain roles.",
+      "It also shows the bureaucratic processes involved in dealing with such cases, including re-examinations and disputes between different medical professionals."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar medical issues among their employees?",
+      "What were the broader implications of these policies on employee morale and retention?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {"name": "W.S. Stenlecker", "confidence": "medium", "sources": ["RDApp-204722Steinecker141.jpg.json"]},
+      {"name": "William Staucker", "confidence": "high", "sources": ["RDApp-204722Steinecker142.jpg.json"]},
+      {"name": "Wm. Steinecker", "confidence": "medium", "sources": ["RDApp-204722Steinecker144.jpg.json"]},
+      {"name": "William Steinacker", "confidence": "low", "sources": ["RDApp-204722Steinecker145.jpg.json"]},
+      {"name": "Wm. Steinbuss", "confidence": "medium", "sources": ["RDApp-204722Steinecker146.jpg.json"]}
+    ],
+    "employee_id": 204722,
+    "birth_year": null,
+    "confidence_notes": "The birth year is not consistently recorded across documents, and the most common name variation is 'William Steinecker'."
+  },
+  
+  "biographical_narrative": "William Steinecker was a brakeman employed by the Baltimore & Ohio Railroad Company in various capacities from at least 1916 to 1923. His career with the railroad involved working in different departments and divisions, including Curtis Bay Yard and the Baltimore Division. He experienced multiple injuries during his tenure, which required medical attention and sometimes led to periods of disability. Steinecker was known for his work as a brakeman, but there are no records indicating any promotions or significant changes in position. His employment history is marked by several incidents where he received treatment for burns and other injuries related to his job.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information on spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "9 Maryland Ave",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in documents",
+      "sources": ["RDApp-204722Steinecker148.jpg.json", "RDApp-204722Steinecker149.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Brakeman",
+      "department": "C T Dept.",
+      "division": "Baltimore Division",
+      "details": "No specific date of hire is provided, but Steinecker was working as a brakeman by 1916.",
+      "sources": ["RDApp-204722Steinecker141.jpg.json", "RDApp-204722Steinecker148.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": "C T Dept.",
+      "division": "Baltimore Division",
+      "details": "Sustained burns to his shoulder, arm, and chest from hot water expelled from a fire hose on June 10, 1923. He was out of work for about two weeks before resuming duty on July 11, 1923.",
+      "sources": ["RDApp-204722Steinecker150.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1923-06-10",
+      "injury_type": "Burns from hot water",
+      "body_part": "Left shoulder, arm & left of chest",
+      "narrative": "William Steinecker was injured on June 10, 1923, when he was struck by hot water from a fire hose. He required medical attention and was out of work for approximately two weeks.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "E. H. MATHERS",
+          "finding": "Able to Resume Duty 7/11 1923",
+          "notes": "Diagnosed with burns to the left shoulder, arm & chest.",
+          "sources": ["RDApp-204722Steinecker150.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1923-06-10", "end": "1923-07-09"},
+          "days": 25,
+          "amount": 24.50,
+          "check_number": "32792",
+          "sources": ["RDApp-204722Steinecker142.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "E. H. MATHERS",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Able to Resume Duty"
+        }
+      ]
+    },
+    {
+      "name": "Dr. C.H. Mathers",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1923-06-15",
+      "event": "Approval of taxi bill for medical transport",
+      "significance": "Indicates the company's responsibility to provide transportation for injured employees.",
+      "sources": ["RDApp-204722Steinecker144.jpg.json"]
+    },
+    {
+      "date": "1923-06-13",
+      "event": "Forwarding of taxi bill for medical transport approval",
+      "significance": "Shows the process involved in obtaining and approving transportation services for an injured employee.",
+      "sources": ["RDApp-204722Steinecker145.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1916-09-26", "latest": "1923-06-15"},
+    "completeness_assessment": "The record is fairly complete for the period from 1916 to 1923, with detailed documentation of injuries and medical treatments. However, there are inconsistencies in name spelling and no clear indication of Steinecker's birth year or date of hire.",
+    "data_quality_notes": [
+      "Name variations exist across documents, affecting identity resolution confidence.",
+      "Some OCR text is unclear, leading to potential inaccuracies."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case illustrates the risks associated with railroad work in the early 20th century and the company's response to employee injuries through medical care and disability payments.",
+      "It also highlights the bureaucratic processes involved in handling workplace accidents, including transportation for injured workers."
+    ],
+    "comparative_questions": [
+      "How did injury rates and responses vary across different divisions of the B&O Railroad?",
+      "What were the typical durations of work absence due to injuries among railroad employees?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O.D. Prewfoot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood161.jpg.json"
+        ]
+      },
+      {
+        "name": "Ostpreus Foot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood164.jpg.json"
+        ]
+      },
+      {
+        "name": "O. A. Brownfoot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood167.jpg.json"
+        ]
+      },
+      {
+        "name": "C. S. Proudfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood169.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": null,
+    "confidence_notes": "Identity is somewhat uncertain due to name variations and lack of birth year data."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was a fireman for the Baltimore & Ohio Railroad Company, working in various capacities from at least 1903 through 1907. His career was marked by several instances of disablement due to sickness or injury, which required medical examination and certification before he could return to duty. Despite these challenges, Proudfoot maintained his position as a fireman, indicating loyalty and commitment to the railroad industry. The records do not provide information on family life or personal circumstances outside work.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": null,
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "124 Anchor St. Cumberland",
+      "date_range": "unknown",
+      "context": "Residence for medical follow-up",
+      "sources": [
+        "RDApp-204801Proudfood164.jpg.json"
+      ]
+    },
+    {
+      "address": "Cumberland Junction",
+      "date_range": "unknown",
+      "context": "Residence",
+      "sources": [
+        "RDApp-204801Proudfood162.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Began employment as a fireman, exact date unknown.",
+      "sources": []
+    },
+    {
+      "date": "1904-02-02",
+      "event_type": "disablement",
+      "position": "Fireman",
+      "department": "C",
+      "division": "Cum",
+      "details": "Reported sick, wages allowed until 1904.",
+      "sources": [
+        "RDApp-204801Proudfood162.jpg.json"
+      ]
+    },
+    {
+      "date": "1907-01-27",
+      "event_type": "disablement",
+      "position": "Fireman",
+      "department": null,
+      "division": "Cumb.",
+      "details": "Reported sick, wages allowed until 1907.",
+      "sources": [
+        "RDApp-204801Proudfood164.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1903-06-08",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Proudfoot was reported sick on June 8, 1903. He resumed work on June 14, 1903.",
+      "medical_examinations": [
+        {
+          "date": "1903-06-14",
+          "examiner": null,
+          "finding": "able to return",
+          "notes": "Certified able to resume work on June 14, 1903.",
+          "sources": [
+            "RDApp-204801Proudfood169.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1907-01-26",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Proudfoot was reported sick on January 26, 1907. Details of treatment and outcome are not provided.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Doane",
+      "district": "6",
+      "examinations": [
+        {
+          "date": null,
+          "finding": null
+        }
+      ]
+    },
+    {
+      "name": null,
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1903-06-08",
+      "event": "Form 5 disablement notice sent",
+      "significance": "Indicates Proudfoot's sickness and need for medical attention.",
+      "sources": [
+        "RDApp-204801Proudfood167.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1903-01-01",
+      "latest": "1907-01-27"
+    },
+    "completeness_assessment": "The records are incomplete, with many fields left blank. There is also some inconsistency in the names used for Proudfoot.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have significant errors or omissions.",
+      "Contradictions exist regarding the employee's name."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the frequent health issues faced by railroad workers and the company\u2019s response through medical examinations and sick leave benefits."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad Company's disability policies compare to other railroads of the time?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.8,
+    "injury_details": 0.9,
+    "overall": 0.82
+  }
+}

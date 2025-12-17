@@ -1,0 +1,228 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Athe A. Bradford",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood061.jpg.json"]
+      },
+      {
+        "name": "Otto D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood063.jpg.json",
+          "RDApp-204801Proudfood064.jpg.json",
+          "RDApp-204801Proudfood065.jpg.json",
+          "RDApp-204801Proudfood067.jpg.json"
+        ]
+      },
+      {
+        "name": "Prior Full Name, Address and Occupation: Otto D. Proudfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood069.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is mostly consistent with 'Otto D. Proudfoot', but there are conflicting names in some documents."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer for the Baltimore and Ohio Railroad Company, working primarily in the Cumberland Division. His career spanned several decades from at least the early 1930s to the mid-1940s. He experienced multiple injuries during his tenure, including a sprain of his left knee on November 28, 1940, and another disabling incident involving gastritis in June 1944. Proudfoot's medical history is well-documented through various forms and reports that detail the nature of his disabilities, the treatments he received, and the compensation he was entitled to during periods of disablement.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence address on medical reports and disablement forms.",
+      "sources": ["RDApp-204801Proudfood064.jpg.json"]
+    },
+    {
+      "address": "132 (illegible)",
+      "date_range": "unknown",
+      "context": "Partial residence address in a notice of disablement form from 1934.",
+      "sources": ["RDApp-204801Proudfood069.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div'n",
+      "details": "Began employment as an engineer in the CT Department, Cumberland Division. The exact start date is not provided.",
+      "sources": ["RDApp-204801Proudfood065.jpg.json", "RDApp-204801Proudfood067.jpg.json"]
+    },
+    {
+      "date": "1934-11-13",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": "EE Division",
+      "details": "Reported disabled due to an unspecified accident or sickness.",
+      "sources": ["RDApp-204801Proudfood069.jpg.json"]
+    },
+    {
+      "date": "1940-11-28",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a sprain to the left knee.",
+      "sources": ["RDApp-204801Proudfood065.jpg.json", "RDApp-204801Proudfood067.jpg.json"]
+    },
+    {
+      "date": "1944-06-23",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to gastritis.",
+      "sources": ["RDApp-204801Proudfood061.jpg.json", "RDApp-204801Proudfood064.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1934-11-13",
+      "injury_type": "Unspecified accident or sickness",
+      "body_part": null,
+      "narrative": "On November 13, 1934, Otto D. Proudfoot was reported disabled due to an unspecified accident or illness.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1940-11-28",
+      "injury_type": "Sprain left knee",
+      "body_part": "left knee",
+      "narrative": "On November 28, 1940, Otto D. Proudfoot sustained a sprain to his left knee and was unable to work from November 29 to December 5, 1940.",
+      "medical_examinations": [
+        {
+          "date": "1940-11-28",
+          "examiner": "Dr. F. Garnett Cowherd",
+          "finding": null,
+          "notes": "X-ray examination of the left knee.",
+          "sources": ["RDApp-204801Proudfood066.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1940-11-29", "end": "1940-12-5"},
+          "days": 7,
+          "amount": 1.75,
+          "check_number": null,
+          "sources": ["RDApp-204801Proudfood065.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1944-06-23",
+      "injury_type": "Gastritis",
+      "body_part": null,
+      "narrative": "On June 23, 1944, Otto D. Proudfoot was reported disabled due to gastritis.",
+      "medical_examinations": [
+        {
+          "date": "1944-06-24",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Gastritis noted as the nature of disability.",
+          "sources": ["RDApp-204801Proudfood063.jpg.json", "RDApp-204801Proudfood064.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. F. Garnett Cowherd",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1940-11-28",
+          "finding": null
+        }
+      ]
+    },
+    {
+      "name": "J B Baker",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1944-07-13",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1940-12-18",
+      "event": "Payment approval for X-ray examination",
+      "significance": "Indicates the company's responsibility to cover medical expenses.",
+      "sources": ["RDApp-204801Proudfood066.jpg.json"]
+    },
+    {
+      "date": "1940-12-10",
+      "event": "Disbursement voucher and journal documentation for injury compensation",
+      "significance": "Reflects the administrative process of compensating employees during periods of disablement.",
+      "sources": ["RDApp-204801Proudfood067.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-11-13",
+      "latest": "1944-07-13"
+    },
+    "completeness_assessment": "The record is relatively complete for the period between 1934 and 1944, with detailed documentation of injuries and medical examinations. However, there are some inconsistencies in names and incomplete addresses.",
+    "data_quality_notes": [
+      "Conflicting names (Athe A. Bradford vs Otto D. Proudfoot) suggest possible OCR errors or identity confusion.",
+      "Some documents contain illegible text, such as the address '132 (illegible)' on document RDApp-204801Proudfood069.jpg.json."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical and administrative practices of railroad companies in handling employee injuries, including detailed documentation and compensation procedures.",
+      "They also reflect the nature of work-related injuries among engineers during this period, with a focus on musculoskeletal issues like sprains."
+    ],
+    "comparative_questions": [
+      "How did injury reporting and compensation differ between various railroads or industries?",
+      "What were the broader trends in occupational health and safety practices during the early to mid-20th century?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

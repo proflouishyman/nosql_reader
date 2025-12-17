@@ -1,0 +1,169 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Roush",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh154.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rosbrough",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh155.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Roanbaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh156.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rosenbaugh",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh157.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "Name variations exist, but 'Claude Roenbaugh' appears most frequently and is likely the canonical name."
+  },
+  "biographical_narrative": "Claude Roenbaugh was an engineer employed by the Baltimore & Ohio Railroad Company in various divisions of its Akron department during the early 1930s. His career with the railroad spanned several years, marked by multiple instances of disability due to sickness and injury. Roenbaugh's employment records indicate a series of disabilities from December 1929 through May 1930, suggesting he was often unable to work due to health issues. Despite these challenges, his continued presence in the company's records suggests that he remained an active employee with no significant disputes or terminations on record.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Lorain",
+      "date_range": "unknown",
+      "context": "Residence as stated in the sickness and payments record.",
+      "sources": [
+        "RDApp-221988Roenbaugh151.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Akron",
+      "details": "Claude Roenbaugh was employed as an engineer in the C.T. Department, Akron Division.",
+      "sources": [
+        "RDApp-221988Roenbaugh151.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Akron",
+      "details": "Claude Roenbaugh was reported disabled due to sickness starting December 7, 1929, at 6 a.m. He was not injured on duty.",
+      "sources": [
+        "RDApp-221988Roenbaugh159.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1929-12-07",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was reported disabled due to sickness starting December 7, 1929. He received disability payments from December 14, 1929, through May 26, 1930.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "J. H. Minor",
+          "finding": "disabled",
+          "notes": "Medical Examiner reported Roenbaugh's disability due to sickness from December 7, 1929, through May 26, 1930.",
+          "sources": [
+            "RDApp-221988Roenbaugh151.jpg.json",
+            "RDApp-221988Roenbaugh154.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1929-12-14",
+            "end": "1930-05-26"
+          },
+          "days": 164,
+          "amount": 328.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-221988Roenbaugh151.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J. H. Minor",
+      "district": "18",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.G. Hemminger",
+      "district": "18",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1929-12-07",
+      "latest": "1930-05-26"
+    },
+    "completeness_assessment": "The record is relatively complete for the period of disability from December 1929 to May 1930. However, there are name variations and some documents have unclear or missing information.",
+    "data_quality_notes": [
+      "OCR quality varies; some names and dates are not clearly legible.",
+      "There are inconsistencies in the spelling of Claude Roenbaugh's name across different documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad employees during the early 20th century, particularly with regard to health and disability.",
+      "It also provides insight into the medical examination process and how it was integrated into the administrative framework of a major railway company."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's approach to employee disability compare to other railroads during this period?",
+      "What were the broader economic impacts on railroad companies due to frequent employee disabilities?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

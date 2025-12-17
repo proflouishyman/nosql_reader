@@ -1,0 +1,185 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thomas E. Freeland",
+        "confidence": "low",
+        "sources": ["RDApp-222507Freeland068.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is certain based on consistent naming across documents, though a minor variation exists."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland was an employee of the Baltimore & Ohio Railroad Company from at least the early 1940s until his death in 1989. He worked as a carman and brakeman, positions that required physical labor and were prone to injury. Throughout his career, Freeland experienced multiple injuries and periods of disability, including an incomplete right inguinal hernia which necessitated surgery on December 3, 1946. Despite these setbacks, he continued to work for the railroad until at least early 1989 when a death benefit was paid out.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "W/F Wiley Ford, W. Va",
+      "date_range": "unknown",
+      "context": "Beneficiary address",
+      "sources": ["RDApp-222507Freeland070.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Exact date and position of hire are not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1946-12-03",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "MP",
+      "division": "Cumb",
+      "details": "Underwent surgery for an incomplete right inguinal hernia.",
+      "sources": ["RDApp-222507Freeland070.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1946-11-22",
+      "injury_type": "Incomplete right inguinal hernia",
+      "body_part": "Right inguinal region",
+      "narrative": "Freeland suffered an incomplete right inguinal hernia on duty in Cumberland, Maryland. He continued working until December 2, 1946, when he was operated on the following day.",
+      "medical_examinations": [
+        {
+          "date": "1946-11-21",
+          "examiner": "Dr. Wilson",
+          "finding": "disabled",
+          "notes": "Healing injury as of 11/21/46, with follow-ups scheduled.",
+          "sources": ["RDApp-222507Freeland069.jpg.json"]
+        },
+        {
+          "date": "1946-12-03",
+          "examiner": "Dr. F. M. Wilson",
+          "finding": "disabled",
+          "notes": "Herniotomy performed on 12/3/46, probable duration of disability is 8 weeks.",
+          "sources": ["RDApp-222507Freeland070.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": []
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1946-12-03",
+      "injury_type": "Phlebitis in both legs",
+      "body_part": "Legs",
+      "narrative": "Following his surgery for a right inguinal hernia on December 3, 1946, Freeland developed phlebitis in both of his legs. This condition was reported to have an indefinite prognosis.",
+      "medical_examinations": [
+        {
+          "date": "1947-02-24",
+          "examiner": "W B Baker",
+          "finding": "disabled",
+          "notes": "Phlebitis in both legs, with progress reported as indefinite.",
+          "sources": ["RDApp-222507Freeland061.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1947-03-20", "end": "1947-04-19"},
+          "days": 31,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland062.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "W B Baker",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1947-02-24",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. F. M. Wilson",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1946-12-03",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1989-06-24",
+      "event": "Death benefit paid out",
+      "significance": "$850 death benefit was issued.",
+      "sources": ["RDApp-222507Freeland067.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1941-12-03",
+      "latest": "1989-06-24"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of Freeland's disability and medical treatment, but lacks details on his initial hiring and early career.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents are more legible than others.",
+      "Minor discrepancies in name spelling exist."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the physical demands of railroad work and the medical challenges faced by employees, including surgical procedures and prolonged disability periods.",
+      "They also show how the company managed employee health through its Relief Department and provided for workers during their recovery."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary among different departments within the railroad?",
+      "What was the typical duration of disability leave, and were there variations based on the nature of the injury?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

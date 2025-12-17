@@ -1,0 +1,170 @@
+{
+  "person_identity": {
+    "canonical_name": "William N. Steinacker",
+    "name_variations": [
+      {
+        "name": "Wm. Steinecker",
+        "confidence": "high",
+        "sources": ["RDApp-204722Steinecker021.jpg.json", "RDApp-204722Steinecker023.jpg.json"]
+      },
+      {
+        "name": "William N. Steinaker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker022.jpg.json"]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": null,
+    "confidence_notes": "The identity is relatively certain based on the consistency of name variations and employee ID across documents."
+  },
+  
+  "biographical_narrative": "William N. Steinacker, a fireman for the Baltimore & Ohio Railroad Company, was injured in an engine explosion at Monrovia, Maryland, on January 18th, 1903. The injury led to a series of disputes over compensation and medical evaluations, with Steinacker refusing to accept benefits from June to August 1903 due to disagreements regarding his disability status. Despite the company's efforts to settle the claim, Steinacker remained in dispute until at least October 4th, 1904.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Westport, Md.",
+      "date_range": "unknown",
+      "context": "place of employment at the time of injury",
+      "sources": ["RDApp-204722Steinecker022.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "fireman",
+      "department": null,
+      "division": null,
+      "details": "William N. Steinacker was employed as a fireman for the Baltimore & Ohio Railroad Company.",
+      "sources": ["RDApp-204722Steinecker021.jpg.json", "RDApp-204722Steinecker022.jpg.json"]
+    },
+    {
+      "date": "1903-01-18",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured in an engine explosion at Monrovia, Maryland.",
+      "sources": ["RDApp-204722Steinecker021.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1903-01-18",
+      "injury_type": "engine explosion injury",
+      "body_part": null,
+      "narrative": "William N. Steinacker was injured in an engine explosion on January 18th, 1903, at Monrovia, Maryland. The company provided benefits from January 19th to May 31st, 1903.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. Tierney",
+          "finding": "able to resume duty on Sept. 1st, 1903",
+          "notes": "Steinacker refused the benefits and checks from June to August 1903.",
+          "sources": ["RDApp-204722Steinecker026.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1903-01-19", "end": "1903-05-31"},
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker026.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "Steinacker refused to sign releases or accept benefits from June 1st to August 31st, 1903.",
+        "resolution": "The case was closed as of August 31st, 1903."
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Tierney",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "able to resume duty on Sept. 1st, 1903"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Robb",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "J.F. Kearney",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1903-10-06",
+          "finding": "not disabled after August 31st, 1903"
+        }
+      ]
+    },
+    {
+      "name": "John A. Rabb Jr.",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1904-02-20",
+      "event": "request for copies of releases given to Steinacker",
+      "significance": "Indicates legal action was being prepared regarding the injury claim.",
+      "sources": ["RDApp-204722Steinecker021.jpg.json"]
+    },
+    {
+      "date": "1904-10-05",
+      "event": "follow-up on Steinacker's claim status",
+      "significance": "Shows ongoing administrative efforts to resolve the dispute.",
+      "sources": ["RDApp-204722Steinecker022.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1903-01-18",
+      "latest": "1904-10-05"
+    },
+    "completeness_assessment": "The record is relatively complete for the injury and its aftermath, but lacks details on Steinacker's employment history before or after the incident.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors that affect readability.",
+      "There are minor inconsistencies in name spelling across documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges and disputes surrounding workers' compensation claims in early 20th-century railroad companies, particularly regarding medical evaluations and benefit payments.",
+      "It reveals the bureaucratic processes involved in resolving employee injury claims."
+    ],
+    "comparative_questions": [
+      "How did other employees handle similar injuries and compensation disputes?",
+      "What were the typical outcomes of such disputes within the Baltimore & Ohio Railroad Company?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

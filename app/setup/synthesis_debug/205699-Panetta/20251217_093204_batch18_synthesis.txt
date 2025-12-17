@@ -1,0 +1,257 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Larry Pannetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta172.jpg.json"
+        ]
+      },
+      {
+        "name": "Clario Pannetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta175.jpg.json"
+        ]
+      },
+      {
+        "name": "Illario Bannetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta176.jpg.json"
+        ]
+      },
+      {
+        "name": "Flavio Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta178.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": 1875,
+    "confidence_notes": "The birth year is consistent across documents, but name variations suggest potential identity confusion with other individuals."
+  },
+  "biographical_narrative": "Ilario Panetta was a railroad worker for the Baltimore & Ohio Railroad Company. His career spanned several decades and included various roles such as car helper and laborer. He experienced multiple injuries and illnesses that affected his work, including shoulder strain and influenza. Despite these challenges, he continued to be employed by the company until at least 1926. Panetta's records indicate a series of medical examinations and treatments for his conditions, reflecting the railroad\u2019s attention to employee health and safety during this period.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No explicit mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "66 Vernon St. Keyser",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-205699Panetta175.jpg.json"
+      ]
+    },
+    {
+      "address": "Vernon City",
+      "date_range": "unknown",
+      "context": "Residence city",
+      "sources": [
+        "RDApp-205699Panetta180.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Car Helper",
+      "department": null,
+      "division": null,
+      "details": "Started as a car helper.",
+      "sources": [
+        "RDApp-205699Panetta172.jpg.json"
+      ]
+    },
+    {
+      "date": "1924-05-05",
+      "event_type": "injury",
+      "position": "Car Helper",
+      "department": null,
+      "division": null,
+      "details": "Injured while loading a heavy piece of sheet steel.",
+      "sources": [
+        "RDApp-205699Panetta175.jpg.json"
+      ]
+    },
+    {
+      "date": "1924-06-10",
+      "event_type": "injury",
+      "position": "Car Helper",
+      "department": null,
+      "division": null,
+      "details": "Reported injury to shoulder from May 5 incident.",
+      "sources": [
+        "RDApp-205699Panetta176.jpg.json"
+      ]
+    },
+    {
+      "date": "1926-03-06",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": null,
+      "division": null,
+      "details": "Disabled by sickness.",
+      "sources": [
+        "RDApp-205699Panetta178.jpg.json"
+      ]
+    },
+    {
+      "date": "1926-03-25",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": null,
+      "division": null,
+      "details": "Continued to be disabled by sickness.",
+      "sources": [
+        "RDApp-205699Panetta178.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1924-05-05",
+      "injury_type": "Contusion",
+      "body_part": "Left shoulder",
+      "narrative": "Injured while loading a heavy piece of sheet steel. Initially reported as a few days' disability but later required further examination.",
+      "medical_examinations": [
+        {
+          "date": "1924-05-09",
+          "examiner": "Dr. C.D. Hoffman",
+          "finding": "disabled",
+          "notes": "Bruise or contusion of the left shoulder, no visible indication of injury.",
+          "sources": [
+            "RDApp-205699Panetta175.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": null,
+            "end": null
+          },
+          "days": 10,
+          "amount": 50.5,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta177.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1926-03-06",
+      "injury_type": "Sickness (Influenza)",
+      "body_part": null,
+      "narrative": "Disabled by influenza from March 6 to April 10, 1926. Received sickness benefits.",
+      "medical_examinations": [
+        {
+          "date": "1926-03-25",
+          "examiner": "W.J. Wilfery",
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-205699Panetta178.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1926-03-25",
+            "end": "1926-04-10"
+          },
+          "days": 15,
+          "amount": 27.0,
+          "check_number": "52775",
+          "sources": [
+            "RDApp-205699Panetta177.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. C.D. Hoffman",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1924-05-09",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.J. Wilfery",
+      "district": "7",
+      "examinations": [
+        {
+          "date": "1926-03-25",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Medical examination",
+      "significance": "Indicates the railroad's attention to employee health and safety.",
+      "sources": [
+        "RDApp-205699Panetta175.jpg.json",
+        "RDApp-205699Panetta178.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1924-05-05",
+      "latest": "1932-05-17"
+    },
+    "completeness_assessment": "The record is relatively complete for injury and medical history but lacks detailed employment progression or family information.",
+    "data_quality_notes": [
+      "Name variations suggest potential identity confusion with other individuals.",
+      "OCR quality varies, leading to some inconsistencies in names and dates."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal the railroad's structured approach to employee health and disability benefits during the early 20th century."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad Company\u2019s medical practices compare with other railroads of the same era?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.9,
+    "overall": 0.82
+  }
+}

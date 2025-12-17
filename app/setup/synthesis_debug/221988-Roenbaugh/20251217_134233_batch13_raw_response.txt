@@ -1,0 +1,178 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Rowland",
+        "confidence": "medium",
+        "sources": ["RDApp-221988Roenbaugh122.jpg.json"]
+      },
+      {
+        "name": "Clan Rosenbaugh",
+        "confidence": "low",
+        "sources": ["RDApp-221988Roenbaugh128.jpg.json"]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1884,
+    "confidence_notes": "The birth year is derived from the medical examination form dated February 26, 1943."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh was an engineer for the Baltimore and Ohio Railroad Company during the early to mid-20th century. His career spanned several decades, marked by various injuries sustained while on duty. Roenbaugh's first recorded injury occurred in May 1943 when he suffered a contused and punctured wound near his right eye after being thrown against a cab during an accident. He was also treated for lumbago in April 1944, which temporarily disabled him from work but did not prevent him from resuming duties on April 22, 1944. Roenbaugh's medical records indicate that he received regular physical examinations and treatment for various conditions, reflecting the railroad company's efforts to maintain employee health and safety.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "531 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address as stated in the medical examiner's report of disablement.",
+      "sources": ["RDApp-221988Roenbaugh123.jpg.json"]
+    },
+    {
+      "address": "Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address as stated in the medical examiner's report of disablement.",
+      "sources": ["RDApp-221988Roenbaugh127.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "unknown",
+      "event_type": "hire/application",
+      "position": "Engineer",
+      "department": "C.I.",
+      "division": "WLE",
+      "details": null,
+      "sources": ["RDApp-221988Roenbaugh121.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Wheeling",
+      "details": "Suffered a contused and punctured wound near the right eye on May 9, 1943.",
+      "sources": ["RDApp-221988Roenbaugh127.jpg.json", "RDApp-221988Roenbaugh128.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Suffered from lumbago, which temporarily disabled him from work.",
+      "sources": ["RDApp-221988Roenbaugh123.jpg.json", "RDApp-221988Roenbaugh124.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "May 9, 1943",
+      "injury_type": "Contused and punctured wound near the right eye",
+      "body_part": "Right Eye",
+      "narrative": "Claude Roenbaugh was injured on May 9, 1943, while working as an engineer. He suffered a contused and punctured wound near his right eye after being thrown against a cab during an accident.",
+      "medical_examinations": [
+        {
+          "date": "May 25, 1943",
+          "examiner": "J.H. Minor",
+          "finding": "Not inspected but able for duty",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh127.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "March 29, 1944",
+      "injury_type": "Lumbago",
+      "body_part": "Back",
+      "narrative": "Claude Roenbaugh was diagnosed with lumbago on March 29, 1944. He received treatments and resumed work on April 22, 1944.",
+      "medical_examinations": [
+        {
+          "date": "April 7, 1944",
+          "examiner": "J.H. Minor",
+          "finding": "Disabled due to lumbago",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh123.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J.H. Minor",
+      "district": null,
+      "examinations": [
+        {
+          "date": "February 26, 1943",
+          "finding": "Physically qualified"
+        },
+        {
+          "date": "April 7, 1944",
+          "finding": "Disabled due to lumbago"
+        }
+      ]
+    },
+    {
+      "name": "P. H. Pettay",
+      "district": null,
+      "examinations": [
+        {
+          "date": "May 25, 1943",
+          "finding": "Not inspected but able for duty"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "February 26, 1943",
+      "latest": "August 28, 1943"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered but lacks details on Roenbaugh's employment start date and any promotions or transfers. The medical records are detailed, providing insight into his injuries and treatments.",
+    "data_quality_notes": [
+      "There are some name variations that may indicate a possible misidentification or typographical errors in documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Claude Roenbaugh reveals the challenges faced by railroad workers, including frequent injuries and the medical support provided to them. It also highlights the importance of regular health examinations for employees.",
+      "It provides a glimpse into the administrative processes and medical practices used by the Baltimore and Ohio Railroad Company in handling employee disabilities."
+    ],
+    "comparative_questions": [
+      "How did injury rates and medical responses vary across different divisions or departments within the railroad company?",
+      "What was the typical duration of disability for injuries similar to Roenbaugh's?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

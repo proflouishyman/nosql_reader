@@ -1,0 +1,180 @@
+{
+  "person_identity": {
+    "canonical_name": "George A. Crudden",
+    "name_variations": [
+      {
+        "name": "Geo Brude",
+        "confidence": "low",
+        "sources": [
+          "RDAPP-634503Crudden061.jpg.json"
+        ]
+      },
+      {
+        "name": "George A. Crullin",
+        "confidence": "medium",
+        "sources": [
+          "RDAPP-634503Crudden062.jpg.json"
+        ]
+      },
+      {
+        "name": "Geo. C. Hinton",
+        "confidence": "low",
+        "sources": [
+          "RDAPP-634503Crudden063.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634503",
+    "birth_year": null,
+    "confidence_notes": "Name variations suggest potential identity confusion with other employees, but primary name is George A. Crudden."
+  },
+  "biographical_narrative": "George A. Crudden was a Tallyman for the Baltimore & Ohio Railroad Company in Philadelphia during the early 20th century. His employment record indicates he suffered from an injury on July 27, 1921, which resulted in pain in his left leg and was suspected to be osteomyelitis. This disability led to a period of medical leave until August 18, 1921, when Crudden was certified fit to return to duty by the company's Medical Examiner. Prior to this injury, there is limited information about his career progression within the railroad company.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": null,
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "1947 No. Fremont St.",
+      "date_range": "unknown",
+      "context": "Residence at time of injury in 1917",
+      "sources": [
+        "RDAPP-634503Crudden061.jpg.json"
+      ]
+    },
+    {
+      "address": "1917 No. Newkirk St.",
+      "date_range": "unknown",
+      "context": "Residence at time of medical examination in 1921",
+      "sources": [
+        "RDAPP-634503Crudden064.jpg.json",
+        "RDAPP-634503Crudden065.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Tallyman",
+      "department": null,
+      "division": null,
+      "details": "Started as a Tallyman for the Baltimore & Ohio Railroad Company in Philadelphia.",
+      "sources": []
+    },
+    {
+      "date": "1921-07-27",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered an injury leading to pain in the left leg and suspected osteomyelitis.",
+      "sources": [
+        "RDAPP-634503Crudden064.jpg.json",
+        "RDAPP-634503Crudden065.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-08-18",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified fit to return to work by the Medical Examiner.",
+      "sources": [
+        "RDAPP-634503Crudden062.jpg.json",
+        "RDAPP-634503Crudden063.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1921-07-27",
+      "injury_type": "Pain in left leg, suspected osteomyelitis",
+      "body_part": "Left upper leg",
+      "narrative": "George A. Crudden suffered from pain in his left leg on July 27, 1921, which was suspected to be osteomyelitis. He was unable to work until August 18, 1921.",
+      "medical_examinations": [
+        {
+          "date": "1921-08-05",
+          "examiner": "Dr. A. H. Clagett",
+          "finding": "disabled",
+          "notes": "Pains left upper leg, suspected osteomyelitis.",
+          "sources": [
+            "RDAPP-634503Crudden064.jpg.json"
+          ]
+        },
+        {
+          "date": null,
+          "examiner": "G.O. Prance",
+          "finding": "able to return to duty",
+          "notes": "",
+          "sources": [
+            "RDAPP-634503Crudden062.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. A. H. Clagett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-08-05",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "G.O. Prance",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "able to return to duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 5,
+    "date_range": {
+      "earliest": "1917-07-27",
+      "latest": "1921-08-19"
+    },
+    "completeness_assessment": "The record is relatively complete for the period of disability and return to work. However, there are contradictions in names and limited information on his career before 1921.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents contain errors or unclear text.",
+      "Name variations suggest potential identity confusion with other employees."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the medical challenges faced by railroad workers and the procedures for handling disabilities in early 20th-century industrial settings."
+    ],
+    "comparative_questions": [
+      "How did injury management practices vary across different railroads?",
+      "What were the common causes of injuries among tallymen?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.8,
+    "injury_details": 0.9,
+    "overall": 0.81
+  }
+}

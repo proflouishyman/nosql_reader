@@ -1,0 +1,189 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thos B Freel",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland191.jpg.json"
+        ]
+      },
+      {
+        "name": "Freeland Thomas",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland193.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": null,
+    "confidence_notes": "The identity is primarily based on the most consistent name usage across documents, but there are minor variations that introduce some uncertainty."
+  },
+  "biographical_narrative": "Thomas B. Freeland was a railroad employee with the Baltimore & Ohio Railroad Company (B&O) in the early 20th century. He held positions as a brakeman and possibly a coach inspector, though his exact start date is not specified in the records provided. His career included at least two notable periods of disablement: one due to tonsillitis in February 1914 and another unspecified disability in January 1916. Freeland was cleared for duty on both occasions but had to undergo medical examinations and certification processes, which are well-documented in his personnel file.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Bartleprs",
+      "date_range": "unknown",
+      "context": "Residence at the time of his tonsillitis disability in February 1914.",
+      "sources": [
+        "RDApp-222507Freeland194.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "No specific hire date is provided in the records.",
+      "sources": []
+    },
+    {
+      "date": "1914-02-25",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": "M W",
+      "division": "Cen",
+      "details": "Freeland was disabled due to tonsillitis, which began at 6 PM.",
+      "sources": [
+        "RDApp-222507Freeland194.jpg.json"
+      ]
+    },
+    {
+      "date": "1914-03-06",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty after tonsillitis.",
+      "sources": [
+        "RDApp-222507Freeland198.jpg.json",
+        "RDApp-222507Freeland199.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-01-13",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": "THIC",
+      "division": "Clyde",
+      "details": "Freeland was disabled, though the nature of his disability is not specified.",
+      "sources": [
+        "RDApp-222507Freeland191.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1914-02-25",
+      "injury_type": "Tonsillitis",
+      "body_part": null,
+      "narrative": "Freeland was disabled due to tonsillitis, which began on February 25th at 6 PM. He received sick benefit payments and resumed work on March 6th.",
+      "medical_examinations": [
+        {
+          "date": "1914-03-06",
+          "examiner": "J.A. Doerner, M.D.",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": [
+            "RDApp-222507Freeland198.jpg.json",
+            "RDApp-222507Freeland199.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1914-03-06",
+            "end": null
+          },
+          "days": 1,
+          "amount": 1.0,
+          "check_number": "8669",
+          "sources": [
+            "RDApp-222507Freeland194.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-01-13",
+      "injury_type": "Unspecified Disability",
+      "body_part": null,
+      "narrative": "Freeland was disabled on January 13th, but the nature of his disability is not specified. There are no further details regarding medical examinations or payments.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.A. Doerner, M.D.",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1914-03-06",
+          "finding": "able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "L.A. Norris, Medical Examiner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1913-01-30",
+          "finding": "vision and hearing tests conducted"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1913-01-30",
+      "latest": "1916-01-14"
+    },
+    "completeness_assessment": "The records are relatively complete for the periods of disablement, but there is a lack of information regarding Freeland's hire date and his exact position over time. The documents also do not provide details about his family or personal life.",
+    "data_quality_notes": [
+      "There are minor inconsistencies in name spelling across different documents.",
+      "Some dates are partially obscured or unclear."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the importance of medical examinations and disability benefits for railroad workers during this period, indicating a structured system to manage employee health issues.",
+      "The documentation process suggests a formalized approach to handling worker injuries or illnesses, with clear procedures for certification and return-to-work processes."
+    ],
+    "comparative_questions": [
+      "How did the medical practices and disability benefits compare across different railroad companies of that era?",
+      "What was the typical duration of disablement periods for similar positions in the B&O Railroad?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,288 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Slario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta191.jpg.json"
+        ]
+      },
+      {
+        "name": "Hilaris Panetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta193.jpg.json"
+        ]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta194.jpg.json"
+        ]
+      },
+      {
+        "name": "Haris Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta198.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": 1875,
+    "confidence_notes": "Name variations are present, but 'Ilario Panetta' appears most frequently and is likely the canonical name."
+  },
+  "biographical_narrative": "Ilario Panetta was a laborer for the Baltimore & Ohio Railroad Company, working in various capacities within the Maintenance of Way (M.P.) department. His career spanned several decades from at least the early 1920s to the early 1930s. Throughout his tenure, he experienced multiple periods of disablement due to illnesses such as influenza and rheumatism. These health issues led to temporary absences from work, during which Panetta received sickness payments. Despite these setbacks, there is no evidence of formal disputes or significant disciplinary actions against him. His family life included a wife named Teresa Panetta, who was designated as the beneficiary in his application for additional natural death benefits.",
+  "family": {
+    "spouse": {
+      "name": "Teresa Panetta",
+      "evidence": "Designated as beneficiary in application form.",
+      "sources": [
+        "RDApp-205699Panetta199.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Vernon, Hooper",
+      "date_range": "unknown",
+      "context": "Address listed in medical examiner's report for influenza disablement.",
+      "sources": [
+        "RDApp-205699Panetta191.jpg.json"
+      ]
+    },
+    {
+      "address": "Keyser, W. Va",
+      "date_range": "unknown",
+      "context": "Residence listed in multiple documents related to sickness payments and disability reports.",
+      "sources": [
+        "RDApp-205699Panetta192.jpg.json",
+        "RDApp-205699Panetta193.jpg.json"
+      ]
+    },
+    {
+      "address": "66 Emerson St. Keyport N.J.",
+      "date_range": "unknown",
+      "context": "Home address provided in application for additional natural death benefits.",
+      "sources": [
+        "RDApp-205699Panetta199.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1923-04-01",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": "CU",
+      "details": "Disabled due to influenza, unable to work from April 1 to April 14, 1923.",
+      "sources": [
+        "RDApp-205699Panetta196.jpg.json"
+      ]
+    },
+    {
+      "date": "1930-04-01",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": "Cu(W)",
+      "details": "Disabled due to influenza, unable to work from April 1 to April 13, 1930. Received sickness payments for six days of disability.",
+      "sources": [
+        "RDApp-205699Panetta192.jpg.json",
+        "RDApp-205699Panetta193.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-02-26",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": "Cu(1)",
+      "details": "Disabled due to rheumatism, unable to work from February 26 to March 15, 1931. Received sickness payments for eleven days of disability.",
+      "sources": [
+        "RDApp-205699Panetta200.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1923-04-01",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Panetta was disabled due to influenza from April 1, 1923. He was unable to work for two weeks and was able to return on April 14, 1923.",
+      "medical_examinations": [
+        {
+          "date": "1927-08-01",
+          "examiner": "Dr. W. Bell",
+          "finding": "disabled",
+          "notes": "Expected duration of disablement was two weeks due to influenza.",
+          "sources": [
+            "RDApp-205699Panetta191.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1923-04-08",
+            "end": "1923-04-13"
+          },
+          "days": 6,
+          "amount": 12.0,
+          "check_number": "10979",
+          "sources": [
+            "RDApp-205699Panetta192.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1930-04-01",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Panetta was disabled due to influenza from April 1, 1930. He received sickness payments for six days of disability.",
+      "medical_examinations": [
+        {
+          "date": "1930-04-07",
+          "examiner": "Dr. B.H. Gustwite",
+          "finding": "disabled",
+          "notes": "Expected duration of disablement was two weeks due to influenza.",
+          "sources": [
+            "RDApp-205699Panetta197.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1930-04-08",
+            "end": "1930-04-13"
+          },
+          "days": 6,
+          "amount": 12.0,
+          "check_number": "10979",
+          "sources": [
+            "RDApp-205699Panetta192.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1931-02-26",
+      "injury_type": "Rheumatism",
+      "body_part": null,
+      "narrative": "Panetta was disabled due to rheumatism from February 26, 1931. He received sickness payments for eleven days of disability.",
+      "medical_examinations": [
+        {
+          "date": "1931-03-14",
+          "examiner": "Dr. Guigtwhite",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta200.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1931-03-05",
+            "end": "1931-03-15"
+          },
+          "days": 11,
+          "amount": 22.0,
+          "check_number": "42379",
+          "sources": [
+            "RDApp-205699Panetta200.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. W. Bell",
+      "district": "7",
+      "examinations": [
+        {
+          "date": "1927-08-01",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. B.H. Gustwite",
+      "district": "7",
+      "examinations": [
+        {
+          "date": "1930-04-07",
+          "finding": "disabled"
+        },
+        {
+          "date": "1931-03-14",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1928",
+      "event": "Application for additional natural death benefits submitted.",
+      "significance": "Indicates Panetta's intention to provide financial security for his wife in the event of his death.",
+      "sources": [
+        "RDApp-205699Panetta199.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1923",
+      "latest": "1931"
+    },
+    "completeness_assessment": "The record is fairly complete regarding medical and sickness payments but lacks detailed information on promotions or transfers. There are some inconsistencies in the spelling of Panetta's name.",
+    "data_quality_notes": [
+      "OCR quality varies, with some documents having partial legibility issues.",
+      "Some fields such as occupation and division have conflicting entries."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the challenges faced by railroad workers in terms of health and the company's mechanisms for providing support during periods of illness.",
+      "Panetta's multiple instances of disablement due to influenza suggest that this was a significant occupational hazard for laborers at the time."
+    ],
+    "comparative_questions": [
+      "How common were sickness payments among railroad workers, and how did these practices vary across different companies?",
+      "What role did family members play in securing benefits during times of illness or death?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

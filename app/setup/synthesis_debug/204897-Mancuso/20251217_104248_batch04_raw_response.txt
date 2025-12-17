@@ -1,0 +1,134 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {"name": "Antonio Manguso", "confidence": "high", "sources": ["RDApp-204897Manusco033.jpg.json"]},
+      {"name": "A. Mascuso", "confidence": "medium", "sources": ["RDApp-204897Manusco038.jpg.json"]},
+      {"name": "Antonio Manus", "confidence": "high", "sources": ["RDApp-204897Manusco034.jpg.json"]}
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is consistent across most documents, but variations in spelling exist."
+  },
+  
+  "biographical_narrative": "Antonio Mancuso was a car repairer for the Baltimore & Ohio Railroad Company. His employment record includes an injury sustained on April 28, 1915, which led to his temporary disablement and subsequent benefits claim. The incident involved a contusion to his right hand's ring finger while he was working at Crill, Pennsylvania. Mancuso reported the injury the following day and received medical attention and disability benefits until May 3, when he returned to work. His case highlights the risks associated with railroad maintenance work during this period.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information provided", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Cville",
+      "date_range": "unknown",
+      "context": "Residence as stated in the accident claims form.",
+      "sources": ["RDApp-204897Manusco033.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Car Repairer",
+      "department": "UMPC",
+      "division": "Chili Div.",
+      "details": "Started as a car repairer, but the exact start date is not provided in the documents.",
+      "sources": ["RDApp-204897Manusco033.jpg.json"]
+    },
+    {
+      "date": "1915-04-28",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained an injury to his right hand's ring finger while working.",
+      "sources": ["RDApp-204897Manusco035.jpg.json", "RDApp-204897Manusco036.jpg.json"]
+    },
+    {
+      "date": "1915-05-03",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work after a period of disability.",
+      "sources": ["RDApp-204897Manusco037.jpg.json", "RDApp-204897Manusco039.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1915-04-28",
+      "injury_type": "Contusion",
+      "body_part": "Right hand's ring finger",
+      "narrative": "Antonio Mancuso was injured on April 28, 1915, while working as a car repairer. The injury involved his right hand's ring finger and required medical attention.",
+      "medical_examinations": [
+        {
+          "date": "1915-04-29",
+          "examiner": "Dr. M.H. Robales",
+          "finding": "disabled",
+          "notes": "The injury was caused by a bar slipping and catching his finger against the rail.",
+          "sources": ["RDApp-204897Manusco038.jpg.json", "RDApp-204897Manusco040.jpg.json"]
+        },
+        {
+          "date": "1915-05-03",
+          "examiner": "Dr. M.H. Robales",
+          "finding": "able to return",
+          "notes": "Certified that Antonio Mancuso was able to return to duty.",
+          "sources": ["RDApp-204897Manusco037.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1915-04-29", "end": "1915-05-02"},
+          "days": 3,
+          "amount": 3.00,
+          "check_number": "38090",
+          "sources": ["RDApp-204897Manusco033.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. M.H. Robales",
+      "district": "15",
+      "examinations": [
+        {"date": "1915-04-29", "finding": "disabled"},
+        {"date": "1915-05-03", "finding": "able to return"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1915-04-28", "latest": "1915-05-05"},
+    "completeness_assessment": "The record is relatively complete for the period of injury and recovery, but lacks details on Mancuso's career before or after this incident.",
+    "data_quality_notes": ["Some documents have variations in spelling of the employee's name.", "OCR quality varies; some text is truncated."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case illustrates the risks and medical support provided to railroad workers during this period.",
+      "It also highlights the administrative processes involved in handling workplace injuries."
+    ],
+    "comparative_questions": [
+      "How did injury rates compare across different departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability for similar types of injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

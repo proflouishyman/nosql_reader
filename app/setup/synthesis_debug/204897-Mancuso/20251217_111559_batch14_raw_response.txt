@@ -1,0 +1,228 @@
+{
+  "person_identity": {
+    "canonical_name": "Antone Mancuso",
+    "name_variations": [
+      {
+        "name": "Antonious Mancuso",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco133.jpg.json"]
+      },
+      {
+        "name": "A. Monnaux",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco132.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is mostly certain, but there are name variations that suggest possible confusion with other individuals."
+  },
+  
+  "biographical_narrative": "Antone Mancuso was a brakeman and car repairman for the Baltimore & Ohio Railroad Company in the early 20th century. His career spanned several years during which he faced significant injuries, notably on July 19, 1916, when his hand was caught by a coupler while working at Connellsville, Pennsylvania yards. This injury led to a period of disability and medical examination before he returned to duty on July 26, 1916. Mancuso's records indicate that he was married and resided in Connellsville, where he faced other health issues such as typhoidal fever, which kept him from work for several months in 1909.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "Mancuso is noted as married but no spouse's name was provided",
+      "sources": ["RDApp-204897Manusco138.jpg.json"]
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Allforrierka JF Ttt, Connellsville, PA",
+      "date_range": "unknown",
+      "context": "Residence at the time of injury report",
+      "sources": ["RDApp-204897Manusco131.jpg.json"]
+    },
+    {
+      "address": "111 Palaska Street, Connellsville, PA",
+      "date_range": "unknown",
+      "context": "Residence at the time of injury report for A. Monnaux (likely a mix-up)",
+      "sources": ["RDApp-204897Manusco132.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Brakeman",
+      "department": "M.P.",
+      "division": "Chrle Dept.",
+      "details": "Started as a brakeman, but exact date of hire is not provided in the documents.",
+      "sources": ["RDApp-204897Manusco131.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "transfer",
+      "position": "Car Repairman",
+      "department": "m P",
+      "division": "Cmville Dept.",
+      "details": "Transferred to car repairman position, but exact date is not provided in the documents.",
+      "sources": ["RDApp-204897Manusco132.jpg.json"]
+    },
+    {
+      "date": "1916-07-19",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured hand while working as a car repairman.",
+      "sources": ["RDApp-204897Manusco135.jpg.json"]
+    },
+    {
+      "date": "1916-07-26",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after hand injury.",
+      "sources": ["RDApp-204897Manusco133.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1916-07-19",
+      "injury_type": "Lacerated and contused left ring finger",
+      "body_part": "Left ring finger",
+      "narrative": "Antone Mancuso was injured on July 19, 1916, when his hand was caught by a coupler while working as a car repairman. He received medical attention and returned to duty on July 26, 1916.",
+      "medical_examinations": [
+        {
+          "date": "1916-07-24",
+          "examiner": "W. H. Kohler",
+          "finding": "disabled",
+          "notes": "The injury was infected and required follow-up visits.",
+          "sources": ["RDApp-204897Manusco135.jpg.json"]
+        },
+        {
+          "date": "1916-07-30",
+          "examiner": "M.F. Norton",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco133.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1916-07-19", "end": "1916-07-25"},
+          "days": 7,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-204897Manusco133.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1909-09-11",
+      "injury_type": "Typhoidal fever",
+      "body_part": null,
+      "narrative": "Antone Mancuso was disabled due to typhoidal fever from September 11, 1909, until October 27, 1909. He received sick benefits during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "A. Rehert",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco139.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1909-10-07", "end": "1909-10-27"},
+          "days": 23,
+          "amount": 23.00,
+          "check_number": null,
+          "sources": ["RDApp-204897Manusco140.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "W. H. Kohler",
+      "district": "129",
+      "examinations": [
+        {
+          "date": "1916-07-24",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "M.F. Norton",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1916-07-30",
+          "finding": "able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "A. Rehert",
+      "district": "15",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1909-10-27",
+      "event": "Return to duty after typhoidal fever",
+      "significance": "Significant recovery event for Mancuso's career.",
+      "sources": ["RDApp-204897Manusco139.jpg.json", "RDApp-204897Manusco140.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1909",
+      "latest": "1916"
+    },
+    "completeness_assessment": "The records are fairly complete for injury and disability claims, but there is a lack of information on the exact dates of employment and initial hiring. There are also some discrepancies in name variations.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have missing or unclear text.",
+      "There are inconsistencies between names (Antone Mancuso vs A. Monnaux)."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the risks faced by railroad workers and the company's approach to handling worker injuries and illnesses, including medical examinations and disability payments.",
+      "They also provide insight into the living conditions of early 20th-century laborers, such as residing in small towns like Connellsville."
+    ],
+    "comparative_questions": [
+      "How did injury rates and company responses vary across different divisions or departments within the B&O Railroad?",
+      "What were the broader health trends among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

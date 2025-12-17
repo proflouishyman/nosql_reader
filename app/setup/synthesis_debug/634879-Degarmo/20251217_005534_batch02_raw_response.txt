@@ -1,0 +1,97 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {"name": "Harry Higaama", "confidence": "low", "sources": ["RDApp-634879Degarmo013.jpg.json"]},
+      {"name": "Gregory Sagarmo", "confidence": "low", "sources": ["RDApp-634879Degarmo015.jpg.json"]}
+    ],
+    "employee_id": "634879",
+    "birth_year": 1888,
+    "confidence_notes": "The birth year is derived from the document dated September 20, 1927. The name variations are noted but likely represent errors in transcription or OCR."
+  },
+  
+  "biographical_narrative": "Harry Degarmo was a railroad worker employed by the Baltimore & Ohio Railroad Company during the early 20th century. He began his career as a brakeman and later served as a switchman, working primarily in Chillicothe, Ohio. His employment spanned several years, marked by two significant injuries: one to his left eye in September 1923 and another facial contusion in September 1927. These incidents required medical attention and temporary disability claims. Degarmo's career also saw a transition from brakeman to yard foreman before he left the service on May 31, 1924, applying for natural death benefits through the company’s Relief Department.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "111 Monroe Av", "date_range": "unknown", "context": "Accident claim address", "sources": ["RDApp-634879Degarmo011.jpg.json"]},
+    {"address": "Chillicothe, Ohio", "date_range": "unknown", "context": "General residence", "sources": ["RDApp-634879Degarmo012.jpg.json", "RDApp-634879Degarmo014.jpg.json"]},
+    {"address": "413 E. Perry, Lima, O.", "date_range": "unknown", "context": "Residence for disability notice", "sources": ["RDApp-634879Degarmo020.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "1/29/1921", "event_type": "medical examination", "position": "Brakeman", "department": null, "division": "Ohio", "details": "Passed medical exam for vision and hearing.", "sources": ["RDApp-634879Degarmo017.jpg.json"]},
+    {"date": "9/12/1923", "event_type": "injury", "position": "Switchman", "department": null, "division": "Ohio", "details": "Suffered a severe blow to the left eye.", "sources": ["RDApp-634879Degarmo011.jpg.json"]},
+    {"date": "5/31/1924", "event_type": "resignation", "position": "Yard Foreman", "department": "Transportation Department", "division": "Ohio Division", "details": "Left service and applied for natural death benefits.", "sources": ["RDApp-634879Degarmo016.jpg.json"]},
+    {"date": "9/17/1927", "event_type": "injury", "position": "Brakeman", "department": null, "division": "Ohio Division", "details": "Suffered a contused face.", "sources": ["RDApp-634879Degarmo018.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "9/12/1923",
+      "injury_type": "Blow to the eye",
+      "body_part": "Left Eye",
+      "narrative": "Degarmo was injured in an accident that resulted in a severe blow over his left eye, causing considerable hemorrhage into the conjunctiva. He was unable to resume duty until September 29, 1923.",
+      "medical_examinations": [
+        {"date": "9/13/1923", "examiner": "Dr. Smylinger", "finding": "disabled", "notes": "Pupil dilated.", "sources": ["RDApp-634879Degarmo011.jpg.json"]},
+        {"date": "9/23/1923", "examiner": "W. L. Potter", "finding": "able to return", "notes": "Probable duration of recovery was three weeks.", "sources": ["RDApp-634879Degarmo013.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "9/17/1927",
+      "injury_type": "Contusion",
+      "body_part": "Face",
+      "narrative": "Degarmo was injured on September 17, 1927, with a contused face. He was unable to work from September 18-20, 1927.",
+      "medical_examinations": [
+        {"date": "9/18/1927", "examiner": "Dr. Burke", "finding": "disabled", "notes": null, "sources": ["RDApp-634879Degarmo019.jpg.json"]}
+      ],
+      "payments": [{"period": {"start": "9/19/1927", "end": "9/20/1927"}, "days": 2, "amount": 3.00, "check_number": "46889", "sources": ["RDApp-634879Degarmo018.jpg.json"]}],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "Dr. Smylinger", "district": null, "examinations": [{"date": "9/13/1923", "finding": "disabled"}]},
+    {"name": "W. L. Potter", "district": "32", "examinations": [{"date": "9/23/1923", "finding": "able to return"}]},
+    {"name": "Dr. Burke", "district": null, "examinations": [{"date": "9/18/1927", "finding": "disabled"}]}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "6/2/1924",
+      "event": "Application for natural death benefits",
+      "significance": "Indicates Degarmo's desire to retain membership benefits after leaving service.",
+      "sources": ["RDApp-634879Degarmo016.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1/29/1921", "latest": "9/21/1927"},
+    "completeness_assessment": "The record is fairly complete, covering employment details and medical history. However, family information and some administrative actions are missing.",
+    "data_quality_notes": ["Name variations suggest OCR errors or transcription issues.", "Some documents lack structured headings typical of forms."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the risks associated with railroad work in the early 20th century and the company's response to employee injuries through disability claims.",
+      "It also illustrates the importance of medical examinations for employment eligibility and ongoing health monitoring."
+    ],
+    "comparative_questions": ["How did injury rates vary across different divisions or departments within the Baltimore & Ohio Railroad Company?", "What were the typical durations and treatments for common railroad-related injuries?"],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto H. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto L. Promhadt",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood212.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto D. Prouckock",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood213.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto A. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood218.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is fairly certain but there are some name variations that suggest possible confusion with other individuals."
+  },
+  "biographical_narrative": "Otto H. Proudfoot, an engineer for the Baltimore & Ohio Railroad Company, began his career in the early 20th century and was active through at least 1919. His employment records indicate several instances of illness and injury that required medical attention and compensation from the company's relief department. In December 1916, Proudfoot suffered a period of disability due to sickness, which lasted until January 5, 1917. He was again disabled by influenza in late 1918 and early 1919, receiving benefits for three days from January 2-5, 1919. His career also included an on-duty injury in February 1918, which required medical attention and a return-to-work certification. Proudfoot's records show his involvement with the company\u2019s relief department, indicating that he was part of the railroad workforce during a period marked by significant health challenges such as the influenza pandemic.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "158 Courtland St",
+      "date_range": "unknown",
+      "context": "Residence",
+      "sources": [
+        "RDApp-204801Proudfood213.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1916-12-26",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": "Key Div.",
+      "details": "Sick leave due to sickness from December 26, 1916, to January 5, 1917.",
+      "sources": [
+        "RDApp-204801Proudfood212.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-02-26",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "On-duty injury (lacerations) reported on February 26, 1918.",
+      "sources": [
+        "RDApp-204801Proudfood213.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-12-26",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Sick leave due to influenza from December 26, 1918, to January 5, 1919.",
+      "sources": [
+        "RDApp-204801Proudfood211.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1916-12-26",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled by sickness from December 26, 1916, to January 5, 1917. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1917-01-31",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-204801Proudfood212.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1918-02-26",
+      "injury_type": "Lacerations",
+      "body_part": null,
+      "narrative": "Proudfoot sustained lacerations on duty on February 26, 1918. The last day wages were allowed was February 25, 1918.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1918-12-26",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Proudfoot was disabled by influenza from December 26, 1918, to January 5, 1919. He received benefits for three days from January 2-5, 1919.",
+      "medical_examinations": [
+        {
+          "date": "1918-12-20",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-204801Proudfood215.jpg.json"
+          ]
+        },
+        {
+          "date": "1919-01-07",
+          "examiner": "J.F. Doerner",
+          "finding": "able to return to duty",
+          "notes": "",
+          "sources": [
+            "RDApp-204801Proudfood218.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1919-01-02",
+            "end": "1919-01-05"
+          },
+          "days": 3,
+          "amount": 7.5,
+          "check_number": "1779",
+          "sources": [
+            "RDApp-204801Proudfood211.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.F. Doerner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1919-01-07",
+          "finding": "able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "Dr. C L Lemus",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1918-12-26",
+      "event": "Disability report submitted due to influenza.",
+      "significance": "Indicates Proudfoot's health status and the company\u2019s response through its relief department.",
+      "sources": [
+        "RDApp-204801Proudfood211.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1916-12-26",
+      "latest": "1919-01-16"
+    },
+    "completeness_assessment": "The record is fairly complete for the period covered, but there are some inconsistencies in names and details that suggest potential confusion with other individuals.",
+    "data_quality_notes": [
+      "Name variations exist across documents (Otto H. Proudfoot, Otto L. Promhadt, Otto D. Prouckock).",
+      "Some documents contain illegible or partially legible text."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the health challenges faced by railroad workers during a period marked by significant public health crises such as influenza."
+    ],
+    "comparative_questions": [
+      "How did other railroad companies manage their employees' health and disability claims?",
+      "What were the typical durations of sick leave for illnesses like influenza?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

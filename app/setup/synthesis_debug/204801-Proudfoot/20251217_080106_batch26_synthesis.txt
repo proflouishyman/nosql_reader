@@ -1,0 +1,214 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto Delbert Proudfit",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood254.jpg.json"
+        ]
+      },
+      {
+        "name": "Cttc D. Proudfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood260.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1881,
+    "confidence_notes": "The birth year is consistent across most documents, but there are discrepancies in the name and date of birth."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company (B&O) from at least the early 1930s until his retirement or departure around the mid-1940s. He had a history of advancing his age to secure employment, as evidenced in documents dated October 5, 1939. Proudfoot experienced several injuries during his career with B&O, including an incident involving a foreign body in his eye and another injury that resulted from being crushed on duty. Despite these incidents, he was found physically qualified for service through multiple medical examinations conducted between 1931 and 1935 by various doctors. His employment records indicate that he worked diligently but faced challenges such as injuries and the need to conform personal documents to family Bible records.",
+  "family": {
+    "spouse": null,
+    "parents": [
+      {
+        "name": "James W. Proudfoot",
+        "relationship": "father",
+        "evidence": "Birth date mentioned in notarized certification from August 5, 1930",
+        "sources": [
+          "RDApp-204801Proudfood255.jpg.json"
+        ]
+      },
+      {
+        "name": "Noxva Proudfoot",
+        "relationship": "mother",
+        "evidence": "Birth and death dates mentioned in notarized certification from August 5, 1930",
+        "sources": [
+          "RDApp-204801Proudfood255.jpg.json"
+        ]
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Cumberland",
+      "date_range": "unknown",
+      "context": "Residence as stated in the Relief Department record from March 14, 1931",
+      "sources": [
+        "RDApp-204801Proudfood260.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cu(W)",
+      "details": "Began employment as an engineer, likely in the early 1930s based on available records.",
+      "sources": [
+        "RDApp-204801Proudfood260.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-09-03",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": "Cuvr",
+      "details": "Was injured on duty and disabled by being crushed.",
+      "sources": [
+        "RDApp-204801Proudfood256.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-05-09",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Experienced a foreign body in the eye, which led to disability payments.",
+      "sources": [
+        "RDApp-204801Proudfood260.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1937-09-03",
+      "injury_type": "Crushed",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was injured on duty in September 1937 and disabled by being crushed, resulting in a medical examination that confirmed his injury.",
+      "medical_examinations": [
+        {
+          "date": "1937",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Injured on duty due to an accident involving being crushed.",
+          "sources": [
+            "RDApp-204801Proudfood256.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1931-05-09",
+      "injury_type": "Foreign Body Eye",
+      "body_part": "Eye",
+      "narrative": "On May 9, 1931, Proudfoot experienced a foreign body in his eye and was disabled for two days. He received $5.00 in accident payments.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "1931-03-11",
+            "end": "1931-03-13"
+          },
+          "days": 2,
+          "amount": 5.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-204801Proudfood260.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "W. Griswold, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1933-01-27",
+          "finding": "Physically Qualified"
+        }
+      ]
+    },
+    {
+      "name": "J. Gilbert Selby, Med. Examiner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1931-01-27",
+          "finding": "Physically Qualified"
+        }
+      ]
+    },
+    {
+      "name": "Dr. L.S. Collister, Medical Examiner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1935-04-01",
+          "finding": "Physically Qualified"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1939-10-05",
+      "event": "Name and date of birth updated to conform with family Bible records.",
+      "significance": "This event indicates that Proudfoot had previously misrepresented his age for employment purposes.",
+      "sources": [
+        "RDApp-204801Proudfood252.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1930-08-05",
+      "latest": "1941-03-09"
+    },
+    "completeness_assessment": "The record is fairly complete for employment and medical history but lacks detailed personal information such as family details beyond parents.",
+    "data_quality_notes": [
+      "There are inconsistencies in the name spelling (Proudfoot vs. Proudfit).",
+      "Some documents contain handwritten notes that were not fully captured by OCR."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Otto D. Proudfoot reveals the challenges faced by railroad employees in maintaining employment and dealing with injuries, as well as the administrative processes involved.",
+      "It also highlights the importance of medical examinations and accident reporting within the B&O Railroad."
+    ],
+    "comparative_questions": [
+      "How common was it for employees to misrepresent their age during this period?",
+      "What were typical injury rates among engineers on the B&O Railroad?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

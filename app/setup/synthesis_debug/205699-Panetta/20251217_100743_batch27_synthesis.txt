@@ -1,0 +1,253 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "J. Parnecher",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta261.jpg.json"
+        ]
+      },
+      {
+        "name": "Claris Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta265.jpg.json"
+        ]
+      },
+      {
+        "name": "I. Pannetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta269.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "Identity certainty is high for Ilario Panetta, but there are name variations that may or may not refer to the same individual."
+  },
+  "biographical_narrative": "Ilario Panetta was a laborer employed by the Baltimore and Ohio Railroad Company in the early 20th century. His career with the railroad is marked by several health-related incidents, including a back injury sustained while lifting iron at work on August 31, 1934, which led to his disablement due to myalgia lumbalis. This condition was assessed as potentially lasting between four and six weeks but ultimately progressed into a more chronic issue with the onset of cataracts in both eyes by February 1, 1935. By August 6, 1935, Panetta was declared permanently disabled due to his medical conditions.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "606 Bernard St Keyser W. Va",
+      "date_range": "unknown",
+      "context": "Residence at time of disablement notice",
+      "sources": [
+        "RDApp-205699Panetta261.jpg.json"
+      ]
+    },
+    {
+      "address": "55 Chas St Keyser WVa",
+      "date_range": "unknown",
+      "context": "Residence in surgeon's report",
+      "sources": [
+        "RDApp-205699Panetta264.jpg.json"
+      ]
+    },
+    {
+      "address": "66 Vernon St., Keyser, W. Va.",
+      "date_range": "August 1935 and later",
+      "context": "Permanent residence after permanent disablement declaration",
+      "sources": [
+        "RDApp-205699Panetta267.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Laborer",
+      "department": "MP (Maintenance of Way)",
+      "division": "Central/Cumb",
+      "details": "No specific date for hire provided in documents.",
+      "sources": [
+        "RDApp-205699Panetta263.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-08-31",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a back injury while lifting iron at work.",
+      "sources": [
+        "RDApp-205699Panetta263.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-09-06",
+      "event_type": "disablement notice",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sent to Medical Examiner regarding his disablement due to sickness.",
+      "sources": [
+        "RDApp-205699Panetta261.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-09-10",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "X-Ray examination of the lumbo sacro-iliac region was negative for fracture.",
+      "sources": [
+        "RDApp-205699Panetta265.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-09-21",
+      "event_type": "medical report",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Medical Examiner's report on disablement due to myalgia lumbalis.",
+      "sources": [
+        "RDApp-205699Panetta263.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-02-01",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Examined for myalgia lumbalis and beginning cataracts in both eyes.",
+      "sources": [
+        "RDApp-205699Panetta266.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-08-06",
+      "event_type": "permanent disablement declaration",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Declared permanently disabled due to myalgia lumbalis and cataracts.",
+      "sources": [
+        "RDApp-205699Panetta267.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1934-08-31",
+      "injury_type": "Lifting injury",
+      "body_part": "Back (lumbar region)",
+      "narrative": "Ilario Panetta injured his back while lifting iron at work on August 31, 1934. The injury was diagnosed as myalgia lumbalis and resulted in a period of disability.",
+      "medical_examinations": [
+        {
+          "date": "1934-09-21",
+          "examiner": "Dr. T. Bess",
+          "finding": "disabled",
+          "notes": "Sprain of lumbar region, no evidence of injury or unusual strain.",
+          "sources": [
+            "RDApp-205699Panetta263.jpg.json"
+          ]
+        },
+        {
+          "date": "1934-09-10",
+          "examiner": null,
+          "finding": "Neg for fracture",
+          "notes": "X-Ray examination of the lumbo sacro-iliac region.",
+          "sources": [
+            "RDApp-205699Panetta265.jpg.json"
+          ]
+        },
+        {
+          "date": "1934-09-06",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Sent to Medical Examiner regarding disablement due to sickness.",
+          "sources": [
+            "RDApp-205699Panetta261.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. T. Bess",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1934-09-21",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "B H Guistwhite",
+      "district": 6,
+      "examinations": [
+        {
+          "date": "1935-02-01",
+          "finding": "Myalgia Lumbalis. Beginning cataracts each eye."
+        },
+        {
+          "date": "1935-08-06",
+          "finding": "Permanently disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1934-09-07",
+      "event": "Internal communication regarding Dr. Pannett's case",
+      "significance": "Indicates ongoing administrative work related to Panetta\u2019s disability claim.",
+      "sources": [
+        "RDApp-205699Panetta268.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-09-06",
+      "latest": "1935-08-06"
+    },
+    "completeness_assessment": "The record is relatively complete regarding medical examinations and administrative actions but lacks details on the start of employment or personal family information.",
+    "data_quality_notes": [
+      "Name variations exist, complicating identity resolution.",
+      "Some documents are handwritten and contain unclear entries."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in terms of workplace injuries and the subsequent medical evaluations and disability declarations."
+    ],
+    "comparative_questions": [
+      "How did injury rates and disablement processes vary across different divisions or departments within the B&O Railroad?",
+      "What was the typical duration and outcome for similar back injuries among other laborers?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

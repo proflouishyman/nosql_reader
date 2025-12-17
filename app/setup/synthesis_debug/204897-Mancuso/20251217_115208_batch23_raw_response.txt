@@ -1,0 +1,156 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {"name": "Manusof Luigi", "confidence": "medium", "sources": ["RDApp-204897Manusco221.jpg.json"]},
+      {"name": "Luigi Menasco", "confidence": "low", "sources": ["RDApp-204897Manusco222.jpg.json"]},
+      {"name": "Sirigi Mancush", "confidence": "low", "sources": ["RDApp-204897Manusco224.jpg.json"]}
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is mostly certain, but name variations introduce some uncertainty."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso was a long-serving employee of the Baltimore and Ohio Railroad Company, primarily working as a car repairman or helper in various divisions. He began his career around 1927 and held positions such as Carman Helper and Can Repair worker within the Motive Power Department. His employment was marked by several injuries, notably a laceration and contusion to his nose on October 13, 1928, which kept him out of work for about ten days. Mancuso also experienced a furlough in February 1927 but returned to temporary service shortly after. He was married with five children under the age of eighteen and maintained membership in the company's Relief Department for natural death benefits.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "References to 'Mrs.' in correspondence", "sources": ["RDApp-204897Manusco229.jpg.json"]},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "111 Pulaski St., Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address for benefit application and correspondence",
+      "sources": ["RDApp-204897Manusco223.jpg.json", "RDApp-204897Manusco229.jpg.json"]
+    },
+    {
+      "address": "111 Ranick St., Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address in injury report",
+      "sources": ["RDApp-204897Manusco222.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1927",
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Began employment with the Baltimore and Ohio Railroad Company.",
+      "sources": ["RDApp-204897Manusco223.jpg.json"]
+    },
+    {
+      "date": "1927",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed in February 1927.",
+      "sources": ["RDApp-204897Manusco223.jpg.json"]
+    },
+    {
+      "date": "March 31, 1927",
+      "event_type": "return to service",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned from furlough.",
+      "sources": ["RDApp-204897Manusco223.jpg.json"]
+    },
+    {
+      "date": "October 13, 1928",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a laceration and contusion to the nose.",
+      "sources": ["RDApp-204897Manusco221.jpg.json"]
+    },
+    {
+      "date": "July 5, 1929",
+      "event_type": "transfer",
+      "position": "Hlp. r. Carman BP20",
+      "department": "Motive Power Department",
+      "division": null,
+      "details": "Transferred from Connellsville Division to Pittsburgh Division.",
+      "sources": ["RDApp-204897Manusco230.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "10/13/1928",
+      "injury_type": "Laceration and Contusion",
+      "body_part": "left side of nose",
+      "narrative": "Luigi Mancuso sustained a laceration and contusion to the left side of his nose while on duty, cutting cars when a lever broke. He was able to return to work after ten days.",
+      "medical_examinations": [
+        {
+          "date": "10/22/1928",
+          "examiner": "Dr. M. M. Smith",
+          "finding": "able for duty",
+          "notes": "The injury was treated and he returned to work on October 22, 1928.",
+          "sources": ["RDApp-204897Manusco221.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. M. M. Smith",
+      "district": "21",
+      "examinations": [{"date": "10/22/1928", "finding": "able for duty"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "February 15, 1927",
+      "event": "Application to retain Natural Death Benefits registered.",
+      "significance": "Indicates Mancuso's interest in maintaining company benefits.",
+      "sources": ["RDApp-204897Manusco223.jpg.json"]
+    },
+    {
+      "date": "April 1, 1927",
+      "event": "Payment for relief money sent by Mrs. Luigi Mancuso.",
+      "significance": "Reflects the family's involvement in managing benefits and payments.",
+      "sources": ["RDApp-204897Manusco229.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "February 15, 1927", "latest": "July 12, 1929"},
+    "completeness_assessment": "The record is fairly complete for employment and medical events but lacks details on family members.",
+    "data_quality_notes": [
+      "Name variations exist across documents which may indicate OCR errors or actual name changes.",
+      "Some dates are not fully specified, leading to some uncertainty."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of company benefits and the impact of injuries on railroad workers' employment.",
+      "It also shows the administrative processes involved in managing employee benefits and transfers within a large corporation."
+    ],
+    "comparative_questions": [
+      "How common were workplace injuries among car repairmen?",
+      "What was the typical duration for recovery from such injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

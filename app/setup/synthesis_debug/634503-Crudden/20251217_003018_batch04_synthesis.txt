@@ -1,0 +1,162 @@
+{
+  "person_identity": {
+    "canonical_name": "George A. Crudden",
+    "name_variations": [
+      {
+        "name": "G.A. Crudden",
+        "confidence": "high",
+        "sources": [
+          "RDAPP-634503Crudden031.jpg.json"
+        ]
+      },
+      {
+        "name": "G. A. Carudden",
+        "confidence": "medium",
+        "sources": [
+          "RDAPP-634503Crudden032.jpg.json"
+        ]
+      },
+      {
+        "name": "George W. Carudden",
+        "confidence": "low",
+        "sources": [
+          "RDAPP-634503Crudden032.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634503",
+    "birth_year": null,
+    "confidence_notes": "The identity is fairly certain, but there are variations in the name spelling and possible confusion with George W. Carudden."
+  },
+  "biographical_narrative": "George A. Crudden was a checker at Pier 22R for the Baltimore & Ohio Railroad Company based in Philadelphia. His career spanned several decades from the late 19th century to the early 20th century, during which he faced various administrative and financial challenges related to his employment benefits. In April 1922, Crudden resigned from his position at Pier 22R but sought to retain membership in the company's Relief Department for natural death benefits. Despite missing a deadline for retaining these benefits, the company allowed him to restore his membership after he executed a waiver. Throughout his tenure and post-resignation period, Crudden maintained regular payments towards insurance and relief contributions, indicating a continued interest in securing financial support from the railroad\u2019s benefit programs.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "1917 N Newkirp St, Philadelphia, Pa",
+      "date_range": "unknown",
+      "context": "Address for fuel claim",
+      "sources": [
+        "RDAPP-634503Crudden034.jpg.json"
+      ]
+    },
+    {
+      "address": "1917 North Bouvier Street, Philadelphia, Pa",
+      "date_range": "June 6th to July 12th, 1922",
+      "context": "Address for correspondence regarding membership and contributions",
+      "sources": [
+        "RDAPP-634503Crudden035.jpg.json"
+      ]
+    },
+    {
+      "address": "1917 W. Hewirk street, Philadelphia, Penna.",
+      "date_range": "June 6th to June 24th, 1922",
+      "context": "Address for correspondence regarding membership and contributions",
+      "sources": [
+        "RDAPP-634503Crudden036.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "April 8, 1922",
+      "event_type": "resignation",
+      "position": "checker",
+      "department": null,
+      "division": "Pier 22R",
+      "details": "Resigned from service effective April 8, 1922.",
+      "sources": [
+        "RDAPP-634503Crudden040.jpg.json"
+      ]
+    },
+    {
+      "date": "June 6, 1922",
+      "event_type": "application",
+      "position": null,
+      "department": "Relief Department",
+      "division": null,
+      "details": "Applied to retain membership in the Relief Department after resignation.",
+      "sources": [
+        "RDAPP-634503Crudden038.jpg.json"
+      ]
+    },
+    {
+      "date": "June 9, 1922",
+      "event_type": "waiver execution",
+      "position": null,
+      "department": "Relief Department",
+      "division": null,
+      "details": "Executed a waiver to restore membership in the Relief Department.",
+      "sources": [
+        "RDAPP-634503Crudden037.jpg.json"
+      ]
+    },
+    {
+      "date": "May 24, 1933",
+      "event_type": "payment",
+      "position": null,
+      "department": "Relief Department",
+      "division": null,
+      "details": "Paid $9.00 for one year's insurance.",
+      "sources": [
+        "RDAPP-634503Crudden032.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [],
+  "administrative_events": [
+    {
+      "date": "April 8, 1922",
+      "event": "Resigned from service but sought to retain membership in Relief Department.",
+      "significance": "Indicates Crudden's desire for continued benefits despite resignation.",
+      "sources": [
+        "RDAPP-634503Crudden040.jpg.json"
+      ]
+    },
+    {
+      "date": "June 9, 1922",
+      "event": "Executed a waiver to restore membership in Relief Department after missing the deadline.",
+      "significance": "Shows administrative flexibility and Crudden's persistence.",
+      "sources": [
+        "RDAPP-634503Crudden037.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "April 28, 1892",
+      "latest": "May 24, 1933"
+    },
+    "completeness_assessment": "The record is fairly complete for administrative and financial transactions but lacks detailed personal information such as family details or birth year.",
+    "data_quality_notes": [
+      "Variations in name spelling suggest possible confusion with other individuals.",
+      "Some documents are handwritten and contain OCR errors."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case illustrates the importance of membership benefits for railroad workers even after resignation, highlighting the role of administrative flexibility in maintaining worker loyalty.",
+      "It also shows the financial burden placed on employees to maintain insurance and relief contributions."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar situations with their former employees?",
+      "What was the typical length of time between resignation and application for benefits retention?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": null,
+    "overall": 0.88
+  }
+}

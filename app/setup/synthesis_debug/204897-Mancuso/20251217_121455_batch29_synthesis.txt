@@ -1,0 +1,234 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Mancuso, Luigi",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204897Manusco286.jpg.json",
+          "RDApp-204897Manusco287.jpg.json",
+          "RDApp-204897Manusco288.jpg.json"
+        ]
+      },
+      {
+        "name": "Mancuso, Lewis",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco281.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "The identity is fairly certain, but there are two name variations: Luigi and Lewis."
+  },
+  "biographical_narrative": "Luigi Mancuso was a carman employed by the Baltimore & Ohio Railroad Company in various capacities from at least late 1947 to early 1948. His career with the railroad included work in different departments such as M.P., M.O., and M.W., and he worked across divisions including Pittsburgh, Connellsville, and possibly others. Mancuso experienced multiple periods of disablement due to sickness and injury, which affected his ability to perform his duties. He was reported disabled on several occasions, with the most detailed records indicating a relapse from influenza and cervical litis in early 1948. Throughout these disablements, he did not receive wages, but there is no indication of any disputes regarding medical findings or payments.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "111 Pulaski St. Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address for medical records",
+      "sources": [
+        "RDApp-204897Manusco287.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "M.P.",
+      "division": "Pgh",
+      "details": "Luigi Mancuso was hired as a carman in the Maintenance of Way (M.P.) department, Pittsburgh Division.",
+      "sources": [
+        "RDApp-204897Manusco286.jpg.json",
+        "RDApp-204897Manusco287.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "M.O.",
+      "division": "Pittsburgh Division at Connellsville, PA",
+      "details": "Luigi Mancuso was employed as a carman in the Maintenance of Operations (M.O.) department, Pittsburgh Division at Connellsville, PA.",
+      "sources": [
+        "RDApp-204897Manusco288.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "M.W.",
+      "division": "C&N Division",
+      "details": "Luigi Mancuso was employed as a carman in the Maintenance of Way (M.W.) department, C&N Division.",
+      "sources": [
+        "RDApp-204897Manusco281.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1947-12-19",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to influenza and cholecystitis from December 19, 1947. He resumed duty on January 26, 1948.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. De Angelis",
+          "finding": "disabled",
+          "notes": "Influenza and cholecystitis were diagnosed by Dr. De Angelis.",
+          "sources": [
+            "RDApp-204897Manusco287.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1948-01-17",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to influenza from January 17, 1948. The disablement lasted until February 19, 1948.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "F. J. Edmonds",
+          "finding": "disabled",
+          "notes": "Influenza was reported as the cause of disablement.",
+          "sources": [
+            "RDApp-204897Manusco282.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1948-01-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to an unspecified sickness from January 20, 1948. The disablement lasted until January 25, 1948.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "District No. 15",
+          "finding": "disabled",
+          "notes": "No wages were allowed during the period of disability.",
+          "sources": [
+            "RDApp-204897Manusco286.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1948-01-31",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to a relapse of influenza and cervical litis from January 31, 1948. The disablement lasted until February 10, 1948.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "District No. 15",
+          "finding": "disabled",
+          "notes": "The probable duration of disability was estimated to be two weeks.",
+          "sources": [
+            "RDApp-204897Manusco285.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "F. J. Edmonds",
+      "district": "15",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. De Angelis",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "District No. 15 Examiner",
+      "district": "15",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1947-12-19",
+      "latest": "1948-02-19"
+    },
+    "completeness_assessment": "The record is fairly complete for the period from late 1947 to early 1948, but lacks details on his initial hiring and career progression before this time. The documents provide detailed information about disablement periods and medical examinations.",
+    "data_quality_notes": [
+      "There are some contradictions in names (Luigi vs Lewis Mancuso).",
+      "OCR quality is generally good, with occasional truncation or illegibility."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Luigi Mancuso highlights the frequent health challenges faced by railroad workers in the early to mid-20th century.",
+      "It also demonstrates the administrative processes involved in managing employee disablement and medical care within a major railroad company."
+    ],
+    "comparative_questions": [
+      "How did the frequency and nature of sicknesses among carmen compare with other roles within the Baltimore & Ohio Railroad?",
+      "What were the typical durations and outcomes for disability claims during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

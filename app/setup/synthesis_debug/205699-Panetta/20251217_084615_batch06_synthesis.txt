@@ -1,0 +1,222 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Mario Cannetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta051.jpg.json"
+        ]
+      },
+      {
+        "name": "Larry Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta053.jpg.json"
+        ]
+      },
+      {
+        "name": "J. Dario Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta058.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "Identity certainty is moderate due to name variations and lack of birth year."
+  },
+  "biographical_narrative": "Ilario Panetta was a laborer employed by the Baltimore & Ohio Railroad Company, working in various capacities within the Labor Department. His career with the railroad spanned several years during which he experienced multiple health issues that affected his work. In October 1931, Panetta reported an injury at work involving lifting heavy beds, leading to a right inguinal hernia. Despite this incident, he continued working until October 27th of the same year. A more severe disability occurred in February 1933 when Panetta suffered from a double herniotomy and was hospitalized for treatment. He received disability payments during his recovery period, which lasted until April 1933. Throughout these health challenges, Panetta's employment with the railroad remained consistent, indicating a dedicated service to the company.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "60 Vernon",
+      "date_range": "1939",
+      "context": "Residence at time of disablement report",
+      "sources": [
+        "RDApp-205699Panetta051.jpg.json"
+      ]
+    },
+    {
+      "address": "Keyser, W. Va.",
+      "date_range": "1931-1933",
+      "context": "Residence during multiple medical examinations and disability reports",
+      "sources": [
+        "RDApp-205699Panetta053.jpg.json",
+        "RDApp-205699Panetta054.jpg.json",
+        "RDApp-205699Panetta056.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": "Cumb",
+      "details": "Began work as a laborer in the Labor Department",
+      "sources": []
+    },
+    {
+      "date": "1931-10-27",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported an inguinal hernia injury while lifting heavy beds at work",
+      "sources": [
+        "RDApp-205699Panetta053.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-02-27",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a double herniotomy and was hospitalized for treatment",
+      "sources": [
+        "RDApp-205699Panetta056.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-04-30",
+      "event_type": "return_to_work",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work after recovery from double herniotomy",
+      "sources": [
+        "RDApp-205699Panetta058.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1931-10-17",
+      "injury_type": "Inguinal Hernia",
+      "body_part": "Right groin",
+      "narrative": "Panetta suffered a right inguinal hernia while lifting heavy beds at work, but continued working until October 27th. A double truss was supplied for treatment.",
+      "medical_examinations": [
+        {
+          "date": "1931-10-20",
+          "examiner": "J. Gilbert Selby",
+          "finding": "disabled",
+          "notes": "Right inguinal hernia with left side notable for pulsation.",
+          "sources": [
+            "RDApp-205699Panetta053.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1933-02-27",
+      "injury_type": "Double Herniotomy",
+      "body_part": "Groin",
+      "narrative": "Panetta was hospitalized for a double herniotomy and received disability payments from February 27th to April 30th, 1933.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. W. A. Gracie",
+          "finding": "disabled",
+          "notes": "Hospitalization for double herniotomy.",
+          "sources": [
+            "RDApp-205699Panetta057.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1933-02-27",
+            "end": "1933-04-19"
+          },
+          "days": 52,
+          "amount": 63.26,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta056.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J. Gilbert Selby",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1931-10-20",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. W. A. Gracie",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1933-04-30",
+      "event": "Case closed for disability payments",
+      "significance": "Indicates the end of Panetta's disability period and return to work.",
+      "sources": [
+        "RDApp-205699Panetta056.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1931-10-28",
+      "latest": "1939-10-28"
+    },
+    "completeness_assessment": "The record is moderately complete, with detailed documentation of injuries and disability payments. However, employment start date and family details are missing.",
+    "data_quality_notes": [
+      "Name variations exist across documents.",
+      "Some OCR text is truncated or unclear."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in terms of workplace injuries and the company's response through disability payments.",
+      "It reveals the medical practices of the time, including treatments for inguinal hernias."
+    ],
+    "comparative_questions": [
+      "How did injury rates vary across different departments within the B&O Railroad?",
+      "What was the average duration of disability leave for railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.85,
+    "injury_details": 0.95,
+    "overall": 0.83
+  }
+}

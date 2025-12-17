@@ -1,0 +1,170 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Freeland, Thomas B.",
+        "confidence": "high",
+        "sources": ["RDApp-222507Freeland031.jpg.json", "RDApp-222507Freeland032.jpg.json", "RDApp-222507Freeland033.jpg.json"]
+      },
+      {
+        "name": "Thomas B. Boyd",
+        "confidence": "low",
+        "sources": ["RDApp-222507Freeland038.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "High confidence in the identity of Thomas B. Freeland, with multiple documents supporting this name. There is a potential error or confusion with 'Thomas B. Boyd' in one document."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland served as a carman for the Baltimore and Ohio Railroad Company (B&O) in the Cumberland Division of the MP Department from at least the early 1940s until his retirement around mid-20th century. His career was marked by significant health issues, particularly thrombophlebitis affecting both legs, which led to multiple periods of disability beginning in April 1954. Freeland's medical condition necessitated several examinations and treatments, with the prognosis indicating an indefinite duration for his recovery. Despite these challenges, he continued to contribute to the B&O Relief Department’s annuity plan post-retirement.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address stated in multiple documents",
+      "sources": ["RDApp-222507Freeland031.jpg.json", "RDApp-222507Freeland033.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Carman",
+      "department": "MP",
+      "division": "Cumb",
+      "details": "Began employment as a carman in the MP Department, Cumberland Division.",
+      "sources": []
+    },
+    {
+      "date": "1954-04-30",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "MP",
+      "division": "Cumb",
+      "details": "Became disabled due to thrombophlebitis in both legs.",
+      "sources": ["RDApp-222507Freeland036.jpg.json"]
+    },
+    {
+      "date": "1954-10-06",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Applied for natural death benefits after retirement.",
+      "sources": ["RDApp-222507Freeland031.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1954-04-30",
+      "injury_type": "Thrombophlebitis",
+      "body_part": "Both legs",
+      "narrative": "Freeland suffered from thrombophlebitis affecting both legs, resulting in multiple periods of disability. He was treated at Fort Ashby, W. Va., and his condition was deemed to have an indefinite duration.",
+      "medical_examinations": [
+        {
+          "date": "1954-05-28",
+          "examiner": "Dr. Roy T. Agostini",
+          "finding": "disabled",
+          "notes": "Certified as totally disabled from May 20 to May 30, 1954.",
+          "sources": ["RDApp-222507Freeland034.jpg.json"]
+        },
+        {
+          "date": "1954-05-18",
+          "examiner": "Dr. R. R. Brown",
+          "finding": "disabled",
+          "notes": "Assessed as totally unable to perform duties from April 29 to June 1, 1954.",
+          "sources": ["RDApp-222507Freeland040.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1954-05-07", "end": "1954-06-30"},
+          "days": 24,
+          "amount": 36.00,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland033.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Roy T. Agostini",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1954-05-28",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. R. R. Brown",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1954-05-18",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1954-10-06",
+      "event": "Supplemental application for natural death benefits after retirement submitted.",
+      "significance": "Indicates Freeland's ongoing commitment to the B&O Relief Department’s annuity plan post-retirement.",
+      "sources": ["RDApp-222507Freeland031.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1946",
+      "latest": "1954"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from 1954, with detailed documentation of Freeland's disability and medical treatments. However, there are gaps in earlier employment details.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text or unclear handwriting.",
+      "There appears to be a potential error in one document referring to 'Thomas B. Boyd' instead of Thomas B. Freeland."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers with chronic health conditions and the role of company-provided medical relief programs.",
+      "It also underscores the importance of disability benefits in supporting employees who cannot continue their duties due to illness."
+    ],
+    "comparative_questions": [
+      "How did the B&O Railroad's approach to employee disabilities compare with other railroads during this period?",
+      "What were the typical durations and outcomes for workers suffering from thrombophlebitis?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

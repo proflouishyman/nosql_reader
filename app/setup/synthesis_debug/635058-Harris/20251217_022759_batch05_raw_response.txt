@@ -1,0 +1,174 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": ["RDApp-635058Harris041.jpg.json", "RDApp-635058Harris042.jpg.json"]
+      },
+      {
+        "name": "Thaddeus Harris",
+        "confidence": "low",
+        "sources": ["RDApp-635058Harris043.jpg.json"]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1897,
+    "confidence_notes": "The birth year is derived from the most consistent record, but there are conflicting dates."
+  },
+  
+  "biographical_narrative": "Charley Harris began his railroad career with the Baltimore & Ohio Railroad Company in various capacities. He worked as a fireman and drayman across different divisions including Parkersburg, W.Va., Wheeling, and Benwood. His employment was marked by periods of disablement due to sickness and occasional lapses or withdrawals from union membership. Harris faced multiple examinations for medical clearance and re-employment after absences. Despite the challenges, he continued his service with the railroad until at least 1936.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [
+      {
+        "name": "Father's name (unspecified)",
+        "relationship": "father",
+        "evidence": "Inquiry about correct spelling of first name",
+        "sources": ["RDApp-635058Harris044.jpg.json"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Greenwood, Cumberland, MD",
+      "date_range": "1922",
+      "context": "Residence during disablement report",
+      "sources": ["RDApp-635058Harris042.jpg.json"]
+    },
+    {
+      "address": "Benwood, W. Va.",
+      "date_range": "unknown",
+      "context": "Location of employment",
+      "sources": ["RDApp-635058Harris048.jpg.json", "RDApp-635058Harris049.jpg.json"]
+    },
+    {
+      "address": "Parkersburg, W. Va.",
+      "date_range": "1925-1936",
+      "context": "Location of employment and residence during multiple medical examinations and disablement reports",
+      "sources": ["RDApp-635058Harris045.jpg.json", "RDApp-635058Harris046.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1925-10-13",
+      "event_type": "hire/application",
+      "position": "Drayman",
+      "department": null,
+      "division": "A.T. Department, 20T8 Division",
+      "details": "Passed medical examination and accepted for employment as a drayman.",
+      "sources": ["RDApp-635058Harris045.jpg.json"]
+    },
+    {
+      "date": "1935-06-03",
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "MofW Department, Wheeling Division",
+      "details": "Passed medical examination and accepted for employment as a fireman.",
+      "sources": ["RDApp-635058Harris047.jpg.json"]
+    },
+    {
+      "date": "1936-02-22",
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "City Department, Trading 108 Division",
+      "details": "Passed medical examination and accepted for employment as a fireman.",
+      "sources": ["RDApp-635058Harris046.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1921-06-17",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Charley Harris was reported sick and unable to work from June 17, 1921. No claim for benefits was made.",
+      "medical_examinations": [],
+      "payments": []
+    },
+    {
+      "injury_date": "1922-04-12",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Charley Harris was reported sick and unable to work from April 12, 1922. No claim for benefits was made.",
+      "medical_examinations": [],
+      "payments": []
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Wm R. Smith",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1927-05-11",
+          "finding": "Able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "O. L. Relaufe",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "W. H. Stokes",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1935-08-10",
+      "event": "Clarification of first name spelling",
+      "significance": "Ensuring accurate record keeping.",
+      "sources": ["RDApp-635058Harris044.jpg.json"]
+    },
+    {
+      "date": "1936-04-24",
+      "event": "Correction of official name to Charley Harris",
+      "significance": "Updating records for consistency.",
+      "sources": ["RDApp-635058Harris050.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1921-06-21",
+      "latest": "1936-04-24"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing employment and medical history but lacks personal details such as family information.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have illegible signatures or unclear dates."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Charley Harris reveals the routine medical examinations and disablement processes in railroad employment during the early 20th century.",
+      "It also highlights the flexibility required by employees to move between different roles and locations."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar administrative tasks?",
+      "What were the common causes of sickness among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

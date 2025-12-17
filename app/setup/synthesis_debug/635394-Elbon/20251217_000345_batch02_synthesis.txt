@@ -1,0 +1,217 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo Verne Elbon",
+    "name_variations": [
+      {
+        "name": "Elbon-Leo Verne",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635394Elbon017.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Verne Callow",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635394Elbon015.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "Identity certainty is high based on consistent employee ID and multiple name variations."
+  },
+  "biographical_narrative": "Leo Verne Elbon, born in 1896, served as a fireman for the Baltimore & Ohio Railroad Company. His career began in the early 20th century with his application for membership in the Relief Feature of the company's Relief Department in 1922. By January 1926, Elbon was working in Cumberland and underwent medical examinations to ensure he met the vision and hearing standards required by the railroad. In May 1927, his employment record shows a termination as 'Fireman,' but it is unclear if this represents a permanent end of service or a temporary furlough. On September 3, 1961, Elbon suffered an off-duty injury to his left knee and facial lacerations, which led to medical evaluations and discussions about his fitness for work. Despite recommendations from multiple doctors that he remain incapacitated until healing was confirmed, Elbon expressed a desire to return to work prematurely.",
+  "family": {
+    "spouse": null,
+    "parents": [
+      {
+        "name": "null",
+        "relationship": "unknown",
+        "evidence": "No direct mention of parents in the documents provided.",
+        "sources": []
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "40 Sharpless Street, Keyser, West Virginia",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in hospital letter.",
+      "sources": [
+        "RDApp-635394Elbon014.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "12/11/1922",
+      "event_type": "application",
+      "position": null,
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Application for membership in the Relief Feature of the Relief Department.",
+      "sources": [
+        "RDApp-635394Elbon020.jpg.json"
+      ]
+    },
+    {
+      "date": "1/19/1926",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Medical examination conducted in Cumberland, showing 20/20 vision and good hearing.",
+      "sources": [
+        "RDApp-635394Elbon018.jpg.json"
+      ]
+    },
+    {
+      "date": "5/14/1927",
+      "event_type": "termination",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Termination record from May 14, 1927.",
+      "sources": [
+        "RDApp-635394Elbon015.jpg.json"
+      ]
+    },
+    {
+      "date": "unknown",
+      "event_type": "re-engagement",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Re-engaged as an engineer, but exact date of re-engagement is not specified.",
+      "sources": [
+        "RDApp-635394Elbon013.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "9/3/1961",
+      "injury_type": "Avulsion fracture of the intercondylar eminence of the left tibia, laceration of nose and chin.",
+      "body_part": "Left knee, nose, chin",
+      "narrative": "Elbon sustained an off-duty injury to his left knee with a laceration on his nose and chin. X-rays showed an avulsion fracture without displacement or deformity of the avulsed fragment. Despite no significant change in condition over time, medical professionals recommended that Elbon remain incapacitated until healing was confirmed.",
+      "medical_examinations": [
+        {
+          "date": "9/5/1961",
+          "examiner": "Dr. Robert W. McCoy Jr.",
+          "finding": "Incapacitated for work due to avulsion fracture of the left knee.",
+          "notes": "Elbon refused immobilization and cast treatment.",
+          "sources": [
+            "RDApp-635394Elbon014.jpg.json"
+          ]
+        },
+        {
+          "date": "10/2/1961",
+          "examiner": "Dr. T. R. Adams",
+          "finding": "Incapacitated for work due to avulsion fracture of the left knee.",
+          "notes": "Further extension of the fracture noted on repeat x-rays, but Elbon denied symptoms and wanted to return to work.",
+          "sources": [
+            "RDApp-635394Elbon012.jpg.json"
+          ]
+        },
+        {
+          "date": "10/9/1961",
+          "examiner": "Dr. I. Kaplan, Consulting Surgeon",
+          "finding": "Incapacitated for work due to avulsion fracture of the left knee.",
+          "notes": "Strongly advised against returning to work until healing was confirmed by x-rays.",
+          "sources": [
+            "RDApp-635394Elbon011.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Robert W. McCoy Jr.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "9/5/1961",
+          "finding": "Incapacitated for work due to avulsion fracture of the left knee."
+        }
+      ]
+    },
+    {
+      "name": "Dr. T. R. Adams",
+      "district": null,
+      "examinations": [
+        {
+          "date": "10/2/1961",
+          "finding": "Incapacitated for work due to avulsion fracture of the left knee."
+        }
+      ]
+    },
+    {
+      "name": "Dr. I. Kaplan, Consulting Surgeon",
+      "district": null,
+      "examinations": [
+        {
+          "date": "10/9/1961",
+          "finding": "Incapacitated for work due to avulsion fracture of the left knee."
+        }
+      ]
+    },
+    {
+      "name": "J. Gilbert Selby, Medical Examiner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1/19/1926",
+          "finding": "Good vision and hearing."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "4/26/1940",
+      "event": "Furloughed as 'Incapacitated for train service'.",
+      "significance": "Indicates a period of incapacity and potential reassignment or termination.",
+      "sources": [
+        "RDApp-635394Elbon016.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "12/11/1922",
+      "latest": "10/9/1961"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from 1922 to 1961, with detailed medical and employment records. However, there are gaps in information regarding family details and exact dates of re-engagement or termination.",
+    "data_quality_notes": [
+      "Some documents have truncated text which limits full context understanding.",
+      "Name variations exist but do not significantly impact identity resolution."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of medical evaluations in railroad employment and the balance between employee health and company operational needs. It also illustrates the process by which employees could be furloughed or terminated due to incapacity.",
+      "It reveals the detailed documentation required for injury claims and the involvement of multiple medical professionals in assessing an employee's fitness for duty."
+    ],
+    "comparative_questions": [
+      "How did other railroad companies handle similar injuries and medical evaluations?",
+      "What was the typical duration of incapacity due to such injuries across different regions or departments?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

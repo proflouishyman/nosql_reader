@@ -1,0 +1,153 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Harley Harris",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635058Harris132.jpg.json"
+        ]
+      },
+      {
+        "name": "Charles Harris",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635058Harris136.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is estimated based on the age of 46 in November 27, 1939."
+  },
+  "biographical_narrative": "Charley Harris was a fireman for the Baltimore & Ohio Railroad, working both freight and passenger trains. He began his career with the railroad at an unspecified date but had been serving as a fireman by October 1939 when he underwent a routine medical examination that revealed an aortic systolic murmur. This led to further examinations in November of the same year, during which Harris was found to have chronic valvular myocarditis and aortic stenosis. Despite these conditions, his physical ability remained unimpaired according to Dr. Carroll Lockard's assessment, allowing him to continue working as a fireman without restriction. His employment with the railroad is marked by this medical episode but lacks other significant events such as promotions or disputes.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Ceredo, West Virginia",
+      "date_range": "unknown",
+      "context": "Residence address as stated in medical examination records.",
+      "sources": [
+        "RDApp-635058Harris131.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Began working as a fireman for the Baltimore & Ohio Railroad, but exact date of hire is unknown.",
+      "sources": [
+        "RDApp-635058Harris139.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-10-07",
+      "event_type": "medical examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Routine medical examination revealed an aortic systolic murmur.",
+      "sources": [
+        "RDApp-635058Harris139.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-11-27",
+      "event_type": "medical examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Further medical assessment conducted by Dr. Carroll Lockard, confirming chronic valvular myocarditis and aortic stenosis.",
+      "sources": [
+        "RDApp-635058Harris131.jpg.json",
+        "RDApp-635058Harris140.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [
+    {
+      "name": "Dr. Carroll Lockard",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-11-27",
+          "finding": "Chronic valvular myocarditis and aortic stenosis, no impairment of physical ability."
+        }
+      ]
+    },
+    {
+      "name": "Dr. Henry J. Welton",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-11-28",
+          "finding": "Chest X-ray shows no pulmonary or cardiac pathology."
+        }
+      ]
+    },
+    {
+      "name": "Dr. E. V. Milholland",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-11-27",
+          "finding": "Not specified in documents provided."
+        }
+      ]
+    },
+    {
+      "name": "Dr. Page Atwood",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1939-12-07",
+      "event": "Request for medical examination report sent to superintendent.",
+      "significance": "Indicates ongoing communication between the railroad and its medical consultants regarding Harris's health status.",
+      "sources": [
+        "RDApp-635058Harris137.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1939-11-25",
+      "latest": "1939-12-07"
+    },
+    "completeness_assessment": "The record is fairly complete for the period covered, with detailed medical examinations and some administrative correspondence. However, there are no documents detailing Harris's initial employment or any events before October 1939.",
+    "data_quality_notes": [
+      "Some OCR text was truncated, leading to incomplete summaries in certain documents.",
+      "There is a discrepancy between 'Charley' and 'Harley' as variations of the same name."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the detailed medical scrutiny railroad employees underwent during routine examinations, particularly those in physically demanding roles like firemen.",
+      "It also demonstrates how the company managed health issues among its workforce, balancing employee safety with operational needs."
+    ],
+    "comparative_questions": [
+      "How common were chronic valvular myocarditis and aortic stenosis among railroad employees?",
+      "What was the typical outcome for workers diagnosed with such conditions in terms of continued employment?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": null,
+    "overall": 0.88
+  }
+}

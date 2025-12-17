@@ -1,0 +1,176 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "W. Steinecker",
+        "confidence": "high",
+        "sources": ["RDApp-204722Steinecker124.jpg.json"]
+      },
+      {
+        "name": "William Stennicker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker123.jpg.json"]
+      },
+      {
+        "name": "Williams Stueneker",
+        "confidence": "low",
+        "sources": ["RDApp-204722Steinecker130.jpg.json"]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1882,
+    "confidence_notes": "Name variations exist but 'William Steinecker' appears most consistently in documents."
+  },
+  
+  "biographical_narrative": "William Steinecker, born in 1882, served as a brakeman for the Baltimore & Ohio Railroad Company. His career was marked by several periods of disability due to sickness and accidents. In November 1920, he suffered an injury at Curtis Bay, Maryland, which led to his temporary disablement. Steinecker also experienced another disabling event in August 1918 when he sustained a lacerated leg while working. These incidents required him to seek medical attention and claim benefits from the Relief Department of the B&O Railroad Company. Despite these setbacks, he was able to return to duty after each incident with no significant disputes over his claims.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Maryland Ave",
+      "date_range": "unknown",
+      "context": "Residence as stated in disability documents",
+      "sources": ["RDApp-204722Steinecker124.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Brakeman",
+      "department": "E T",
+      "division": "Balt. Div.",
+      "details": "William Steinecker was employed as a Brakeman on the Baltimore Division of the B&O Railroad Company, though his exact hire date is not provided in the documents.",
+      "sources": ["RDApp-204722Steinecker130.jpg.json"]
+    },
+    {
+      "date": "1920-11-11",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "William Steinecker was injured at Curtis Bay, Maryland, leading to a period of disability.",
+      "sources": ["RDApp-204722Steinecker124.jpg.json"]
+    },
+    {
+      "date": "1918-08-04",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "William Steinecker suffered a lacerated leg, leading to his temporary disablement.",
+      "sources": ["RDApp-204722Steinecker129.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1920-11-11",
+      "injury_type": "Accident",
+      "body_part": null,
+      "narrative": "William Steinecker was injured at Curtis Bay, Maryland on November 11, 1920. The nature of the injury is not specified in the documents.",
+      "medical_examinations": [
+        {
+          "date": "1920-11-12",
+          "examiner": "Dr. Mathews",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204722Steinecker124.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1918-08-04",
+      "injury_type": "Lacerated leg",
+      "body_part": "Leg",
+      "narrative": "William Steinecker sustained a laceration to his leg on August 4, 1918. He was unable to work until August 11, 1918.",
+      "medical_examinations": [
+        {
+          "date": "1918-08-07",
+          "examiner": "E.W. Mathers",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204722Steinecker130.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1918-08-04", "end": "1918-08-11"},
+          "days": 6,
+          "amount": 9.00,
+          "check_number": "86455",
+          "sources": ["RDApp-204722Steinecker129.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Mathews",
+      "district": null,
+      "examinations": [
+        {"date": "1920-11-12", "finding": "disabled"}
+      ]
+    },
+    {
+      "name": "E.W. Mathers",
+      "district": null,
+      "examinations": [
+        {"date": "1918-08-07", "finding": "disabled"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1916",
+      "latest": "1920"
+    },
+    "completeness_assessment": "The record is relatively complete for documenting injuries and disability claims, but lacks information on Steinecker's hiring date or any family details.",
+    "data_quality_notes": [
+      "Some documents have incomplete fields, particularly in medical examination forms.",
+      "Name variations exist across different documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of William Steinecker highlights the frequent injuries and disabilities faced by railroad workers during this period and the mechanisms in place to support them through disability benefits.",
+      "It also reveals the importance of medical examinations and the role they played in determining eligibility for benefits."
+    ],
+    "comparative_questions": [
+      "How did injury rates vary between different positions within the B&O Railroad Company?",
+      "What were the typical durations and amounts of disability payments across various injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

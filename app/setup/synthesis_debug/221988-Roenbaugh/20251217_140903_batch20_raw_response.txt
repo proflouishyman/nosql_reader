@@ -1,0 +1,222 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Rombough Claude",
+        "confidence": "medium",
+        "sources": ["RDApp-221988Roenbaugh191.jpg.json"]
+      },
+      {
+        "name": "Roentauch, Wass Engr",
+        "confidence": "low",
+        "sources": ["RDApp-221988Roenbaugh192.jpg.json"]
+      },
+      {
+        "name": "Rosenbaugh, Claude",
+        "confidence": "high",
+        "sources": ["RDApp-221988Roenbaugh194.jpg.json", "RDApp-221988Roenbaugh195.jpg.json"]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1894,
+    "confidence_notes": "The birth year is derived from the examination dated May 28, 1921. Other documents do not provide a consistent date."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh began his career with the Baltimore & Ohio Railroad Company as an engineer and later served as an engineman in various divisions across Ohio. His employment spanned several decades, from at least 1903 to 1953, during which he experienced multiple medical examinations and a notable injury. In July 1923, Roenbaugh was reported disabled due to sickness, though no claim for compensation was filed. He also suffered an injury in December 1927, involving a 'hole in the leg,' as noted by a medical examiner. Roenbaugh's career included transfers between divisions, such as from Lorain to Wheeling in July 1953.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "331 W. 27th",
+      "date_range": "July 26, 1923 - unknown",
+      "context": "Residence address during disablement report.",
+      "sources": ["RDApp-221988Roenbaugh198.jpg.json"]
+    },
+    {
+      "address": "Uhrichsville O.",
+      "date_range": "September 25, 1903 - unknown",
+      "context": "Address for refund of unearned contributions to the Relief Feature.",
+      "sources": ["RDApp-221988Roenbaugh195.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1903",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Refund of unearned contributions to the Relief Feature.",
+      "sources": ["RDApp-221988Roenbaugh195.jpg.json"]
+    },
+    {
+      "date": "May 28, 1921",
+      "event_type": "medical examination",
+      "position": "Engineer",
+      "department": null,
+      "division": "Stoneboard",
+      "details": "Medical examination for visual acuity and hearing.",
+      "sources": ["RDApp-221988Roenbaugh194.jpg.json"]
+    },
+    {
+      "date": "July 26, 1923",
+      "event_type": "disablement",
+      "position": "Engineer",
+      "department": null,
+      "division": "Akron",
+      "details": "Reported disabled by sickness.",
+      "sources": ["RDApp-221988Roenbaugh198.jpg.json"]
+    },
+    {
+      "date": "July 1, 1953",
+      "event_type": "transfer",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division Transportation Department",
+      "details": "Transferred from Akron-Chicago Division at Lorain.",
+      "sources": ["RDApp-221988Roenbaugh196.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "July 26, 1923",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was reported disabled due to sickness beginning July 26, 1923 at 9 PM. No claim for compensation was filed.",
+      "medical_examinations": [
+        {
+          "date": "July 26, 1923",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Reported disabled by sickness.",
+          "sources": ["RDApp-221988Roenbaugh198.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "December 27, 1927",
+      "injury_type": "Hole in leg",
+      "body_part": "Leg",
+      "narrative": "Claude Roenbaugh was examined for a 'hole in the leg' on December 27, 1927.",
+      "medical_examinations": [
+        {
+          "date": "December 27, 1927",
+          "examiner": null,
+          "finding": null,
+          "notes": "Hole in leg as well.",
+          "sources": ["RDApp-221988Roenbaugh200.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Simpson",
+      "district": null,
+      "examinations": [
+        {
+          "date": "September 3, 1941",
+          "finding": "Good vision and hearing."
+        }
+      ]
+    },
+    {
+      "name": "W. P. Tinsley",
+      "district": null,
+      "examinations": [
+        {
+          "date": "April 30, 1919",
+          "finding": "Good vision without glasses and good hearing."
+        }
+      ]
+    },
+    {
+      "name": "K H Miner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "March 4, 1927",
+          "finding": "Normal vision and hearing with no corrective glasses required."
+        }
+      ]
+    },
+    {
+      "name": "Jd. Murray",
+      "district": null,
+      "examinations": [
+        {
+          "date": "May 28, 1921",
+          "finding": "Good visual acuity and hearing."
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "September 25, 1903",
+      "event": "Refund of unearned contributions to the Relief Feature.",
+      "significance": "Indicates Roenbaugh's early involvement with the company’s relief program.",
+      "sources": ["RDApp-221988Roenbaugh195.jpg.json"]
+    },
+    {
+      "date": "July 1, 1953",
+      "event": "Transfer from Akron-Chicago Division at Lorain to Wheeling Division Transportation Department.",
+      "significance": "Marks a significant career shift in Roenbaugh's employment history.",
+      "sources": ["RDApp-221988Roenbaugh196.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "April 30, 1919",
+      "latest": "July 11, 1953"
+    },
+    "completeness_assessment": "The record is incomplete in terms of personal details and family information. However, it provides a good overview of Roenbaugh's employment history and medical examinations.",
+    "data_quality_notes": [
+      "Some documents contain handwritten entries that are illegible or unclear.",
+      "There are inconsistencies in the spelling of Roenbaugh’s name across different documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "Roenbaugh's case highlights the importance of medical examinations and disability reporting within railroad companies during the early to mid-20th century.",
+      "The records provide insight into the administrative processes for employee transfers, injury reports, and relief programs."
+    ],
+    "comparative_questions": [
+      "How did Roenbaugh’s experience compare with other employees in terms of medical treatment and disability reporting?",
+      "What were the typical durations of employment for railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

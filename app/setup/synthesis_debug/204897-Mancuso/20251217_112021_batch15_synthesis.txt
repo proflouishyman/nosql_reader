@@ -1,0 +1,273 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "L. Mamusa",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco145.jpg.json"
+        ]
+      },
+      {
+        "name": "Louis J Mancuss",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco146.jpg.json"
+        ]
+      },
+      {
+        "name": "Luigi Mancuso",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204897Manusco141.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "Identity is reasonably certain, but there are name variations and no clear birth year."
+  },
+  "biographical_narrative": "Luigi Mancuso was a laborer for the Baltimore & Ohio Railroad Company during the early 20th century. His employment records indicate that he experienced several periods of sickness which required medical attention and benefits from the company's Relief Department. These incidents included typhoid fever in 1909, for which he received benefits for 23 days at $1 per day, and another period of disability due to an unspecified illness in 1911. Mancuso was able to return to his duties after each incident following medical clearance from the company's medical examiner.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No information on spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "3735 [illegible text]",
+      "date_range": "unknown",
+      "context": "Residence address during sickness report in 1911",
+      "sources": [
+        "RDApp-204897Manusco142.jpg.json"
+      ]
+    },
+    {
+      "address": "573 Gibson Street, McKees Pa",
+      "date_range": "unknown",
+      "context": "Residence address for medical examination in 1909",
+      "sources": [
+        "RDApp-204897Manusco146.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1907-09-20",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": null,
+      "division": "G. Ville",
+      "details": "Sickness reported for a period of 10 days from September 20 to September 30, 1907.",
+      "sources": [
+        "RDApp-204897Manusco141.jpg.json"
+      ]
+    },
+    {
+      "date": "1909-01-28",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after a period of disability due to sickness from January 5 to January 28, 1909.",
+      "sources": [
+        "RDApp-204897Manusco144.jpg.json"
+      ]
+    },
+    {
+      "date": "1909-10-28",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after a period of disability due to typhoid fever from September 30 to October 28, 1909.",
+      "sources": [
+        "RDApp-204897Manusco145.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1907-09-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso reported sickness from September 20 to September 30, 1907. He was entitled to benefits for this period.",
+      "medical_examinations": [
+        {
+          "date": "1907-09-30",
+          "examiner": "G. H. Stainly, M.D.",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco141.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1907-09-20",
+            "end": "1907-09-30"
+          },
+          "days": 10,
+          "amount": 10.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-204897Manusco141.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1909-01-05",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso reported sickness from January 5 to January 28, 1909. He was entitled to benefits for this period.",
+      "medical_examinations": [
+        {
+          "date": "1909-01-29",
+          "examiner": "Dr. W.A. Norhen",
+          "finding": "able_to_return",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco144.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1909-01-05",
+            "end": "1909-01-28"
+          },
+          "days": 23,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204897Manusco144.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1909-09-30",
+      "injury_type": "Typhoid Fever",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was diagnosed with typhoid fever and reported sickness from September 30 to October 28, 1909. He received benefits for this period.",
+      "medical_examinations": [
+        {
+          "date": "1909-10-04",
+          "examiner": "W.H. Roberts",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco146.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1909-09-30",
+            "end": "1909-10-28"
+          },
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204897Manusco146.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "G. H. Stainly",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1907-09-30",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.H. Roberts",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "1909-10-04",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1907-09-30",
+      "event": "Claim for sickness benefits certified by G. H. Stainly, M.D.",
+      "significance": "Certified Luigi Mancuso's claim for a 10-day period of disability due to illness in September 1907.",
+      "sources": [
+        "RDApp-204897Manusco141.jpg.json"
+      ]
+    },
+    {
+      "date": "1909-01-29",
+      "event": "Luigi Mancuso certified fit for duty after a period of disability due to sickness from January 5, 1909.",
+      "significance": "Marked the end of Luigi Mancuso's disability period and his return to work.",
+      "sources": [
+        "RDApp-204897Manusco144.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1907-09-20",
+      "latest": "1909-10-25"
+    },
+    "completeness_assessment": "The records are relatively complete for the periods of sickness and disability. However, there is no information on Luigi Mancuso's initial hiring date or any promotions.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors, such as incorrect names (e.g., 'L. Mamusa' instead of 'Luigi Mancuso').",
+      "Dates are not always fully legible."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical and administrative practices of the Baltimore & Ohio Railroad Company in handling employee sickness and disability.",
+      "They highlight the reliance on a formal process involving medical examiners to certify claims for benefits."
+    ],
+    "comparative_questions": [
+      "How did other railroad companies handle similar situations, and were there differences in their policies or procedures?",
+      "What was the typical duration of disability periods among laborers during this era?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

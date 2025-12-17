@@ -1,0 +1,182 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": ["RDApp-635058Harris064.jpg.json", "RDApp-635058Harris065.jpg.json"]
+      },
+      {
+        "name": "C. Harris",
+        "confidence": "medium",
+        "sources": ["RDApp-635058Harris066.jpg.json"]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is certain based on consistent use of 'Charley Harris' and related variations."
+  },
+  
+  "biographical_narrative": "Charley Harris was a fireman employed by the Baltimore & Ohio Railroad Company in the early to mid-20th century. His career with the railroad appears to have been marked by periods of illness and injury, which led to several instances where he required medical attention and relief from work duties. In 1927, Harris suffered from influenza that incapacitated him for nearly three weeks, during which time he was placed on relief status. He also faced administrative challenges when he failed to provide a necessary physician's certificate, leading to the closure of his case without any recommendation for benefits. Later in life, Harris filed a lawsuit against the railroad company in 1941, alleging that he had suffered significant bodily injuries and mental anguish due to his work, which impaired his ability to earn a livelihood.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "P.O. Box 697, Kenova, W.Va",
+      "date_range": "unknown",
+      "context": "Residence address for relief purposes",
+      "sources": ["RDApp-635058Harris064.jpg.json"]
+    },
+    {
+      "address": "P.O. Box 237, Cerido, W.Va",
+      "date_range": "unknown",
+      "context": "Residence address for medical relief requests",
+      "sources": ["RDApp-635058Harris065.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": "CT",
+      "division": "Comp. Kenova",
+      "details": "Harris was hired as a fireman, working in the CT department of the railroad.",
+      "sources": ["RDApp-635058Harris062.jpg.json", "RDApp-635058Harris065.jpg.json"]
+    },
+    {
+      "date": "1927-02-29",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Placed on relief due to influenza.",
+      "sources": ["RDApp-635058Harris064.jpg.json"]
+    },
+    {
+      "date": "1927-03-30",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Medical examiner's report indicates no evidence of disablement.",
+      "sources": ["RDApp-635058Harris061.jpg.json"]
+    },
+    {
+      "date": "1941",
+      "event_type": "lawsuit",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Filed a lawsuit against the B&O Railroad Company alleging significant injuries and damages.",
+      "sources": ["RDApp-635058Harris067.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1927-02-27",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Harris was incapacitated by influenza from February 27 to March 13, 1927. He failed to provide a required physician's certificate and his case for benefits was closed.",
+      "medical_examinations": [
+        {
+          "date": "1927-03-30",
+          "examiner": "Dr. W.A. Funk",
+          "finding": "disabled",
+          "notes": "Failed to produce a required certificate, no recommendation for benefits made.",
+          "sources": ["RDApp-635058Harris061.jpg.json", "RDApp-635058Harris063.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 17,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-635058Harris062.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "The dispute arose from Harris's failure to provide a physician’s certificate, leading to the closure of his case without benefits.",
+        "resolution": "Case closed without recommendation for benefits."
+      }
+    },
+    {
+      "injury_date": null,
+      "injury_type": "Workplace injury",
+      "body_part": null,
+      "narrative": "In 1941, Harris filed a lawsuit alleging he suffered great bodily injuries and mental anguish due to his work with the B&O Railroad Company.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "The dispute involved claims of permanent impairment of Harris's capacity to earn a livelihood, which was denied by the company.",
+        "resolution": "Company won the lawsuit."
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. W.A. Funk",
+      "district": "10",
+      "examinations": [
+        {"date": "1927-03-30", "finding": "disabled"},
+        {"date": "1927-03-14", "finding": "awaiting certificate"}
+      ]
+    },
+    {
+      "name": "Dr. J.W. Rife",
+      "district": null,
+      "examinations": [
+        {"date": "1927-03-30", "finding": "disabled due to influenza"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1941-07-10",
+      "event": "Medical bill approval for court attendance",
+      "significance": "Indicates Harris's ongoing legal proceedings against the B&O Railroad Company.",
+      "sources": ["RDApp-635058Harris069.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1927-02-27", "latest": "1941-09-08"},
+    "completeness_assessment": "The record is relatively complete for the period of illness and legal proceedings but lacks details on Harris's early career with the railroad.",
+    "data_quality_notes": [
+      "OCR quality varies, some documents have missing or truncated text."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in securing medical benefits and compensation for injuries sustained on the job.",
+      "It also reveals the bureaucratic processes involved in handling employee claims and disputes within a large corporation like the B&O Railroad Company."
+    ],
+    "comparative_questions": [
+      "How did other employees fare when filing similar lawsuits against the railroad company?",
+      "What were the typical outcomes of workers' compensation cases during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

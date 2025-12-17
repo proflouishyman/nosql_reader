@@ -1,0 +1,210 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Rosenbaugh",
+    "name_variations": [
+      {"name": "Denbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh101.jpg.json"]},
+      {"name": "McVernaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh102.jpg.json"]},
+      {"name": "Moonbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh107.jpg.json"]},
+      {"name": "Rabuntaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh109.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "Name variations are present, but 'Claude Rosenbaugh' appears most frequently and with consistent context."
+  },
+  
+  "biographical_narrative": "Claude Rosenbaugh was an engineer for the Baltimore & Ohio Railroad Company. His career spanned several years during which he experienced multiple health issues that required medical attention and temporary disability leave. In May of 1945, he suffered from acute gastroenteritis and hypotension, leading to a period of disability. He also had a previous incident in August 1944 involving an axillary abscess, for which he received disability benefits until his return to duty on September 2, 1944. Rosenbaugh's records indicate that he was laid off on August 9, 1945, and reported sick on August 21, 1945, but returned to work in October of the same year after being treated for his ailments.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information provided", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "351 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address on disablement notice",
+      "sources": ["RDApp-221988Roenbaugh101.jpg.json"]
+    },
+    {
+      "address": "331 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address on multiple documents",
+      "sources": ["RDApp-221988Roenbaugh102.jpg.json", "RDApp-221988Roenbaugh103.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Vhg",
+      "details": "Started as an engineer, but exact hire date is not provided.",
+      "sources": []
+    },
+    {
+      "date": "1945-08-21",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported sick due to an ankle injury.",
+      "sources": ["RDApp-221988Roenbaugh101.jpg.json"]
+    },
+    {
+      "date": "1945-09-12",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed duty after being reported sick.",
+      "sources": ["RDApp-221988Roenbaugh102.jpg.json"]
+    },
+    {
+      "date": "1945-05-17",
+      "event_type": "medical_examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Inspected for acute gastroenteritis and hypotension.",
+      "sources": ["RDApp-221988Roenbaugh103.jpg.json"]
+    },
+    {
+      "date": "1945-08-09",
+      "event_type": "layoff",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Laid off from work.",
+      "sources": ["RDApp-221988Roenbaugh106.jpg.json"]
+    },
+    {
+      "date": "1945-10-03",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed duty after being reported sick.",
+      "sources": ["RDApp-221988Roenbaugh109.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1945-08-21",
+      "injury_type": "Ankle injury",
+      "body_part": "ankle",
+      "narrative": "Claude Rosenbaugh reported an ankle injury on August 21, 1945. He was examined and allowed to resume duty on September 12, 1945.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. J. M. Sayler",
+          "finding": "disabled",
+          "notes": "Ankle injury reported.",
+          "sources": ["RDApp-221988Roenbaugh101.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1945-05-17",
+      "injury_type": "Acute gastroenteritis and hypotension",
+      "body_part": null,
+      "narrative": "Claude Rosenbaugh was examined for acute gastroenteritis and hypotension on May 17, 1945. He resumed duty after treatment.",
+      "medical_examinations": [
+        {
+          "date": "1945-05-17",
+          "examiner": "Dr. Jos H. Taylor",
+          "finding": "disabled",
+          "notes": "Acute gastroenteritis and hypotension noted.",
+          "sources": ["RDApp-221988Roenbaugh103.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1945-06-09",
+      "injury_type": "Axillary abscess",
+      "body_part": null,
+      "narrative": "Claude Rosenbaugh was disabled due to an axillary abscess starting June 9, 1945. He received disability benefits until his return to duty on September 2, 1944.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "1944-08-01", "end": "1944-08-13"},
+          "days": 6,
+          "amount": 995.34,
+          "check_number": null,
+          "sources": ["RDApp-221988Roenbaugh110.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. J. M. Sayler",
+      "district": null,
+      "examinations": [
+        {"date": null, "finding": "disabled"}
+      ]
+    },
+    {
+      "name": "Dr. Jos H. Taylor",
+      "district": null,
+      "examinations": [
+        {"date": "1945-05-17", "finding": "disabled"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1945-08-27",
+      "event": "Delayed submission of Form 5 for disability reporting",
+      "significance": "Highlighted the importance of timely reporting for benefit eligibility.",
+      "sources": ["RDApp-221988Roenbaugh105.jpg.json", "RDApp-221988Roenbaugh108.jpg.json"]
+    },
+    {
+      "date": "1945-09-06",
+      "event": "Follow-up letter regarding delayed Form 5 submission",
+      "significance": "Emphasized the need for prompt reporting of disablement.",
+      "sources": ["RDApp-221988Roenbaugh107.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1945-05-17", "latest": "1945-10-03"},
+    "completeness_assessment": "The record is fairly complete for the period covered, but lacks details on his initial hiring and early career. There are also some inconsistencies in name spellings.",
+    "data_quality_notes": [
+      "Name variations present across documents",
+      "Some dates are not fully specified (e.g., missing day or month)",
+      "OCR quality is generally good but has minor errors"
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of timely reporting for disability benefits and the role of medical examinations in determining eligibility.",
+      "It also shows the impact of health issues on railroad workers' careers during this period."
+    ],
+    "comparative_questions": [
+      "How did other employees manage similar health issues?",
+      "What were the typical durations of disability leave?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

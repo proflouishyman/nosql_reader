@@ -1,0 +1,148 @@
+{
+  "person_identity": {
+    "canonical_name": "George A. Crudden",
+    "name_variations": [
+      {
+        "name": "Geo. A. Crudden",
+        "confidence": "high",
+        "sources": [
+          "RDAPP-634503Crudden008.jpg.json",
+          "RDAPP-634503Crudden010.jpg.json"
+        ]
+      },
+      {
+        "name": "George Alojzas Andrulis",
+        "confidence": "low",
+        "sources": [
+          "RDAPP-634503Crudden002.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634503",
+    "birth_year": null,
+    "confidence_notes": "The birth year is not explicitly provided in the records. The identity of George A. Crudden is well-supported, but there's a low-confidence name variation that may or may not be related."
+  },
+  "biographical_narrative": "George A. Crudden was an employee of the Baltimore & Ohio Railroad Company during the early to mid-20th century. His employment records indicate he held positions within the company and participated in its Relief Department, contributing monthly to a benefit plan that would provide for his family in case of disability or death. Crudden's career with the railroad spanned several decades, from at least 1925 through 1935, as evidenced by correspondence regarding contributions and changes to beneficiary designations. He lived primarily in Philadelphia, Pennsylvania, and North Merchantville, New Jersey, and was married to Hazel M. Crudden. His records do not indicate any significant injuries or disputes during his tenure with the railroad.",
+  "family": {
+    "spouse": {
+      "name": "Hazel M. Crudden",
+      "evidence": "Designation as beneficiary in a letter dated March 25, 1925.",
+      "sources": [
+        "RDAPP-634503Crudden006.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "206 Witherspoon Ave., N. Merchantville, NJ",
+      "date_range": "1925-unknown",
+      "context": "Residence address in correspondence dated May 11 and April 7, 1925.",
+      "sources": [
+        "RDAPP-634503Crudden004.jpg.json",
+        "RDAPP-634503Crudden005.jpg.json"
+      ]
+    },
+    {
+      "address": "4035 N. Broad St., Philadelphia, PA",
+      "date_range": "1934-unknown",
+      "context": "Residence address in a letter dated December 17, 1934.",
+      "sources": [
+        "RDAPP-634503Crudden009.jpg.json"
+      ]
+    },
+    {
+      "address": "5413 Sylvester St., Philadelphia, PA",
+      "date_range": "1935-unknown",
+      "context": "Residence address in a letter dated January 10, 1935.",
+      "sources": [
+        "RDAPP-634503Crudden008.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application for full membership in the Relief Feature of the Baltimore & Ohio Railroad Company's Relief Department.",
+      "sources": [
+        "RDAPP-634503Crudden002.jpg.json"
+      ]
+    },
+    {
+      "date": "1925",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application for membership in the Relief Feature, with contributions starting at $2.25 per month.",
+      "sources": [
+        "RDAPP-634503Crudden002.jpg.json"
+      ]
+    },
+    {
+      "date": "1935",
+      "event_type": "adjustment",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Adjustment to membership account due to an increase in contribution rates, with a new rate of $1.05 per month.",
+      "sources": [
+        "RDAPP-634503Crudden009.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [],
+  "administrative_events": [
+    {
+      "date": "1925",
+      "event": "Change of beneficiary in Relief Feature certificate #634503 from Mrs. Thomas E. Carrigan to Hazel M. Crudden.",
+      "significance": "Indicates a personal life event, likely marriage or change in family status.",
+      "sources": [
+        "RDAPP-634503Crudden006.jpg.json"
+      ]
+    },
+    {
+      "date": "1935",
+      "event": "Payment of $9.00 for one year's advance payment on certificate #634503.",
+      "significance": "Reflects Crudden's continued participation in the Relief Feature and his financial commitment to it.",
+      "sources": [
+        "RDAPP-634503Crudden010.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1925",
+      "latest": "1935"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from 1925 to 1935, with detailed information on Crudden's participation in the Relief Feature and his family situation. However, there are no records of specific employment positions or any injuries.",
+    "data_quality_notes": [
+      "Some documents contain truncated text which may affect the completeness of certain details.",
+      "The OCR quality is generally good but some handwritten notes are faded and difficult to read."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "Crudden's records reveal the importance of company-sponsored insurance plans for railroad workers in providing financial security for their families.",
+      "The documents also highlight the administrative processes involved in managing such programs, including changes to beneficiary designations and payment schedules."
+    ],
+    "comparative_questions": [
+      "How did participation rates in similar benefit programs vary across different railroads?",
+      "What were the typical reasons for changing beneficiaries or adjusting contribution amounts?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 1.0,
+    "overall": 0.88
+  }
+}

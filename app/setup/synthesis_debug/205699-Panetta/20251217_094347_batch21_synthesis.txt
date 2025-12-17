@@ -1,0 +1,218 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Darius Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta201.jpg.json"
+        ]
+      },
+      {
+        "name": "Illario Pannetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta203.jpg.json"
+        ]
+      },
+      {
+        "name": "Elario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta207.jpg.json"
+        ]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta208.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": null,
+    "confidence_notes": "The name variations suggest a potential issue with consistent record keeping, but Ilario Panetta appears most frequently and is considered the canonical name."
+  },
+  "biographical_narrative": "Ilario Panetta was employed as a laborer in the M.P. Department of the Baltimore & Ohio Railroad Company. His career spanned several years from at least early 1930s to mid-1950s, during which he experienced periods of disability due to rheumatism affecting his legs, back, and shoulders. He was furloughed multiple times, including in June 1933 and May-July 1953, when he resumed work for a short period before being furloughed again. Panetta maintained communication with the company regarding contributions and benefits during periods of disability or absence from work.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "66 Vernon St., Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address for communication with the company regarding contributions and benefits",
+      "sources": [
+        "RDApp-205699Panetta203.jpg.json",
+        "RDApp-205699Panetta207.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": "CU",
+      "details": "Started working as a laborer in the M.P. Department, CU Division.",
+      "sources": []
+    },
+    {
+      "date": "1931-02-26",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Became totally disabled by rheumatism.",
+      "sources": [
+        "RDApp-205699Panetta201.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-06",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Was furloughed and made contributions for June.",
+      "sources": [
+        "RDApp-205699Panetta207.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-07",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Contributed $3.45 for July.",
+      "sources": [
+        "RDApp-205699Panetta206.jpg.json"
+      ]
+    },
+    {
+      "date": "1953-05",
+      "event_type": "resume_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed duty on May 4th after a period of absence.",
+      "sources": [
+        "RDApp-205699Panetta209.jpg.json"
+      ]
+    },
+    {
+      "date": "1953-07",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed again and requested Natural Death Benefits only for July.",
+      "sources": [
+        "RDApp-205699Panetta209.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1931-02-26",
+      "injury_type": "Rheumatism",
+      "body_part": "legs, back, shoulders",
+      "narrative": "Ilario Panetta was disabled by rheumatism affecting his legs, back, and shoulders. He was unable to work from February 26th until March 15th, 1931.",
+      "medical_examinations": [
+        {
+          "date": "1931-02-27",
+          "examiner": "Dr. Edward R. Lintz",
+          "finding": "disabled",
+          "notes": "Rheumatism affecting both legs, back, and shoulders.",
+          "sources": [
+            "RDApp-205699Panetta204.jpg.json"
+          ]
+        },
+        {
+          "date": "1931-03-16",
+          "examiner": null,
+          "finding": "able to return",
+          "notes": "Cleared for duty on March 16, 1931.",
+          "sources": [
+            "RDApp-205699Panetta205.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Edward R. Lintz",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1931-02-27",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "G.M. Ambrose",
+      "district": "District No. 20",
+      "examinations": [
+        {
+          "date": "1931-02-26",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1953-05",
+      "event": "adjustment of membership contributions and benefits",
+      "significance": "Reflects the administrative process for handling employee contributions during periods of furlough.",
+      "sources": [
+        "RDApp-205699Panetta209.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1931-02-26",
+      "latest": "1953-07"
+    },
+    "completeness_assessment": "The records are fairly complete for the period of disability and furloughs, but there is a lack of information regarding his initial hiring or any promotions.",
+    "data_quality_notes": [
+      "Name variations exist across documents which may indicate record keeping issues.",
+      "Some handwritten notes are difficult to decipher."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the challenges faced by railroad workers, such as rheumatism and periods of furlough due to illness or economic conditions."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's policies on disability compare with other railroads during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

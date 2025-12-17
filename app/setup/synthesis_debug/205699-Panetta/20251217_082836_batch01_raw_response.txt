@@ -1,0 +1,124 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {"name": "J. Pagetta", "confidence": "low", "sources": ["RDApp-205699Panetta001.jpg.json"]},
+      {"name": "Alexion Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta003.jpg.json"]},
+      {"name": "Slario Panetta", "confidence": "low", "sources": ["RDApp-205699Panetta004.jpg.json"]},
+      {"name": "Marian Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta005.jpg.json"]},
+      {"name": "Ilario Vanetta", "confidence": "low", "sources": ["RDApp-205699Panetta010.jpg.json"]}
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "There are multiple name variations, but Ilario Panetta appears most frequently and is the canonical name used in official documents."
+  },
+  
+  "biographical_narrative": "Ilario Panetta was an employee of the Baltimore & Ohio Railroad Company who had a varied career marked by both injuries and changes in employment status. His earliest documented injury occurred in March 1906, when he suffered a skull fracture that required hospitalization for several months. After his recovery, he continued to work for the railroad but faced periods of furlough and other administrative challenges. In January 1934, Panetta was furloughed from his position as a laborer in the Car Shops Department, Cumberland Division. Despite these setbacks, he attempted to maintain membership in the Relief Feature of the company's relief department for natural death benefits during his period of unemployment.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "606 Vernon St., Keyser (City) Mineral (County) W Va (State)",
+      "date_range": "1934",
+      "context": "Home address for receiving membership papers and instructions regarding payment of monthly contributions.",
+      "sources": ["RDApp-205699Panetta004.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1906-03-03",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a skull fracture injury requiring hospitalization.",
+      "sources": ["RDApp-205699Panetta006.jpg.json", "RDApp-205699Panetta010.jpg.json"]
+    },
+    {
+      "date": "1934-01-04",
+      "event_type": "furloughed",
+      "position": "Laborer",
+      "department": "Car Shops Department",
+      "division": "Cumberland Division",
+      "details": "Panetta was furloughed and applied to retain membership for natural death benefits.",
+      "sources": ["RDApp-205699Panetta004.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1906-03-03",
+      "injury_type": "Fracture of skull, extensive injury to head, face and nose",
+      "body_part": "Head, Face, Nose",
+      "narrative": "Panetta suffered a severe injury that required hospitalization from March 3rd to May 5th, 1906. He was treated at Hoffman Hospital in Keyser.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "1906-04-01", "end": "1906-05-05"},
+          "days": 35,
+          "amount": 74.00,
+          "check_number": null,
+          "sources": ["RDApp-205699Panetta006.jpg.json", "RDApp-205699Panetta007.jpg.json", "RDApp-205699Panetta008.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. C.S. Hoffman",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "Dr. Z.T. Kalbaugh",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1934-01-09",
+      "event": "Acknowledged receipt of Form 216 for furloughed status and retention of membership.",
+      "significance": "Panetta was informed about the procedures to retain his insurance coverage during unemployment.",
+      "sources": ["RDApp-205699Panetta002.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1906-03-03", "latest": "1945"},
+    "completeness_assessment": "The record is fairly complete for the period from 1906 to 1945, with detailed information on injuries and employment status. However, there are some name variations that complicate identity resolution.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text or unclear handwriting.",
+      "Name variations exist across documents, affecting identity confidence."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Ilario Panetta reveals the challenges faced by railroad workers in maintaining employment and insurance coverage during periods of unemployment.",
+      "It also highlights the medical practices and hospital care provided to injured employees at the turn of the century."
+    ],
+    "comparative_questions": [
+      "How did injury rates and worker compensation vary across different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What was the typical duration and nature of injuries among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

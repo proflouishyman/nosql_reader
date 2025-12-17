@@ -1,0 +1,91 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {"name": "A. Mancuso", "confidence": "high", "sources": ["RDApp-204897Manusco116.jpg.json", "RDApp-204897Manusco118.jpg.json"]},
+      {"name": "Antonio Mancuss", "confidence": "medium", "sources": ["RDApp-204897Manusco117.jpg.json"]},
+      {"name": "A. Maneuss", "confidence": "low", "sources": ["RDApp-204897Manusco119.jpg.json"]}
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations exist, but 'Antonio Mancuso' is the most consistent and official name used."
+  },
+  
+  "biographical_narrative": "Antonio Mancuso began his career with the Baltimore & Ohio Railroad Company in the early 20th century. His employment record reflects a series of injuries and recoveries, indicating he was likely engaged in physically demanding work such as laborer or brakeman. On July 25, 1913, Antonio sustained an injury while tightening nuts on a rail car, which resulted in a slight laceration above his right eyebrow. He was examined by medical personnel and returned to duty on August 1, 1913. The records also indicate that he had another period of disablement due to an accident reported on July 25, 1913, but the exact nature of this incident is not detailed in the documents provided.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information about spouse found", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "418 East Fayette St.", "date_range": "unknown", "context": "Residence address for Antonio Mancuso", "sources": ["RDApp-204897Manusco114.jpg.json"]},
+    {"address": "118 East Fayette, Carville", "date_range": "unknown", "context": "Residence address for A. Mancuso", "sources": ["RDApp-204897Manusco118.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": null, "event_type": "hire/application", "position": null, "department": null, "division": null, "details": "Exact date of hire not provided in documents.", "sources": []},
+    {"date": "1907-10-14", "event_type": "return to duty", "position": null, "department": null, "division": null, "details": "Returned to work after a period of disablement.", "sources": ["RDApp-204897Manusco111.jpg.json"]},
+    {"date": "1913-07-25", "event_type": "injury", "position": null, "department": null, "division": null, "details": "Sustained a slight laceration above the right eyebrow while tightening nuts on a rail car.", "sources": ["RDApp-204897Manusco116.jpg.json"]},
+    {"date": "1913-08-01", "event_type": "return to duty", "position": null, "department": null, "division": null, "details": "Cleared by medical examiner and returned to work.", "sources": ["RDApp-204897Manusco118.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1913-07-25",
+      "injury_type": "laceration above right eyebrow",
+      "body_part": "right eyebrow",
+      "narrative": "Antonio Mancuso was injured while tightening nuts on a rail car, resulting in a slight laceration. He returned to work after being examined and declared fit for duty.",
+      "medical_examinations": [
+        {"date": "1913-07-25", "examiner": "Dr. Weller", "finding": "not disabled", "notes": "Injury did not result in disablement.", "sources": ["RDApp-204897Manusco120.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Weller",
+      "district": null,
+      "examinations": [{"date": "1913-07-25", "finding": "not disabled"}]
+    },
+    {
+      "name": "M.H. Koehler",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {"date": "1907-10-16", "event": "return to duty notice issued", "significance": "Documented Antonio's return from a period of disablement.", "sources": ["RDApp-204897Manusco111.jpg.json"]},
+    {"date": "1913-08-06", "event": "return to duty notice issued for A. Mancuso", "significance": "Documented return from another period of disablement.", "sources": ["RDApp-204897Manusco118.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1907-05-21", "latest": "1913-08-06"},
+    "completeness_assessment": "The record is fairly complete for Antonio Mancuso's injury and return to duty events, but lacks details on his initial hiring or other aspects of his career.",
+    "data_quality_notes": ["Name variations exist across documents.", "Some OCR issues with dates and names."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the physical risks involved in railroad work during this period, as well as the procedures for handling injuries.",
+      "They also show how medical examinations were used to determine fitness for duty after an injury."
+    ],
+    "comparative_questions": [
+      "How did the length and frequency of disablement periods compare across different types of jobs within the railroad company?",
+      "What was the typical duration of recovery from similar injuries among other employees?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

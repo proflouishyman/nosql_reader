@@ -1,0 +1,104 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {"name": "Harry Legasmo", "confidence": "low", "sources": ["RDApp-634879Degarmo001.jpg.json"]},
+      {"name": "H. D. Garamo", "confidence": "medium", "sources": ["RDApp-634879Degarmo010.jpg.json"]},
+      {"name": "Harry Higaama", "confidence": "low", "sources": ["RDApp-634879Degarmo013.jpg.json"]},
+      {"name": "Gregory Sagarmo", "confidence": "low", "sources": ["RDApp-634879Degarmo015.jpg.json"]},
+      {"name": "Degarmo, Harry", "confidence": "high", "sources": ["RDApp-634879Degarmo021.jpg.json", "RDApp-634879Degarmo023.jpg.json"]},
+      {"name": "Harry De Garmo", "confidence": "medium", "sources": ["RDApp-634879Degarmo025.jpg.json"]},
+      {"name": "Harry Gegarms", "confidence": "medium", "sources": ["RDApp-634879Degarmo031.jpg.json"]},
+      {"name": "Gregory, Harry", "confidence": "low", "sources": ["RDApp-634879Degarmo035.jpg.json"]},
+      {"name": "Harry Dogane", "confidence": "medium", "sources": ["RDApp-634879Degarmo036.jpg.json"]},
+      {"name": "Harry Algarno", "confidence": "low", "sources": ["RDApp-634879Degarmo040.jpg.json"]}
+    ],
+    "employee_id": "634879",
+    "birth_year": 1888,
+    "confidence_notes": "The birth year is derived from the most consistent records, but variations in name and ID suggest some uncertainty."
+  },
+  "biographical_narrative": "Harry Degarmo was a railroad worker employed by the Baltimore & Ohio Railroad Company during the early to mid-20th century. He began his career as a brakeman around 1920 and later served in various roles including switchman, yard helper, and foreman within the Ohio Division. His employment spanned several decades, marked by multiple injuries that required medical attention and temporary disability leave. Despite these setbacks, Degarmo continued working for the railroad until at least 1941 when he passed a physical examination declaring him physically qualified for duty.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {"address": "111 Monrose Ave", "date_range": "unknown", "context": "Residence address as of September 17, 1923.", "sources": ["RDApp-634879Degarmo010.jpg.json"]},
+    {"address": "111 Monroe Av", "date_range": "unknown", "context": "Accident claim address", "sources": ["RDApp-634879Degarmo011.jpg.json"]},
+    {"address": "Chillicothe, Ohio", "date_range": "unknown", "context": "General residence", "sources": ["RDApp-634879Degarmo012.jpg.json", "RDApp-634879Degarmo014.jpg.json"]},
+    {"address": "413 E. Perry, Lima, O.", "date_range": "unknown", "context": "Residence for disability notice", "sources": ["RDApp-634879Degarmo020.jpg.json"]},
+    {"address": "575 East Water", "date_range": "unknown", "context": "Residence address in injury report", "sources": ["RDApp-634879Degarmo031.jpg.json"]}
+  ],
+  "employment_timeline": [
+    {"date": "1920", "event_type": "hire/application", "position": "Yard Brake", "department": "Ex. frt Dept.", "division": "Ohio Division", "details": "Began working as a Yard Brake in the Express Freight Department, Ohio Division.", "sources": ["RDApp-634879Degarmo031.jpg.json"]},
+    {"date": "1/29/1921", "event_type": "medical examination", "position": "Brakeman", "department": null, "division": "Ohio", "details": "Passed medical exam for vision and hearing.", "sources": ["RDApp-634879Degarmo017.jpg.json"]},
+    {"date": "September 13, 1923", "event_type": "injury", "position": "Switchman", "department": null, "division": null, "details": "Contused eye led to off-duty status.", "sources": ["RDApp-634879Degarmo007.jpg.json"]},
+    {"date": "September 12, 1923", "event_type": "injury", "position": null, "department": null, "division": null, "details": "Reported disabled by accident or sickness.", "sources": ["RDApp-634879Degarmo010.jpg.json"]},
+    {"date": "June 30, 1925", "event_type": "furloughed", "position": null, "department": null, "division": null, "details": "No time July A.", "sources": ["RDApp-634879Degarmo004.jpg.json"]},
+    {"date": "1925", "event_type": "application", "position": null, "department": null, "division": null, "details": "Applied for employment or benefits.", "sources": ["RDApp-634879Degarmo001.jpg.json"]},
+    {"date": "5/31/1924", "event_type": "resignation", "position": "Yard Foreman", "department": "Transportation Department", "division": "Ohio Division", "details": "Left service and applied for natural death benefits.", "sources": ["RDApp-634879Degarmo016.jpg.json"]},
+    {"date": "1927-09-17", "event_type": "injury", "position": "Brakeman", "department": null, "division": "Ohio Division", "details": "Sustained a severe contusion to the right side of his face, neck, and eye due to an accident involving a distant signal lever.", "sources": ["RDApp-634879Degarmo025.jpg.json", "RDApp-634879Degarmo026.jpg.json"]},
+    {"date": "1927-09-21", "event_type": "return_to_duty", "position": "Brakeman", "department": null, "division": "Ohio Division", "details": "Resumed duty after being reported disabled.", "sources": ["RDApp-634879Degarmo022.jpg.json"]},
+    {"date": "1929-05-20", "event_type": "medical_examination", "position": "Yard Helper", "department": null, "division": "Belmont Division", "details": "Underwent a vision examination that confirmed his acuity and color perception.", "sources": ["RDApp-634879Degarmo028.jpg.json"]},
+    {"date": "1930-10-15", "event_type": "injury", "position": "Yard Helper", "department": null, "division": "Ohio Division", "details": "Developed an ulcer of the cornea, leading to a period of disability.", "sources": ["RDApp-634879Degarmo030.jpg.json"]},
+    {"date": "1930-11-02", "event_type": "return_to_duty", "position": "Yard Helper", "department": null, "division": "Ohio Division", "details": "Returned to duty after a period of disability due to an ulcer of the cornea.", "sources": ["RDApp-634879Degarmo030.jpg.json"]},
+    {"date": "1933", "event_type": "hire/application", "position": "Foreman, Machinist", "department": "M. M.", "division": null, "details": "Began working as a Foreman, Machinist in the Machine and Maintenance department.", "sources": ["RDApp-634879Degarmo040.jpg.json"]},
+    {"date": "1941", "event_type": "medical examination", "position": null, "department": null, "division": null, "details": "Passed a physical examination, declared physically qualified for duty.", "sources": ["RDApp-634879Degarmo038.jpg.json"]}
+  ],
+  "injury_history": [
+    {"injury_date": "September 12, 1923", "injury_type": "Accident/Sickness", "body_part": null, "narrative": "Degarmo was reported totally disabled by accident or sickness from September 12 to October 26, 1923. Wages were not allowed during this period.", "medical_examinations": [{"date": "September 12-18, 1923", "examiner": "C.C. Trichler M.D.", "finding": "disabled", "notes": "Total disability reported by C.C. Trichler M.D., Medical Examiner, District No. 22.", "sources": ["RDApp-634879Degarmo008.jpg.json"]}], "payments": [], "medical_dispute": {"disputed": false}},
+    {"injury_date": "September 13, 1923", "injury_type": "Contused eye", "body_part": "Eye", "narrative": "Degarmo suffered a contusion to his eye on September 13, 1923. This injury led to a period of disability and off-duty status.", "medical_examinations": [{"date": "September 13, 1923", "examiner": "N. Cotter", "finding": "disabled", "notes": "Eye contusion reported by N. Cotter on September 13, 1923.", "sources": ["RDApp-634879Degarmo007.jpg.json"]}], "payments": [{"period": {"start": "September 7", "end": null}, "days": 7, "amount": 10.5, "check_number": "62834", "sources": ["RDApp-634879Degarmo007.jpg.json"]}], "medical_dispute": {"disputed": false}},
+    {"injury_date": "9/12/1923", "injury_type": "Blow to the eye", "body_part": "Left Eye", "narrative": "Degarmo was injured in an accident that resulted in a severe blow over his left eye, causing considerable hemorrhage into the conjunctiva. He was unable to resume duty until September 29, 1923.", "medical_examinations": [{"date": "9/13/1923", "examiner": "Dr. Smylinger", "finding": "disabled", "notes": "Pupil dilated.", "sources": ["RDApp-634879Degarmo011.jpg.json"]}, {"date": "9/23/1923", "examiner": "W. L. Potter", "finding": "able to return", "notes": "Probable duration of recovery was three weeks.", "sources": ["RDApp-634879Degarmo013.jpg.json"]}], "payments": [], "medical_dispute": {"disputed": false}},
+    {"injury_date": "9/17/1927", "injury_type": "Contusion", "body_part": "Face", "narrative": "Degarmo was injured on September 17, 1927, with a contused face. He was unable to work from September 18-20, 1927.", "medical_examinations": [{"date": "9/18/1927", "examiner": "Dr. Burke", "finding": "disabled", "notes": null, "sources": ["RDApp-634879Degarmo019.jpg.json"]}], "payments": [{"period": {"start": "9/19/1927", "end": "9/20/1927"}, "days": 2, "amount": 3.0, "check_number": "46889", "sources": ["RDApp-634879Degarmo018.jpg.json"]}], "medical_dispute": {"disputed": false}},
+    {"injury_date": "1927-09-17", "injury_type": "Severe contusion of the face, neck and eye", "body_part": "Right side of face, neck, and right eye", "narrative": "Degarmo was injured while handling a distant signal switch when he dropped his tool and reached for it. The lever flew up and struck him in the face causing severe contusions.", "medical_examinations": [{"date": "1927-09-19", "examiner": "Dr. D. M. Meyers", "finding": "disabled", "notes": "Degarmo was reported to have a severe contusion of the face, right eye.", "sources": ["RDApp-634879Degarmo024.jpg.json"]}], "payments": [], "medical_dispute": {"disputed": false}},
+    {"injury_date": "1930-10-15", "injury_type": "Ulcer of the cornea", "body_part": "Eye", "narrative": "Degarmo developed an ulcer of the cornea, leading to a period of disability from October 15th until November 2nd.", "medical_examinations": [{"date": "1930-10-18", "examiner": "Potter", "finding": "disabled", "notes": "Degarmo was reported to have an ulcer of the cornea, leading to a period of disability.", "sources": ["RDApp-634879Degarmo030.jpg.json"]}], "payments": [{"period": {"start": "1930-10-15", "end": "1930-11-02"}, "days": 19, "amount": 28.5, "check_number": "28520", "sources": ["RDApp-634879Degarmo030.jpg.json"]}], "medical_dispute": {"disputed": false}},
+    {"injury_date": "1920-10-15", "injury_type": "Ulcer of left cornea", "body_part": "Left eye", "narrative": "Degarmo was injured on duty, suffering an ulcer in his left cornea. He was unable to work until November 3rd and then resumed his duties.", "medical_examinations": [{"date": "1920-10-15", "examiner": "R.E. Porter", "finding": "Disabled", "notes": "Diagnosis of ulcer in the left cornea, cleared to resume duty on November 3rd.", "sources": ["RDApp-634879Degarmo034.jpg.json"]}], "payments": [], "medical_dispute": {"disputed": false}},
+    {"injury_date": "1930-10-15", "injury_type": "Hot cinder hit membrane in eye", "body_part": "Left eye", "narrative": "Degarmo was injured by a hot cinder from an engine while on duty, resulting in temporary disability until November 2nd.", "medical_examinations": [{"date": "1930-10-15", "examiner": "H. Colston", "finding": "Disabled", "notes": "Hot cinder from engine hit the membrane in his left eye, estimated 15 days of disability.", "sources": ["RDApp-634879Degarmo035.jpg.json"]}], "payments": [], "medical_dispute": {"disputed": false}}
+  ],
+  "medical_examiners": [
+    {"name": "N. Cotter", "district": null, "examinations": [{"date": "January 16, 1920", "finding": "Vision and hearing tests conducted."}]},
+    {"name": "C.C. Trichler M.D.", "district": "No. 22", "examinations": [{"date": "September 12-18, 1923", "finding": "Totally disabled by accident or sickness."}]},
+    {"name": "EL Porter", "district": null, "examinations": []},
+    {"name": "Dr. Smylinger", "district": null, "examinations": [{"date": "9/13/1923", "finding": "disabled"}]},
+    {"name": "W. L. Potter", "district": "32", "examinations": [{"date": "9/23/1923", "finding": "able to return"}]},
+    {"name": "Dr. Burke", "district": null, "examinations": [{"date": "9/18/1927", "finding": "disabled"}]},
+    {"name": "Dr. D. M. Meyers", "district": "25", "examinations": [{"date": "1927-09-19", "finding": "Disabled"}]},
+    {"name": "H.C. Potter", "district": "22", "examinations": [{"date": "1929-05-20", "finding": "Good Vision and Hearing"}]},
+    {"name": "R.E. Porter", "district": null, "examinations": [{"date": "1920-10-15", "finding": "Disabled"}]},
+    {"name": "H. Colston", "district": "District No. 22", "examinations": [{"date": "1930-10-15", "finding": "Disabled"}]}
+  ],
+  "administrative_events": [
+    {"date": "August 8, 1955", "event": "Account arrears reported.", "significance": "Degarmo's account was in arrears by $2.45 as of June 30th.", "sources": ["RDApp-634879Degarmo003.jpg.json"]},
+    {"date": "July 27, 1935", "event": "Discrepancy list clarification requested.", "significance": "Clarification was sought regarding the supersession of discrepancy lists for Degarmo's account.", "sources": ["RDApp-634879Degarmo005.jpg.json"]},
+    {"date": "6/2/1924", "event": "Application for natural death benefits", "significance": "Indicates Degarmo's desire to retain membership benefits after leaving service.", "sources": ["RDApp-634879Degarmo016.jpg.json"]},
+    {"date": "1941-01-30", "event": "Physical examination passed", "significance": "Degarmo was declared physically qualified for duty.", "sources": ["RDApp-634879Degarmo038.jpg.json"]},
+    {"date": "1936-04-06", "event": "Request for certificate of membership", "significance": "A request was made to send Degarmo a certificate of membership.", "sources": ["RDApp-634879Degarmo037.jpg.json"]}
+  ],
+  "document_analysis": {
+    "total_documents": 40,
+    "date_range": {"earliest": "January 16, 1920", "latest": "August 8, 1955"},
+    "completeness_assessment": "The record is fairly complete for the period of employment and includes medical exams, injury reports, and administrative communications. However, there are some inconsistencies in name spelling.",
+    "data_quality_notes": [
+      "Name variations exist between documents (Legasmo vs Degarmo).",
+      "Some dates are not fully specified."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical and administrative practices of railroad companies in handling employee injuries.",
+      "They also highlight the financial challenges faced by workers, such as account arrears."
+    ],
+    "comparative_questions": [
+      "How did injury management and benefits differ between various railroads?",
+      "What were the common causes of injuries among railroad employees?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

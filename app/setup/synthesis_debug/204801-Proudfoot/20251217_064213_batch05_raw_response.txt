@@ -1,0 +1,196 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O. D. Proudfoot",
+        "confidence": "high",
+        "sources": ["RDApp-204801Proudfood046.jpg.json"]
+      },
+      {
+        "name": "Otto W. Pandoff",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood048.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations exist but are likely due to OCR errors or typographical mistakes. The canonical name is based on the most consistent usage."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore and Ohio Railroad Company in Cumberland, Maryland. His employment spanned several years during which he experienced both minor injuries and significant periods of illness that affected his work. In March 1944, he suffered a cinder injury to his left eye while working as an engineer in Grafton, West Virginia. This incident was relatively minor but highlighted the risks inherent in his position. More significantly, Proudfoot faced a period of disability from November 17, 1944, due to influenza, which lasted until December 1, 1944. During this time, he received disability payments and no wages were allowed for his absence. His employment records also indicate some administrative issues related to the restoration of death benefits, suggesting occasional bureaucratic challenges in managing his employee status.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour Street",
+      "date_range": "unknown",
+      "context": "Residence address used in multiple documents.",
+      "sources": ["RDApp-204801Proudfood044.jpg.json", "RDApp-204801Proudfood045.jpg.json"]
+    },
+    {
+      "address": "130 Reymond Ave",
+      "date_range": "unknown",
+      "context": "Residence address used in the Notice of Disablement document.",
+      "sources": ["RDApp-204801Proudfood049.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "C.J. Dept.",
+      "division": "Che",
+      "details": "Began employment as an engineer in the Cumberland Division.",
+      "sources": ["RDApp-204801Proudfood047.jpg.json"]
+    },
+    {
+      "date": "1944-03-06",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Suffered a cinder injury to the left eye while working in Grafton, West Virginia.",
+      "sources": ["RDApp-204801Proudfood046.jpg.json"]
+    },
+    {
+      "date": "1944-11-17",
+      "event_type": "disablement",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to influenza, no wages allowed from this date.",
+      "sources": ["RDApp-204801Proudfood047.jpg.json", "RDApp-204801Proudfood049.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1944-03-06",
+      "injury_type": "Cinder injury",
+      "body_part": "Left eye",
+      "narrative": "On March 6, 1944, Otto D. Proudfoot suffered a cinder in his left eye while working as an engineer in Grafton, West Virginia. The cinder was removed without further complications.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Cinder removed",
+          "notes": "The injury did not lead to significant disability or prolonged absence from work.",
+          "sources": ["RDApp-204801Proudfood046.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1944-11-17",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "From November 17, 1944, to December 1, 1944, Proudfoot was disabled due to influenza. He received disability payments during this period.",
+      "medical_examinations": [
+        {
+          "date": "1944-12-13",
+          "examiner": null,
+          "finding": "Totally disabled by sickness",
+          "notes": "No wages were allowed from November 18, 1944.",
+          "sources": ["RDApp-204801Proudfood048.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1944-11-17", "end": "1944-12-01"},
+          "days": 15,
+          "amount": null,
+          "check_number": "5956",
+          "sources": ["RDApp-204801Proudfood047.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. B. B. Bonser",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Noted in the Notice of Disablement document."
+        }
+      ]
+    },
+    {
+      "name": "G.M. Calynda",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Reported Proudfoot as disabled due to sickness from November 17, 1944."
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1943-05-24",
+      "event": "Sent option form for restoring death benefits.",
+      "significance": "Indicates an ongoing administrative process to ensure employees are covered by the company's benefit programs.",
+      "sources": ["RDApp-204801Proudfood044.jpg.json"]
+    },
+    {
+      "date": "1945-11-02",
+      "event": "Sent new option form due to improper execution of previous one.",
+      "significance": "Highlights the importance of proper documentation and signatures for administrative processes.",
+      "sources": ["RDApp-204801Proudfood045.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1943-05-24",
+      "latest": "1945-11-02"
+    },
+    "completeness_assessment": "The record is fairly complete, covering employment details, injuries, and disability payments. However, there are some inconsistencies in names and addresses.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have errors or missing information.",
+      "There are discrepancies between 'Proudfoot' and 'Pandoff', likely due to OCR issues."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the risks faced by railroad engineers in the early 20th century, as well as the company's efforts to provide medical care and disability benefits.",
+      "They also show the importance of proper documentation for administrative processes like benefit restoration."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different divisions or departments within the railroad?",
+      "What were the typical durations and causes of disability among engineers during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

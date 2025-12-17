@@ -1,0 +1,725 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records from the early 20th century.
+
+EMPLOYEE FOLDER: 205479-Collins
+EMPLOYEE ID: 205479
+FOLDER NAME: Collins
+NUMBER OF DOCUMENTS: 25 - Batch 4/7
+
+Below are ALL documents from this employee's personnel file. Read carefully and generate a comprehensive biographical synthesis.
+
+
+======================================================================
+DOCUMENT 1 of 25: RDApp-205479Collins076.jpg.json
+======================================================================
+
+OCR TEXT:
+BALTIMORE AND OHIO RAILROAD CO., Relief Department, MEDICAL EXAMINER'S REPORT OF DISABLEMENT. Name: Edward L. Collins Occupation: [blank] Form 5 No. 52084 Address: [blank] Certificate of Membership No. 205479 1. Nature of Disablement: Influenza Probable Duration: 7d 4/15/ 2. If accident, state if on or off duty [Place]: [blank] [Date]: 19__ 3. Describe how accident occurred: [blank] DOCTOR'S CERTIFICATE APPROVED: M.B.B. 5/1/22 3pm 4. In: [blank] Hospital. Form 22-A issued? [blank] Attending Physician: Dr. Harri[smudge] 5. Remarks: Please note date of issue. Form 5 reached this office 4/22/22. Date: 5/1/22 J. G. Selby, Medical Examiner, District No. 6
+
+SUMMARY:
+This is a Medical Examiner's Report of Disablement form from the Baltimore and Ohio Railroad Co. Relief Department for Edward L. Collins. He was disabled due to influenza, with a probable duration of 7 days beginning 4/15. The form was signed by a physician (Dr. Harris) and by the medical examiner, J.G. Selby. The form 5 was received on 4/22/22 and finalized on 5/1/22. Other sections such as accident details, hospital and address are left blank.
+
+
+======================================================================
+DOCUMENT 2 of 25: RDApp-205479Collins077.jpg.json
+======================================================================
+
+OCR TEXT:
+25m. 12-2-21. 22x31-20 R. F. Form 43-Rev.
+THE BALTIMORE AND OHIO RAILROAD CO., RELIEF DEPARTMENT. 
+Office of Medical Examiner. 43
+
+A. B. Turner   E. L. Collins
+I have this date inspected
+Occupation. Cross
+Division. cr Form 5 No.
+Nature of disability, &c. Influenza Dr Harris
+7/14 7/15
+Date 7/13-22 (over) J 98
+Medical Examiner, District No.
+
+SUMMARY:
+This is a Baltimore and Ohio Railroad Company Relief Department medical examiner's inspection form. It contains both printed and handwritten information, primarily documenting the inspection of an individual named A. B. Turner (possibly also E. L. Collins). The form records the date, occupation, division, nature of disability (influenza), and is signed or noted by Dr. Harris. It includes dates relevant to the examination and a district number.
+
+
+======================================================================
+DOCUMENT 3 of 25: RDApp-205479Collins078.jpg.json
+======================================================================
+
+OCR TEXT:
+EDWARD HARRIS, M. D.
+NO. 29 SOUTH CENTRE STREET
+CUMBERLAND, MD.
+
+OFFICE HOURS:
+NO MORNING HOURS
+1 P. M. TO 3 P. M.
+7 P. M. TO 9 P. M.
+
+April. 13. 1922.
+
+B. & O. Releif.
+Cumberland, Md.
+
+This certifies that I have been and am now treating Mr. Ed. L. Collins for an attack of Influenza and eye strain.
+From March the 16th. to present date.
+
+Very truly yours.
+(Signed) Edward Harris
+
+SUMMARY:
+A physician, Dr. Edward Harris, certifies that he has been treating Mr. Ed. L. Collins for influenza and eye strain from March 16, 1922, to at least April 13, 1922. This certification is addressed to B. & O. Relief in Cumberland, Maryland.
+
+
+======================================================================
+DOCUMENT 4 of 25: RDApp-205479Collins079.jpg.json
+======================================================================
+
+OCR TEXT:
+iwc
+Let 5 go to me with corrs.
+HCS
+
+SUMMARY:
+The document contains a handwritten note directing someone to let '5' go to the author along with correspondence. It is signed by 'HCS'.
+
+
+======================================================================
+DOCUMENT 5 of 25: RDApp-205479Collins080.jpg.json
+======================================================================
+
+OCR TEXT:
+Edward T. Collins
+1879
+B. & O.R.R. CO.—RELIEF DEPARTMENT.
+PART TWO (2): NOTICE OF DISABLEMENT. N: 52084 [5]
+Notice sent from: ________________________________ on _______________ 19__
+Superintendent Relief Department:
+Medical Examiner _______________________________ has been notified that
+(Name) Collins (Certificate Number) 205479
+(Residence) 218 Summit St E 5.00
+(Occupation) Baggageman (Department) (Division) Ouille
+Reported disabled by ACCIDENT or SICKNESS beginning April 3, 21
+Signature and title of Official issuing _____________________________________
+(Forward this PART TWO direct to SUPERINTENDENT RELIEF DEPARTMENT, and at the same time send PART THREE to the MEDICAL EXAMINER.)
+500 bks. 50 sets each. 10-12-20. 2834-41
+R. F. Form 5—Revised.
+
+SUMMARY:
+This document is a notice of disablement from the B. & O.R.R. Co. Relief Department, dated around 1879. It records the notification regarding Edward T. Collins, a baggageman from 218 Summit St., who has been reported disabled beginning April 3rd due to accident or sickness. The notice includes a certificate number, monetary value, and the division or department name, with signature and routing instructions for record-keeping.
+
+
+======================================================================
+DOCUMENT 6 of 25: RDApp-205479Collins081.jpg.json
+======================================================================
+
+OCR TEXT:
+THE BALTIMORE AND OHIO RAILROAD COMPANY
+SUBJECT.
+Re: Book of Forms 5 held by E. M. Egan - Cumberland, Md. -
+Cumberland, Md. May 5th, 1922
+Mr. W. J. Dudley,
+Supt., Relief Dep't.
+Baltimore, Md.
+Dear Sir:-
+Replying to your letter of May 2nd, above subject,
+I give you below, statement showing information requested:
+52081 - E. L. Collins 4/19/22
+52082 - W. E. Castle 4/19/22
+52083 - J. R. Rectley 4/21/22
+52084 - E. L. Collins 3/24/22
+52085 - E. M. Egan 4/24/22
+52086 - T. W. Smith 4/24/22
+52087 - W. T. Whitman 4/30/22
+No doubt you have received advice of Chief Crew Dispatcher Egan's death in the last few days.
+Presume you refer to case of E. L. Collins being reported sick, March 24th. This man was taken sick on the ready track and had to be taken home in a taxicab on March 24th and was not reported on the Relief at that time. When he was able to get about, he called at Caller's Office and requested Form 5 and Chief Caller being familiar with the case, issued Form 5 to cover.
+Yours truly,
+Supe
+... [truncated for length]
+
+SUMMARY:
+This is a letter from The Baltimore and Ohio Railroad Company dated May 5, 1922, concerning the Book of Forms 5 held by E. M. Egan in Cumberland, Maryland. The letter is addressed to W. J. Dudley, Superintendent of the Relief Department in Baltimore. The writer provides a list of Form 5 issuances by name and date as requested. The letter also notes the recent death of Chief Crew Dispatcher Egan and details a specific incident involving E. L. Collins, who was reported sick and later received Form 5 after an absence.
+
+
+======================================================================
+DOCUMENT 7 of 25: RDApp-205479Collins082.jpg.json
+======================================================================
+
+OCR TEXT:
+Baltimore, May 2, 1922.
+
+Mr. C. W. Van Horn,
+Superintendent,
+Cumberland, Md.
+
+Personal
+
+Dear Sir:
+
+We will thank you to inspect the book of forms 5 held by Mr. C. H. Egan, and furnish us with the dates appearing on forms 5-52081 to 52087, inclusive, and the names of the employees so reported.
+
+Very respectfully,
+
+Superintendent Relief Department.
+
+SUMMARY:
+This is a formal letter dated May 2, 1922, from the Superintendent of the Relief Department in Baltimore to Mr. C. W. Van Horn, Superintendent in Cumberland, Maryland. The letter requests Mr. Van Horn to inspect a book of specific forms held by Mr. C. H. Egan, and to provide the dates and the names of employees reported on forms 5-52081 to 52087, inclusive.
+
+
+======================================================================
+DOCUMENT 8 of 25: RDApp-205479Collins083.jpg.json
+======================================================================
+
+OCR TEXT:
+Connellsville, Pa. April 28th, 1922 - 1
+
+Mr. J. Dudley -
+
+Referring to your personal letter April 26th in which you request that we inspect the book of forms 5 held by Dr. C. H. Ogen. Apparently this letter has been addressed to me in error as Dr. Ogen is not an employe of the Connellsville Division.
+
+R.W. Brown
+Superintendent
+
+B. & O. R.R. CO.
+MAY 11 RELIEF DEPT.
+
+SUMMARY:
+This is a letter written by R.W. Brown, Superintendent, on April 28th, 1922, in Connellsville, PA, addressing Mr. J. Dudley. The letter refers to a previous request about inspecting forms held by Dr. C. H. Ogen. Brown clarifies that the request was made in error because Dr. Ogen is not an employee of the Connellsville Division. The letter is stamped by the B. & O. R.R. Co. Relief Dept. on May 11.
+
+
+======================================================================
+DOCUMENT 9 of 25: RDApp-205479Collins084.jpg.json
+======================================================================
+
+OCR TEXT:
+Baltimore, April 26, 1922.
+
+Mr. R. W. Brown,
+Superintendent,
+Connellsville, Pa.
+
+Personal
+
+Dear Sir:
+
+We will thank you to inspect the book of forms 5 held by Mr. C. M. Egan, and furnish us with the dates appearing on forms 5-5281 and 5287, inclusive, and the names of the employees reported.
+
+Very respectfully,
+
+[Handwritten note]
+Keep this before you for information, no names mentioned.
+Superintendent Relief Department.
+
+SUMMARY:
+This is a formal letter dated April 26, 1922, from an unspecified party in Baltimore to Mr. R. W. Brown, Superintendent in Connellsville, Pennsylvania. The sender requests Mr. Brown to inspect a specific book of forms, identify pertinent dates and employee names from those forms, and report the findings. There is a handwritten note attached advising to keep this request for information but noting that no employee names were mentioned.
+
+
+======================================================================
+DOCUMENT 10 of 25: RDApp-205479Collins085.jpg.json
+======================================================================
+
+OCR TEXT:
+7/34/79
+25M. 5-4-18
+FORM R D 8 A
+Baltimore & Ohio Railroad Co. - Relief Department.
+YEAR 1918 CERTIFICATE No. 205479
+Edward L. Collins
+NAME
+Residence: Cus Dec
+Occupation: Eug. Div. C. ville E
+Class E. Contrib'n $5-
+Med. Examiner: Doerner Dist. No. 6
+S.D. 94699 to Med. Ex. NOV 21 1918
+R.D. 17 Received. DEC 7 1918
+R.D. 107 Rec'd
+Nature of Disability: Influenza
+Jan. Feb. March April May June July Aug. Sept. Oct. Nov. Dec.
+21/29 25
+DEC 7 1918
+R.D. 10 Rec'd DEC 7 1918
+Claims - Sick
+Disability began. 11-16-1918 M. Member reported. 11-16-1918
+Last day wages allowed. 11-16-1918
+Benefits began. 11-24-1918 M. of a day. Rate per day $2.50
+From NOV 24 To DEC 4/18 Days 9 Amount 22.50 Check No. 97186
+TOTAL 9 22.50
+Termination 12/4 1918
+PAID TO
+PAID TO
+52 Weeks expire 19
+
+SUMMARY:
+This document is an early 20th-century Baltimore & Ohio Railroad Co. Relief Department sick claim form for an employee named Edward L. Collins. It details a claim for disability payments due to influenza, recording various administrative steps, dates of illness, payments, and claim processing.
+
+
+======================================================================
+DOCUMENT 11 of 25: RDApp-205479Collins086.jpg.json
+======================================================================
+
+OCR TEXT:
+THE BALTIMORE & OHIO R. R. CO.—Relief Department.
+CERTIFICATE OF DISABLEMENT.
+Form 5 No. 146991
+Cert. No. 205479
+Mr. [illegible]
+[illegible] on the [illegible] Div., [illegible] Dept,
+Was totally disabled by ACCIDENT—SICKNESS
+FROM 1/1/17  191 M., TO 7/31  1918 Inc.
+Disablement reported by [illegible]
+Medical Examiner, District No. [blank]
+Examination of the Time Record shows that WAGES WERE NOT ALLOWED
+FROM 1/1/17  1918 M., TO 7/31/17 1918 Inc.
+Division Accountant or Timekeeper: J.A. Lindsay
+The Medical Examiner will forward this form to the Division Accountant, Timekeeper, or other officer in direct charge, who will ascertain from the time record of the member whether or not wages were allowed during period stated, and after so certifying will return this form to the Medical Examiner attached to receipt slip of R.D. Form 150.
+Inspected 11/31  791-75
+
+SUMMARY:
+This document is a Certificate of Disablement issued by the Baltimore & Ohio Railroad Company Relief Department. It certifies that the named employee was totally disabled due to accident or sickness over a specified period. The document records official and medical information, duration of disablement, and that wages were not allowed during this time. The form includes reference numbers and is to be circulated among relevant officers for proper record keeping.
+
+
+======================================================================
+DOCUMENT 12 of 25: RDApp-205479Collins087.jpg.json
+======================================================================
+
+OCR TEXT:
+Edward L. Collins
+B. & O.R.R. CO., RELIEF DEPARTMENT.
+PART 2. NOTICE OF DISABLEMENT. No. 94699
+NOTICE Sent from Cuba on 11 - 17 1918
+Name: E. L. Collins Certificate No. 205579
+Residence: Cuba, Ohio Occupation: Engineer 500
+Department: --- Division: C & MC
+Disability {Accident or Sickness}: Sickness began 11 - 11 1918, at ___ o'clock __ M.
+Member Reported: Held 1918. Last Day Wages Allowed: 11 - 16 1918, at 11:00 o'clock M.
+Injured on Duty? Answer "Yes" or "No": ---
+Date of Injury on Duty: ---
+Signature and Title of Official Issuing: [illegible]
+SEND THIS PART TO SUP'T RELIEF DEP'T THROUGH DIVISION SUP'T.
+Part 3 sent to Medical Examiner, Dr.
+1000 bks., 50 sets each. 3-2-17.
+R. D. Form 5—Revised.
+
+SUMMARY:
+This is a historical bureaucratic notice of disablement form from the B&O Railroad Relief Department, documenting a sickness-related disablement reported for Edward L. Collins. It includes certificate and case numbers, personal and occupational information, sickness and wage dates, and administrative instructions for further processing.
+
+
+======================================================================
+DOCUMENT 13 of 25: RDApp-205479Collins088.jpg.json
+======================================================================
+
+OCR TEXT:
+B. & O. R. R. CO. RELIEF DEPARTMENT. 5
+PART 3. NOTICE OF DISABLEMENT. No 94699
+NOTICE Sent from __Cuba__ on __11-17__ 191__
+Name __E.E. Collins__ Certificate No. ______
+Residence __Tidel St.__ Occupation __Enginer__
+Department __C&E__ Division __Cuba__
+Cause of Accident or Sickness __sick__ began __11-16__ 191_ at __11:25__ o'clock __P__ M.
+Date Member Reported __11-16__ 191_ Last Day Wages Allowed __11-16__ 191_ at __11:25__ o'clock __P__ M.
+Was Member Injured on Duty?  Answer "Yes" or "No"
+If Yes, State Injury on Duty
+Name and Title of Official Issuing __[signature]__
+SEND THIS PART TO MEDICAL EXAMINER.
+R.D. Form 5—Revised.
+1000 bks. 50 cts each. 3-2-17.
+
+SUMMARY:
+This document is a Notice of Disablement from the Relief Department of the Baltimore & Ohio Railroad Company. It records the disablement due to sickness of an employee named E. E. Collins, who was an engineer at the Cuba division. The disablement began and was reported on November 16th, 191_, with wages allowed up to that date and time. The form confirms the disablement was not due to injury on duty.
+
+
+======================================================================
+DOCUMENT 14 of 25: RDApp-205479Collins089.jpg.json
+======================================================================
+
+OCR TEXT:
+22500. 10-13-17. 22x34-32 R. D. Form 10. Baltimore & Ohio Railroad Company. CERTIFICATE OF ABILITY. 10 CUMBERLAND, MD. 12/6 1915 I CERTIFY that Edward L Collins reported on R. D. 5 No. 94699 was able to return to duty. 12/5 1915. The last claim for benefits was sent to J. H. Lindsay (title) M. Loc. Gent. on 12/6 1915. Member notified by Form 7 A on 12/13 1915 Dr. is entitled to $ ------------ Medical Examiner, District No. ------------ This certificate must be sent to Sup't Relief Dep't with R. D. 7 or 7 A and part 2 of Form 5 attached.
+
+SUMMARY:
+This is a Baltimore & Ohio Railroad Company 'Certificate of Ability' issued in Cumberland, MD, on December 6, 1915, certifying that Edward L. Collins (employee no. 94699) was able to return to duty on December 5, 1915. The last claim for benefits was sent to J. H. Lindsay. The document provides administrative details about the claim submission and notifications.
+
+
+======================================================================
+DOCUMENT 15 of 25: RDApp-205479Collins090.jpg.json
+======================================================================
+
+OCR TEXT:
+25m. 8-2-18.
+17:22-16
+R. D. Form 7.
+The Baltimore & Ohio Railroad Company.
+RETURN TO DUTY NOTICE. 7
+Examiner............................................................ 191....
+Mr. .......................................................................
+residing at...............................................................
+who was reported disabled.......................... 191....,
+reported for work................................................ 191.... M
+See back part 3
+Signature, .............................................
+Title, .........................................................
+Location, .................................................. 
+NOTE.—The employing official will be particular to forward this to the Medical Examiner the same day the member reports for duty, if Form 7-A is not then presented by the member. The final check for benefits will not be issued by the Relief Department until this Form or Form 7-A from the Medical Examiner is received.
+
+SUMMARY:
+This document is a 'Return to Duty Notice' form from The Baltimore & Ohio Railroad Company. It is designed for use when an employee who was previously reported disabled is returning to work. The form requires information about the examiner, the employee, residence, disability reporting date, actual return-to-work date, as well as signatures and official titles. There is a notice reminding officials to forward the form to the Medical Examiner on the same day, with instructions for benefit processing.
+
+
+======================================================================
+DOCUMENT 16 of 25: RDApp-205479Collins091.jpg.json
+======================================================================
+
+OCR TEXT:
+R. D. Form 17.
+Baltimore and Ohio Railroad Co., Relief Department.
+MEDICAL EXAMINER'S REPORT OF DISABLEMENT.
+Name... Edward L. Collins ... Certificate of Membership No. ... 205479 ... Form 5 No. 24698 ...
+1. Nature of Disablement. Influenza
+2. If accident, state if on duty, cause and place of occurrence. Attending Surgeon or Hospital. Dr. Harris
+3. Probable Duration. 12/5
+4. All other facts and recommendations of importance.
+Form 187 attached (Yes or No)
+....................
+Date...........12/6........1918..... J. A. Drenan Medical Examiner District No. ...............
+
+SUMMARY:
+This document is a medical examiner's report of disablement from the Baltimore and Ohio Railroad Co. Relief Department, filled out for an individual named Edward L. Collins. The report indicates the nature of disablement as influenza, lists Dr. Harris as the attending physician, and notes a probable duration until December 5. The form was completed and signed by Medical Examiner J. A. Drenan on December 6, 1918. No further recommendations or attached forms are indicated.
+
+
+======================================================================
+DOCUMENT 17 of 25: RDApp-205479Collins092.jpg.json
+======================================================================
+
+OCR TEXT:
+25M. 3-17-08 Cor. File No. ____ Form RD8A Baltimore & Ohio Railroad Co.—Relief Department. CASE No. ___ YEAR 190__ CERTIFICATE No. 205479 Edwin L. Collins NAME Cumb. RESIDENCE Dept. Off. OCCUPATION Quill. Class. Rd. Contrib. 100 Med. Examiner: Boernett R.O. 6787 SEP 2, 1908 Dist. No. 6 R.O. 17 to Med. Ex. 1908. R.O. 17 received. Nature of Disability. ______________ Jan. | Feb. | March | April | May | June | July | Aug. | Sept. | Oct. | Nov. | Dec. ________ Rec'd Certif. Ability 190__ Return to Duty Card 190__ Claims—Sick. Disability began 8/27 9:10 P.M. Richmond reported 8/27/1908 Wages allowed to 8/27/1908 9:10 P.M. Deduct ___ days delayed report. Benefits began 190__ M. ___ of a day. Rate per day $ ___ From | To | Days | Amount | Check No. | Date TOTAL - - - Termination ____ 190__ Ret'd to duty ____ 190__ M. * Paid to _________ † Paid to ___________ 52 Weeks expire _______ 190__
+
+SUMMARY:
+The document is a form from the Baltimore & Ohio Railroad Co. Relief Department, relating to the sickness claim of Edwin L. Collins. It contains personal details, report of disability, administrative notations, and space for wage/benefit calculations and payouts, mostly filled for the initial claim period in 1908.
+
+
+======================================================================
+DOCUMENT 18 of 25: RDApp-205479Collins093.jpg.json
+======================================================================
+
+OCR TEXT:
+R. D. Form 5—Revised. B. & O. R. R. CO., RELIEF DEPARTMENT. NOTICE OF DISABLEMENT. No: 82817 NOTICE Sent from ______ on 8-28 190___. Name __________________________ Occupation __________________________ Dept. __________ Div'n __________ Certif. No. ________ Class. ________ Monthly Contrib'n $ ________ Disability (Accident or Sickness) began ________ 190__ at ____ o'clock ___ M. Wages allowed to (Usually Local Lay) ________ 190__ at ____ o'clock ___ M. Date member reported himself ________ 190__. if injury, how caused _____________. Member resides at ____________________ Signature and title of Official issuing ____________________________ SEND THIS PART TO SUP'T RELIEF DEPT. THROUGH DIVISION SUP'T. Part 3 sent to Medical Examiner, Dr. ___________
+
+SUMMARY:
+This document is a B. & O. Railroad Company Relief Department Notice of Disablement form, form number 82817. The form records the details of an employee's disablement, including personal and employment information, nature of disability, and official reporting/approval. The fields capture details such as name, occupation, certificate number, classification, begin date and time of disability, wages, and cause of injury (if any). There are sections for residence, official issuing, and onward transmission to the medical examiner. Much of the information is handwritten and not fully legible.
+
+
+======================================================================
+DOCUMENT 19 of 25: RDApp-205479Collins094.jpg.json
+======================================================================
+
+OCR TEXT:
+R. D. Form 5—Revised. B. & O. R. R. CO., RELIEF DEPARTMENT. 5 1000 bks.—7-11-08. Part 3. NOTICE OF DISABLEMENT. No. 82817 NOTICE Sent from Cville, O. on 8-29 1909 Name E.J. Collins Occupation Engineer Dept. Cville Div'n Certif. No. Class B Monthly Contrib'n $2 Disability sickness began 8-29 1909 at 2 o'clock M. (Accident or Sickness) Wages allowed to 9/10 1909 (Last Day) at 10 o'clock M. Date member reported himself 9/10 1909 If injury, how caused? Member resides at Cumberland Mills Signature and title of Official issuing Jno Miller SEND THIS PART TO MEDICAL EXAMINER. •Give City or Town, Street and house number; or if house has no number, give, as far as possible, on the back of this form, directions how to and the member's residence.
+
+SUMMARY:
+This document is a Notice of Disablement from the B. & O. Railroad Company Relief Department dated 1909, reporting the disablement of an employee named E.J. Collins, who was an Engineer. The disability is reported as sickness, with the incident beginning on August 29, 1909. Details such as wages allowed, residence, reporting date, and signatures are included.
+
+
+======================================================================
+DOCUMENT 20 of 25: RDApp-205479Collins095.jpg.json
+======================================================================
+
+OCR TEXT:
+10m.-5-8-1908.
+Baltimore & Ohio Railroad Company.
+R. D. Form 7.
+RETURN TO DUTY NOTICE. 7
+Examiner ____________ 9/7 1907
+Mr. E J Collin who was reported Jan 8-7 as sick reported for work he 3 day of Sept, 190_ at __________
+Signature, ___________
+Title, ____________
+Residence, __________
+NOTE.—The employing official will be particular to forward this the same day the member reports for duty. If Form 7A is not then presented by the member. The final check for benefits will not be issued by the Relief Department until this Form or Form 7A from the Medical Examiner is received.
+
+SUMMARY:
+This is a 'Return to Duty Notice' form from the Baltimore & Ohio Railroad Company dated 1907. It records the return to work of an employee named E J Collin, who had previously reported as sick. The form includes details about the examiner, reporting and return dates, and a note regarding administrative procedure.
+
+
+======================================================================
+DOCUMENT 21 of 25: RDApp-205479Collins096.jpg.json
+======================================================================
+
+OCR TEXT:
+FORM RD 8 A
+23M. 1-24-12
+Baltimore & Ohio Railroad Co. – Relief Department.
+YEAR 191__. CERTIFICATE No. 205479
+NAME: Edward L. Collins
+RESIDENCE: Cumberland
+OCCUPATION: Engr
+DEPT: Code Dept
+CLASS: D
+CONTR'N S.: 4
+Med. Examiner: Doerner
+Dist. No. 6
+S. D. 5/8457 NOV 16 1912
+R. D. 17 received.
+R. D. 187 Rec'd.
+Nature of Disability
+---------------------
+Jan., Feb., March, April, May, June, July, Aug., Sept., Oct., Nov., Dec.
+R. D. 10 Rec’d … 191__    R. D. 7 or 7A Rec’d … 191__
+Claims – Sick
+Disability began 11/10 1912 A.M.
+Member reported 11/10 1912
+Last day wages allowed 11/10 1912 A.M.
+Deduct ____ days delayed report.
+Benefits began ____ 191__ M., ____ of a day. Rate per day $ ____
+From | To | Days | Amount | Check No. | Date
+[TABLE with no filled entries]
+TOTAL
+Termination _____ 191__   Ret’d to duty _____ 191__ M.
+* Paid to ___________________
+† Paid to ___________________
+52 Weeks expire 19____
+
+SUMMARY:
+This document is a form from the Baltimore & Ohio Railroad Co. Relief Department for the year 1912. It records disability and sick relief claims for an employee named Edward L. Collins, who resided in Cumberland and worked as an engineer in the Code Department. The form contains certificate and examination details, important dates about the disability claim, but does not contain any handwritten or calculated entries for benefit payout or completion.
+
+
+======================================================================
+DOCUMENT 22 of 25: RDApp-205479Collins097.jpg.json
+======================================================================
+
+OCR TEXT:
+B. & O. R. R. CO., RELIEF DEPARTMENT. NOTICE OF DISABLEMENT. PART 2. No. 134657
+NOTICE Sent from: Carlisle
+Name: E. L. Collins
+Residence: 736 Carlisle Ave., Cumberland
+Division: Carlisle
+Dept: Eng.
+Disability (Accident or Sickness): Sickness
+began: 11-10-1912
+Date member reported: 11-10-1912
+Last Day Wages Allowed: 11-10-1912
+Certificate No.: 205479
+Occupation: Engineer
+Class: 2
+Monthly Contrib.: 1.00
+NO CLAIM
+If Injury, How Caused?: [not specified]
+Signature and Title of Official Issuing: George R. Doyle
+SEND THIS PART TO SUP'T RELIEF DEP'T THROUGH DIVISION SUP'T. Part 3 sent to Medical Examiner, Dr. [illegible signature]
+
+SUMMARY:
+This document is a notice of disablement from the B. & O. Railroad Company Relief Department for an employee named E. L. Collins, residing at 736 Carlisle Ave., Cumberland. The notice, sent from Carlisle, records a case of sickness beginning on November 10, 1912. No monetary claim is made. The certificate number, occupation, department, classification, and signature of the issuing official are included.
+
+
+======================================================================
+DOCUMENT 23 of 25: RDApp-205479Collins098.jpg.json
+======================================================================
+
+OCR TEXT:
+1000 bks.-50 sets each.-10-18-11.  R. D. Form 6—Revised
+B. & O. R. R. CO., RELIEF DEPARTMENT. 5
+PART 3. NOTICE OF DISABLEMENT. No. 134657
+NOTICE Sent from Coville on 11-12 1912
+Name E.L. Collins Certificate No. ______
+Residence 700 Lafayette Ave. Cumberland Occupation. Engineer
+Division Coville Dep’t C.J. Class ______ Monthly Contrib’n. ______
+Disability Sickness (Accident or Sickness.) began 11-10 1912 at 11:30 P.M.
+Date member reported 11-10 1912
+Last Day Wages Allowed 11-10 1912 11:15 P.M.
+If Injury, How Caused? ________ On Duty? Yes. No.
+Signature and Title of Official Issuing George R. Dafoe
+SEND THIS PART TO MEDICAL EXAMINER: W.A. Dearner
+
+SUMMARY:
+This document is a 1912 bureaucratic form from the B. & O. Railroad Company's Relief Department, designated as a Notice of Disablement. It records a claim for sickness-based disability for an engineer named E.L. Collins, residing in Cumberland. The incident began on November 10, 1912, and was reported the same day. Both the date wages stopped and the disability start date are recorded, alongside signatures from officials involved.
+
+
+======================================================================
+DOCUMENT 24 of 25: RDApp-205479Collins099.jpg.json
+======================================================================
+
+OCR TEXT:
+15,000. 12-5-11. PART 1.
+R. D. Form 7 A.
+THE BALTIMORE & OHIO RAILROAD CO.—RELIEF DEPARTMENT.
+OFFICE OF MEDICAL EXAMINER, DISTRICT No.
+7 A
+Cumberland, Md. 11/7/12 191__
+I HEREBY CERTIFY that E J Collins reported disabled per
+Form 5 No. _____ will be able to return to duty on 11/12/12 1912
+J. A. DOERNER, M.D.
+Medical Examiner.
+The above named member resumed work on 11/12/12 191__ at ___ o'clock __ M.
+Signature of Time-keeper or Employing Official _____
+Title _____
+The Medical Examiner will forward this part direct to the Time-keeper or Employing Officer, who will complete same and return it to the Medical Examiner. If the member does not report within two days from the time set, this part must be returned to the Examiner with the notation "Has not reported." Final claim will not be certified by Examiner until this part is received back.
+
+SUMMARY:
+This document is a medical return-to-work certificate for an employee (E J Collins) of the Baltimore & Ohio Railroad Co. Relief Department, indicating that the employee was disabled but is certified by a medical examiner (J.A. Doerner, M.D.) to return to work on 11/12/1912. The document also includes instructions for how it is to be processed by company officials.
+
+
+======================================================================
+DOCUMENT 25 of 25: RDApp-205479Collins100.jpg.json
+======================================================================
+
+OCR TEXT:
+Baltimore & Ohio Railroad Co. - Relief Department. FORM R.D. 5A 25M. 1-24-12 YEAR 191 CERTIFICATE No. 205479 Edward F. Collins NAME Eamed. RESIDENCE Eng OCCUPATION Div. R. R. CO. DEPT D CLASS D CONTRIB'N $4.00 Doerner Dist. No. 6 Med. Examiner 98649 R. D. 59 to Med. Ex. 191 R. D. 17 received. R. D. 187 Rec'd. Nature of Disability Jan. Feb. March. April. May. June. July. Aug. Sept. Oct. Nov. Dec. R. D. 10 Rec'd 191 R. D. 7 or 7A Rec'd 191 Claims - Sick Disability began 4/10 191 605 Member reported 4/10/191 Last day wages allowed 4/11/191 2 605P Deduct days delayed report. Benefits began 191 M of a day. Rate per day $ From To Days Amount Check No. Date. TOTAL, Termination 191 Ret'd to duty 191 M. * Paid to † Paid to 52 Weeks expire 19
+
+SUMMARY:
+This document is a Relief Department claim form from the Baltimore & Ohio Railroad Company for the year 191X. It documents a sick claim for Edward F. Collins, who worked in the engineering department as a Class D employee, with a contribution rate of $4.00. Key dates regarding the claim and last day of wages are included. The document otherwise prepares for disability and benefit claims, but many fields are blank.
+
+
+{'='*70}
+YOUR TASK: GENERATE COMPREHENSIVE BIOGRAPHICAL SYNTHESIS
+{'='*70}
+
+Create a structured JSON synthesis with the following schema. Be thorough and evidence-based.
+
+{
+  "person_identity": {
+    "canonical_name": "Full official name based on most common/official usage",
+    "name_variations": [
+      {
+        "name": "Variation as it appears",
+        "confidence": "high/medium/low",
+        "sources": ["list document filenames where this variation appears"]
+      }
+    ],
+    "employee_id": "Employee ID number",
+    "birth_year": 1895,
+    "confidence_notes": "Brief assessment of identity certainty"
+  },
+  
+  "biographical_narrative": "Write 2-4 paragraphs summarizing this person's railroad career. Include: when they started, positions held, major events (injuries, promotions, disputes), family situation, and any notable circumstances. Write in past tense as a professional historian would. Make it readable and informative.",
+  
+  "family": {
+    "spouse": {
+      "name": "Spouse name or null",
+      "evidence": "How we know this",
+      "sources": ["document filenames"]
+    },
+    "parents": [
+      {
+        "name": "Parent name",
+        "relationship": "father/mother",
+        "evidence": "How mentioned",
+        "sources": ["document filenames"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Full address as stated",
+      "date_range": "When associated with this address or 'unknown'",
+      "context": "Why this address appears (residence, beneficiary address, etc.)",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Job title",
+      "department": "Department name or null",
+      "division": "Division name or null",
+      "details": "Brief description of what happened",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "YYYY-MM-DD or best available",
+      "injury_type": "Description of injury",
+      "body_part": "Affected body part(s)",
+      "narrative": "2-3 sentence description of injury, treatment, and outcome",
+      "medical_examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "examiner": "Dr. Name",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Key details from examination",
+          "sources": ["document filenames"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"},
+          "days": 10,
+          "amount": 50.00,
+          "check_number": "Check number if available",
+          "sources": ["document filenames"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true or false,
+        "narrative": "If disputed, explain the conflict between doctors or administrators",
+        "resolution": "How was it resolved or 'unclear'"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Name",
+      "district": "District number if available",
+      "examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "finding": "Brief finding"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event": "What happened",
+      "significance": "Why this matters",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "YYYY-MM-DD or best guess",
+      "latest": "YYYY-MM-DD or best guess"
+    },
+    "completeness_assessment": "1-2 sentences: How complete is this record? What's well-documented? What's missing?",
+    "data_quality_notes": [
+      "List observations about OCR quality, contradictions, clarity, etc."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "What does this case reveal about railroad labor, medical practices, administration, etc.?"
+    ],
+    "comparative_questions": [
+      "What questions could be explored by comparing this case to others?"
+    ],
+    "research_value": "High/Medium/Low"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON - no preamble, no markdown fences, no explanation
+2. Use exact schema above - include all fields even if some are empty/null
+3. Always include "sources" arrays with actual document filenames for evidence
+4. Be thorough but concise
+5. Note contradictions or uncertainties explicitly
+6. Assign realistic confidence scores (0.0-1.0) based on evidence quality
+7. Write biographical_narrative in clear, professional prose
+8. If information is missing, use null or empty arrays - don't invent data
+9. For dates, use best available format (prefer YYYY-MM-DD, but accept what documents provide)
+10. Document filenames should match the filename shown in DOCUMENT headers above
+
+Begin your response with { and end with }. Return ONLY the JSON object.

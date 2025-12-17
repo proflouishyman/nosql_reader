@@ -1,0 +1,164 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Claude Robbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh271.jpg.json"]},
+      {"name": "Claude Rosenbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh274.jpg.json"]},
+      {"name": "Claude Rambough", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh275.jpg.json"]},
+      {"name": "Claude Robnbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh276.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1895,
+    "confidence_notes": "The name variations suggest some inconsistency in record keeping, but 'Claude Roenbaugh' is most consistent across documents."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh began his career with the Baltimore & Ohio Railroad Company as an engineer and later a brakeman. His employment spanned from at least 1913 to 1916, during which he experienced multiple health issues that affected his work. In November 1913, Roenbaugh was temporarily disabled due to acute muscular rheumatism in his back, returning to duty by December of the same year. Another significant event occurred in February 1916 when he developed septicemia in his right arm after scratching himself while off-duty, which required medical attention and a period of disability before he could return to work on October 7, 1916. Roenbaugh's career with B&O Railroad was marked by these health challenges but also by his resilience and eventual recovery each time.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information provided", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "381 W. 7th, Lorain O",
+      "date_range": "unknown",
+      "context": "Residence address for the employee",
+      "sources": ["RDApp-221988Roenbaugh276.jpg.json"]
+    },
+    {
+      "address": "Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "General location of residence and medical examination district",
+      "sources": ["RDApp-221988Roenbaugh273.jpg.json", "RDApp-221988Roenbaugh275.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1913",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": null,
+      "division": "Cleveland Division",
+      "details": "Claude Roenbaugh was employed as an engineer in the Cleveland Division.",
+      "sources": ["RDApp-221988Roenbaugh274.jpg.json"]
+    },
+    {
+      "date": "1916",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Brakeman",
+      "department": null,
+      "division": null,
+      "details": "Roenbaugh was noted as a brakeman in the records.",
+      "sources": ["RDApp-221988Roenbaugh276.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "11/07/1913",
+      "injury_type": "Acute muscular Rheumatism",
+      "body_part": "back",
+      "narrative": "Roenbaugh was disabled due to acute muscular rheumatism in his back, which lasted until November 28, 1913.",
+      "medical_examinations": [
+        {
+          "date": "12/01/1913",
+          "examiner": "D. E. Stephan",
+          "finding": "disabled",
+          "notes": "Rheumatism in the back caused total disability from November 7 to November 28, 1913.",
+          "sources": ["RDApp-221988Roenbaugh275.jpg.json", "RDApp-221988Roenbaugh280.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "11/21/1913", "end": "11/27/1913"},
+          "days": 2,
+          "amount": 4.00,
+          "check_number": "351810",
+          "sources": ["RDApp-221988Roenbaugh274.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "unknown",
+      "infection_date": "before 02/21/1916",
+      "injury_type": "Septicemia",
+      "body_part": "right arm",
+      "narrative": "Roenbaugh developed septicemia in his right arm after scratching himself while off-duty. He was unable to work until he returned on October 7, 1916.",
+      "medical_examinations": [
+        {
+          "date": "02/21/1916",
+          "examiner": "J. J. McGarell",
+          "finding": "disabled",
+          "notes": "Septicemia in the right arm caused disability until Roenbaugh's return to duty on February 21, 1916.",
+          "sources": ["RDApp-221988Roenbaugh273.jpg.json"]
+        },
+        {
+          "date": "10/07/1916",
+          "examiner": "J. J. McCormick",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh271.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "D. E. Stephan",
+      "district": "19",
+      "examinations": [{"date": "12/01/1913", "finding": "disabled"}]
+    },
+    {
+      "name": "J. J. McGarell",
+      "district": "19",
+      "examinations": [{"date": "02/21/1916", "finding": "disabled"}]
+    },
+    {
+      "name": "J. J. McCormick",
+      "district": "49",
+      "examinations": [{"date": "10/07/1916", "finding": "able to return to duty"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "unknown",
+      "event": "Roenbaugh's disability and recovery process was well-documented by the Relief Department.",
+      "significance": "The documentation provides insight into the medical and administrative processes of the B&O Railroad during this period.",
+      "sources": ["RDApp-221988Roenbaugh274.jpg.json", "RDApp-221988Roenbaugh275.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "11/07/1913", "latest": "10/07/1916"},
+    "completeness_assessment": "The records are fairly complete, detailing Roenbaugh's injuries and disability periods. However, there is some inconsistency in the spelling of his name across documents.",
+    "data_quality_notes": [
+      "OCR quality varies; some names and dates are unclear or misspelled.",
+      "Some forms contain blank fields that could not be filled due to lack of information."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The case highlights the medical challenges faced by railroad workers in the early 20th century and the administrative processes for handling disability claims."],
+    "comparative_questions": [
+      "How did Roenbaugh's experience compare with other employees who suffered similar injuries?",
+      "What were the typical durations of recovery periods for different types of injuries?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

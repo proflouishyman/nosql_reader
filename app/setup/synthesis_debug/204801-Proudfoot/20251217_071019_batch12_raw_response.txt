@@ -1,0 +1,318 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto L. Proudfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood113.jpg.json"]
+      },
+      {
+        "name": "Otto S. Braund Lout",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood115.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the earliest disability records. Name variations are noted but 'Otto D. Proudfoot' appears most consistently."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company, serving in various departments and divisions over his career. His employment history is marked by several instances of disability due to accidents or sickness, which spanned from late 1934 into early 1935. The nature of these injuries included fractures to ribs and femurs, indicating significant physical strain associated with his role as an engineer. Proudfoot's records suggest he was a dedicated employee who faced considerable health challenges but continued to serve the company despite multiple periods of disability.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Cumberland",
+      "date_range": "unknown",
+      "context": "Place of residence or work location",
+      "sources": ["RDApp-204801Proudfood112.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "Ct Dept.",
+      "division": "Eu Div'n",
+      "details": "No specific date for hire is provided, but he was employed as an engineer in the Ct Department, Eu Division.",
+      "sources": ["RDApp-204801Proudfood117.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "Ct Dept.",
+      "division": "Eu Div'n",
+      "details": "Totally disabled by accident or sickness from October 20, 1934 to November 19, 1934.",
+      "sources": ["RDApp-204801Proudfood119.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1934-03-15",
+      "injury_type": "Fractured rib & left femur (off duty)",
+      "body_part": "Rib, Left Femur",
+      "narrative": "Otto D. Proudfoot suffered a fracture to his ribs and left femur off-duty on March 15, 1934, leading to disability payments from the company.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "DR. B.H. Guistwhite",
+          "finding": "disabled",
+          "notes": "Examination confirmed disability due to fractures off-duty.",
+          "sources": ["RDApp-204801Proudfood112.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1934-03-17", "end": "1935-04-19"},
+          "days": 365,
+          "amount": 58.75,
+          "check_number": null,
+          "sources": ["RDApp-204801Proudfood112.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1935-03-20",
+      "injury_type": "ACCIDENT—SICKNESS",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled due to accident or sickness from March 20, 1935 to April 1, 1935.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "DR. B.H. Guistwhite",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood114.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1935-02-20",
+      "injury_type": "ACCIDENT—SICKNESS",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled due to accident or sickness from February 20, 1935 to March 19, 1935.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "J.E. Fuller",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood115.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1935-01-20",
+      "injury_type": "ACCIDENT—SICKNESS",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled due to accident or sickness from January 20, 1935 to February 19, 1935.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "T.C. Fuller",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood116.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1934-12-20",
+      "injury_type": "ACCIDENT—SICKNESS",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled due to accident or sickness from December 20, 1934 to January 19, 1935.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "DR. B.H. Guistwhite",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood117.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1934-11-20",
+      "injury_type": "ACCIDENT—SICKNESS",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled due to accident or sickness from November 20, 1934 to December 19, 1934.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "DR. B.H. Guistwhite",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood118.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1934-10-20",
+      "injury_type": "ACCIDENT-SICKNESS",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled due to accident or sickness from October 20, 1934 to November 19, 1934.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "J.E. Fuller",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood119.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1934-09-20",
+      "injury_type": "ACCIDENT—SICKNESS",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled due to accident or sickness from September 20, 1934 to October 19, 1934.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "DR. R.H. Chestwhite",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood120.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "DR. B.H. Guistwhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        },
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "J.E. Fuller",
+      "district": "6",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "T.C. Fuller",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "DR. R.H. Chestwhite",
+      "district": "60",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-09-20",
+      "latest": "1935-04-19"
+    },
+    "completeness_assessment": "The records are relatively complete regarding disability and medical examinations but lack details on employment start date, promotions, or family information.",
+    "data_quality_notes": [
+      "Some documents contain name variations that may indicate typographical errors or alternative spellings of the same individual.",
+      "Dates in some documents are not fully specified (e.g., missing day or month)."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the physical demands and risks associated with railroad engineering roles during this period, as well as the company's response to employee injuries through disability payments.",
+      "Medical examination processes were formalized with specific forms and procedures for reporting and certifying disabilities."
+    ],
+    "comparative_questions": [
+      "How did injury rates and responses vary across different departments or divisions within the railroad?",
+      "What was the typical duration of disability periods, and how did this affect employees' long-term employment?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

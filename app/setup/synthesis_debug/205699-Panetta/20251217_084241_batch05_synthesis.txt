@@ -1,0 +1,218 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Dario Lonetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta041.jpg.json"
+        ]
+      },
+      {
+        "name": "Harry Panella",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta042.jpg.json"
+        ]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta044.jpg.json"
+        ]
+      },
+      {
+        "name": "Eloio Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta045.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "The identity of the individual is somewhat uncertain due to multiple name variations. The most consistent name across documents is Ilario Panetta."
+  },
+  "biographical_narrative": "Ilario Panetta, a laborer for the Baltimore & Ohio Railroad Company, had a career marked by several injuries and medical issues that required ongoing attention from the company's Relief Department. His employment history includes periods of disability due to workplace accidents and health conditions such as hernias. In May 1912, he suffered an injury while working in Keyser, West Virginia, which led to his temporary inability to work. He was later certified fit for duty by medical examiners. By October 1931, Panetta reported another disability but did not lose any time from work. The company provided him with a double truss due to an inguinal hernia that developed while he was on duty in October 1931.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No information about spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Keyser",
+      "date_range": "unknown",
+      "context": "Residence or work location",
+      "sources": [
+        "RDApp-205699Panetta045.jpg.json"
+      ]
+    },
+    {
+      "address": "Leonard Keyes, WVA",
+      "date_range": "unknown",
+      "context": "Workplace accident location",
+      "sources": [
+        "RDApp-205699Panetta044.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Laborer",
+      "department": "Motive Power Department",
+      "division": "Cumberland Division",
+      "details": "Started as a laborer in the Motive Power Department, Cumberland Division.",
+      "sources": []
+    },
+    {
+      "date": "1912-05-15",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a contusion over his right shoulder while working.",
+      "sources": [
+        "RDApp-205699Panetta044.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-10-07",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported a right inguinal hernia, possibly due to an accident.",
+      "sources": [
+        "RDApp-205699Panetta046.jpg.json",
+        "RDApp-205699Panetta048.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1912-05-15",
+      "injury_type": "Contusion over right shoulder",
+      "body_part": "Right shoulder",
+      "narrative": "Panetta was injured while loading scrap on track, resulting in a contusion. He returned to duty after medical examination.",
+      "medical_examinations": [
+        {
+          "date": "1912-05-23",
+          "examiner": "J.A. Doerner, M.D.",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta041.jpg.json",
+            "RDApp-205699Panetta042.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1931-10-07",
+      "injury_type": "Right inguinal hernia with incomplete left inguinal hernia",
+      "body_part": "Inguinal region (right and left)",
+      "narrative": "Panetta reported a right inguinal hernia, possibly due to an accident in October 1931. The company provided him with a double truss.",
+      "medical_examinations": [
+        {
+          "date": "1931-10-28",
+          "examiner": null,
+          "finding": "provided with bilateral truss",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta047.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.A. Doerner, M.D.",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1912-05-23",
+          "finding": "able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": null,
+      "district": null,
+      "examinations": [
+        {
+          "date": "1931-10-28",
+          "finding": "provided with bilateral truss"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1931-10-28",
+      "event": "Purchase of a bilateral truss for Panetta",
+      "significance": "Indicates the company's provision of medical support to employees with disabilities.",
+      "sources": [
+        "RDApp-205699Panetta047.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-11-10",
+      "event": "Confirmation that the truss was satisfactory",
+      "significance": "Shows follow-up on medical equipment provided to employees.",
+      "sources": [
+        "RDApp-205699Panetta048.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1912-05-15",
+      "latest": "1933-01-20"
+    },
+    "completeness_assessment": "The record is relatively complete for injury and medical documentation but lacks comprehensive employment details.",
+    "data_quality_notes": [
+      "Multiple name variations make identity resolution challenging.",
+      "Some documents are partially handwritten, leading to OCR quality issues."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the railroad's medical support system for injured employees and the detailed documentation required by the company.",
+      "It also reveals the commonality of workplace injuries among laborers in early 20th-century railroads."
+    ],
+    "comparative_questions": [
+      "How did injury rates and medical support vary across different divisions or departments within the railroad?",
+      "What were the typical durations of disability claims for similar injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.83
+  }
+}

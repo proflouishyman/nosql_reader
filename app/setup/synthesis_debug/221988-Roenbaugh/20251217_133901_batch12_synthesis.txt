@@ -1,0 +1,237 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Rosenbaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh116.jpg.json"
+        ]
+      },
+      {
+        "name": "J. Claude Armstrong",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh114.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "Name variations exist but 'Claude Roenbaugh' is most commonly used. Birth year derived from disability record."
+  },
+  "biographical_narrative": "Claude Roenbaugh, a locomotive engineer for the Baltimore & Ohio Railroad Company (B&O), had a career marked by multiple instances of disablement due to sickness and injury. He began his employment in April 1940 with the C.T. Department, Whg Division, but faced several interruptions to his service due to health issues. Roenbaugh was reported disabled on at least three occasions: from August 1-13, 1944, for an axillary abscess; from May 12, 1949, likely due to sickness or accident; and from April 1-16, 1944, also due to sickness. Each instance required medical examination and certification of disablement by the company's Relief Department. Despite these interruptions, Roenbaugh returned to duty each time, indicating a resilient career within the railroad industry.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "331 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-221988Roenbaugh116.jpg.json",
+        "RDApp-221988Roenbaugh118.jpg.json"
+      ]
+    },
+    {
+      "address": "394 W. 21st, Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-221988Roenbaugh119.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1940-04-11",
+      "event_type": "hire/application",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Whg",
+      "details": "Claude Roenbaugh was hired as an engineer in the C.T. Department, Whg Division.",
+      "sources": [
+        "RDApp-221988Roenbaugh117.jpg.json"
+      ]
+    },
+    {
+      "date": "1944-08-01",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Whg",
+      "details": "Roenbaugh was disabled due to an axillary abscess.",
+      "sources": [
+        "RDApp-221988Roenbaugh116.jpg.json"
+      ]
+    },
+    {
+      "date": "1944-04-01",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Whg",
+      "details": "Roenbaugh was disabled due to sickness.",
+      "sources": [
+        "RDApp-221988Roenbaugh118.jpg.json"
+      ]
+    },
+    {
+      "date": "1949-05-12",
+      "event_type": "injury",
+      "position": "Locomotive Engineer",
+      "department": "CT",
+      "division": "WT9",
+      "details": "Roenbaugh was reported disabled due to sickness.",
+      "sources": [
+        "RDApp-221988Roenbaugh119.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1944-08-01",
+      "injury_type": "Axillary Abscess",
+      "body_part": "Armpit",
+      "narrative": "Claude Roenbaugh was disabled due to an axillary abscess from August 1, 1944. He resumed duty on August 14, 1944.",
+      "medical_examinations": [
+        {
+          "date": "1944-08-11",
+          "examiner": "Dr. J.H. Minor",
+          "finding": "disabled",
+          "notes": "Inspected for return to duty on August 14, 1944.",
+          "sources": [
+            "RDApp-221988Roenbaugh116.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1944-08-01",
+            "end": "1944-08-13"
+          },
+          "days": 13,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-221988Roenbaugh116.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1944-04-01",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was disabled due to sickness from April 1, 1944. He resumed duty on April 17, 1944.",
+      "medical_examinations": [
+        {
+          "date": "1944-04-07",
+          "examiner": "Dr. J.H. Minor",
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-221988Roenbaugh118.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1944-04-01",
+            "end": "1944-04-16"
+          },
+          "days": 16,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-221988Roenbaugh118.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1949-05-12",
+      "injury_type": "Sickness or Accident",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was reported disabled due to sickness or an accident starting May 12, 1949. Details on the nature of disablement are not provided.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. J.H. Minor",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "1944-04-07",
+          "finding": "disabled"
+        },
+        {
+          "date": "1944-08-11",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Jeff Marr",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1944-08-18",
+          "finding": "able to return"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1914-08-08",
+      "latest": "1949-05-18"
+    },
+    "completeness_assessment": "The record is relatively complete for Roenbaugh's disablement events, but lacks details on his personal life and family. There are some inconsistencies in name spelling.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have unclear entries or missing information."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the frequent health issues faced by railroad employees and the company's structured process for handling disablement claims.",
+      "It also demonstrates the role of medical examiners in certifying disability and facilitating return to duty."
+    ],
+    "comparative_questions": [
+      "How did Roenbaugh's experience compare with other engineers or workers in different departments?",
+      "What were the common health issues among railroad employees during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

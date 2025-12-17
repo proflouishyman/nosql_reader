@@ -1,0 +1,190 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Luigia Mancusa",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco066.jpg.json"
+        ]
+      },
+      {
+        "name": "L. L. Mancuso",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco067.jpg.json"
+        ]
+      },
+      {
+        "name": "Luigi Mancusi",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204897Manusco065.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist but 'Luigi Mancuso' appears most frequently and is likely the canonical name."
+  },
+  "biographical_narrative": "Luigi Mancuso was a carman for the Baltimore and Ohio Railroad Company, working in various capacities including as a repairman. His career with the railroad included several notable events, particularly his injury on February 5, 1936, when he caught his left thumb in the truck of a car while replacing a wheel at Glenwood, Pennsylvania. This resulted in significant medical attention and time off work due to the severity of the wound involving flexor tendons and circulatory damage. Mancuso's injury was well-documented through multiple reports and correspondence, reflecting the company\u2019s detailed record-keeping for employee health and safety incidents.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No explicit mention of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence mentioned in correspondence",
+      "sources": [
+        "RDApp-204897Manusco062.jpg.json"
+      ]
+    },
+    {
+      "address": "111 Pulaski St., City",
+      "date_range": "unknown",
+      "context": "Address provided on medical forms",
+      "sources": [
+        "RDApp-204897Manusco070.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Carman",
+      "department": "M.P.",
+      "division": "Pgh.",
+      "details": "Began working as a carman for the Baltimore and Ohio Railroad Company. Specific hire date not provided in records.",
+      "sources": [
+        "RDApp-204897Manusco065.jpg.json"
+      ]
+    },
+    {
+      "date": "1936-02-05",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured while on duty at Glenwood, Pennsylvania.",
+      "sources": [
+        "RDApp-204897Manusco061.jpg.json",
+        "RDApp-204897Manusco063.jpg.json"
+      ]
+    },
+    {
+      "date": "1936-04-21",
+      "event_type": "medical examination referral",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported to the Division Clerk for medical examination due to prolonged absence from service.",
+      "sources": [
+        "RDApp-204897Manusco065.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1936-02-05",
+      "injury_type": "Complete circular lacerated wound",
+      "body_part": "Left thumb",
+      "narrative": "Luigi Mancuso was injured on February 5, 1936, when he caught his left thumb in the truck of a car while replacing a wheel. The injury required suturing and resulted in considerable destruction of circulation.",
+      "medical_examinations": [
+        {
+          "date": "1936-02-08",
+          "examiner": "Dr. G. E. Harvey",
+          "finding": "disabled",
+          "notes": "Sent to Murray Hospital, expected to lose time.",
+          "sources": [
+            "RDApp-204897Manusco068.jpg.json"
+          ]
+        },
+        {
+          "date": null,
+          "examiner": "J.H. McIntire",
+          "finding": "disabled",
+          "notes": "Estimated disability duration of 4 to 6 weeks due to the injury.",
+          "sources": [
+            "RDApp-204897Manusco069.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. G. E. Harvey",
+      "district": "16",
+      "examinations": [
+        {
+          "date": "1936-02-08",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "J.H. McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1936-04-21",
+      "event": "Reported to Division Clerk for medical examination referral.",
+      "significance": "Indicates prolonged absence from service due to injury.",
+      "sources": [
+        "RDApp-204897Manusco065.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1936-02-05",
+      "latest": "1936-04-21"
+    },
+    "completeness_assessment": "The records are comprehensive regarding the injury and its medical treatment but lack details on Mancuso's employment history before or after the incident.",
+    "data_quality_notes": [
+      "Name variations exist across documents.",
+      "Some dates are not fully specified, leading to uncertainty."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the detailed record-keeping practices of railroad companies for employee health and safety incidents in the early 20th century.",
+      "It also underscores the limited insurance coverage available to employees at that time, with Mancuso only insured for natural death benefits."
+    ],
+    "comparative_questions": [
+      "How did injury reporting and compensation vary between different railroad companies?",
+      "What was the typical duration of disability leave due to injuries in this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

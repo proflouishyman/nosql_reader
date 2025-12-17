@@ -1,0 +1,150 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {"name": "Charles Harris", "confidence": "medium", "sources": ["RDApp-635058Harris092.jpg.json"]},
+      {"name": "Charly Harris", "confidence": "low", "sources": ["RDApp-635058Harris095.jpg.json"]}
+    ],
+    "employee_id": "635058",
+    "birth_year": 1893,
+    "confidence_notes": "Name variations exist but 'Charley Harris' is most commonly used. Birth year derived from insurance claim documentation."
+  },
+  
+  "biographical_narrative": "Charley Harris, born in 1893, began his career with the Baltimore & Ohio Railroad Company as a fireman in an unspecified year prior to November 1939. His employment spanned several years during which he contributed significantly to the company's insurance fund. In October or early November of 1939, Harris suffered an injury that led to his total disability and subsequent retirement from service on December 19, 1939. Throughout his tenure with B&O Railroad, Harris held a position in the Wheeling Division. His case highlights the complexities involved in workers' compensation claims and the role of medical examinations in determining eligibility for benefits.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No explicit mention", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "811 Hill St., Ceredo, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in correspondence regarding disability claim.",
+      "sources": ["RDApp-635058Harris099.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Began employment as a fireman, details of start date not provided.",
+      "sources": ["RDApp-635058Harris092.jpg.json", "RDApp-635058Harris094.jpg.json"]
+    },
+    {
+      "date": "1939-11-09",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Injured and declared totally disabled, leading to furlough.",
+      "sources": ["RDApp-635058Harris094.jpg.json", "RDApp-635058Harris098.jpg.json"]
+    },
+    {
+      "date": "1939-12-19",
+      "event_type": "furlough/resignation",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Retired from service due to total disability.",
+      "sources": ["RDApp-635058Harris094.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1939-10-29",
+      "injury_type": "Slipped and fell on a water tank, puncturing his chest.",
+      "body_part": "Chest",
+      "narrative": "On October 29, 1939, Harris slipped while working in the yards at Bado, West Virginia, falling onto a water tank which resulted in a punctured chest. This injury led to his total disability and retirement from service.",
+      "medical_examinations": [
+        {
+          "date": "1939-11-28",
+          "examiner": null,
+          "finding": "Totally disabled",
+          "notes": "Medical examination found Harris totally disabled, unable to perform any work.",
+          "sources": ["RDApp-635058Harris094.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1939-11-01", "end": null},
+          "days": 52,
+          "amount": 3.00,
+          "check_number": null,
+          "sources": ["RDApp-635058Harris095.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": null,
+      "district": null,
+      "examinations": [
+        {"date": "1939-11-28", "finding": "Totally disabled"}
+      ]
+    },
+    {
+      "name": "I. Clay Hicks, M.D.",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1940-06-07",
+      "event": "Request for information denied without Harris's authorization",
+      "significance": "Demonstrates the company’s policy on privacy and member confidentiality.",
+      "sources": ["RDApp-635058Harris097.jpg.json"]
+    },
+    {
+      "date": "1940-04-22",
+      "event": "Received claim from attorney representing Harris",
+      "significance": "Indicates legal involvement in the disability claim process.",
+      "sources": ["RDApp-635058Harris098.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1940-04-22", "latest": "1949-11-21"},
+    "completeness_assessment": "The record is relatively complete regarding Harris's injury and disability claim, but lacks details on his early career and family life.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents contain truncated text or unclear handwriting.",
+      "There are minor discrepancies in the spelling of 'Charley' vs. 'Charles'."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case illustrates the challenges faced by railroad workers and the complex administrative processes involved in disability claims during the early 20th century.",
+      "It also highlights the role of medical examinations and legal representation in securing benefits."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's policies compare to other railroads regarding worker compensation?",
+      "What were the typical outcomes for workers like Harris who suffered injuries on the job?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

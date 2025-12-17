@@ -1,0 +1,180 @@
+{
+  "person_identity": {
+    "canonical_name": "William N. Steinecker",
+    "name_variations": [
+      {
+        "name": "Wm. Steinacker",
+        "confidence": "high",
+        "sources": ["RDApp-204722Steinecker013.jpg.json", "RDApp-204722Steinecker015.jpg.json"]
+      },
+      {
+        "name": "William Steinesker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker006.jpg.json"]
+      },
+      {
+        "name": "Wm. Stenecker",
+        "confidence": "low",
+        "sources": ["RDApp-204722Steinecker015.jpg.json"]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": null,
+    "confidence_notes": "The birth year is not provided in the documents, but the identity of William N. Steinecker is well-supported across multiple records."
+  },
+  
+  "biographical_narrative": "William N. Steinecker was a fireman employed by the Baltimore & Ohio Railroad Company during the early 20th century. His career began with his employment as a fireman, and he faced significant challenges when he was severely injured in an engine explosion on January 18, 1903, at Monrovia, Maryland. The injury left him hospitalized for several months, during which time he received benefits from the company's Relief Department. After being discharged from hospital care, Steinecker continued to receive medical treatment and compensation until his recovery was certified in September of that year. Despite his injuries, Steinecker returned to work as a fireman but faced disputes over benefit payments for June through August 1903, which he refused to accept or sign releases for.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Westport, Md",
+      "date_range": "unknown",
+      "context": "Residence location mentioned in several documents related to his employment and injury.",
+      "sources": ["RDApp-204722Steinecker013.jpg.json", "RDApp-204722Steinecker015.jpg.json"]
+    },
+    {
+      "address": "Baltimore City Hospital, Calvert Street, North",
+      "date_range": "January 18 - March 31, 1903",
+      "context": "Hospitalization location during his recovery from the injury.",
+      "sources": ["RDApp-204722Steinecker005.jpg.json", "RDApp-204722Steinecker006.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": "C.T.",
+      "division": "Balto.",
+      "details": "William N. Steinecker began his career as a fireman with the Baltimore & Ohio Railroad Company, though the exact date of hire is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1903-01-18",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Steinecker was severely injured in an engine explosion at Monrovia, Maryland.",
+      "sources": ["RDApp-204722Steinecker013.jpg.json"]
+    },
+    {
+      "date": "1903-09-01",
+      "event_type": "return to duty",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "After recovery, Steinecker was certified as able to return to his duties.",
+      "sources": ["RDApp-204722Steinecker015.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1903-01-18",
+      "injury_type": "Severe burns and cuts by glass",
+      "body_part": "Not specified",
+      "narrative": "William N. Steinecker was severely injured in an engine explosion at Monrovia, Maryland on January 18, 1903. He suffered from severe burns and cuts by glass.",
+      "medical_examinations": [
+        {
+          "date": "1903-01-21",
+          "examiner": "Adams",
+          "finding": "disabled",
+          "notes": "Severely burned while on duty during a wreck at Monrovia, now at Baltimore City Hospital.",
+          "sources": ["RDApp-204722Steinecker017.jpg.json"]
+        },
+        {
+          "date": "1903-09-01",
+          "examiner": "Tearney",
+          "finding": "able to return to duty",
+          "notes": "Certified able to resume duties on September 1, 1903.",
+          "sources": ["RDApp-204722Steinecker015.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1903-01-19", "end": "1903-08-31"},
+          "days": 224,
+          "amount": 60.50,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker006.jpg.json", "RDApp-204722Steinecker010.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "There was a dispute over the benefit payments for June through August 1903, as Steinecker refused to sign releases or accept checks.",
+        "resolution": "The case was closed on August 31, 1903, with unpaid checks held in the office."
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Adams",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1903-01-21",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Tearney",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1903-09-01",
+          "finding": "able to return to duty"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1905-02-21",
+      "event": "Releases executed by William Steinrocker were sent in response to a request.",
+      "significance": "This event highlights the administrative follow-up related to Steinecker's injury claim and benefit payments.",
+      "sources": ["RDApp-204722Steinecker020.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1903-01-18",
+      "latest": "1905-02-21"
+    },
+    "completeness_assessment": "The documents provide a detailed account of William N. Steinecker's injury and subsequent benefit claims, but lack information on his pre-injury career or personal life.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors that affect the readability and accuracy of names and dates."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case provides insight into the medical care, benefit systems, and administrative practices of railroad companies in handling employee injuries during the early 20th century.",
+      "It also highlights the bureaucratic processes involved in worker compensation claims."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar injury cases?",
+      "What were the typical durations and amounts of benefit payments for injured workers?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "A. E. Manusack",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco165.jpg.json"
+        ]
+      },
+      {
+        "name": "A. Mazzauat",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco166.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the document dated January 23, 1921, where Antonio Mancuso's certificate number and employment details are provided."
+  },
+  "biographical_narrative": "Antonio Mancuso was a car repairman for the Baltimore & Ohio Railroad Company. He began his career in the company\u2019s Maintenance of Property (M.P.) Department around 1913, as indicated by his eight years of service noted on January 23, 1921. Throughout his employment, he faced several injuries that required medical attention and temporary disability benefits. On January 18, 1921, Mancuso suffered a contused wound to his right foot at the base of his little toe while working in Connellsville shops. He returned to work on January 24, 1921. Another injury occurred on November 18, 1921, when he was jacking up a tank and the jack fell on his foot, causing another contusion. Mancuso's career with the railroad company is marked by these injuries and the subsequent medical examinations and disability benefits.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Connellsville, Pa",
+      "date_range": "unknown",
+      "context": "Residence as stated in the Relief Department records.",
+      "sources": [
+        "RDApp-204897Manusco162.jpg.json",
+        "RDApp-204897Manusco163.jpg.json"
+      ]
+    },
+    {
+      "address": "McKees Rocks, Pa",
+      "date_range": "unknown",
+      "context": "Residence as stated in the Notice of Disablement.",
+      "sources": [
+        "RDApp-204897Manusco164.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1913",
+      "event_type": "hire/application",
+      "position": "Car Repairman",
+      "department": "M.P.",
+      "division": null,
+      "details": "Began employment as a car repairman in the Maintenance of Property Department.",
+      "sources": [
+        "RDApp-204897Manusco162.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-01-18",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": "M.P.",
+      "division": null,
+      "details": "Sustained a contused wound to the right foot at the base of his little toe while working in Connellsville shops.",
+      "sources": [
+        "RDApp-204897Manusco163.jpg.json",
+        "RDApp-204897Manusco165.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-01-24",
+      "event_type": "return to duty",
+      "position": "Car Repairman",
+      "department": "M.P.",
+      "division": null,
+      "details": "Returned to work after a period of disability due to the contused foot injury.",
+      "sources": [
+        "RDApp-204897Manusco163.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-11-18",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": "M.P.",
+      "division": null,
+      "details": "Sustained another contusion to the right foot while jacking up a tank and the jack fell on his foot.",
+      "sources": [
+        "RDApp-204897Manusco169.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1921-01-18",
+      "injury_type": "Contused wound to the right foot at the base of little toe",
+      "body_part": "Right foot, little toe",
+      "narrative": "Antonio Mancuso suffered a contusion while working in Connellsville shops on January 18, 1921. He was unable to work and received disability benefits until January 24, 1921.",
+      "medical_examinations": [
+        {
+          "date": "1921-01-28",
+          "examiner": "H.H. McIntire",
+          "finding": "disabled",
+          "notes": "Certified as disabled due to the contused wound on his right foot.",
+          "sources": [
+            "RDApp-204897Manusco165.jpg.json"
+          ]
+        },
+        {
+          "date": "1921-01-29",
+          "examiner": "H.H. McIntire",
+          "finding": "able to return to duty",
+          "notes": "Certified as able to resume work on January 24, 1921.",
+          "sources": [
+            "RDApp-204897Manusco168.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1921-01-19",
+            "end": "1921-01-23"
+          },
+          "days": 4,
+          "amount": 6.15,
+          "check_number": "71000",
+          "sources": [
+            "RDApp-204897Manusco162.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1921-11-18",
+      "injury_type": "Contusion to the right foot",
+      "body_part": "Right foot",
+      "narrative": "On November 18, 1921, Antonio Mancuso was injured again while working in Connellsville shops. The jack he was using fell on his foot causing a contusion.",
+      "medical_examinations": [
+        {
+          "date": "1921-11-18",
+          "examiner": "N. Kennedy",
+          "finding": null,
+          "notes": "Inspected Mancuso for an injury to the right foot after the jack fell on it.",
+          "sources": [
+            "RDApp-204897Manusco169.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "H.H. McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "1921-01-28",
+          "finding": "disabled"
+        },
+        {
+          "date": "1921-01-29",
+          "finding": "able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "N. Kennedy",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-11-18",
+          "finding": null
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1921-01-18",
+      "latest": "1921-11-18"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from January to November 1921, detailing Mancuso's injuries and medical examinations. However, there are some inconsistencies in name variations which may indicate potential confusion with other employees.",
+    "data_quality_notes": [
+      "Name variations exist that need further verification.",
+      "Some documents have incomplete information or unclear OCR text."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical practices and disability benefits provided by the Baltimore & Ohio Railroad Company in the early 20th century, highlighting the risks faced by workers in railroad maintenance roles.",
+      "These documents also reveal the administrative processes involved in handling employee injuries and the role of medical examiners in certifying disabilities."
+    ],
+    "comparative_questions": [
+      "How did disability benefits and medical practices vary across different railroads during this period?",
+      "What were the common causes of injury among railroad workers, and how did these compare to other industrial sectors?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

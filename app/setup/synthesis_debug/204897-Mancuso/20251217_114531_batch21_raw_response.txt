@@ -1,0 +1,175 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "N. Mancuso",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco201.jpg.json"]
+      },
+      {
+        "name": "Luigi Mannoio",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco205.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is primarily based on the most consistent name usage, but there are minor variations that introduce slight uncertainty."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso was an employee of the Baltimore & Ohio Railroad Company for several decades during the early to mid-20th century. He initially worked as a car repairman and later as a laborer, with his employment spanning various departments including the Car Department and Inspection Division. His career was marked by periods of furloughs and returns to duty, indicating fluctuating economic conditions within the railroad industry. Mancuso faced health challenges, having been reported disabled at one point but later authorized to return to work. He also dealt with administrative issues related to his membership in the company's Relief Department for natural death benefits while on leave.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "118 E Fayette St, ConnelsPa",
+      "date_range": "unknown",
+      "context": "Residence when reported for duty after disability",
+      "sources": ["RDApp-204897Manusco201.jpg.json"]
+    },
+    {
+      "address": "111 Pulaski St, Connellsville, Pa",
+      "date_range": "unknown",
+      "context": "Residence for correspondence and benefit requests",
+      "sources": ["RDApp-204897Manusco202.jpg.json", "RDApp-204897Manusco203.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1913-12-29",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after being reported disabled on 12/22/1913.",
+      "sources": ["RDApp-204897Manusco201.jpg.json"]
+    },
+    {
+      "date": "1936-02-01",
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application date for membership in the Relief Department.",
+      "sources": ["RDApp-204897Manusco210.jpg.json"]
+    },
+    {
+      "date": "1937-07-30",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed from service.",
+      "sources": ["RDApp-204897Manusco205.jpg.json"]
+    },
+    {
+      "date": "1937-08-06",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed again.",
+      "sources": ["RDApp-204897Manusco205.jpg.json"]
+    },
+    {
+      "date": "1938-01-31",
+      "event_type": "administrative_event",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Overpayment of $2.10 in membership account for January.",
+      "sources": ["RDApp-204897Manusco207.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1913-12-22",
+      "injury_type": null,
+      "body_part": null,
+      "narrative": "Reported disabled on December 22, 1913. Returned to duty on December 29, 1913.",
+      "medical_examinations": [
+        {
+          "date": "1913-12-29",
+          "examiner": "Koehler",
+          "finding": "able_to_return",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco201.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Koehler",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1913-12-29",
+          "finding": "able_to_return"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1937-08-27",
+      "event": "deduction_of_contributions",
+      "significance": "Indicates payroll processing for benefits.",
+      "sources": ["RDApp-204897Manusco203.jpg.json"]
+    },
+    {
+      "date": "1938-01-31",
+      "event": "overpayment_adjustment",
+      "significance": "Reflects financial adjustments due to overpaid contributions.",
+      "sources": ["RDApp-204897Manusco207.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1913-12-22",
+      "latest": "1938-01-31"
+    },
+    "completeness_assessment": "The record is relatively complete, covering employment status changes and administrative events. However, there are some inconsistencies in names and minor gaps in details.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text.",
+      "There's a discrepancy between 'Luigi Mancuso' and 'Luigi Mannoio'."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Luigi Mancuso highlights the fluctuating nature of railroad employment during economic downturns, as evidenced by his furloughs.",
+      "It also demonstrates the importance of company-provided benefits and the administrative processes involved in maintaining membership."
+    ],
+    "comparative_questions": [
+      "How did other employees fare during similar periods of economic stress?",
+      "What were the typical durations for which workers were furloughed?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

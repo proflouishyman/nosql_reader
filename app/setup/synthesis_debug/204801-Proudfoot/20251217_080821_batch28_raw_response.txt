@@ -1,0 +1,181 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O.S. Proudfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood271.jpg.json"]
+      },
+      {
+        "name": "A.D. Trudfort",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood273.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from documents and may not be accurate. The name variations are noted, with 'O.S. Proudfoot' having a higher confidence due to multiple references."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company in the early to mid-20th century. His career spanned several decades and included various incidents of injury that impacted his ability to work. In February 1929, he suffered a fall from a tank car which resulted in fractures to both wrists; however, this incident was not followed up with a claim for benefits. Another notable event occurred on December 13, 1952, when Proudfoot became disabled due to spinal osteoporosis and the collapse of vertebrae. This disability led to his retirement from active service by February 24, 1953, after which he opted to retain natural death benefits.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour Street, Cumberland, Maryland",
+      "date_range": "unknown",
+      "context": "Residence address as stated in multiple documents.",
+      "sources": ["RDApp-204801Proudfood277.jpg.json", "RDApp-204801Proudfood278.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div'n",
+      "details": "Began employment as an engineer in the Cumberland Division of the Baltimore & Ohio Railroad Company. The exact date is not specified in the documents.",
+      "sources": ["RDApp-204801Proudfood277.jpg.json"]
+    },
+    {
+      "date": "1953-02-24",
+      "event_type": "retirement",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Retired from active service due to disability.",
+      "sources": ["RDApp-204801Proudfood279.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1929-02-05",
+      "injury_type": "Fall from tank car",
+      "body_part": "Both wrists",
+      "narrative": "On February 4, 1929, Proudfoot fell while descending a tank car and suffered fractures to both wrists. Despite the injury, no claim for benefits was made.",
+      "medical_examinations": [
+        {
+          "date": "1929-02-05",
+          "examiner": "J.G. Selby",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Examined by Dr. J.G. Selby, who noted the fracture but no contusions.",
+          "sources": ["RDApp-204801Proudfood271.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1952-12-13",
+      "injury_type": "Spinal osteoporosis and collapse of vertebrae",
+      "body_part": "7th & 9th dorsal vertebrae",
+      "narrative": "On December 13, 1952, Proudfoot became disabled due to spinal issues. This led to his retirement from active service.",
+      "medical_examinations": [
+        {
+          "date": "1953-02-25",
+          "examiner": "W.I. Munsie",
+          "finding": "disabled",
+          "notes": "Certified as totally disabled by accident or sickness from February 20, 1953 to February 23, 1953.",
+          "sources": ["RDApp-204801Proudfood280.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1953-01-13", "end": "1953-03-04"},
+          "days": 66,
+          "amount": 157.00,
+          "check_number": null,
+          "sources": ["RDApp-204801Proudfood277.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J.G. Selby",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1929-02-05",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.I. Munsie",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1953-02-25",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1953-02-24",
+      "event": "Application for annuity effective date change",
+      "significance": "Proudfoot applied to have his annuity benefits start on February 24, 1953.",
+      "sources": ["RDApp-204801Proudfood279.jpg.json"]
+    },
+    {
+      "date": "1953-03-10",
+      "event": "Case closure and benefits termination notice sent to Proudfoot",
+      "significance": "Notified that his case was closed effective February 23, 1953.",
+      "sources": ["RDApp-204801Proudfood278.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1929-02-05",
+      "latest": "1953-03-10"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from 1929 to 1953, with detailed documentation of injuries and disability benefits. However, there are some inconsistencies in names and a lack of information on family or personal life.",
+    "data_quality_notes": [
+      "There are discrepancies in the name 'O.S. Proudfoot' versus 'Otto D. Proudfoot'.",
+      "Some documents contain incomplete data fields."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Otto D. Proudfoot provides insight into the medical practices and administrative procedures for handling injuries among railroad employees in the early to mid-20th century.",
+      "It highlights the importance of documentation and claims processes within the Baltimore & Ohio Railroad Company."
+    ],
+    "comparative_questions": [
+      "How did injury management and disability benefits differ between various railroads during this period?",
+      "What was the typical career trajectory for engineers in the railroad industry?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

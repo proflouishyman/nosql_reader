@@ -1,0 +1,174 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "L. Mancuso",
+        "confidence": "high",
+        "sources": ["RDApp-204897Manusco214.jpg.json"]
+      },
+      {
+        "name": "Luigi Manosa",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco216.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1887,
+    "confidence_notes": "Name variations are noted but likely refer to the same individual due to consistent context and employment details."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso, born in 1887, began his career with the Baltimore & Ohio Railroad Company as a car oiler. His employment spanned several divisions within the company, including the Ogle Division and the Connellsville Division. In October 1928, he suffered an accident that resulted in a lacerated nose, for which he received disability payments. Mancuso's career also saw administrative issues such as incorrect payroll deductions and delays in receiving insurance policies. His last recorded work date was January 3, 1938, after which he sought to continue his membership with the company’s relief department.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "111 Pulaski St., Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address for correspondence and benefits",
+      "sources": ["RDApp-204897Manusco213.jpg.json", "RDApp-204897Manusco216.jpg.json"]
+    },
+    {
+      "address": "111 Judd St., Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address for correspondence",
+      "sources": ["RDApp-204897Manusco212.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "11/18/1926",
+      "event_type": "transfer",
+      "position": "Car Oiler",
+      "department": "MP Department",
+      "division": "Connellsville Division",
+      "details": "Transferred from the Ogle Division to the Connellsville Division.",
+      "sources": ["RDApp-204897Manusco215.jpg.json"]
+    },
+    {
+      "date": "10/13/1928",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a lacerated nose injury.",
+      "sources": ["RDApp-204897Manusco216.jpg.json", "RDApp-204897Manusco217.jpg.json"]
+    },
+    {
+      "date": "1/3/1938",
+      "event_type": "last_work_date",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Last day worked.",
+      "sources": ["RDApp-204897Manusco211.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "10/13/1928",
+      "injury_type": "Lacerated nose",
+      "body_part": "Nose",
+      "narrative": "Luigi Mancuso suffered a laceration to his nose on October 13, 1928. He was examined by Dr. McIntire and received disability payments for the period of injury.",
+      "medical_examinations": [
+        {
+          "date": "10/13/1928",
+          "examiner": "McIntire",
+          "finding": "disabled",
+          "notes": "Lacerated nose, 7/10 days disabled at a rate of $1.50 per day.",
+          "sources": ["RDApp-204897Manusco216.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "10/13/1928", "end": "10/21/1928"},
+          "days": 8.7,
+          "amount": 13.05,
+          "check_number": "543423",
+          "sources": ["RDApp-204897Manusco216.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "10/13/1928",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "H.H. McArthur",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "McClintic",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1/25/1938",
+      "event": "Incorrect payroll deduction",
+      "significance": "Mancuso reported an incorrect deduction for relief dues.",
+      "sources": ["RDApp-204897Manusco213.jpg.json"]
+    },
+    {
+      "date": "3/8/1937",
+      "event": "Insurance policy delay",
+      "significance": "Mancuso inquired about the delay in receiving his insurance policy.",
+      "sources": ["RDApp-204897Manusco214.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "3/8/1937",
+      "latest": "1/27/1938"
+    },
+    "completeness_assessment": "The record is fairly complete for the period covered, detailing injuries and administrative issues. However, there are some inconsistencies in name spellings.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents contain truncated text or unclear handwriting."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of disability insurance and relief programs for railroad workers, as well as administrative challenges in payroll and benefits management.",
+      "It also reveals the detailed documentation required by companies to manage employee injuries and benefits."
+    ],
+    "comparative_questions": [
+      "How did injury management practices vary across different divisions within the B&O Railroad?",
+      "What were common issues faced by workers regarding insurance policies and administrative errors?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

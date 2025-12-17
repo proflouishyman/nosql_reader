@@ -1,0 +1,170 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claud Roach",
+        "confidence": "medium",
+        "sources": ["RDApp-221988Roenbaugh148.jpg.json"]
+      },
+      {
+        "name": "Claude Vincent Chaplin",
+        "confidence": "low",
+        "sources": ["RDApp-221988Roenbaugh147.jpg.json"]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "Name variations exist but 'Claude Roenbaugh' is the most consistent. Birth year derived from document references."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh, an engineer for the Baltimore and Ohio Railroad Company, began his career in 1941 as part of the Transportation Department on the Akron-Chicago Division at Lorain, Ohio Station. His employment records indicate a series of transfers between divisions within the company, including a move to the Wheeling Division in September 1941. Roenbaugh experienced health issues that led to periods of disability due to gastroenteritis in July and August 1941. Despite these setbacks, he was able to return to duty by mid-August. His career with the railroad company spanned several years until his death in 1950.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "351 W. 27th Street, Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address as stated in disability documents.",
+      "sources": ["RDApp-221988Roenbaugh143.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1941-06-01",
+      "event_type": "transfer",
+      "position": "Engineer",
+      "department": "Transportation Department",
+      "division": "Akron-Chicago Division",
+      "details": "Transferred from Wheeling Division to Akron-Chicago Division.",
+      "sources": ["RDApp-221988Roenbaugh141.jpg.json"]
+    },
+    {
+      "date": "1941-09-01",
+      "event_type": "transfer",
+      "position": "Engineer",
+      "department": "Transportation Department",
+      "division": "Wheeling Division",
+      "details": "Transferred from Akron-Chicago Division to Wheeling Division.",
+      "sources": ["RDApp-221988Roenbaugh142.jpg.json"]
+    },
+    {
+      "date": "1945-08-11",
+      "event_type": "medical clearance",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "No longer considered totally disabled by the Relief Department.",
+      "sources": ["RDApp-221988Roenbaugh148.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1941-07-29",
+      "injury_type": "Gastro-enteritis",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was disabled due to gastroenteritis from July 29, 1941, and was unable to work until August 10, 1941. He resumed duties on August 11.",
+      "medical_examinations": [
+        {
+          "date": "1941-08-08",
+          "examiner": "Dr. J.H. Munson",
+          "finding": "disabled",
+          "notes": "Inspected and confirmed disability due to gastroenteritis.",
+          "sources": ["RDApp-221988Roenbaugh145.jpg.json"]
+        },
+        {
+          "date": "1941-08-11",
+          "examiner": null,
+          "finding": "able to return to duty",
+          "notes": "No longer considered totally disabled.",
+          "sources": ["RDApp-221988Roenbaugh148.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1941-07-25", "end": "1941-07-31"},
+          "days": 6,
+          "amount": 12.00,
+          "check_number": "19966",
+          "sources": ["RDApp-221988Roenbaugh143.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. J.H. Munson",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1941-08-08",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "J.W. Barr",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1941-08-08",
+          "finding": "groin enteritis"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1951-04-20",
+      "event": "Refund notice for annuity payments",
+      "significance": "Clarifies financial obligations post-death.",
+      "sources": ["RDApp-221988Roenbaugh150.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1941-06-12",
+      "latest": "1951-04-20"
+    },
+    "completeness_assessment": "The record is relatively complete, covering employment and medical details. However, family information and full address history are missing.",
+    "data_quality_notes": [
+      "Name variations exist across documents (Claude Roenbaugh, Claud Roach).",
+      "Some OCR text is truncated or illegible."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the railroad company's structured approach to managing employee health and disability.",
+      "It reveals the importance of medical examinations in determining work eligibility during periods of illness."
+    ],
+    "comparative_questions": [
+      "How did other employees' experiences with injury and disability compare?",
+      "What were typical durations for recovery from similar illnesses?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

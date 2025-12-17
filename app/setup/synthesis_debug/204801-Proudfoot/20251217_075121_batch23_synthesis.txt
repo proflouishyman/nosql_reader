@@ -1,0 +1,205 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Proudfood",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood221.jpg.json",
+          "RDApp-204801Proudfood222.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto D. Proudfcot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood226.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1884,
+    "confidence_notes": "Name variations are present but 'Otto D. Proudfoot' is the most consistent and official name used in multiple documents."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company, working in the Cumberland Division of the CT Department. He experienced several periods of disability due to myalgia in both shoulders, which began on September 18, 1948. Despite these health issues, he continued his service with intermittent returns to duty and ongoing medical examinations. His employment record reflects a series of disablement certificates and payments from the company's Relief Department, indicating a history of illness that affected his work but did not terminate his career.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "150 Seymour St., Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence address as stated in multiple documents.",
+      "sources": [
+        "RDApp-204801Proudfood221.jpg.json",
+        "RDApp-204801Proudfood230.jpg.json"
+      ]
+    },
+    {
+      "address": "139 S. Locust St., Euf",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in one document.",
+      "sources": [
+        "RDApp-204801Proudfood227.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1946-05-10",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumberland",
+      "details": "Inspection record indicates ongoing monitoring for myalgia.",
+      "sources": [
+        "RDApp-204801Proudfood224.jpg.json"
+      ]
+    },
+    {
+      "date": "1948-09-18",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumberland",
+      "details": "First reported disability due to myalgia in both shoulders.",
+      "sources": [
+        "RDApp-204801Proudfood223.jpg.json",
+        "RDApp-204801Proudfood226.jpg.json"
+      ]
+    },
+    {
+      "date": "1948-11-20",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumberland",
+      "details": "Second reported disability period due to myalgia.",
+      "sources": [
+        "RDApp-204801Proudfood222.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1948-09-18",
+      "injury_type": "Myalgia",
+      "body_part": "Both shoulders",
+      "narrative": "Otto D. Proudfoot was disabled due to myalgia in both shoulders, with a probable duration of 4 to 6 weeks as diagnosed by Dr. C.E. Durrett.",
+      "medical_examinations": [
+        {
+          "date": "1948-09-27",
+          "examiner": "Dr. W.B. Baker",
+          "finding": "disabled",
+          "notes": "Myalgia both shoulders, probable duration 4 to 6 weeks.",
+          "sources": [
+            "RDApp-204801Proudfood230.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1948-11-20",
+            "end": "1948-11-23"
+          },
+          "days": 3.85,
+          "amount": 5.95,
+          "check_number": "03994",
+          "sources": [
+            "RDApp-204801Proudfood221.jpg.json"
+          ]
+        },
+        {
+          "period": {
+            "start": "1948-11-20",
+            "end": "1948-11-31"
+          },
+          "days": 3.15,
+          "amount": 11.85,
+          "check_number": "01751",
+          "sources": [
+            "RDApp-204801Proudfood221.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. W.B. Baker",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1948-09-27",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. C.E. Durrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "myalgia both shoulders, probable duration 4 to 6 weeks."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1948-09-27",
+      "event": "Certification of disablement due to myalgia.",
+      "significance": "This event marked the formal recognition of Proudfoot's disability by the company\u2019s Relief Department.",
+      "sources": [
+        "RDApp-204801Proudfood230.jpg.json"
+      ]
+    },
+    {
+      "date": "1948-12-06",
+      "event": "Final inspection and certification of disablement period ending.",
+      "significance": "Indicates the end of a significant disability period affecting Proudfoot's work.",
+      "sources": [
+        "RDApp-204801Proudfood224.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1946-05-10",
+      "latest": "1948-12-06"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of disability and medical examination, but lacks details on his career progression or family life.",
+    "data_quality_notes": [
+      "Some OCR errors in document names and text content.",
+      "Conflicting addresses are noted."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Otto D. Proudfoot reveals the extent to which railroad companies provided support for employees with disabilities, including ongoing medical examinations and disability payments.",
+      "It also highlights the challenges faced by engineers in maintaining their health on the job."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's policies compare to those of other railroads during this period?",
+      "What were the broader implications for labor relations in the railroad industry?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

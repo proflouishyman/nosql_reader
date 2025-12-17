@@ -1,0 +1,217 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Ott",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood197.jpg.json"]
+      },
+      {
+        "name": "J. D. Proudfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood192.jpg.json"]
+      },
+      {
+        "name": "O. D. Proudfoot",
+        "confidence": "high",
+        "sources": ["RDApp-204801Proudfood193.jpg.json", "RDApp-204801Proudfood196.jpg.json"]
+      },
+      {
+        "name": "Otto L. Proudfont",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood200.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1884,
+    "confidence_notes": "The birth year is derived from the medical examination record dated September 27, 1920."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer for the Baltimore & Ohio Railroad Company in Cumberland, Maryland. His career with the railroad spanned several years during which he experienced multiple periods of disablement due to accidents and illnesses. In October 1914, Proudfoot suffered a traumatic ulcer on his left lower leg after being struck by a switch stand while on duty. He was unable to work from October 10 to November 14, 1914. Another significant event occurred in May 1916 when he developed sciatica and was disabled until August of the same year. Proudfoot's medical records indicate that he received benefits during these periods of disablement, reflecting the company’s policy on employee health and safety. His career with the railroad also involved regular medical examinations to ensure his fitness for duty.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Arch St., S. Cumberland, Md.",
+      "date_range": "Unknown",
+      "context": "Residence address listed in disablement notices",
+      "sources": ["RDApp-204801Proudfood192.jpg.json", "RDApp-204801Proudfood193.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "G. S.",
+      "division": "Cumbd Div.",
+      "details": "Hired as an engineer in the Cumberland Division, G. S. Department.",
+      "sources": []
+    },
+    {
+      "date": "1914-10-10",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Disabled due to a traumatic ulcer on the left lower leg caused by being struck by a switch stand.",
+      "sources": ["RDApp-204801Proudfood196.jpg.json"]
+    },
+    {
+      "date": "1914-11-15",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty after being disabled.",
+      "sources": ["RDApp-204801Proudfood194.jpg.json"]
+    },
+    {
+      "date": "1916-05-08",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Disabled due to sciatica.",
+      "sources": ["RDApp-204801Proudfood199.jpg.json"]
+    },
+    {
+      "date": "1916-08-01",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty after being disabled.",
+      "sources": ["RDApp-204801Proudfood200.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1914-10-10",
+      "injury_type": "Traumatic ulcer on the left lower leg",
+      "body_part": "Left Lower Leg",
+      "narrative": "Proudfoot was struck by a switch stand while on duty, resulting in a traumatic ulcer. He was disabled from October 10 to November 14, 1914.",
+      "medical_examinations": [
+        {
+          "date": "1914-11-15",
+          "examiner": "Dr. J. A. Doerner",
+          "finding": "able_to_return_to_duty",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood194.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1914-10-10", "end": "1914-11-14"},
+          "days": 36,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-204801Proudfood191.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-05-08",
+      "injury_type": "Sciatica",
+      "body_part": "Lower Back",
+      "narrative": "Proudfoot developed sciatica and was disabled from May 8 to August 1, 1916. He received benefits during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. J.A. Doerner",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood200.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1916-05-09", "end": "1916-08-01"},
+          "days": 73,
+          "amount": 182.50,
+          "check_number": null,
+          "sources": ["RDApp-204801Proudfood199.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. J.A. Doerner",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1914-11-15",
+          "finding": "able_to_return_to_duty"
+        },
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Ammons",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1913-05-01",
+      "latest": "1920-09-27"
+    },
+    "completeness_assessment": "The records are fairly complete for the periods of disablement and medical examinations, but there is no information on his hiring date or career progression beyond injuries.",
+    "data_quality_notes": [
+      "Some documents have OCR errors, such as 'Proudfont' instead of 'Proudfoot'.",
+      "There are discrepancies in names (e.g., Ott vs. Otto D.)."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the importance of medical care and disability benefits for railroad workers during this period.",
+      "They also show the meticulous documentation required by the company to manage employee health issues."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's policies compare with other railroads in terms of worker safety and compensation?",
+      "What were the common causes of injuries among railroad engineers?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

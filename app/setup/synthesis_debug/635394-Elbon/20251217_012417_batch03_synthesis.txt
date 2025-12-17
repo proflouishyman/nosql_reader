@@ -1,0 +1,212 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo Verne Elbon",
+    "name_variations": [
+      {
+        "name": "L. V. Ebon",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635394Elbon027.jpg.json",
+          "RDApp-635394Elbon028.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Verne Elbon",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635394Elbon023.jpg.json",
+          "RDApp-635394Elbon028.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist but are consistent enough to establish identity with high confidence."
+  },
+  "biographical_narrative": "Leo Verne Elbon was a fireman for the Baltimore and Ohio Railroad Company, serving in Cumberland Division. His career spanned several decades, marked by periods of furlough and re-examination due to health concerns. In 1940, he faced rejection from service due to a faint systolic murmur detected during a medical examination but was later cleared after further tests in 1941. Elbon's application for full membership in the Relief Feature of the Baltimore & Ohio Railroad Company\u2019s Relief Department indicates his commitment to securing benefits and support through company programs. His records show a dedication to maintaining employment despite health challenges, reflecting the resilience required by railroad workers during this era.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention of spouse in documents",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "R.F.D. #1, Buckhannon, W.Va.",
+      "date_range": "unknown",
+      "context": "Residence address for medical examination coordination",
+      "sources": [
+        "RDApp-635394Elbon028.jpg.json",
+        "RDApp-635394Elbon030.jpg.json"
+      ]
+    },
+    {
+      "address": "Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Location for Relief Department application and correspondence",
+      "sources": [
+        "RDApp-635394Elbon022.jpg.json",
+        "RDApp-635394Elbon023.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Initial employment as a fireman in Cumberland Division.",
+      "sources": [
+        "RDApp-635394Elbon023.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "furlough",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Furloughed in 1927, possibly due to health concerns.",
+      "sources": [
+        "RDApp-635394Elbon029.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "application",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Applied for full membership in the Relief Feature of the Baltimore & Ohio Railroad Company\u2019s Relief Department.",
+      "sources": [
+        "RDApp-635394Elbon022.jpg.json",
+        "RDApp-635394Elbon023.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "re-examination",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Re-examined in 1940 and found to have a faint systolic murmur, leading to rejection. Re-examined again in 1941 with satisfactory results.",
+      "sources": [
+        "RDApp-635394Elbon027.jpg.json",
+        "RDApp-635394Elbon028.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Faint systolic murmur",
+      "body_part": "Heart",
+      "narrative": "In February 1940, Elbon was rejected from service due to a faint systolic murmur detected during examination. However, he was re-examined in June 1941 and found to be in satisfactory health.",
+      "medical_examinations": [
+        {
+          "date": "1940-02-19",
+          "examiner": "Dr. Baker",
+          "finding": "disabled",
+          "notes": "Detected faint systolic murmur, leading to rejection from service.",
+          "sources": [
+            "RDApp-635394Elbon029.jpg.json"
+          ]
+        },
+        {
+          "date": "1941-06-16",
+          "examiner": "Dr. Stine",
+          "finding": "able to return",
+          "notes": "No heart murmur detected, blood pressure and urine tests were normal.",
+          "sources": [
+            "RDApp-635394Elbon028.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Stine",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1940-02-19",
+          "finding": "Detected faint systolic murmur"
+        },
+        {
+          "date": "1941-06-16",
+          "finding": "No heart murmur detected, satisfactory health."
+        }
+      ]
+    },
+    {
+      "name": "Dr. Baker",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1940-02-19",
+          "finding": "Detected faint systolic murmur"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1926-01-19",
+      "event": "Application for Relief Department membership",
+      "significance": "Indicates Elbon's commitment to securing benefits and support through company programs.",
+      "sources": [
+        "RDApp-635394Elbon022.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event": "Re-examination coordination",
+      "significance": "Reflects the process of re-evaluating health status for continued employment.",
+      "sources": [
+        "RDApp-635394Elbon028.jpg.json",
+        "RDApp-635394Elbon029.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1920",
+      "latest": "1941"
+    },
+    "completeness_assessment": "The record is fairly complete, providing a detailed timeline of Elbon's health and employment status. However, there are some inconsistencies in name spelling that could affect identity resolution.",
+    "data_quality_notes": [
+      "Name variations exist (e.g., L. V. Ebon vs Leo Verne Elbon).",
+      "Some documents have truncated text, which may impact the completeness of information."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the stringent health requirements and re-evaluation processes for railroad workers in the early 20th century.",
+      "It also underscores the importance of company-sponsored relief programs to support employees during times of illness or injury."
+    ],
+    "comparative_questions": [
+      "How did medical practices and employment policies vary across different railroads?",
+      "What were the common health issues faced by railroad workers, and how were they addressed?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris087.jpg.json"
+        ]
+      },
+      {
+        "name": "Mr. Charley Harris",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635058Harris088.jpg.json",
+          "RDApp-635058Harris090.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 635058,
+    "birth_year": null,
+    "confidence_notes": "Identity is certain based on consistent references across documents, though birth year information is missing."
+  },
+  "biographical_narrative": "Charley Harris was a fireman for the Baltimore and Ohio Railroad Company. He began his career with the company but faced significant challenges due to health issues. In March of 1937, he was furloughed from service, likely due to medical reasons or other circumstances. Harris attempted to return to duty in October 1939 when he was recalled by the company. However, upon returning, his application for new membership and re-employment was rejected after a medical examination revealed that he did not meet the necessary health standards required for firemen. This rejection led to legal disputes over benefits and contributions made during his employment tenure.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "208 First Huntington Arcade, Huntington, W. Va.",
+      "date_range": "unknown",
+      "context": "Attorney Connor Hall's address where legal correspondence was sent regarding Harris's case",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1937-03-22",
+      "event_type": "furlough",
+      "position": "fireman",
+      "department": null,
+      "division": null,
+      "details": "Charley Harris was furloughed from service.",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-10-10",
+      "event_type": "recall to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Charley Harris was recalled to service.",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-10-07",
+      "event_type": "medical examination/rejection",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Charley Harris was rejected for new membership and re-employment after a medical examination.",
+      "sources": [
+        "RDApp-635058Harris090.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "heart condition",
+      "body_part": "heart",
+      "narrative": "Charley Harris was rejected for re-employment due to a heart condition, which led to his furlough in 1937 and the rejection of his medical examination in 1939.",
+      "medical_examinations": [
+        {
+          "date": "1939-10-07",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Harris was found to have a heart condition that disqualified him from rejoining the fireman position.",
+          "sources": [
+            "RDApp-635058Harris087.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "Charley Harris disputed his rejection and sought legal recourse, questioning the withholding of premium payments during his period of service.",
+        "resolution": "The dispute was not resolved in the documents provided."
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": null,
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-10-07",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1941-05-22",
+      "event": "trial for legal case",
+      "significance": "The trial involved Charley Harris's dispute over benefits and contributions.",
+      "sources": [
+        "RDApp-635058Harris086.jpg.json",
+        "RDApp-635058Harris087.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1941-01-03",
+      "latest": "1941-05-19"
+    },
+    "completeness_assessment": "The record is complete for the period from January to May 1941, detailing legal and administrative actions. However, it lacks comprehensive medical details or personal information beyond employment.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text.",
+      "There are minor inconsistencies in spelling of names (e.g., Dr. Nimal/Nimi/Minal)."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the stringent medical standards for railroad employees and the legal disputes that could arise over benefits and contributions.",
+      "It also underscores the administrative challenges in managing employee health records and ensuring compliance with company policies."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases involving medical disqualification?",
+      "What were the broader implications of such rejections on railroad labor force demographics?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

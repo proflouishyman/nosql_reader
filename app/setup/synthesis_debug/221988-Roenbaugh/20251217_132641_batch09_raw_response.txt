@@ -1,0 +1,142 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Claude Koenbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh081.jpg.json"]},
+      {"name": "Claude Rombach", "confidence": "low", "sources": ["RDApp-221988Roenbaugh089.jpg.json"]},
+      {"name": "Claude Rambaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh090.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "Name variations exist, but 'Claude Roenbaugh' appears most frequently and is likely the canonical name."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh was an engineer for the Baltimore & Ohio Railroad Company. He began his career with the company by September of 1946, working in the C.T. Department under the Wheeling Division. In September of that year, he suffered a disability due to a chronic infection affecting his left eye lid, which kept him from work until October 26th, 1946. Roenbaugh resumed duty on October 27th, but was later reported as disabled again in May 1947 with mild anxiety neurosis, indicating that he likely faced ongoing health challenges during his tenure at the railroad company.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information about spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "331 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address as stated in the documents",
+      "sources": ["RDApp-221988Roenbaugh082.jpg.json", "RDApp-221988Roenbaugh083.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1946",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Wheeling",
+      "details": "Claude Roenbaugh was employed as an engineer in the C.T. Department under the Wheeling Division of the Baltimore & Ohio Railroad Company.",
+      "sources": ["RDApp-221988Roenbaugh082.jpg.json"]
+    },
+    {
+      "date": "1946-09-25",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Claude Roenbaugh was reported disabled due to a chronic infection of the lower lid, left eye.",
+      "sources": ["RDApp-221988Roenbaugh083.jpg.json", "RDApp-221988Roenbaugh086.jpg.json"]
+    },
+    {
+      "date": "1947-05-31",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Claude Roenbaugh was reported disabled due to mild anxiety neurosis.",
+      "sources": ["RDApp-221988Roenbaugh081.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1946-09-25",
+      "injury_type": "Chronic infection of the lower lid, left eye",
+      "body_part": "Left eyelid",
+      "narrative": "Claude Roenbaugh was reported disabled due to a chronic infection affecting his left eyelid. He was off duty from September 25th until October 26th, 1946.",
+      "medical_examinations": [
+        {
+          "date": "1946-10-04",
+          "examiner": "J.W. Sayre, M.D.",
+          "finding": "disabled",
+          "notes": "Claude Roenbaugh was under care without work absence until 9/25; he was off duty from 9/25 and expected to resume about 10/9.",
+          "sources": ["RDApp-221988Roenbaugh089.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1946-10-03", "end": "1946-10-28"},
+          "days": 25,
+          "amount": 50.284,
+          "check_number": null,
+          "sources": ["RDApp-221988Roenbaugh082.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1947-05-31",
+      "injury_type": "Mild anxiety neurosis",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was reported disabled due to mild anxiety neurosis, which began on May 31st, 1947.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "J.W. Sayre, M.D.", "district": "18", "examinations": [{"date": "1946-10-04", "finding": "disabled"}]},
+    {"name": "Dr. John W. Adrain", "district": null, "examinations": []}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1947-07-03",
+      "event": "Claude Roenbaugh should not be permitted to resume duty until authorized by the office.",
+      "significance": "Indicates that Roenbaugh's return to work was dependent on further medical clearance due to his anxiety neurosis.",
+      "sources": ["RDApp-221988Roenbaugh081.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1946-07-03", "latest": "1947-11-02"},
+    "completeness_assessment": "The record is relatively complete for Roenbaugh's disability history and medical examinations. However, there are some inconsistencies in the spelling of his name across documents.",
+    "data_quality_notes": [
+      "There are minor OCR errors in several documents which affect readability but not critical information.",
+      "Some documents contain unclear or missing details such as check numbers."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The case of Claude Roenbaugh highlights the importance of medical clearance and ongoing health monitoring for railroad employees, particularly those in safety-sensitive positions like engineers."],
+    "comparative_questions": ["How common were mental health issues among railroad workers during this period?", "What was the typical duration and treatment for disabilities such as mild anxiety neurosis?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

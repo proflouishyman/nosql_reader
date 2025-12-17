@@ -1,0 +1,238 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claud L. Ritenbaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh211.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Roenbaugh",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh213.jpg.json",
+          "RDApp-221988Roenbaugh214.jpg.json",
+          "RDApp-221988Roenbaugh215.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude R. Roundsbrough",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh214.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rosenbaugh",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh216.jpg.json",
+          "RDApp-221988Roenbaugh217.jpg.json",
+          "RDApp-221988Roenbaugh218.jpg.json",
+          "RDApp-221988Roenbaugh219.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rosenbrough",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh217.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 221988,
+    "birth_year": 1883,
+    "confidence_notes": "Name variations are noted, but 'Claude Roenbaugh' is the most consistent across documents."
+  },
+  "biographical_narrative": "Claude Roenbaugh was an employee of the Baltimore & Ohio Railroad Company (B&O) from at least as early as September 1929. He held positions including Fireman and Engineman within the C.T. Department, primarily in the Akron Division. His career with B&O was marked by several periods of disablement due to sickness or injury between June 1929 and November 1931. Roenbaugh's medical records indicate he suffered from a strained leg and general colds, which led to multiple absences from work. Despite these interruptions, there is no indication that his employment was terminated, suggesting he returned to active duty after each period of disablement.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No mention in documents",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "311 W 21 St.",
+      "date_range": "November 1931",
+      "context": "Residence at time of disablement due to accident or sickness",
+      "sources": [
+        "RDApp-221988Roenbaugh211.jpg.json"
+      ]
+    },
+    {
+      "address": "Lorain, Ohio",
+      "date_range": "Unknown",
+      "context": "General residence mentioned in medical records",
+      "sources": [
+        "RDApp-221988Roenbaugh213.jpg.json",
+        "RDApp-221988Roenbaugh215.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Exact date of hire is unknown.",
+      "sources": []
+    },
+    {
+      "date": "1929-06-20",
+      "event_type": "injury",
+      "position": "Engineman",
+      "department": "C.T. Dept.",
+      "division": "Akron Div'n",
+      "details": "Disabled by accident or sickness from June 20, 1929 to July 19, 1929.",
+      "sources": [
+        "RDApp-221988Roenbaugh218.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-11-21",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": "C.T. Dept.",
+      "division": "Glenwood Div'n",
+      "details": "Disabled by accident or sickness from November 21, 1931 to December 8, 1931.",
+      "sources": [
+        "RDApp-221988Roenbaugh211.jpg.json",
+        "RDApp-221988Roenbaugh212.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1929-06-20",
+      "injury_type": "Accident/Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was disabled by an accident or sickness from June 20 to July 19, 1929. No specific injury details are provided.",
+      "medical_examinations": [
+        {
+          "date": "1929-08-07",
+          "examiner": "J.H. Minor",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-221988Roenbaugh218.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1931-11-21",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was disabled by a general cold from November 21 to December 8, 1931. He resumed duties on December 8.",
+      "medical_examinations": [
+        {
+          "date": "1931-12-09",
+          "examiner": "J.H. Minor",
+          "finding": "able to return",
+          "notes": null,
+          "sources": [
+            "RDApp-221988Roenbaugh212.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.H. Minor",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "1931-12-09",
+          "finding": "able to return"
+        },
+        {
+          "date": "1929-08-07",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "T.E. McDermott",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1929-06-20",
+          "finding": "disabled"
+        },
+        {
+          "date": "1931-11-21",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1929-08-19",
+      "event": "Inspection of time record",
+      "significance": "Confirmed no wages were allowed during disablement period.",
+      "sources": [
+        "RDApp-221988Roenbaugh217.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-12-09",
+      "event": "Medical Examiner's Report of Disablement",
+      "significance": "Documented Roenbaugh's recovery from a general cold.",
+      "sources": [
+        "RDApp-221988Roenbaugh212.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1929-06-20",
+      "latest": "1931-12-09"
+    },
+    "completeness_assessment": "The record is relatively complete for the period of June 1929 to December 1931, detailing multiple instances of disablement and medical examinations. However, there are no documents indicating his initial hire date or any promotions.",
+    "data_quality_notes": [
+      "Name variations exist across documents.",
+      "OCR quality is generally good but some dates and names have minor inconsistencies."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical practices of B&O during this period, including how disablement was reported and managed.",
+      "They also highlight the impact of sickness on railroad employees' work schedules."
+    ],
+    "comparative_questions": [
+      "How did the frequency and duration of disablements compare among different departments or divisions?",
+      "What were the common causes of disablement across other B&O employees?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Louis Ianuosa",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco301.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonio Mannassa",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco305.jpg.json"
+        ]
+      },
+      {
+        "name": "Luigi Minnoso",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco308.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonio Luigi Mannuno",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco307.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1886,
+    "confidence_notes": "The identity is primarily based on the name 'Luigi Mancuso' and birth year of 1886, with some variations in names that may be due to mistranscriptions or aliases."
+  },
+  "biographical_narrative": "Luigi Mancuso was a long-serving employee of the Baltimore & Ohio Railroad Company. Born in 1886, he began his career as a car inspector and later held positions such as motorcarman and laborer. His employment spanned several decades, with notable injuries occurring on January 27, 1944, and August 18, 1946. Mancuso's work was characterized by dedication to the railroad industry, despite suffering from physical ailments that affected his ability to perform his duties. He faced a significant disability due to lumbago in February 1953, which led to a period of medical leave and eventual return to duty.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of spouse's name",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence",
+      "sources": [
+        "RDApp-204897Manusco301.jpg.json"
+      ]
+    },
+    {
+      "address": "111 Pulaski Street Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Place of residence for disability record",
+      "sources": [
+        "RDApp-204897Manusco310.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Car Inspector",
+      "department": "unknown",
+      "division": "Pgh MCH. Bob",
+      "details": "Began work as a car inspector.",
+      "sources": [
+        "RDApp-204897Manusco301.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "promotion/transfer",
+      "position": "Motorcarman",
+      "department": "unknown",
+      "division": "Pgh MCH. Bob",
+      "details": "Transferred to motorcarman position.",
+      "sources": [
+        "RDApp-204897Manusco304.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Car Inspector",
+      "department": "unknown",
+      "division": "Pgh MCH. Bob",
+      "details": "Injured right ear while working under a car.",
+      "sources": [
+        "RDApp-204897Manusco301.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Car Inspector",
+      "department": "unknown",
+      "division": "Pgh MCH. Bob",
+      "details": "Injured while on duty at Glenwood, Pa.",
+      "sources": [
+        "RDApp-204897Manusco302.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "disability",
+      "position": "Carman",
+      "department": "MP",
+      "division": "Pgh MCH. Bob",
+      "details": "Began disability due to lumbago.",
+      "sources": [
+        "RDApp-204897Manusco310.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1944-01-27",
+      "injury_type": "Laceration",
+      "body_part": "Right ear",
+      "narrative": "Luigi Mancuso was injured while working under a car, resulting in a lacerated right ear. He received treatment at Mercy Hospital.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "R.W. Dean",
+          "finding": "disabled",
+          "notes": "Recommended caution to prevent future accidents.",
+          "sources": [
+            "RDApp-204897Manusco301.jpg.json"
+          ]
+        }
+      ],
+      "payments": []
+    },
+    {
+      "injury_date": "1946-08-18",
+      "injury_type": "First Aid",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was injured while on duty at Glenwood, Pa., and received first aid treatment.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": null,
+            "end": null
+          },
+          "days": 1,
+          "amount": 2.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-204897Manusco302.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "R.W. Dean",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Fuller Nance, M.D.",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Disability benefits",
+      "significance": "Began receiving disability benefits due to lumbago.",
+      "sources": [
+        "RDApp-204897Manusco310.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event": "Medical examination",
+      "significance": "Received medical examination for first aid treatment.",
+      "sources": [
+        "RDApp-204897Manusco302.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": null,
+      "latest": null
+    },
+    "completeness_assessment": "The record is fairly complete for injury and disability events but lacks detailed personal information such as family details.",
+    "data_quality_notes": [
+      "Multiple name variations suggest potential OCR errors or aliases.",
+      "Some documents are incomplete or unclear."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Luigi Mancuso highlights the risks and medical support provided to railroad workers during the mid-20th century.",
+      "It also underscores the importance of workplace safety measures in an industrial setting."
+    ],
+    "comparative_questions": [
+      "How did injury rates compare across different divisions or departments within the Baltimore & Ohio Railroad Company?",
+      "What was the typical duration and amount of disability benefits provided to injured employees?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

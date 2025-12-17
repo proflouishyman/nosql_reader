@@ -1,0 +1,96 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {"name": "Harry Gegarms", "confidence": "medium", "sources": ["RDApp-634879Degarmo031.jpg.json"]},
+      {"name": "Henry LeGame", "confidence": "low", "sources": ["RDApp-634879Degarmo032.jpg.json"]},
+      {"name": "Harry Ingram", "confidence": "low", "sources": ["RDApp-634879Degarmo033.jpg.json"]},
+      {"name": "Gregory, Harry", "confidence": "medium", "sources": ["RDApp-634879Degarmo035.jpg.json"]}
+    ],
+    "employee_id": "634879",
+    "birth_year": 1888,
+    "confidence_notes": "The birth year is based on the most consistent information across documents, but there are slight variations."
+  },
+  
+  "biographical_narrative": "Harry Degarmo was a yard brakeman for the Baltimore and Ohio Railroad Company in the early to mid-20th century. His career spanned several decades during which he experienced multiple injuries on the job that temporarily disabled him from work, including an ulcer of his left cornea and being struck by a hot cinder from an engine. Degarmo's employment records indicate ongoing medical examinations and contributions to the company’s relief department, reflecting the railroad industry’s approach to worker health and safety during this period.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct mention of a spouse in documents", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "575 East Water", "date_range": "unknown", "context": "Residence address", "sources": ["RDApp-634879Degarmo031.jpg.json"]},
+    {"address": "Chillicothe", "date_range": "unknown", "context": "General location of residence", "sources": ["RDApp-634879Degarmo035.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": null, "event_type": "hire/application", "position": "Yard Brake", "department": "Ex. frt Dept.", "division": "Ohio Div.", "details": "Began employment as Yard Brake in the Express Freight Department of Ohio Division.", "sources": ["RDApp-634879Degarmo031.jpg.json"]},
+    {"date": null, "event_type": "promotion", "position": "Road Brkmn", "department": "T. & O.", "division": "Ohio Div.", "details": "Promoted to Road Brakeman in the Transportation and Operations Department of Ohio Division.", "sources": ["RDApp-634879Degarmo035.jpg.json"]},
+    {"date": null, "event_type": "transfer", "position": "Yard Helper", "department": null, "division": null, "details": "Transferred to the position of Yard Helper.", "sources": ["RDApp-634879Degarmo036.jpg.json"]},
+    {"date": null, "event_type": "medical examination", "position": "Yard Brakeman", "department": null, "division": "St Louis Division", "details": "Received a medical examination and was declared physically qualified.", "sources": ["RDApp-634879Degarmo037.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1920-10-15",
+      "injury_type": "Ulcer of left cornea",
+      "body_part": "Left eye",
+      "narrative": "Degarmo was temporarily disabled due to an ulcer in his left cornea, which kept him from work until November 3, 1920.",
+      "medical_examinations": [
+        {"date": null, "examiner": "R. E. Porter", "finding": "disabled", "notes": "", "sources": ["RDApp-634879Degarmo034.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1930-10-15",
+      "injury_type": "Hot cinder from engine hit membrane in eye",
+      "body_part": "Left eye",
+      "narrative": "Degarmo was temporarily disabled due to a hot cinder hitting the membrane of his left eye, which kept him from work until November 2, 1930.",
+      "medical_examinations": [
+        {"date": null, "examiner": "H. Colston", "finding": "disabled", "notes": "", "sources": ["RDApp-634879Degarmo035.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "R. E. Porter", "district": "22", "examinations": [{"date": null, "finding": "disabled"}]},
+    {"name": "H. Colston", "district": "22", "examinations": [{"date": null, "finding": "disabled"}]}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1936-04-06",
+      "event": "Request for certificate of membership",
+      "significance": "Indicates Degarmo's active participation in the company’s relief department.",
+      "sources": ["RDApp-634879Degarmo037.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": null, "latest": null},
+    "completeness_assessment": "The record is relatively complete for injury and medical examination details but lacks comprehensive information on family or full employment history.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors affecting readability.",
+      "There are discrepancies in the spelling of Degarmo's name across documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The records highlight the importance of medical care and disability support for railroad workers during this period.", "They also reflect the bureaucratic process involved in documenting injuries and providing relief."],
+    "comparative_questions": ["How did injury rates compare across different departments within the Baltimore & Ohio Railroad?", "What were the typical durations of recovery periods for common injuries?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

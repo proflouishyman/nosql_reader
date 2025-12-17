@@ -1,0 +1,151 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Ilario Panetta",
+        "confidence": "high",
+        "sources": ["RDApp-205699Panetta221.jpg.json", "RDApp-205699Panetta222.jpg.json", "RDApp-205699Panetta223.jpg.json", "RDApp-205699Panetta224.jpg.json", "RDApp-205699Panetta225.jpg.json", "RDApp-205699Panetta227.jpg.json", "RDApp-205699Panetta228.jpg.json", "RDApp-205699Panetta229.jpg.json"]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": 1875,
+    "confidence_notes": "High confidence in the identity of Ilario Panetta based on consistent records across multiple documents."
+  },
+  
+  "biographical_narrative": "Ilario Panetta, born in 1875, was a laborer for the Baltimore & Ohio Railroad Company. He began his career with the company and worked under the Maintenance of Way (M.P.) Department within the Cumberland Division. In September 1934, he suffered an injury that led to myalgia lumbalis and beginning cataracts, which resulted in disability payments from the railroad's Relief Department. After a period of investigation by the Railroad Retirement Board, Panetta was granted an annuity effective June 24, 1937, for which he received $22.01 per month. His case involved several administrative adjustments and repayments due to overpayments during his application process.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "66 Vernon St., Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address for Ilario Panetta as stated in multiple documents",
+      "sources": ["RDApp-205699Panetta222.jpg.json", "RDApp-205699Panetta224.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1938-02-15",
+      "event_type": "application",
+      "position": "Laborer",
+      "department": "M.P.",
+      "division": "Cumberland Division",
+      "details": "Application for annuity submitted to the Railroad Retirement Board",
+      "sources": ["RDApp-205699Panetta228.jpg.json"]
+    },
+    {
+      "date": "1937-06-24",
+      "event_type": "annuity_granted",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Granted an annuity by the Railroad Retirement Board effective this date.",
+      "sources": ["RDApp-205699Panetta227.jpg.json", "RDApp-205699Panetta228.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1934-09-08",
+      "injury_type": "Myalgia lumbalis and beginning cataracts",
+      "body_part": "Back, eyes",
+      "narrative": "Ilario Panetta suffered from myalgia lumbalis and early-stage cataracts leading to his disability. The injury began on September 8, 1934.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Details of the examination are not provided in the documents.",
+          "sources": ["RDApp-205699Panetta224.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1934-07-09", "end": "1935-07-19"},
+          "days": 406,
+          "amount": 72.44,
+          "check_number": null,
+          "sources": ["RDApp-205699Panetta225.jpg.json"]
+        },
+        {
+          "period": {"start": "1935-10-20", "end": "1935-11-19"},
+          "days": 31,
+          "amount": 29.05,
+          "check_number": "29906",
+          "sources": ["RDApp-205699Panetta225.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Guistwhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1938-02-15",
+      "event": "Refund of overpaid benefits to the Railroad Retirement Board.",
+      "significance": "This event reflects administrative adjustments due to an annuity application process.",
+      "sources": ["RDApp-205699Panetta228.jpg.json"]
+    },
+    {
+      "date": "1938-02-18",
+      "event": "Acknowledgment of receipt of refund and natural death contributions by the Relief Department.",
+      "significance": "This event shows administrative closure of Ilario Panetta's case following his annuity grant.",
+      "sources": ["RDApp-205699Panetta227.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-09-08",
+      "latest": "1944-06-12"
+    },
+    "completeness_assessment": "The record is relatively complete for administrative and medical details, but lacks personal information such as family members or a full employment history.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents contain truncated text."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "This case provides insight into the disability and retirement benefits system of the Baltimore & Ohio Railroad Company in the early to mid-20th century.",
+      "It highlights the administrative processes involved in handling annuity applications and overpayments."
+    ],
+    "comparative_questions": [
+      "How did the medical practices for assessing injuries vary across different railroad companies?",
+      "What were the typical durations of disability payments before an annuity was granted?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

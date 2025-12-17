@@ -1,0 +1,184 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "Antonio Mazzeo",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco197.jpg.json"]
+      },
+      {
+        "name": "Emory Meyers",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco194.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1887,
+    "confidence_notes": "High confidence in identity based on multiple documents, but some name variations exist."
+  },
+  
+  "biographical_narrative": "Antonio Mancuso began his career with the Baltimore & Ohio Railroad Company as a car repairman. His employment spanned several years and involved various positions within the Mechanical Department at different divisions including Cville and Chicago. A significant event in his career was an injury sustained on April 17, 1922, when he suffered a contused wound to his left great toe while on duty due to a piece of timber falling on it. This incident led to a period of disability during which Mancuso received medical attention and compensation from the company's Relief Department. He was able to return to work by May 1st, 1922. Another notable event occurred in December 1913 when he reported a neck injury while not on duty, leading to another period of disability.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "158 Garfield St.",
+      "date_range": "unknown",
+      "context": "Residence at the time of neck injury report in December 1913",
+      "sources": ["RDApp-204897Manusco199.jpg.json"]
+    },
+    {
+      "address": "1111 Pulaski St., Civille",
+      "date_range": "unknown",
+      "context": "Residence at the time of toe injury report in April 1922",
+      "sources": ["RDApp-204897Manusco196.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Car Repairman",
+      "department": "Mechanical Department (M.P.)",
+      "division": "Cville Division",
+      "details": "Began working as a car repairman in the Mechanical Department at Cville division.",
+      "sources": ["RDApp-204897Manusco191.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Locomotive Engineer",
+      "department": "Chicago Department",
+      "division": null,
+      "details": "Worked as a locomotive engineer in the Chicago department.",
+      "sources": ["RDApp-204897Manusco199.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1922-04-17",
+      "injury_type": "Contused wound of the left great toe",
+      "body_part": "Left great toe",
+      "narrative": "Antonio Mancuso suffered a contused wound to his left great toe when a piece of timber fell on it while he was on duty at Cville repair track. He received medical attention and compensation for 11 days, from April 18th to April 29th, 1922.",
+      "medical_examinations": [
+        {
+          "date": "1922-04-26",
+          "examiner": "Dr. McCandless",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco195.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1922-04-18", "end": "1922-04-29"},
+          "days": 11,
+          "amount": 16.50,
+          "check_number": "11660",
+          "sources": ["RDApp-204897Manusco191.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1913-12-22",
+      "injury_type": "Neck injury",
+      "body_part": "Neck",
+      "narrative": "Antonio Mancuso reported a neck injury on December 22, 1913. This incident occurred while he was not on duty and led to another period of disability.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "1922-04-26",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. McCandless",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1922-04-26",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Kohler",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1922-04-17",
+      "event": "Reported injury to toe",
+      "significance": "Initiated a period of disability and compensation.",
+      "sources": ["RDApp-204897Manusco193.jpg.json"]
+    },
+    {
+      "date": "1913-12-22",
+      "event": "Reported neck injury",
+      "significance": "Initiated a period of disability and compensation.",
+      "sources": ["RDApp-204897Manusco199.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1913-12-22",
+      "latest": "1922-05-06"
+    },
+    "completeness_assessment": "The records are relatively complete for the injury events but lack details on family and employment history outside of injury reports.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors, particularly in names and addresses.",
+      "There is a discrepancy between 'Antonio Mancuso' and 'Antonio Mazzeo', which requires further investigation."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical practices and compensation policies of the Baltimore & Ohio Railroad Company during the early 20th century, particularly in handling employee injuries.",
+      "They also highlight the nature of work-related accidents among railroad workers."
+    ],
+    "comparative_questions": [
+      "How did injury compensation vary between different divisions or departments within the B&O Railroad?",
+      "What were the typical durations and severities of workplace injuries for car repairmen compared to other roles?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

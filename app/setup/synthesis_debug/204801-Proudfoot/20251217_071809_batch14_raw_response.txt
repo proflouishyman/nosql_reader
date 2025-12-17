@@ -1,0 +1,229 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Proudfood",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood131.jpg.json"]
+      },
+      {
+        "name": "Otto D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood132.jpg.json",
+          "RDApp-204801Proudfood133.jpg.json",
+          "RDApp-204801Proudfood134.jpg.json",
+          "RDApp-204801Proudfood135.jpg.json",
+          "RDApp-204801Proudfood136.jpg.json",
+          "RDApp-204801Proudfood137.jpg.json",
+          "RDApp-204801Proudfood138.jpg.json",
+          "RDApp-204801Proudfood139.jpg.json",
+          "RDApp-204801Proudfood140.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": null,
+    "confidence_notes": "Name variations are likely due to OCR errors. The canonical name is based on the majority of documents."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer with the Baltimore and Ohio Railroad Company, serving in the CT department at Cumberland Division. His career was marked by significant health challenges following two major accidents that occurred off duty. On March 17, 1934, he suffered a transverse fracture of his eighth rib and a comminuted fracture of his left femur in an automobile accident near Cumberland, Maryland. This injury led to a prolonged period of disability during which he required medical treatment at Memorial Hospital. Unfortunately, on August 12, 1934, while still recovering from the initial injuries, Proudfoot fell and re-fractured his left femur at the site of the previous fracture, further complicating his recovery process. Despite these setbacks, by March 28, 1935, he was deemed fit to return to duty with a modified shoe for compensation due to shortening from his injuries.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": ["RDApp-204801Proudfood132.jpg.json"]
+    },
+    {
+      "address": "Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Place of residence or medical treatment",
+      "sources": [
+        "RDApp-204801Proudfood133.jpg.json",
+        "RDApp-204801Proudfood135.jpg.json",
+        "RDApp-204801Proudfood136.jpg.json",
+        "RDApp-204801Proudfood137.jpg.json",
+        "RDApp-204801Proudfood138.jpg.json"
+      ]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumb",
+      "details": "Began working as an engineer in the CT department at Cumberland Division.",
+      "sources": []
+    },
+    {
+      "date": "1934-03-17",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a transverse fracture of the 8th rib and a comminuted fracture of the left femur in an automobile accident.",
+      "sources": ["RDApp-204801Proudfood132.jpg.json", "RDApp-204801Proudfood133.jpg.json"]
+    },
+    {
+      "date": "1934-08-12",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Re-fractured the left femur at the site of a previous fracture while using crutches.",
+      "sources": ["RDApp-204801Proudfood139.jpg.json"]
+    },
+    {
+      "date": "1935-03-28",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Deemed fit to return to duty with a modified shoe for compensation due to shortening from injuries.",
+      "sources": ["RDApp-204801Proudfood134.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1934-03-17",
+      "injury_type": "transverse fracture of the 8th rib and comminuted fracture of the left femur",
+      "body_part": "rib, femur",
+      "narrative": "Otto D. Proudfoot sustained a transverse fracture of his eighth rib and a comminuted fracture of his left femur in an automobile accident near Cumberland, Maryland on March 17, 1934. This injury led to a prolonged period of disability during which he required medical treatment at Memorial Hospital.",
+      "medical_examinations": [
+        {
+          "date": "1935-02-01",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Improving slowly, using crutches to get around.",
+          "sources": ["RDApp-204801Proudfood137.jpg.json"]
+        },
+        {
+          "date": "1935-03-28",
+          "examiner": null,
+          "finding": "able to return",
+          "notes": "Wearing a shoe built up on both the heel and sole to compensate for shortening.",
+          "sources": ["RDApp-204801Proudfood134.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1934-08-12",
+      "injury_type": "re-fracture of the left femur at the site of a previous fracture",
+      "body_part": "femur",
+      "narrative": "On August 12, 1934, while still recovering from his initial injuries, Otto D. Proudfoot fell and re-fractured his left femur at the site of the previous fracture, further complicating his recovery process.",
+      "medical_examinations": [
+        {
+          "date": "1934-08-12",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Re-fractured left femur at site of previous fracture, prognosis indefinite.",
+          "sources": ["RDApp-204801Proudfood139.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. B. H. Quistwhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1934-11-01",
+          "finding": "disabled, improving slowly"
+        }
+      ]
+    },
+    {
+      "name": null,
+      "district": null,
+      "examinations": [
+        {
+          "date": "1935-02-01",
+          "finding": "disabled, improving slowly"
+        },
+        {
+          "date": "1934-08-12",
+          "finding": "disabled, prognosis indefinite"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "medical examination and reporting",
+      "significance": "Documentation of injuries and recovery progress.",
+      "sources": [
+        "RDApp-204801Proudfood137.jpg.json",
+        "RDApp-204801Proudfood138.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event": "medical examination and reporting",
+      "significance": "Documentation of recovery progress.",
+      "sources": [
+        "RDApp-204801Proudfood139.jpg.json"
+      ]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-03-17",
+      "latest": "1935-03-28"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of injury and recovery, but lacks information on employment prior to the accident. There are no documents detailing family or personal life outside work.",
+    "data_quality_notes": [
+      "OCR errors in some document names (e.g., 'Proudfood' instead of 'Proudfoot').",
+      "Some dates are not fully specified."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the significant health risks faced by railroad workers and the prolonged recovery periods from severe injuries.",
+      "It also demonstrates the company's efforts to support injured employees through medical examinations, treatment, and eventual reintegration into work."
+    ],
+    "comparative_questions": [
+      "How typical were such injuries among railroad engineers?",
+      "What was the average duration of disability for similar injuries across different divisions?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

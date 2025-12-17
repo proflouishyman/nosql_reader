@@ -1,0 +1,194 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "T.B. Freeland",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland211.jpg.json"
+        ]
+      },
+      {
+        "name": "Thos. B. Freeland",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland218.jpg.json",
+          "RDApp-222507Freeland219.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas B. England",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland213.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations are noted, with 'Thomas B. Freeland' being the most consistent across documents."
+  },
+  "biographical_narrative": "Thomas B. Freeland was a laborer for the Baltimore & Ohio Railroad Company in Cumberland, Maryland, where he worked from at least January 1906 until his disability and subsequent return to duty. His career with the railroad company is marked by several instances of injury or illness that required medical attention and temporary leave from work. In January 1906, Freeland suffered a sprained ankle while working, which led to a period of disability and benefit claims. He was later involved in another accident in November 1906, for which he received additional benefits. Despite these setbacks, Freeland continued his employment with the railroad company, indicating resilience and dedication to his work.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No mention of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Corner Mary St. & Olive Avenue",
+      "date_range": "1906-01-12",
+      "context": "Residence at time of injury report",
+      "sources": [
+        "RDApp-222507Freeland218.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1906-01-12",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": "Stores",
+      "division": "Cumberland",
+      "details": "Sprained ankle while working, leading to disability and benefit claims.",
+      "sources": [
+        "RDApp-222507Freeland216.jpg.json",
+        "RDApp-222507Freeland218.jpg.json"
+      ]
+    },
+    {
+      "date": "1906-01-30",
+      "event_type": "notification",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Notified by Form 7A that he was able to return to duty.",
+      "sources": [
+        "RDApp-222507Freeland220.jpg.json"
+      ]
+    },
+    {
+      "date": "1906-11-02",
+      "event_type": "accident",
+      "position": "Foreman",
+      "department": "Stores",
+      "division": "Cumberland",
+      "details": "Disabled for 5.5 days due to an accident, receiving benefits.",
+      "sources": [
+        "RDApp-222507Freeland217.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1906-01-12",
+      "injury_type": "Sprained ankle",
+      "body_part": "Ankle",
+      "narrative": "Freeland sprained his ankle on January 12, 1906, while working as a laborer. He was entitled to benefits for 7.5 days and resumed work on February 1, 1906.",
+      "medical_examinations": [
+        {
+          "date": "1906-01-30",
+          "examiner": "J.L. Donmey",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": [
+            "RDApp-222507Freeland220.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1906-01-12",
+            "end": "1906-01-20"
+          },
+          "days": 7.5,
+          "amount": 3.75,
+          "check_number": "598024",
+          "sources": [
+            "RDApp-222507Freeland216.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1906-11-02",
+      "injury_type": "Accident",
+      "body_part": null,
+      "narrative": "Freeland was involved in an accident on November 2, 1906, leading to a disability period of 5.5 days and receiving benefits.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "1906-11-02",
+            "end": "1906-11-06"
+          },
+          "days": 5.5,
+          "amount": 8.75,
+          "check_number": null,
+          "sources": [
+            "RDApp-222507Freeland217.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.L. Donmey",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1906-01-30",
+          "finding": "able to return to duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1906-01-12",
+      "latest": "1931-01-13"
+    },
+    "completeness_assessment": "The records provide a detailed account of Freeland's injuries and benefits, but lack information on his initial hiring date or any promotions. There is also no mention of family members.",
+    "data_quality_notes": [
+      "Some documents have unclear handwriting affecting readability.",
+      "There are inconsistencies in the spelling of 'Freeland' versus 'England', which may be an error."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the medical and administrative processes involved when railroad employees were injured, including disability benefits and return-to-work certifications.",
+      "It also underscores the importance of maintaining detailed records for employee health and safety in early 20th-century industrial settings."
+    ],
+    "comparative_questions": [
+      "How did injury rates and benefit policies vary across different divisions or departments within the B&O Railroad?",
+      "What was the typical duration of disability leave, and how did it affect an employee's career progression?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

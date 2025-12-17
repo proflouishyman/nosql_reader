@@ -1,0 +1,146 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "J.B. Norland",
+        "confidence": "low",
+        "sources": ["RDApp-222507Freeland243.jpg.json"]
+      },
+      {
+        "name": "A. Freeland",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland248.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1889,
+    "confidence_notes": "The birth year is derived from Document 4, but there are conflicting names in the records."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland was employed by the Baltimore & Ohio Railroad Company and served as a Mason Helper in Cumberland, West Virginia. His career began sometime before February 1935 when he signed up for membership in the Relief Feature of the company's Relief Department. He had been contributing to this feature since at least 1924, with contributions increasing from 1935 onwards due to a new rate plan. Freeland experienced an injury or illness that required medical attention and resulted in his reporting back to duty on November 23, 1903. His father, Philip G. Freeland, provided consent for Thomas's employment when he was younger, indicating that Thomas may have been under the age of majority at some point during his early career with the railroad.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of a spouse in documents",
+      "sources": []
+    },
+    "parents": [
+      {
+        "name": "Philip G. Freeland",
+        "relationship": "father",
+        "evidence": "Signed consent for Thomas's employment",
+        "sources": ["RDApp-222507Freeland245.jpg.json", "RDApp-222507Freeland248.jpg.json"]
+      },
+      {
+        "name": "Sarah B. Freeland",
+        "relationship": "mother",
+        "evidence": "Signed consent for Thomas's employment",
+        "sources": ["RDApp-222507Freeland248.jpg.json"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": null,
+      "date_range": "unknown",
+      "context": "No residential address provided in documents",
+      "sources": []
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1903-11-23",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported back to work after being sick or injured.",
+      "sources": ["RDApp-222507Freeland241.jpg.json"]
+    },
+    {
+      "date": "1935-01-01",
+      "event_type": "new rate plan",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "New contribution rates for Relief Feature membership went into effect.",
+      "sources": ["RDApp-222507Freeland244.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1903-11-23",
+      "injury_type": "Lymphnia (uncertain cause)",
+      "body_part": null,
+      "narrative": "Freeland was reported sick or injured, and he returned to work on November 23, 1903. The nature of his disablement was recorded as 'Lymphnia' with an uncertain cause.",
+      "medical_examinations": [
+        {
+          "date": "1903-10",
+          "examiner": "J.A. Doerner, M.D.",
+          "finding": "disabled",
+          "notes": "Estimated recovery time of about six weeks.",
+          "sources": ["RDApp-222507Freeland243.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J.A. Doerner, M.D.",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1903-10",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1903-10",
+      "latest": "1940"
+    },
+    "completeness_assessment": "The record is relatively complete for employment and medical details, but lacks residential addresses and detailed family information.",
+    "data_quality_notes": [
+      "Conflicting names in the documents (Thomas B. Freeland vs J.B. Norland)",
+      "Some forms are partially truncated"
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case reveals the importance of medical examinations and the Relief Feature for railroad employees, providing insight into early 20th-century labor practices.",
+      "It highlights the role of parental consent in hiring minors."
+    ],
+    "comparative_questions": [
+      "How did injury rates vary across different departments within the Baltimore & Ohio Railroad Company?",
+      "What was the typical duration of disability for railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

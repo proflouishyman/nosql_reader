@@ -1,0 +1,181 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Roanbaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh225.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is reasonably certain based on consistent naming and employee ID across documents, but a minor spelling variation exists."
+  },
+  "biographical_narrative": "Claude Roenbaugh was an Engineman for the Baltimore & Ohio Railroad Company, serving in various capacities within the Akron Division. His career spanned several years with significant interruptions due to injuries and sicknesses. Roenbaugh's employment record indicates multiple instances of disability, including muscular strain and other unspecified injuries that required him to be off duty for extended periods. Despite these setbacks, he continued his service as an Engineman, reflecting the resilience typical among railroad workers during this era.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "531 W. 27th St., Lorain, O.",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-221988Roenbaugh228.jpg.json"
+      ]
+    },
+    {
+      "address": "331 \u2013 West 29th St., Lorain, O.",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-221988Roenbaugh225.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineman",
+      "department": "C.T. Dept.",
+      "division": "Akron Div\u2019n",
+      "details": "Began employment as an Engineman in the C.T. Department, Akron Division.",
+      "sources": [
+        "RDApp-221988Roenbaugh221.jpg.json",
+        "RDApp-221988Roenbaugh222.jpg.json"
+      ]
+    },
+    {
+      "date": "1927",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to sickness on January 10, 1927.",
+      "sources": [
+        "RDApp-221988Roenbaugh225.jpg.json"
+      ]
+    },
+    {
+      "date": "1/11/1929",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a muscular strain of the right leg, expected to incapacitate him for 2-3 weeks.",
+      "sources": [
+        "RDApp-221988Roenbaugh228.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1/10/1927",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was reported disabled due to sickness on January 10, 1927. The cause of injury is noted as an injury to the spine.",
+      "medical_examinations": [
+        {
+          "date": "1/10/1927",
+          "examiner": "Dr. Spinning",
+          "finding": "disabled",
+          "notes": "Injured on duty with a game segment of spine.",
+          "sources": [
+            "RDApp-221988Roenbaugh225.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1/11/1929",
+      "injury_type": "Muscular strain of right leg",
+      "body_part": "right leg",
+      "narrative": "Claude Roenbaugh suffered a muscular strain in his right leg on January 11, 1929. He was expected to be incapacitated for 2-3 weeks.",
+      "medical_examinations": [
+        {
+          "date": "4/1/1929",
+          "examiner": "J. H. Quimor",
+          "finding": "disabled",
+          "notes": "Inspected on November 1, 1929 for a muscular strain of the right leg.",
+          "sources": [
+            "RDApp-221988Roenbaugh230.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "T. E. McDermott",
+      "district": "151/18",
+      "examinations": [
+        {
+          "date": "4-19-1929",
+          "finding": "disabled"
+        },
+        {
+          "date": "3-19-1929",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "J. H. Quimor",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "4/1/1929",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1-10-1927",
+      "latest": "4/1/1929"
+    },
+    "completeness_assessment": "The record is fairly complete for the period covered, with detailed documentation of injuries and disability periods. However, there are some inconsistencies in address information.",
+    "data_quality_notes": [
+      "OCR quality varies; some handwritten notes are not fully legible.",
+      "There are minor discrepancies in spelling of Roenbaugh's name."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the frequent injuries and sicknesses that railroad workers faced, leading to periods of disability without wage compensation.",
+      "The documentation process for injuries was thorough but could involve multiple parties including medical examiners and division accountants."
+    ],
+    "comparative_questions": [
+      "How did injury rates and handling vary across different divisions or departments within the Baltimore & Ohio Railroad Company?",
+      "What were the typical durations of disability periods for workers in similar roles?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

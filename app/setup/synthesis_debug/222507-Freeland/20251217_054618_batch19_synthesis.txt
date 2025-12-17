@@ -1,0 +1,142 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "T.B. Freeland",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland182.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas B. Freedland",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland185.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas B. Frohland",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland186.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist but are likely due to OCR errors. Employee ID and canonical name are consistent."
+  },
+  "biographical_narrative": "Thomas B. Freeland began his career with the Baltimore & Ohio Railroad Company in a capacity that evolved from carman to laborer, eventually becoming a permanent employee on September 1st, 1934. His employment was marked by periods of furlough and reemployment, indicating the economic uncertainties of the early 20th century. Freeland's career also included financial transactions related to his employment benefits, including insurance payments and deductions for various services or dues. Despite these fluctuations in employment status, he maintained a consistent presence with the railroad company through multiple applications and renewals of membership in the Relief Department.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "unknown",
+      "context": "Home address for receiving papers and instructions",
+      "sources": [
+        "RDApp-222507Freeland184.jpg.json",
+        "RDApp-222507Freeland186.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1934-09-01",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "barnman",
+      "department": null,
+      "division": null,
+      "details": "Made permanent employee",
+      "sources": [
+        "RDApp-222507Freeland184.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-07-23",
+      "event_type": "furlough",
+      "position": "carman",
+      "department": null,
+      "division": null,
+      "details": "Furloughed from service",
+      "sources": [
+        "RDApp-222507Freeland186.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-10-12",
+      "event_type": "furlough",
+      "position": "car repairman",
+      "department": null,
+      "division": null,
+      "details": "Furloughed from service",
+      "sources": [
+        "RDApp-222507Freeland189.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [
+    {
+      "name": "Dr. Engle",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1954-10-03",
+      "event": "Payment deductions noted",
+      "significance": "Indicates ongoing financial transactions related to employment benefits.",
+      "sources": [
+        "RDApp-222507Freeland181.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-08-08",
+      "event": "Furloughed member retains membership options",
+      "significance": "Highlights the company's policy for furloughed employees maintaining insurance benefits.",
+      "sources": [
+        "RDApp-222507Freeland184.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-07-23",
+      "latest": "1954-10-03"
+    },
+    "completeness_assessment": "The record is fairly complete for employment and administrative events but lacks detailed personal information such as birth year or family details.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors, particularly in names.",
+      "Financial records are somewhat fragmented without clear context."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Thomas B. Freeland reveals the economic conditions and employment policies during the early to mid-20th century for railroad workers.",
+      "It highlights the importance of membership in the Relief Department as a form of insurance against unemployment."
+    ],
+    "comparative_questions": [
+      "How did furlough policies vary among different railroads?",
+      "What were common reasons for employees being placed on furlough?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 1.0,
+    "overall": 0.88
+  }
+}

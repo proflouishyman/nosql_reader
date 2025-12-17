@@ -1,0 +1,221 @@
+{
+  "person_identity": {
+    "canonical_name": "George Aloysious Crudden",
+    "name_variations": [
+      {
+        "name": "George A. Crudden",
+        "confidence": "high",
+        "sources": [
+          "RDAPP-634503Crudden051.jpg.json",
+          "RDAPP-634503Crudden054.jpg.json"
+        ]
+      },
+      {
+        "name": "George (Aloysious) Cruddon",
+        "confidence": "medium",
+        "sources": [
+          "RDAPP-634503Crudden053.jpg.json"
+        ]
+      },
+      {
+        "name": "G. H. Courlas",
+        "confidence": "low",
+        "sources": [
+          "RDAPP-634503Crudden056.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634503",
+    "birth_year": 1891,
+    "confidence_notes": "The birth year is derived from the most consistent record, but there are contradictions in other documents."
+  },
+  "biographical_narrative": "George Aloysious Crudden began his career with the Baltimore & Ohio Railroad Company around April 6, 1922, as a checker. He served in various capacities within the company's relief department and was later promoted to an operator role. His employment history includes several instances of disablement due to health issues, particularly involving his femur. Crudden faced periods where he was unable to perform his duties fully, leading to temporary wage suspensions. In 1925, he updated his beneficiary designation for the Relief Department to include his wife Hazel as the primary recipient in case of his death. His career with the railroad company spanned several years until he left service, after which he retained membership for natural death benefits.",
+  "family": {
+    "spouse": {
+      "name": "Hazel",
+      "evidence": "Designated beneficiary on supplementary application.",
+      "sources": [
+        "RDAPP-634503Crudden054.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "206 Witherspoon Ave., N. Merchantsville, NJ",
+      "date_range": "1925",
+      "context": "Beneficiary address for death benefit.",
+      "sources": [
+        "RDAPP-634503Crudden054.jpg.json"
+      ]
+    },
+    {
+      "address": "1917 N Newkirk Street, Philadelphia, PA",
+      "date_range": "unknown",
+      "context": "Residence during medical treatment.",
+      "sources": [
+        "RDAPP-634503Crudden057.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1922-04-06",
+      "event_type": "application",
+      "position": "Checker",
+      "department": "Trans Sub",
+      "division": "Relief",
+      "details": "Applied for membership in the Relief Department.",
+      "sources": [
+        "RDAPP-634503Crudden053.jpg.json"
+      ]
+    },
+    {
+      "date": "1922-04-08",
+      "event_type": "application/promotion",
+      "position": "Operator",
+      "department": null,
+      "division": null,
+      "details": "Changed occupation from Checker to Operator.",
+      "sources": [
+        "RDAPP-634503Crudden051.jpg.json"
+      ]
+    },
+    {
+      "date": "1925-04-22",
+      "event_type": "administrative_event",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Updated beneficiary designation to include wife Hazel.",
+      "sources": [
+        "RDAPP-634503Crudden054.jpg.json"
+      ]
+    },
+    {
+      "date": "1927",
+      "event_type": "contribution",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Began contributing to the Relief Department.",
+      "sources": [
+        "RDAPP-634503Crudden053.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1921-07-27",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Crudden was disabled due to sickness from July 27, 1921, until August 8, 1921. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1921-08-08",
+          "examiner": null,
+          "finding": "Disabled due to sickness",
+          "notes": "No wages were allowed from July 27, 1921, until August 8, 1921.",
+          "sources": [
+            "RDAPP-634503Crudden059.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false
+      }
+    },
+    {
+      "injury_date": "1921-08-10",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Crudden was disabled due to sickness from August 10, 1921, until August 13, 1921. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1921-08-13",
+          "examiner": null,
+          "finding": "Disabled due to sickness",
+          "notes": "No wages were allowed from August 10, 1921, until August 13, 1921.",
+          "sources": [
+            "RDAPP-634503Crudden058.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "A.H. Clagett, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-08-01",
+          "finding": "Femur condition suggestive of developing osteomyelitis"
+        }
+      ]
+    },
+    {
+      "name": "C. B. Rittenhouse, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-08-13",
+          "finding": "Disabled due to sickness"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1925-04-22",
+      "event": "Updated beneficiary designation for death benefit.",
+      "significance": "Ensured his wife would receive benefits in case of his death.",
+      "sources": [
+        "RDAPP-634503Crudden054.jpg.json"
+      ]
+    },
+    {
+      "date": "1927",
+      "event": "Began contributing to the Relief Department.",
+      "significance": "Indicates Crudden's commitment to securing benefits for himself and his family.",
+      "sources": [
+        "RDAPP-634503Crudden053.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1921",
+      "latest": "1927"
+    },
+    "completeness_assessment": "The record is fairly complete for employment and medical history, but there are some contradictions in names and dates.",
+    "data_quality_notes": [
+      "There are inconsistencies in the spelling of George's name across documents.",
+      "Dates provided in some documents are incomplete or unclear."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal the importance of health and disability benefits for railroad workers during this period, as well as the administrative processes involved.",
+      "Crudden's career highlights the challenges faced by employees due to health issues and the role of medical examinations in determining eligibility for benefits."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad Company's policies on disability and death benefits compare with other railroads?",
+      "What were the typical durations and causes of disablement among railroad workers?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

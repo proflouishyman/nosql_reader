@@ -31,8 +31,8 @@ OLLAMA_URL = "http://host.docker.internal:11434/api/generate"
 MODEL = "qwen2.5:32b"  # Options: llama3.1:8b, qwen2.5:32b, llama3.3:70b
 
 # Processing Configuration
-BATCH_SIZE = 25  # Documents per batch (smaller = faster, less timeout risk)
-TIMEOUT_SECONDS = 300  # Ollama timeout in seconds (increase for larger models)
+BATCH_SIZE = 10  # Documents per batch (smaller = faster, less timeout risk)
+TIMEOUT_SECONDS = 600  # Ollama timeout in seconds (increase for larger models)
 
 # Model Parameters
 TEMPERATURE = 0.3  # Lower = more deterministic (0.0-1.0)

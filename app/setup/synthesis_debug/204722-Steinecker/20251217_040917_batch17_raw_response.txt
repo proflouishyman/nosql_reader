@@ -1,0 +1,154 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "W. Shumacher",
+        "confidence": "low",
+        "sources": ["RDApp-204722Steinecker163.jpg.json"]
+      },
+      {
+        "name": "Wm. Steinecker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker165.jpg.json", "RDApp-204722Steinecker169.jpg.json"]
+      },
+      {
+        "name": "W. Steinmacher",
+        "confidence": "low",
+        "sources": ["RDApp-204722Steinecker170.jpg.json"]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1883,
+    "confidence_notes": "High confidence in birth year and canonical name based on multiple consistent documents."
+  },
+  
+  "biographical_narrative": "William Steinecker, a foreman for the Baltimore & Ohio Railroad Company, worked primarily within the Department of C. T., Division Balto. His career spanned several years, during which he faced significant occupational hazards typical of railroad work in the early 20th century. On May 25, 1928, Steinecker suffered a severe workplace injury when his fingers were lacerated while climbing on a gondola car at Seawall, Maryland. The incident left him disabled for approximately two weeks, during which he was compensated by the company's Relief Department. Despite this setback, Steinecker returned to duty on June 7, 1928, and continued his service with the railroad.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of spouse in documents",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "101 3rd Ave.",
+      "date_range": "unknown",
+      "context": "Residence address as stated on multiple documents",
+      "sources": ["RDApp-204722Steinecker165.jpg.json", "RDApp-204722Steinecker169.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Foreman",
+      "department": "C. T.",
+      "division": "Balto.",
+      "details": "Began working as a foreman in the Department of C. T., Division Balto.",
+      "sources": []
+    },
+    {
+      "date": "1928-05-25",
+      "event_type": "injury",
+      "position": "Foreman",
+      "department": "C. T.",
+      "division": "Balto.",
+      "details": "Sustained deep lacerations to his right index and middle fingers while climbing a gondola car at Seawall, Maryland.",
+      "sources": ["RDApp-204722Steinecker165.jpg.json", "RDApp-204722Steinecker169.jpg.json"]
+    },
+    {
+      "date": "1928-06-07",
+      "event_type": "return to duty",
+      "position": "Foreman",
+      "department": "C. T.",
+      "division": "Balto.",
+      "details": "Returned to work after being declared able for duty following his injury.",
+      "sources": ["RDApp-204722Steinecker165.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1928-05-25",
+      "injury_type": "Deep lacerations to right index and middle fingers",
+      "body_part": "Right index finger, Right middle finger",
+      "narrative": "William Steinecker was injured on May 25, 1928, while climbing a gondola car at Seawall, Maryland. He received medical attention and was compensated for his disability period from May 25 to June 6, 1928.",
+      "medical_examinations": [
+        {
+          "date": "1928-05-31",
+          "examiner": "E.H. Mathers",
+          "finding": "disabled",
+          "notes": "Estimated duration of disability was 10 to 15 days.",
+          "sources": ["RDApp-204722Steinecker169.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1928-05-25", "end": "1928-06-06"},
+          "days": 13,
+          "amount": 19.50,
+          "check_number": "290105",
+          "sources": ["RDApp-204722Steinecker161.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "E.H. Mathers",
+      "district": "2",
+      "examinations": [
+        {
+          "date": "1928-05-31",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1928-05-25",
+      "latest": "1928-06-07"
+    },
+    "completeness_assessment": "The record is fairly complete regarding Steinecker's injury and compensation. However, there are inconsistencies in the names used across documents.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors or partial illegibility, affecting data quality."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of William Steinecker highlights the occupational hazards faced by railroad workers in the early 20th century and the mechanisms in place for compensation and medical care.",
+      "It also reveals the bureaucratic processes involved in documenting injuries, providing relief payments, and managing employee return to duty."
+    ],
+    "comparative_questions": [
+      "How did injury rates and compensation practices vary across different divisions of the Baltimore & Ohio Railroad?",
+      "What were the broader implications of workplace safety regulations on railroad operations during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

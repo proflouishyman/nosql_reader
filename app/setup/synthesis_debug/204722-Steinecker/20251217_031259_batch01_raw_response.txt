@@ -1,0 +1,189 @@
+{
+  "person_identity": {
+    "canonical_name": "William N. Steinecker",
+    "name_variations": [
+      {
+        "name": "Wm. Steincker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker002.jpg.json"]
+      },
+      {
+        "name": "Mr. Wm. Steincken",
+        "confidence": "low",
+        "sources": ["RDApp-204722Steinecker003.jpg.json"]
+      },
+      {
+        "name": "Wm. Stenecker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker009.jpg.json"]
+      },
+      {
+        "name": "William Steinesker",
+        "confidence": "high",
+        "sources": ["RDApp-204722Steinecker006.jpg.json"]
+      }
+    ],
+    "employee_id": 204722,
+    "birth_year": null,
+    "confidence_notes": "Name variations are noted, but the most consistent name is William N. Steinecker."
+  },
+  
+  "biographical_narrative": "William N. Steinecker was a fireman employed by the Baltimore & Ohio Railroad Company in the early 20th century. His career with the railroad involved several injury claims between April and August of 1903, suggesting he may have been prone to workplace accidents or had a particularly hazardous role as a fireman. The records indicate that Steinecker was entitled to benefits for various periods due to his injuries, which required him to be out of work for extended durations. His medical care was often provided at the Baltimore City Hospital under the Sisters of Mercy, and he received treatment in Westport, Maryland, where he resided or had family ties.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Westport, Md",
+      "date_range": "unknown",
+      "context": "Residence or beneficiary address for medical care.",
+      "sources": ["RDApp-204722Steinecker001.jpg.json", "RDApp-204722Steinecker005.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "William N. Steinecker was hired as a fireman for the Baltimore & Ohio Railroad Company.",
+      "sources": []
+    },
+    {
+      "date": "1903-04-01",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Entitled to benefits for 26 days due to an injury.",
+      "sources": ["RDApp-204722Steinecker008.jpg.json"]
+    },
+    {
+      "date": "1903-05-01",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Entitled to benefits for 26 days due to an injury.",
+      "sources": ["RDApp-204722Steinecker007.jpg.json"]
+    },
+    {
+      "date": "1903-06-01",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Entitled to benefits for 42 days due to an injury, followed by another period of 37 days at a reduced rate.",
+      "sources": ["RDApp-204722Steinecker006.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Not specified",
+      "body_part": null,
+      "narrative": "William N. Steinecker was injured multiple times between April and August of 1903, leading to several periods where he was entitled to benefits.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "E. L. McMahon",
+          "finding": "Disabled",
+          "notes": "Wages were not allowed for the days claimed due to disablement.",
+          "sources": ["RDApp-204722Steinecker006.jpg.json", "RDApp-204722Steinecker007.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1903-04-01", "end": "1903-04-30"},
+          "days": 26,
+          "amount": 26.00,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker008.jpg.json"]
+        },
+        {
+          "period": {"start": "1903-05-01", "end": "1903-05-31"},
+          "days": 26,
+          "amount": 26.00,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker007.jpg.json"]
+        },
+        {
+          "period": {"start": "1903-06-01", "end": "1903-08-31"},
+          "days": 79,
+          "amount": 60.50,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker006.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "E. L. McMahon",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "J. F. Kearney",
+      "district": 4,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1903-02-16",
+      "latest": "1941-04-19"
+    },
+    "completeness_assessment": "The record is relatively complete for the period of Steinecker's injuries and benefits, but lacks details on his initial hiring or any promotions. There are also no records of family members.",
+    "data_quality_notes": [
+      "Name variations exist across documents, leading to some uncertainty in identity resolution.",
+      "Dates are not always precise, with many entries lacking specific dates."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of William N. Steinecker reveals the extent of workplace injuries among railroad workers and the mechanisms for providing benefits during recovery periods.",
+      "It highlights the role of medical examiners in certifying disability and ensuring that employees receive appropriate compensation."
+    ],
+    "comparative_questions": [
+      "How did injury rates and benefit provisions vary across different railroads or regions?",
+      "What were the typical durations of disablement for firemen compared to other railroad occupations?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

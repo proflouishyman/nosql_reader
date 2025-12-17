@@ -1,0 +1,127 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Claude Poonbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh031.jpg.json"]},
+      {"name": "Claude Rosenbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh033.jpg.json"]},
+      {"name": "Claude Rambaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh034.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1884,
+    "confidence_notes": "The birth year is consistent across multiple documents, but name variations exist."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh was an engineer for the Baltimore and Ohio Railroad. His career with the railroad appears to have been marked by health issues, particularly Meniere's Syndrome, which led him to apply for relief benefits starting from June 3, 1950. In January of 1951, he applied for an annuity through the Railroad Retirement Board, and his application was processed in early February of that year. Roenbaugh had been receiving sickness benefits during this period but would be required to refund any overpayments once his annuity became effective on January 1, 1951. His case involved multiple communications between medical examiners and administrators regarding the correct date of birth and details about his application for an annuity.",
+  
+  "family": {
+    "spouse": {"name": "Mary Julia Roenbaugh", "evidence": "Document detailing Roenbaugh's annuity application mentions her name.", "sources": ["RDApp-221988Roenbaugh032.jpg.json"]},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "Lorain, Ohio", "date_range": "unknown", "context": "Residence of Claude Roenbaugh.", "sources": ["RDApp-221988Roenbaugh032.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Claude Roenbaugh was hired as an engineer, but the exact date of hire is not specified in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1950-06-03",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Roenbaugh was placed on relief due to Meniere's Syndrome.",
+      "sources": ["RDApp-221988Roenbaugh037.jpg.json", "RDApp-221988Roenbaugh039.jpg.json"]
+    },
+    {
+      "date": "1951-01-01",
+      "event_type": "annuity",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Effective date of Roenbaugh's annuity from the Railroad Retirement Board.",
+      "sources": ["RDApp-221988Roenbaugh032.jpg.json", "RDApp-221988Roenbaugh033.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Meniere's Syndrome",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was diagnosed with Meniere's Syndrome, which led to his placement on relief benefits.",
+      "medical_examinations": [
+        {
+          "date": "1950-06-03",
+          "examiner": "Not specified",
+          "finding": "Disabled due to Meniere's Syndrome",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh039.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1950-06-03", "end": "1951-01-31"},
+          "days": 242,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-221988Roenbaugh031.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "D.A. Wiener",
+      "district": null,
+      "examinations": [{"date": "1950-06-03", "finding": "Disabled due to Meniere's Syndrome"}]
+    },
+    {"name": "L.E. Bubna", "district": null, "examinations": []}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1951-02-16",
+      "event": "Signed agreement to refund overpaid benefits.",
+      "significance": "This event marks Roenbaugh's formal commitment to repay any relief payments received after his annuity became effective.",
+      "sources": ["RDApp-221988Roenbaugh035.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1950-06-03", "latest": "1951-04-30"},
+    "completeness_assessment": "The records are fairly complete for Roenbaugh's annuity application and subsequent administrative actions, but details about his early career with the railroad are missing.",
+    "data_quality_notes": ["Name variations exist across documents.", "Some OCR text is truncated."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Claude Roenbaugh provides insight into how railroad employees navigated health issues and retirement benefits in the early 1950s.",
+      "It highlights the bureaucratic process involved in applying for annuities and the coordination between medical examiners, administrators, and the Railroad Retirement Board."
+    ],
+    "comparative_questions": [
+      "How did other engineers or employees of similar age handle health issues leading to retirement?",
+      "What was the typical duration of relief benefits before an annuity became effective?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

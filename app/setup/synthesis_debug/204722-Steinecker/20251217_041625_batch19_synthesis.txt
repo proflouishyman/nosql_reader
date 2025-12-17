@@ -1,0 +1,193 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "William Thomas",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker181.jpg.json"
+        ]
+      },
+      {
+        "name": "Waltham Steinacker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker184.jpg.json"
+        ]
+      },
+      {
+        "name": "William Illes",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker182.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 204722,
+    "birth_year": 1882,
+    "confidence_notes": "High confidence in canonical name and birth year due to consistent documentation. Variations are likely typographical errors or misinterpretations."
+  },
+  "biographical_narrative": "William Steinecker, born in 1882, served the Baltimore & Ohio Railroad Company for several decades, holding various positions including Yard Helper and Fireman. His career spanned a significant period of railroad development and labor practices. Notably, he experienced multiple injuries and illnesses that affected his employment status over time. In 1952, Steinecker was diagnosed with generalized arteriosclerosis, leading to prolonged disability benefits until his death in the early 1950s. Throughout his career, he faced several furloughs and suspensions, indicating a complex relationship with the railroad administration.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No explicit mention of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "914 Garden Drive - 2B",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-204722Steinecker187.jpg.json"
+      ]
+    },
+    {
+      "address": "977 Stoll Street - 25",
+      "date_range": "unknown",
+      "context": "Address for claims and benefits",
+      "sources": [
+        "RDApp-204722Steinecker189.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1913-01-06",
+      "event_type": "hire/application",
+      "position": "Ballman/Dressman",
+      "department": "Balt. Maint.",
+      "division": null,
+      "details": "Initial employment as Ballman and Dressman at Baltimore Maintenance Department.",
+      "sources": [
+        "RDApp-204722Steinecker184.jpg.json"
+      ]
+    },
+    {
+      "date": "1952-08-16",
+      "event_type": "injury",
+      "position": "Yard Helper",
+      "department": null,
+      "division": null,
+      "details": "Diagnosed with generalized arteriosclerosis, leading to disability benefits.",
+      "sources": [
+        "RDApp-204722Steinecker187.jpg.json"
+      ]
+    },
+    {
+      "date": "1953-02-24",
+      "event_type": "medical_examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Medical examination confirmed disability due to sickness.",
+      "sources": [
+        "RDApp-204722Steinecker188.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1952-08-16",
+      "injury_type": "Generalized arteriosclerosis",
+      "body_part": null,
+      "narrative": "Steinecker was diagnosed with generalized arteriosclerosis, leading to a prolonged period of disability benefits from August 16, 1952. He received multiple payments over the following months.",
+      "medical_examinations": [
+        {
+          "date": "1953-02-24",
+          "examiner": "I. Kaplan, M.D.",
+          "finding": "disabled",
+          "notes": "Confirmed disability due to sickness.",
+          "sources": [
+            "RDApp-204722Steinecker188.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1952-08-23",
+            "end": "1953-02-21"
+          },
+          "days": 82,
+          "amount": 4180.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-204722Steinecker187.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "I. Kaplan, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1953-02-24",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "D. Kaplan",
+      "district": 2,
+      "examinations": [
+        {
+          "date": "1953-02-21",
+          "finding": null
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1953-02-19",
+      "event": "applied for R.R.B. Annuity",
+      "significance": "Indicates Steinecker's intention to seek long-term benefits due to his disability.",
+      "sources": [
+        "RDApp-204722Steinecker189.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1913",
+      "latest": "1953"
+    },
+    "completeness_assessment": "The record is relatively complete for Steinecker's later career and disability period. Early employment details are less clear, with some contradictions in names and positions.",
+    "data_quality_notes": [
+      "Some documents have illegible or undecipherable sections.",
+      "There are inconsistencies in the spelling of the employee's name across different documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "Steinecker\u2019s case highlights the challenges faced by railroad workers with long-term disabilities and the evolution of disability benefits within the industry.",
+      "The documentation provides insight into the medical examination process and administrative procedures for handling employee injuries and illnesses."
+    ],
+    "comparative_questions": [
+      "How did other employees' experiences with similar conditions compare to Steinecker's?",
+      "What were the typical durations and amounts of disability benefits paid out during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

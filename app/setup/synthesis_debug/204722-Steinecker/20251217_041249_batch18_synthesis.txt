@@ -1,0 +1,210 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "Steinacker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker180.jpg.json"
+        ]
+      },
+      {
+        "name": "Stanchek",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker173.jpg.json"
+        ]
+      },
+      {
+        "name": "Strinecker",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker174.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1882,
+    "confidence_notes": "High confidence in birth year and canonical name. Variations in names are noted with varying levels of certainty."
+  },
+  "biographical_narrative": "William Steinecker, born in 1882, was a long-serving employee of the Baltimore & Ohio Railroad Company (B&O). His career spanned several decades, during which he held various positions including brakeman and yard foreman. He experienced multiple periods of disablement due to both accidents and sicknesses, such as appendicitis and muscle cramps. Steinecker's records indicate that his health issues occasionally interrupted his work but did not prevent him from resuming duties after recovery. Despite the challenges, he remained a dedicated employee until at least 1937.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention of spouse in documents",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Brooklyn, Maryland",
+      "date_range": "unknown",
+      "context": "Place of residence as stated on personnel record",
+      "sources": [
+        "RDApp-204722Steinecker171.jpg.json"
+      ]
+    },
+    {
+      "address": "101 3rd Ave. Brooklyn NY",
+      "date_range": "unknown",
+      "context": "Residence for medical examination and disablement notice",
+      "sources": [
+        "RDApp-204722Steinecker173.jpg.json"
+      ]
+    },
+    {
+      "address": "9 Mt. Ave W.",
+      "date_range": "unknown",
+      "context": "Residence for 1915 disablement report",
+      "sources": [
+        "RDApp-204722Steinecker179.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Exact date of hire is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1915-03-15",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to sickness, not work-related.",
+      "sources": [
+        "RDApp-204722Steinecker179.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-08-13",
+      "event_type": "injury",
+      "position": "Yard Foreman",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to a muscle cramp in his left leg.",
+      "sources": [
+        "RDApp-204722Steinecker176.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-08-16",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed work after a short period of disability.",
+      "sources": [
+        "RDApp-204722Steinecker174.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1937-08-13",
+      "injury_type": "Muscle cramp in left leg",
+      "body_part": "Left leg",
+      "narrative": "William Steinecker experienced a sudden pain in his left calf while flagging at Curtis Bay Yard. The medical examiner concluded it was likely a muscle cramp and treated the case as sick leave rather than an injury.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Medical Examiner",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Treated as a sick case, not due to external accident.",
+          "sources": [
+            "RDApp-204722Steinecker176.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1937-08-13",
+      "injury_type": "Appendicitis",
+      "body_part": "Stomach area",
+      "narrative": "William Steinecker was reported disabled due to appendicitis, which occurred on duty. He resumed work after a short period.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "A J Bregar",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1937-08-13",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "E. W. Anthony",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1925-03-10",
+          "finding": "able to return"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1937-08-25",
+      "event": "Case closed on disability report",
+      "significance": "Indicates the end of a period of disablement.",
+      "sources": [
+        "RDApp-204722Steinecker171.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1915-03-15",
+      "latest": "1937-08-25"
+    },
+    "completeness_assessment": "The record is fairly complete for the period from 1915 to 1937, with detailed information on injuries and medical examinations. However, there are some contradictions in names and positions.",
+    "data_quality_notes": [
+      "Variations in name spellings",
+      "Some forms have incomplete or missing data"
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the health challenges faced by railroad workers, including both work-related injuries and non-work-related illnesses.",
+      "They also highlight the administrative processes involved in managing employee disabilities and returning them to duty."
+    ],
+    "comparative_questions": [
+      "How did disability management practices vary across different railroads?",
+      "What were the common health issues faced by railroad workers in this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

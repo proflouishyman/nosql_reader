@@ -1,0 +1,78 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Claud Roenbaugh", "confidence": "high", "sources": ["RDApp-221988Roenbaugh181.jpg.json"]},
+      {"name": "Claude Koenbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh182.jpg.json"]},
+      {"name": "Chas. Roenbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh186.jpg.json"]},
+      {"name": "Claude Moonbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh187.jpg.json"]},
+      {"name": "Claude Bouslaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh188.jpg.json"]},
+      {"name": "Claude Rosenbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh189.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is generally consistent but with some spelling variations, particularly in names."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh was an engineer for the Baltimore & Ohio Railroad Company. His career began around 1917 when he worked as a fireman and later transitioned to an engineering role. Throughout his tenure, Roenbaugh served in various capacities including committeeman at conferences, which required him to be away from regular duties. In April of 1928, Roenbaugh took leave of absence for personal reasons but maintained his membership in the Relief Feature for natural death benefits. His career was marked by several medical issues, notably a diagnosis of popliteal cellulitis on February 29, 1937, which required rest and gradual use to recover fully.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence found", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "331 W. 27 St.", "date_range": "unknown", "context": "Medical record address", "sources": ["RDApp-221988Roenbaugh181.jpg.json"]},
+    {"address": "532 W. 27th Street, Lorain, Ohio", "date_range": "June 13, 1928", "context": "Accounting correspondence address", "sources": ["RDApp-221988Roenbaugh187.jpg.json"]},
+    {"address": "351 W. 27th St., Lorain, Ohio", "date_range": "May 29, 1928", "context": "Home address for natural death benefits", "sources": ["RDApp-221988Roenbaugh188.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "7/11/17", "event_type": "application", "position": "Fireman", "department": "OT", "division": null, "details": "Applied for position as fireman in the OT department.", "sources": ["RDApp-221988Roenbaugh189.jpg.json"]},
+    {"date": "3/24/17", "event_type": "promotion", "position": "Engineer", "department": null, "division": null, "details": "Promoted to engineer position.", "sources": ["RDApp-221988Roenbaugh185.jpg.json"]},
+    {"date": "3/17/17", "event_type": "transfer", "position": "Committeeman", "department": null, "division": null, "details": "Served as committeeman at a conference in Baltimore.", "sources": ["RDApp-221988Roenbaugh185.jpg.json"]},
+    {"date": "3/18/27", "event_type": "furlough", "position": null, "department": null, "division": null, "details": "Last day of service as an engineer.", "sources": ["RDApp-221988Roenbaugh183.jpg.json"]},
+    {"date": "5/28/28", "event_type": "leave_of_absence", "position": "Fireman", "department": null, "division": null, "details": "Left service by leave of absence.", "sources": ["RDApp-221988Roenbaugh188.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {"injury_date": "2/29/37", "injury_type": "Popliteal Cellulitis", "body_part": "Left leg", "narrative": "Claude Roenbaugh was diagnosed with popliteal cellulitis on his left side. The prognosis was good, requiring rest and gradual use.", "medical_examinations": [{"date": "2/29/37", "examiner": "Dr. Gerald Krupp", "finding": "Good prognosis", "notes": "Rest and gradual use recommended", "sources": ["RDApp-221988Roenbaugh181.jpg.json"]}], "payments": [], "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}}
+  ],
+  
+  "medical_examiners": [
+    {"name": "Dr. Gerald Krupp", "district": null, "examinations": [{"date": "2/29/37", "finding": "Good prognosis"}]}
+  ],
+  
+  "administrative_events": [
+    {"date": "4/14/27", "event": "Refund dispute", "significance": "Clarified dues payment status for Roenbaugh as a committeeman.", "sources": ["RDApp-221988Roenbaugh182.jpg.json"]},
+    {"date": "6/13/28", "event": "Account balance notification", "significance": "Instructed to deposit ten cents by July 1st for account balance.", "sources": ["RDApp-221988Roenbaugh187.jpg.json"]},
+    {"date": "5/29/28", "event": "Natural death benefits retention request", "significance": "Ensured membership in Relief Feature despite leave of absence.", "sources": ["RDApp-221988Roenbaugh188.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "4/20/11", "latest": "6/13/28"},
+    "completeness_assessment": "The records are fairly complete, detailing employment status and medical history. However, there is a lack of information on personal life details such as family.",
+    "data_quality_notes": ["Name variations exist across documents.", "Some dates are truncated or not fully provided."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of union dues and benefits for railroad workers, especially during periods of leave.",
+      "Medical records show the company's attention to employee health and its impact on work."
+    ],
+    "comparative_questions": [
+      "How did medical practices differ across regions or over time?",
+      "What was the typical career progression for engineers in this era?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

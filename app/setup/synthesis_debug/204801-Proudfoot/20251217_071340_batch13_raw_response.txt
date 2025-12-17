@@ -1,0 +1,166 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Proudfood",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood121.jpg.json", "RDApp-204801Proudfood122.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The name variations are due to OCR errors, and the birth year is an estimate based on typical employment age."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was a dedicated engineer employed by the Baltimore & Ohio Railroad Company in various departments from at least early 1934 until his return to duty in April 1935. His career with the railroad was marked by several significant injuries and periods of disability, which affected both his health and employment status. In March 1934, he suffered a transverse fracture of the eighth rib and a comminuted fracture of the left femur due to an automobile accident while off duty. This injury led to multiple disablement certificates and wage suspensions throughout the year. Proudfoot's ability to return to work was uncertain for much of this period, but by April 1935, he had been cleared to resume his duties as an engineer.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour St",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": ["RDApp-204801Proudfood130.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Engineer",
+      "department": "Ct Dept.",
+      "division": "Cu Divn",
+      "details": "Started as an engineer in the Ct department, Cu division. The exact date of hire is not provided in the documents.",
+      "sources": ["RDApp-204801Proudfood130.jpg.json"]
+    },
+    {
+      "date": "1935-04-02",
+      "event_type": "resume duty",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Cleared to return to work after a period of disability.",
+      "sources": ["RDApp-204801Proudfood130.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1934-03-17",
+      "injury_type": "Auto accident off duty",
+      "body_part": "Left femur, eighth rib",
+      "narrative": "Proudfoot was involved in an automobile accident on March 17, 1934, which resulted in a transverse fracture of the eighth rib and a comminuted fracture of the left femur. This injury led to multiple periods of disability throughout the year.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "T.C. Tulley",
+          "finding": "disabled",
+          "notes": "Reported disabled from March 17, 1934, to April 19, 1934.",
+          "sources": ["RDApp-204801Proudfood126.jpg.json"]
+        },
+        {
+          "date": null,
+          "examiner": "T.C. Fuller",
+          "finding": "disabled",
+          "notes": "Reported disabled from April 20, 1934, to May 19, 1934.",
+          "sources": ["RDApp-204801Proudfood125.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1934-08-12",
+      "injury_type": "Fell going up steps",
+      "body_part": "Left femur (site of previous fracture)",
+      "narrative": "On August 12, 1934, Proudfoot fell while going up steps and fractured his left femur at the site of a previous injury. This incident led to further disability.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "B.H. Guistwhite",
+          "finding": "disabled",
+          "notes": "Reported disabled from August 12, 1934, to September 19, 1934.",
+          "sources": ["RDApp-204801Proudfood121.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "T.C. Fuller",
+      "district": "6",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        },
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "B.H. Guistwhite",
+      "district": "62",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "able to return"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-03-17",
+      "latest": "1935-04-02"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of disability and injury, but lacks details on employment history prior to 1934 or family information.",
+    "data_quality_notes": [
+      "OCR errors in some document names (e.g., 'Proudfood' instead of 'Proudfoot').",
+      "Some documents are partially filled out, leaving gaps in the narrative."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers due to frequent injuries and the company's response through disability certificates.",
+      "It also shows the medical practices of the time, including multiple examinations for a single injury."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad Company's policies compare with other railroads in terms of worker compensation?",
+      "What were the typical durations and outcomes of disability periods among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

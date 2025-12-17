@@ -1,0 +1,159 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635058Harris011.jpg.json"
+        ]
+      },
+      {
+        "name": "Charly Harris",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635058Harris015.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 635058,
+    "birth_year": 1895,
+    "confidence_notes": "Identity is mostly consistent across documents, with slight variations in name spelling."
+  },
+  "biographical_narrative": "Charley Harris was a fireman for the Baltimore & Ohio Railroad Company. He began his career as a fireman and held this position throughout the period documented here. His employment spanned several divisions including Wyo, CR, Wh3, TX, and OHIO RIVER. Harris applied for membership in the company's Relief Feature to secure benefits during potential times of need. Medical examinations conducted between 1924 and 1929 indicate that he maintained good vision and hearing throughout his career. No significant injuries or disputes are documented within this period.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention of a spouse in the documents provided",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "PARKERSBURG, WOOD County, West Virginia",
+      "date_range": "unknown",
+      "context": "Residence for Relief Feature application",
+      "sources": [
+        "RDApp-635058Harris017.jpg.json",
+        "RDApp-635058Harris020.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Wyo",
+      "details": "Began work as a fireman in the Wyo division.",
+      "sources": [
+        "RDApp-635058Harris011.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "application",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "CR",
+      "details": "Applied for membership in the Relief Feature while working as a fireman.",
+      "sources": [
+        "RDApp-635058Harris012.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "application",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Wh3",
+      "details": "Applied for membership in the Relief Feature while working as a fireman.",
+      "sources": [
+        "RDApp-635058Harris013.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "application",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "TX",
+      "details": "Applied for membership in the Relief Feature while working as a fireman.",
+      "sources": [
+        "RDApp-635058Harris014.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "application",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "OHIO RIVER",
+      "details": "Applied for membership in the Relief Feature while working as a fireman.",
+      "sources": [
+        "RDApp-635058Harris020.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [
+    {
+      "name": "Dr. W.A. Funk",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1924-12-08",
+          "finding": "Good vision and hearing, no glasses needed."
+        },
+        {
+          "date": "1927-02-03",
+          "finding": "Good vision and hearing, no glasses needed."
+        }
+      ]
+    },
+    {
+      "name": "J.P. Lawlor",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1929-11-19",
+          "finding": "Good vision and hearing, wears glasses."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1924-12-08",
+      "latest": "1929-11-19"
+    },
+    "completeness_assessment": "The record is fairly complete regarding medical examinations and employment status, but lacks detailed information on personal life or specific career milestones.",
+    "data_quality_notes": [
+      "Variations in name spelling across documents",
+      "Some OCR errors in dates and numbers"
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Charley Harris highlights the importance of regular medical examinations for railroad employees to ensure they meet physical requirements.",
+      "It also shows how workers sought security through company-sponsored relief programs."
+    ],
+    "comparative_questions": [
+      "How did the frequency and thoroughness of medical exams vary across different divisions?",
+      "What were common reasons for injury among firemen in this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 1.0,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto W. Pamidotz",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood032.jpg.json"]
+      },
+      {
+        "name": "Ott, Delbert Brughart",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood036.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the context and document dates, but not explicitly stated."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer with the Baltimore & Ohio Railroad Company (B&O). His career spanned several decades during which he faced various health challenges that impacted his work. He began working for B&O in the early 20th century, though the exact start date is not specified in the records. In December of 1945, Proudfoot suffered a contusion to his left great toe when an express handle dropped on his foot while he was on duty in Grafton, West Virginia. This injury temporarily sidelined him but did not prevent him from returning to work shortly thereafter. His medical history includes regular physical examinations and occasional reports of disability due to sickness or minor injuries. Proudfoot's career with B&O reflects the typical challenges faced by railroad workers during this era.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence address at the time of medical examination and disablement report.",
+      "sources": ["RDApp-204801Proudfood033.jpg.json", "RDApp-204801Proudfood038.jpg.json"]
+    },
+    {
+      "address": "Crescent, Md",
+      "date_range": "unknown",
+      "context": "Residence address at the time of a disablement report.",
+      "sources": ["RDApp-204801Proudfood037.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumbl",
+      "details": "Began work as an engineer for the Baltimore & Ohio Railroad Company.",
+      "sources": ["RDApp-204801Proudfood033.jpg.json"]
+    },
+    {
+      "date": "1945-12-01",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumbl",
+      "details": "Suffered a contusion to the left great toe due to an accident at work.",
+      "sources": ["RDApp-204801Proudfood033.jpg.json"]
+    },
+    {
+      "date": "1945-12-04",
+      "event_type": "medical examination",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Received an X-ray for his left great toe, which showed no fracture or dislocation.",
+      "sources": ["RDApp-204801Proudfood034.jpg.json"]
+    },
+    {
+      "date": "1945-12-06",
+      "event_type": "medical clearance",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Cleared for duty by Medical Examiner W. B. Baker.",
+      "sources": ["RDApp-204801Proudfood033.jpg.json"]
+    },
+    {
+      "date": "1945-10-18",
+      "event_type": "disablement report",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Reported disablement due to sickness.",
+      "sources": ["RDApp-204801Proudfood037.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1945-12-01",
+      "injury_type": "Contusion",
+      "body_part": "Left great toe",
+      "narrative": "On December 1, 1945, Otto D. Proudfoot was injured on duty in Grafton, West Virginia, when an express handle dropped onto his left foot causing a contusion to the great toe.",
+      "medical_examinations": [
+        {
+          "date": "1945-12-03",
+          "examiner": null,
+          "finding": "Negative for fracture or dislocation",
+          "notes": "X-ray examination of left great toe showed no fractures or dislocations.",
+          "sources": ["RDApp-204801Proudfood034.jpg.json"]
+        },
+        {
+          "date": "1945-12-06",
+          "examiner": "W. B. Baker",
+          "finding": "Able to return to duty",
+          "notes": "Cleared for duty by Medical Examiner W. B. Baker.",
+          "sources": ["RDApp-204801Proudfood033.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1945-10-18",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "On October 18, 1945, Proudfoot reported disablement due to sickness.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "W. B. Baker",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1945-12-06",
+          "finding": "Able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "Dr. W A Gracie",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1945-09-03",
+      "event": "Physical examination",
+      "significance": "Routine physical examination indicating normal health and qualification for employment.",
+      "sources": ["RDApp-204801Proudfood038.jpg.json"]
+    },
+    {
+      "date": null,
+      "event": "Supplementary application to restore death benefits",
+      "significance": "Application to increase natural death benefit under Relief Department regulations.",
+      "sources": ["RDApp-204801Proudfood040.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1931",
+      "latest": "1945"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from 1931 to 1945, with detailed documentation of employment and medical history. However, there are some inconsistencies in names and dates that may affect accuracy.",
+    "data_quality_notes": [
+      "OCR quality varies across documents, leading to potential errors or omissions in text extraction.",
+      "Some documents contain incomplete information, such as missing dates or signatures."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical practices and work conditions for railroad engineers during the early to mid-20th century. They highlight the importance of regular physical examinations and disability reporting in ensuring employee health and safety.",
+      "Proudfoot's case exemplifies typical challenges faced by workers, including injuries from machinery and sickness-related absences."
+    ],
+    "comparative_questions": [
+      "How did medical practices for railroad employees compare to those in other industries during the same period?",
+      "What were the common causes of injury among engineers on railroads?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

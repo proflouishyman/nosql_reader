@@ -1,0 +1,79 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {"name": "O.D. Proudfoot", "confidence": "high", "sources": ["RDApp-204801Proudfood250.jpg.json"]},
+      {"name": "Otto N. Proudfoot", "confidence": "medium", "sources": ["RDApp-204801Proudfood247.jpg.json"]},
+      {"name": "O D Proudfoot", "confidence": "high", "sources": ["RDApp-204801Proudfood243.jpg.json"]}
+    ],
+    "employee_id": "204801",
+    "birth_year": 1884,
+    "confidence_notes": "The birth year is consistent across multiple documents, but there's a discrepancy in the day (15th vs. 13th), suggesting potential for error or confusion."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an employee of the Baltimore and Ohio Railroad Company, working as an engineer in Cumberland, Maryland. His career with the railroad began at least by 1937, when he underwent a comprehensive medical examination that confirmed his physical fitness for service. On April 9, 1942, while on duty near Swanton, Maryland, Proudfoot suffered a workplace injury—a longitudinal fracture of the fifth metacarpal bone in his left hand—when his hand was caught between a coal gate and rake. He resumed work after approximately five to six weeks of recovery. The records also indicate that Proudfoot had some family ties within the railroad community, as evidenced by correspondence regarding documentation of his birth date from his family Bible.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence in documents", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "130 Seymour St., Cumberland, Md.", "date_range": "unknown", "context": "Residence address for medical and employment records", "sources": ["RDApp-204801Proudfood241.jpg.json", "RDApp-204801Proudfood242.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "1937-06-16", "event_type": "medical examination", "position": "Engineer", "department": "CT", "division": "Cumb", "details": "Physical fitness confirmed for service", "sources": ["RDApp-204801Proudfood247.jpg.json"]},
+    {"date": "1939-08-17", "event_type": "request for documentation", "position": "Freight Engineer", "department": null, "division": null, "details": "Request to provide birth record from family Bible", "sources": ["RDApp-204801Proudfood250.jpg.json"]},
+    {"date": "1942-04-09", "event_type": "injury", "position": "Engineer", "department": null, "division": null, "details": "Workplace injury involving left hand fracture", "sources": ["RDApp-204801Proudfood241.jpg.json", "RDApp-204801Proudfood242.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1942-04-09",
+      "injury_type": "Longitudinal fracture of fifth metacarpal bone, left hand",
+      "body_part": "Left Hand",
+      "narrative": "Otto D. Proudfoot sustained a workplace injury on April 9, 1942, when his hand was caught between the end of a coal gate and rake near Swanton, Maryland. The injury resulted in a longitudinal fracture of the fifth metacarpal bone in his left hand, with an estimated recovery time of five to six weeks.",
+      "medical_examinations": [
+        {"date": "1942-04-09", "examiner": "Dr. B B Sturdivant M.D.", "finding": "disabled", "notes": "Severe contusion with possible blood clot formation, estimated disability of one week", "sources": ["RDApp-204801Proudfood243.jpg.json"]},
+        {"date": "1942-04-10", "examiner": "Dr. Godward A. Wathbone", "finding": "disabled", "notes": "X-ray examination shows an oblique fracture of the shaft of the fifth metacarpal in good position", "sources": ["RDApp-204801Proudfood244.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "Dr. B B Sturdivant M.D.", "district": null, "examinations": [{"date": "1942-04-09", "finding": "Severe contusion with possible blood clot formation"}]},
+    {"name": "Dr. Godward A. Wathbone", "district": null, "examinations": [{"date": "1942-04-10", "finding": "Oblique fracture of the shaft of the fifth metacarpal in good position"}]}
+  ],
+  
+  "administrative_events": [
+    {"date": "1939-08-17", "event": "Request for birth record documentation", "significance": "Clarification needed on date of birth", "sources": ["RDApp-204801Proudfood250.jpg.json"]},
+    {"date": "1939-09-15", "event": "Follow-up request for birth record", "significance": "Continued effort to verify birth date", "sources": ["RDApp-204801Proudfood249.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1937-06-16", "latest": "1942-04-10"},
+    "completeness_assessment": "The record is fairly complete for the period of employment and injury, but lacks details on family members beyond names and birth dates. There are also discrepancies in his name variations.",
+    "data_quality_notes": ["OCR quality varies; some documents have truncated text", "Discrepancy between 'Otto D.' and 'Otto N.' Proudfoot"]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of medical documentation in railroad employment, including injury records and physical examinations.",
+      "It also shows the bureaucratic process involved in verifying employee details like date of birth."
+    ],
+    "comparative_questions": ["How common were workplace injuries among engineers during this period?", "What was the typical recovery time for similar hand injuries?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

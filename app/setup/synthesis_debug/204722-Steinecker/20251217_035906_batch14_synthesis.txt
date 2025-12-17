@@ -1,0 +1,198 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "Wm Strimecker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker131.jpg.json"
+        ]
+      },
+      {
+        "name": "W. Stossekers",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker133.jpg.json"
+        ]
+      },
+      {
+        "name": "W. Steinacker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker137.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1895,
+    "confidence_notes": "High confidence in identity due to consistent employee ID and multiple name variations."
+  },
+  "biographical_narrative": "William Steinecker, a brakeman for the Baltimore & Ohio Railroad Company (B&O), began his career with the company around late spring or early summer of 1918. His employment was marked by an injury on August 4, 1918, when he fell over a switch bolt at Curtis Bay and suffered a deep laceration to his right leg. This incident led to temporary disability, during which Steinecker received benefits from the company's Relief Department. He returned to work on August 14, 1918, after medical clearance. Throughout this period, there were administrative issues with forms being incorrectly signed or lacking necessary signatures, indicating some procedural challenges within the B&O\u2019s documentation process.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No mention of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "819 West Ave Newport",
+      "date_range": "unknown",
+      "context": "Residence at the time of injury report",
+      "sources": [
+        "RDApp-204722Steinecker131.jpg.json"
+      ]
+    },
+    {
+      "address": "9 Md Ave Woodlawn",
+      "date_range": "unknown",
+      "context": "Address for return to duty notice",
+      "sources": [
+        "RDApp-204722Steinecker134.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1918-05",
+      "event_type": "hire/application",
+      "position": "Brakeman",
+      "department": "Freight Division",
+      "division": "Balt. & Ohio",
+      "details": "Started employment as a brakeman in the Freight Division of Balt. & Ohio.",
+      "sources": []
+    },
+    {
+      "date": "1918-08-04",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": "Freight Division",
+      "division": "Balt. & Ohio",
+      "details": "Suffered a deep laceration to the right leg due to an accident at Curtis Bay.",
+      "sources": [
+        "RDApp-204722Steinecker135.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-08-14",
+      "event_type": "return_to_duty",
+      "position": "Brakeman",
+      "department": "Freight Division",
+      "division": "Balt. & Ohio",
+      "details": "Returned to duty after medical clearance.",
+      "sources": [
+        "RDApp-204722Steinecker134.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1918-08-04",
+      "injury_type": "Deep laceration to the right leg",
+      "body_part": "Right leg",
+      "narrative": "William Steinecker suffered a deep laceration on his right leg after falling over a switch bolt at Curtis Bay. He was unable to work until August 14, 1918.",
+      "medical_examinations": [
+        {
+          "date": "1918-08-12",
+          "examiner": "G. H. Mathers",
+          "finding": "able_to_return",
+          "notes": "Certified as able to return to duty on 1918-09-12.",
+          "sources": [
+            "RDApp-204722Steinecker133.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1918-08-05",
+            "end": "1918-08-14"
+          },
+          "days": 10,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204722Steinecker134.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "G. H. Mathers",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1918-08-12",
+          "finding": "able to return"
+        }
+      ]
+    },
+    {
+      "name": "E. H. Mathers",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1918-10-14",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1918-09-27",
+      "event": "Return of incorrectly signed form",
+      "significance": "Indicates procedural issues in documentation.",
+      "sources": [
+        "RDApp-204722Steinecker138.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-08-26",
+      "event": "Return of form 790 due to incorrect signature",
+      "significance": "Highlights the importance of proper documentation for injury claims.",
+      "sources": [
+        "RDApp-204722Steinecker139.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1918-08-05",
+      "latest": "1918-10-14"
+    },
+    "completeness_assessment": "The record is relatively complete for the period of injury and recovery, but lacks detailed information about Steinecker's career before or after this incident.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have minor errors in name spelling and date formatting."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the risks faced by railroad workers during the early 20th century and the administrative processes involved in handling workplace injuries.",
+      "The procedural issues noted suggest that there were challenges within the B&O's documentation system, which could have implications for employee benefits and legal claims."
+    ],
+    "comparative_questions": [
+      "How did injury reporting and medical clearance procedures vary between different railroad companies during this period?",
+      "What was the typical duration of disability for injuries similar to Steinecker\u2019s?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

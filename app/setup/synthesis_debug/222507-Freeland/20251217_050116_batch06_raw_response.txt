@@ -1,0 +1,196 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thomas B. Lincoln",
+        "confidence": "low",
+        "sources": ["RDApp-222507Freeland056.jpg.json"]
+      },
+      {
+        "name": "THOMAS B. FREELAND",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland051.jpg.json",
+          "RDApp-222507Freeland053.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the date of disability and other records, but a direct record of birth year is not available."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland was employed as a carman by the Baltimore & Ohio Railroad Company in the Cumberland Division. His career with the railroad included several instances where he suffered from medical conditions that required extended periods of disability leave. In December 1946, Freeland underwent surgery for an inguinal hernia and subsequently developed complications such as phlebitis in both legs. He was off duty due to these health issues until June 1947 when his condition stabilized enough for him to return to work. His medical history also includes a varicose ulcer on his right leg, which led to another period of disability beginning in March 1944 and continuing into the late 1940s. Freeland's records indicate that he received regular compensation during these periods of disablement.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Wiley Ford, W.Va.",
+      "date_range": "unknown",
+      "context": "residence",
+      "sources": ["RDApp-222507Freeland051.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "M.P.",
+      "division": "Cumberland",
+      "details": "Began employment as a carman in the Mechanical Department, Cumberland Division of B&O Railroad Company. Exact date of hire is not provided in documents.",
+      "sources": []
+    },
+    {
+      "date": "1946-12-02",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "M.P.",
+      "division": "Cumberland",
+      "details": "Suffered an injury leading to right inguinal hernia surgery on December 3, 1946. This resulted in a period of disability until June 15, 1947.",
+      "sources": ["RDApp-222507Freeland058.jpg.json"]
+    },
+    {
+      "date": "1947-06-16",
+      "event_type": "return to duty",
+      "position": "Carman",
+      "department": "M.P.",
+      "division": "Cumberland",
+      "details": "Resumed work after a period of disability due to surgery and complications from inguinal hernia.",
+      "sources": ["RDApp-222507Freeland058.jpg.json"]
+    },
+    {
+      "date": "1949-08-24",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "M.P.",
+      "division": "Cumberland",
+      "details": "Developed a varicose ulcer on the right leg, leading to another period of disability. The nature and duration of this disablement are marked as indefinite in medical reports.",
+      "sources": ["RDApp-222507Freeland052.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1946-11-22",
+      "injury_type": "right inguinal hernia",
+      "body_part": "Right side (inguinal region)",
+      "narrative": "Thomas B. Freeland suffered an injury while on duty, leading to the development of a right inguinal hernia. He underwent surgery for this condition on December 3, 1946, and experienced complications including phlebitis in both legs.",
+      "medical_examinations": [
+        {
+          "date": "1947-05-21",
+          "examiner": "Dr. W. E. Bahe",
+          "finding": "disabled",
+          "notes": "Reported for disability due to complications following surgery, including phlebitis in both legs.",
+          "sources": ["RDApp-222507Freeland058.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1946-12-02", "end": "1947-06-15"},
+          "days": 193,
+          "amount": 33.84,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland053.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1949-08-24",
+      "injury_type": "varicose ulcer right leg",
+      "body_part": "Right leg",
+      "narrative": "Freeland was reported as disabled due to a varicose ulcer on his right leg, with the duration marked as indefinite. He did not report for relief until June 30, 1949.",
+      "medical_examinations": [
+        {
+          "date": "1949-09-06",
+          "examiner": "W.B. Baker",
+          "finding": "disabled",
+          "notes": "Diagnosed with varicose ulcer on the right leg, with no specified duration of disability.",
+          "sources": ["RDApp-222507Freeland052.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. W. E. Bahe",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1947-05-21",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.B. Baker",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1949-09-06",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1947-02-19",
+      "event": "submission of hospital bill for Thomas B. Lincoln (Freeland)",
+      "significance": "The submission and approval of a hospital bill for services rendered to Freeland after his surgery.",
+      "sources": ["RDApp-222507Freeland056.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1943-03-09",
+      "latest": "1949-09-06"
+    },
+    "completeness_assessment": "The record is fairly complete for the periods of disability and medical treatments, but lacks details on Freeland's daily work activities or promotions. There are some discrepancies in names (e.g., Thomas B. Lincoln vs. Thomas B. Freeland) that need further investigation.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have incomplete text due to poor image quality.",
+      "There is a discrepancy between the name 'Thomas B. Freeland' and 'Thomas B. Lincoln'. Further research needed to clarify if these refer to the same individual."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Thomas B. Freeland reveals the extent of medical support provided by railroads for their employees during the early 20th century, including detailed documentation and compensation for disability.",
+      "It also highlights the common health issues faced by railroad workers, such as hernias and varicose ulcers, which were often work-related."
+    ],
+    "comparative_questions": [
+      "How did the medical support provided to Thomas B. Freeland compare with that of other railroads or industries during this period?",
+      "What was the typical duration and compensation for disability leaves among railroad workers?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

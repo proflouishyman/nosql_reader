@@ -1,0 +1,90 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {"name": "Luigi Manauo", "confidence": "medium", "sources": ["RDApp-204897Manusco242.jpg.json"]},
+      {"name": "Antonio Mancuso", "confidence": "high", "sources": ["RDApp-204897Manusco244.jpg.json", "RDApp-204897Manusco245.jpg.json", "RDApp-204897Manusco246.jpg.json"]},
+      {"name": "Antonis Mancuso", "confidence": "medium", "sources": ["RDApp-204897Manusco245.jpg.json"]},
+      {"name": "L. Marcus", "confidence": "low", "sources": ["RDApp-204897Manusco250.jpg.json"]}
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Identity certainty is high for Luigi Mancuso, with moderate confidence in Antonio as a possible variation due to multiple documents using this name."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso was an employee of the Baltimore & Ohio Railroad Company (B&O) during the early 20th century. His employment history includes positions such as Carmen Freight and Car Repairman, with his career spanning multiple divisions including Pittsburgh and Coville. He experienced significant periods of furlough and reinstatement, notably being reemployed in October 1933 and reinstated on November 16, 1936. Mancuso's employment was marked by several injuries that led to temporary disablement, such as a sprained knee sustained on June 19, 1924, which required medical examination and compensation for lost workdays. His career with the B&O also involved administrative actions like physical examinations for reinstatement after long periods of furlough.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information on spouse in documents", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "1101 E. North Ave., Balto Md.", "date_range": "unknown", "context": "Residence for Antonio Mancuso", "sources": ["RDApp-204897Manusco246.jpg.json"]},
+    {"address": "111 Pulaski St., Curllle Pa.", "date_range": "unknown", "context": "Address for Antonio Mancuso", "sources": ["RDApp-204897Manusco248.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "1933-10-XX", "event_type": "reemployment", "position": null, "department": null, "division": null, "details": "Reemployed in October 1933.", "sources": ["RDApp-204897Manusco241.jpg.json"]},
+    {"date": "1936-11-16", "event_type": "reinstatement", "position": null, "department": null, "division": null, "details": "Reinstated after a period of furlough.", "sources": ["RDApp-204897Manusco241.jpg.json"]},
+    {"date": "1936-01-16", "event_type": "reinstatement", "position": "Carmen Freight", "department": "Motive Power Dept.", "division": "Pittsburgh Div.", "details": "Resumed duty as Carmen Freight after a furlough exceeding 12 months.", "sources": ["RDApp-204897Manusco243.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1924-06-19",
+      "injury_type": "Sprain of left knee",
+      "body_part": "left knee",
+      "narrative": "On June 19, 1924, Antonio Mancuso sustained a sprained left knee while working in the Motive Power Department. He was unable to work for approximately two weeks.",
+      "medical_examinations": [
+        {"date": "1924-06-30", "examiner": "Dr. Veil", "finding": "disabled", "notes": "Sprain of left knee, probable duration 2 or 3 weeks.", "sources": ["RDApp-204897Manusco249.jpg.json"]}
+      ],
+      "payments": [
+        {"period": {"start": "1924-06-19", "end": "1924-07-07"}, "days": 15.5, "amount": 23.25, "check_number": "899991", "sources": ["RDApp-204897Manusco244.jpg.json"]}
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Veil",
+      "district": "15",
+      "examinations": [{"date": "1924-06-30", "finding": "disabled"}]
+    },
+    {"name": "M.E. Intire", "district": "15", "examinations": []}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1936-01-31",
+      "event": "Physical examination required for full rate membership in the Relief Department.",
+      "significance": "Indicates administrative process to ensure employee's eligibility for benefits after long furlough.",
+      "sources": ["RDApp-204897Manusco243.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1924-06-19", "latest": "1936-11-16"},
+    "completeness_assessment": "The record is fairly complete in terms of employment and injury history, but lacks details on family life or personal circumstances outside work.",
+    "data_quality_notes": ["Name variations exist between documents.", "Some OCR errors affect readability."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the administrative processes involved in reinstating employees after long periods of furlough, including medical examinations and eligibility checks.",
+      "It also provides insight into injury compensation practices and the role of medical examiners within railroad companies."
+    ],
+    "comparative_questions": ["How did injury compensation vary across different divisions or departments?", "What were common causes of injuries among employees in similar roles?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

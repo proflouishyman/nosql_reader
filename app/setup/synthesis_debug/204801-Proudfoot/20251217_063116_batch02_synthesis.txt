@@ -1,0 +1,370 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto R. Proudfoot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood014.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood013.jpg.json",
+          "RDApp-204801Proudfood015.jpg.json",
+          "RDApp-204801Proudfood016.jpg.json",
+          "RDApp-204801Proudfood017.jpg.json",
+          "RDApp-204801Proudfood018.jpg.json",
+          "RDApp-204801Proudfood019.jpg.json",
+          "RDApp-204801Proudfood020.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the earliest disability record in June 1943, assuming a typical age of employment for railroad engineers."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore and Ohio Railroad Company (B&O) during the early to mid-20th century. His career with B&O is marked by several periods of disability, primarily due to neurasthenia and bronchitis. The earliest documented period of disability occurred in June 1943 when he was unable to work for nearly two weeks due to bronchitis. Over the following years, Proudfoot experienced multiple episodes of illness that led to his temporary inability to perform his duties as an engineer. Despite these health challenges, he remained a dedicated employee and continued working with B&O until at least August 1946 when he was still under medical supervision for neurasthenia.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence address as stated in medical examiner's report and disability record",
+      "sources": [
+        "RDApp-204801Proudfood018.jpg.json",
+        "RDApp-204801Proudfood019.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div\u2019n",
+      "details": "Otto D. Proudfoot was employed as an engineer in the CT Department, Cumberland Division of B&O Railroad Company.",
+      "sources": [
+        "RDApp-204801Proudfood013.jpg.json",
+        "RDApp-204801Proudfood015.jpg.json"
+      ]
+    },
+    {
+      "date": "1943-06-02",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div\u2019n",
+      "details": "Totally disabled by sickness due to bronchitis from June 2, 1943, to June 16, 1943. Wages were not allowed during this period.",
+      "sources": [
+        "RDApp-204801Proudfood020.jpg.json"
+      ]
+    },
+    {
+      "date": "1946-03-26",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div\u2019n",
+      "details": "Totally disabled by sickness due to neurasthenia from March 26, 1946, to April 19, 1946. Wages were not allowed during this period.",
+      "sources": [
+        "RDApp-204801Proudfood015.jpg.json"
+      ]
+    },
+    {
+      "date": "1946-04-20",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div\u2019n",
+      "details": "Totally disabled by sickness due to neurasthenia from April 20, 1946, to May 19, 1946. Wages were not allowed during this period.",
+      "sources": [
+        "RDApp-204801Proudfood014.jpg.json"
+      ]
+    },
+    {
+      "date": "1946-05-20",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div\u2019n",
+      "details": "Totally disabled by sickness due to neurasthenia from May 20, 1946, to June 19, 1946. Wages were not allowed during this period.",
+      "sources": [
+        "RDApp-204801Proudfood013.jpg.json"
+      ]
+    },
+    {
+      "date": "1946-06-20",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div\u2019n",
+      "details": "Totally disabled by sickness due to neurasthenia from June 20, 1946, to July 19, 1946. Wages were not allowed during this period.",
+      "sources": [
+        "RDApp-204801Proudfood012.jpg.json"
+      ]
+    },
+    {
+      "date": "1946-08-13",
+      "event_type": "medical examination",
+      "position": "Engineer",
+      "department": "CT Dept.",
+      "division": "Cumb Div\u2019n",
+      "details": "Medical examination by Dr. W.C. Lane, indicating neurasthenia with some improvement noted.",
+      "sources": [
+        "RDApp-204801Proudfood011.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1943-06-02",
+      "injury_type": "Sickness due to bronchitis",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was totally disabled by sickness from June 2, 1943, to June 16, 1943, due to bronchitis. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "No specific medical examination details provided for this injury.",
+          "sources": [
+            "RDApp-204801Proudfood020.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1943-06-02",
+            "end": "1943-06-16"
+          },
+          "days": 7,
+          "amount": 17.5,
+          "check_number": "69080",
+          "sources": [
+            "RDApp-204801Proudfood019.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1946-03-26",
+      "injury_type": "Sickness due to neurasthenia",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was totally disabled by sickness from March 26, 1946, to April 19, 1946, due to neurasthenia. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "No specific medical examination details provided for this injury.",
+          "sources": [
+            "RDApp-204801Proudfood015.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1946-04-20",
+      "injury_type": "Sickness due to neurasthenia",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was totally disabled by sickness from April 20, 1946, to May 19, 1946, due to neurasthenia. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "No specific medical examination details provided for this injury.",
+          "sources": [
+            "RDApp-204801Proudfood014.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1946-05-20",
+      "injury_type": "Sickness due to neurasthenia",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was totally disabled by sickness from May 20, 1946, to June 19, 1946, due to neurasthenia. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "No specific medical examination details provided for this injury.",
+          "sources": [
+            "RDApp-204801Proudfood013.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1946-06-20",
+      "injury_type": "Sickness due to neurasthenia",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was totally disabled by sickness from June 20, 1946, to July 19, 1946, due to neurasthenia. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "No specific medical examination details provided for this injury.",
+          "sources": [
+            "RDApp-204801Proudfood012.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1946-08-13",
+      "injury_type": "Sickness due to neurasthenia",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was examined by Dr. W.C. Lane on August 13, 1946, and found to have neurasthenia with some improvement noted.",
+      "medical_examinations": [
+        {
+          "date": "1946-08-13",
+          "examiner": "Dr. W.C. Lane",
+          "finding": "disabled",
+          "notes": "Neurasthenia with some improvement noted.",
+          "sources": [
+            "RDApp-204801Proudfood011.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. W.C. Lane",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1946-08-13",
+          "finding": "disabled with some improvement noted"
+        }
+      ]
+    },
+    {
+      "name": "J.M. Salyards",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "Dr. C.I. Durrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1946-03-26",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. W.B. Baker",
+      "district": "16",
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Disability record creation for bronchitis in June 1943",
+      "significance": "Marks the first documented period of disability due to illness.",
+      "sources": [
+        "RDApp-204801Proudfood019.jpg.json",
+        "RDApp-204801Proudfood020.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event": "Disability record creation for neurasthenia in 1946",
+      "significance": "Indicates multiple periods of disability due to the same condition over a span of several months.",
+      "sources": [
+        "RDApp-204801Proudfood013.jpg.json",
+        "RDApp-204801Proudfood014.jpg.json",
+        "RDApp-204801Proudfood015.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event": "Medical examination by Dr. W.C. Lane in August 1946",
+      "significance": "Indicates ongoing medical supervision and evaluation of Otto D. Proudfoot's condition.",
+      "sources": [
+        "RDApp-204801Proudfood011.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1943-06-02",
+      "latest": "1946-08-13"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from June 1943 to August 1946, with detailed documentation of disability periods and medical examinations. However, there are no records prior to this period or any indication of when Proudfoot was hired.",
+    "data_quality_notes": [
+      "Some documents contain variations in name spelling (e.g., 'Otto D.' vs. 'Otto R.')",
+      "OCR quality is generally good but some dates and names were truncated, requiring inference."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Otto D. Proudfoot highlights the challenges faced by railroad workers in maintaining their health during a period when medical care was less advanced than today.",
+      "It also shows the importance of disability benefits and medical supervision for employees who were unable to work due to illness."
+    ],
+    "comparative_questions": [
+      "How did the frequency and duration of illnesses among railroad engineers compare with other occupations in the early 20th century?",
+      "What was the typical response time between reporting an injury or sickness and receiving medical attention?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

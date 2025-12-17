@@ -1,0 +1,192 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "T.B. Freeland",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland162.jpg.json"
+        ]
+      },
+      {
+        "name": "J. B. Freeland",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland170.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "High confidence in identity based on consistent use of Thomas B. Freeland across documents, though some variations exist."
+  },
+  "biographical_narrative": "Thomas B. Freeland began his career with the Baltimore and Ohio Railroad Company as a car repairman in Cumberland, Maryland. In October 1920, he suffered an injury to his right foot when struck by a maul while on duty, resulting in a laceration that disabled him for several weeks. After this incident, Freeland continued working at the railroad company until he was furloughed in April 1932. He returned to work in November 1933 following a successful physical examination and was restored to his membership status with additional natural death benefits. Throughout his career, Freeland's employment was marked by periods of injury and medical evaluations, reflecting the challenging nature of railroad labor during this era.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "The document does not provide specific information about a spouse.",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Dixie, W. Va",
+      "date_range": "Unknown",
+      "context": "Residence at the time of injury in October 1920.",
+      "sources": [
+        "RDApp-222507Freeland161.jpg.json",
+        "RDApp-222507Freeland162.jpg.json"
+      ]
+    },
+    {
+      "address": "Wiley Ford, W. Va",
+      "date_range": "November 13, 1933 - Unknown",
+      "context": "Address at the time of correspondence regarding his return to work.",
+      "sources": [
+        "RDApp-222507Freeland165.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1920-10-07",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Injured by a maul while on duty, resulting in laceration of the right foot.",
+      "sources": [
+        "RDApp-222507Freeland161.jpg.json",
+        "RDApp-222507Freeland162.jpg.json"
+      ]
+    },
+    {
+      "date": "1932-04-27",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed from the company.",
+      "sources": [
+        "RDApp-222507Freeland170.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-11-03",
+      "event_type": "medical_examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Passed a medical examination and was cleared to return to work.",
+      "sources": [
+        "RDApp-222507Freeland164.jpg.json",
+        "RDApp-222507Freeland168.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-11-23",
+      "event_type": "restoration_to_membership",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Restored to full membership in Class C with additional natural death benefits.",
+      "sources": [
+        "RDApp-222507Freeland164.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1920-10-07",
+      "injury_type": "Laceration and contusion of toes on right foot",
+      "body_part": "Right foot/toes",
+      "narrative": "Freeland was struck by a maul while working in the Cumberland shops, resulting in lacerations to his right foot. He was expected to be disabled for three weeks.",
+      "medical_examinations": [
+        {
+          "date": "1920-10-07",
+          "examiner": "Dr. Charles",
+          "finding": "Disabled",
+          "notes": "Expected duration of disablement: 3 weeks.",
+          "sources": [
+            "RDApp-222507Freeland161.jpg.json",
+            "RDApp-222507Freeland162.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Charles",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1920-10-07",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "B.H. Guertwcheler",
+      "district": 6,
+      "examinations": [
+        {
+          "date": "1933-11-03",
+          "finding": "Able to return to work"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Guistwhite",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1933-11-23",
+      "event": "Restoration to full membership with additional benefits",
+      "significance": "Indicates Freeland's return to work and restoration of insurance status after a period of furlough.",
+      "sources": [
+        "RDApp-222507Freeland164.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1920-10-07",
+      "latest": "1933-11-23"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered, with detailed documentation of Freeland's injury and return to work. However, information about his family or specific employment positions beyond car repairman is lacking.",
+    "data_quality_notes": [
+      "Some documents have conflicting names (T.B., Thomas B., J.B.), which may indicate a typographical error or confusion between individuals."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Freeland highlights the risks associated with railroad work in the early 20th century, as well as the company's response to employee injuries and subsequent medical evaluations.",
+      "It also illustrates the importance of membership benefits for workers during this period."
+    ],
+    "comparative_questions": [
+      "How did injury rates vary across different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disablement for various types of injuries?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

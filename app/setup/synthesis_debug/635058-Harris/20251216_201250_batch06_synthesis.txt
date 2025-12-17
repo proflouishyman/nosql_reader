@@ -1,0 +1,202 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Harley Harris",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635058Harris132.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the age of 46 in November 1939."
+  },
+  "biographical_narrative": "Charley Harris was a fireman for the Baltimore & Ohio Railroad Company, working primarily on the Wheeling Division. His career spanned several decades and included periods of furlough due to medical conditions. In October 1939, Harris was found to have valvular heart disease during a routine examination, which led to his furlough and subsequent medical evaluations. Despite these health issues, he sought to continue working as a fireman but faced significant challenges due to the risks associated with his condition. His application for membership in the Relief Feature of the company's Relief Department reflects his desire for support and insurance benefits. Harris was also seeking assistance from the Railroad Pension Board after being rejected by the Relief Department due to age limits.",
+  "family": {
+    "spouse": {
+      "name": "Stella V. Harris",
+      "evidence": "Designated as beneficiary in application documents",
+      "sources": [
+        "RDApp-635058Harris145.jpg.json"
+      ]
+    },
+    "parents": [
+      {
+        "name": "George W.",
+        "relationship": "father",
+        "evidence": "Mentioned in the Relief Feature membership application form",
+        "sources": [
+          "RDApp-635058Harris146.jpg.json"
+        ]
+      }
+    ],
+    "children": [
+      {
+        "name": "J. Dayman, Regina, Myrtle Thacker, Maurice, Lewis",
+        "evidence": "Listed in the Relief Feature membership application form",
+        "sources": [
+          "RDApp-635058Harris146.jpg.json"
+        ]
+      }
+    ]
+  },
+  "addresses": [
+    {
+      "address": "Ceredo, West Virginia",
+      "date_range": "unknown",
+      "context": "Residence address on medical examination reports",
+      "sources": [
+        "RDApp-635058Harris127.jpg.json",
+        "RDApp-635058Harris129.jpg.json"
+      ]
+    },
+    {
+      "address": "Parkersburg, West Virginia",
+      "date_range": "unknown",
+      "context": "Address in Relief Feature membership application form",
+      "sources": [
+        "RDApp-635058Harris145.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1939-10-07",
+      "event_type": "medical examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Found to have an aortic systolic murmur during routine examination, leading to rejection for membership and employment.",
+      "sources": [
+        "RDApp-635058Harris149.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-11-27",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Examined by Dr. Carroll Lockard, confirming the presence of valvular heart disease.",
+      "sources": [
+        "RDApp-635058Harris128.jpg.json"
+      ]
+    },
+    {
+      "date": "1940-01-16",
+      "event_type": "application for pension annuity",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Wrote to Dr. Milholland requesting medical advice and status of his pension application.",
+      "sources": [
+        "RDApp-635058Harris127.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1939-10-07",
+      "injury_type": "Valvular heart disease (aortic stenosis)",
+      "body_part": "Heart",
+      "narrative": "Charley Harris was diagnosed with aortic stenosis during a routine medical examination, which led to his furlough and subsequent examinations for fitness to work.",
+      "medical_examinations": [
+        {
+          "date": "1939-10-07",
+          "examiner": "Dr. Hinal",
+          "finding": "Disabled",
+          "notes": "Found to have valvular heart disease, leading to rejection for employment and membership.",
+          "sources": [
+            "RDApp-635058Harris129.jpg.json"
+          ]
+        },
+        {
+          "date": "1939-11-27",
+          "examiner": "Dr. Carroll Lockard",
+          "finding": "Disabled (with caution)",
+          "notes": "Confirmed the presence of aortic stenosis, but noted no physical impairment for work as a fireman.",
+          "sources": [
+            "RDApp-635058Harris128.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "There was some disagreement about Harris's fitness for work, with medical consultants advising against his employment as a fireman due to the risk of sudden death associated with aortic stenosis.",
+        "resolution": "Unclear"
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Carroll Lockard",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-11-27",
+          "finding": "Disabled (with caution)"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Hinal",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-10-07",
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1939-10-31",
+      "event": "Refusal of employment due to age and heart condition",
+      "significance": "This event led Harris to seek further medical evaluations and apply for membership in the Relief Feature.",
+      "sources": [
+        "RDApp-635058Harris148.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-11-27",
+      "event": "Medical examination by Dr. Carroll Lockard",
+      "significance": "Confirmed the presence of aortic stenosis and advised against employment as a fireman.",
+      "sources": [
+        "RDApp-635058Harris128.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 21,
+    "date_range": {
+      "earliest": "1939-10-07",
+      "latest": "1940-01-18"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from October 1939 to January 1940, covering medical examinations and administrative actions. However, there are no documents detailing Harris's earlier career or his initial hiring.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text, affecting completeness of information."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the challenges faced by railroad employees with chronic health conditions and the complex administrative processes involved in assessing fitness for duty.",
+      "It also reveals the importance of medical examinations in determining employment status and eligibility for relief benefits."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases involving heart disease among their workforce?",
+      "What were the broader implications of these administrative decisions on employee morale and company policies?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

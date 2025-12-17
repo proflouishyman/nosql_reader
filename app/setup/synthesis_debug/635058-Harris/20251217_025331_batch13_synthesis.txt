@@ -1,0 +1,188 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635058Harris122.jpg.json"
+        ]
+      },
+      {
+        "name": "Mr. Charley Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris121.jpg.json",
+          "RDApp-635058Harris129.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 635058,
+    "birth_year": null,
+    "confidence_notes": "Identity is certain based on consistent references to Charley Harris across documents, but variations in name format exist."
+  },
+  "biographical_narrative": "Charley Harris was a fireman employed by the Baltimore & Ohio Railroad Company's Wheeling Division. His career with the railroad began sometime before 1939, as evidenced by his membership in the Relief Department since 1922 and his contributions to it. In October 1939, Harris faced medical scrutiny after returning from furlough due to an aortic systolic murmur detected upon examination, which led to further diagnosis of chronic valvular myocarditis and aortic stenosis. These conditions rendered him unfit for engine service due to the risk of sudden death associated with his heart condition. Despite this, Harris sought assistance through various means, including applying for annuity benefits from the Railroad Retirement Board and requesting support from the railroad's Relief Department, given his inability to work and financial distress.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "811 Hill Street, Ceredo, W.Va",
+      "date_range": "Unknown",
+      "context": "Residence address as stated in Harris's correspondence.",
+      "sources": [
+        "RDApp-635058Harris124.jpg.json",
+        "RDApp-635058Harris127.jpg.json"
+      ]
+    },
+    {
+      "address": "Ceredo, W.Va",
+      "date_range": "Unknown",
+      "context": "Residence city mentioned in Harris's letters.",
+      "sources": [
+        "RDApp-635058Harris124.jpg.json",
+        "RDApp-635058Harris127.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Started working as a fireman sometime before 1939.",
+      "sources": []
+    },
+    {
+      "date": "1922-01-01",
+      "event_type": "application",
+      "position": null,
+      "department": "Relief Department",
+      "division": null,
+      "details": "Became a member of the Relief Department.",
+      "sources": [
+        "RDApp-635058Harris124.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-10-07",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Rejected for employment due to heart condition.",
+      "sources": [
+        "RDApp-635058Harris121.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1939-10-07",
+      "injury_type": "Heart Condition",
+      "body_part": "Heart",
+      "narrative": "Charley Harris was found to have chronic valvular myocarditis and aortic stenosis, conditions that made him unfit for engine service due to the risk of sudden death.",
+      "medical_examinations": [
+        {
+          "date": "1939-10-07",
+          "examiner": "Dr. Himal",
+          "finding": "disabled",
+          "notes": "Found to have valvular heart disease upon examination.",
+          "sources": [
+            "RDApp-635058Harris129.jpg.json"
+          ]
+        },
+        {
+          "date": "1939-11-27",
+          "examiner": "Dr. Howard J. Maldeis",
+          "finding": "disabled",
+          "notes": "Further examination confirmed valvular heart trouble.",
+          "sources": [
+            "RDApp-635058Harris128.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Himal",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-10-07",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Howard J. Maldeis",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-11-27",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1940-01-16",
+      "event": "Application for annuity submitted to the Railroad Pension Board.",
+      "significance": "Harris applied for pension benefits due to his inability to work and financial need.",
+      "sources": [
+        "RDApp-635058Harris127.jpg.json"
+      ]
+    },
+    {
+      "date": "1940-01-30",
+      "event": "Letter sent to Dr. Roscoe Stotts regarding Harris's medical condition and potential consultation.",
+      "significance": "Railroad officials sought local medical assistance for Harris.",
+      "sources": [
+        "RDApp-635058Harris121.jpg.json",
+        "RDApp-635058Harris122.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1939-11-27",
+      "latest": "1940-01-30"
+    },
+    "completeness_assessment": "The record is fairly complete for the period from late November 1939 to early January 1940, detailing Harris's medical condition and his attempts to secure benefits. However, there are no documents prior to this period that detail his earlier employment history.",
+    "data_quality_notes": [
+      "Some OCR text has been truncated, leading to incomplete summaries in some cases.",
+      "The documents do not provide a full picture of Harris's family situation or complete medical records."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the stringent health requirements for railroad workers and the potential for sudden termination due to unforeseen medical conditions.",
+      "It also underscores the challenges faced by employees in securing benefits when deemed unfit for service, especially those over a certain age limit."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases of sudden medical disqualification?",
+      "What were the typical outcomes for workers who applied for annuities due to health reasons?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

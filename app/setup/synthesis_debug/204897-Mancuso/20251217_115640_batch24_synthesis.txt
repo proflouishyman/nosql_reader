@@ -1,0 +1,272 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Mancuso Luigi",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204897Manusco236.jpg.json",
+          "RDApp-204897Manusco238.jpg.json"
+        ]
+      },
+      {
+        "name": "Luigi Mancuso",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204897Manusco233.jpg.json",
+          "RDApp-204897Manusco235.jpg.json",
+          "RDApp-204897Manusco239.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1887,
+    "confidence_notes": "Birth year is consistent across multiple documents, indicating high confidence in the identity resolution."
+  },
+  "biographical_narrative": "Luigi Mancuso began his career with the Baltimore & Ohio Railroad Company as a carman around 1929. His employment records indicate he worked in the Maintenance of Property (M.P.) Department under various divisions, including Pittsburgh and Connellsville. Throughout his tenure, Mancuso experienced several periods of disability due to influenza, which affected his work from January through February 1931 and again in July 1931. Despite these health challenges, he continued to serve the railroad company until at least June 15, 1936, when a physical examination confirmed that he was physically qualified for his position.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Connellsville",
+      "date_range": "1930-1936",
+      "context": "Residence during employment period",
+      "sources": [
+        "RDApp-204897Manusco233.jpg.json",
+        "RDApp-204897Manusco235.jpg.json"
+      ]
+    },
+    {
+      "address": "111 Pulaski St, Connellsville, PA",
+      "date_range": "unknown",
+      "context": "Residence for medical examination",
+      "sources": [
+        "RDApp-204897Manusco238.jpg.json"
+      ]
+    },
+    {
+      "address": "111 Water St, Connellsville, PA",
+      "date_range": "unknown",
+      "context": "Residence for medical examiner's report of disablement",
+      "sources": [
+        "RDApp-204897Manusco239.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1929",
+      "event_type": "hire/application",
+      "position": "Carmen",
+      "department": "M.P.",
+      "division": null,
+      "details": "Began working as a carman for the Baltimore & Ohio Railroad Company.",
+      "sources": [
+        "RDApp-204897Manusco233.jpg.json"
+      ]
+    },
+    {
+      "date": "1-7-31",
+      "event_type": "injury",
+      "position": "Carmen",
+      "department": "M.P.",
+      "division": "Pitts",
+      "details": "Disabled by influenza, unable to work from January 7th through February 15th, 1931.",
+      "sources": [
+        "RDApp-204897Manusco233.jpg.json",
+        "RDApp-204897Manusco235.jpg.json"
+      ]
+    },
+    {
+      "date": "7/10/1931",
+      "event_type": "injury",
+      "position": "Carmen",
+      "department": "M.P.",
+      "division": null,
+      "details": "Disabled by sickness from July 10th through July 15th, 1931.",
+      "sources": [
+        "RDApp-204897Manusco234.jpg.json"
+      ]
+    },
+    {
+      "date": "6/15/1936",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": "Pittsburgh",
+      "details": "Passed a physical examination, confirming he was physically qualified for his position.",
+      "sources": [
+        "RDApp-204897Manusco240.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1/7/1931",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled by influenza from January 7th through February 15th, 1931. He received sickness payments totaling $49.50.",
+      "medical_examinations": [
+        {
+          "date": "1-16-31",
+          "examiner": "McIntire",
+          "finding": "Disabled by influenza",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco233.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1/14/31",
+            "end": "2/15/31"
+          },
+          "days": 33,
+          "amount": 49.5,
+          "check_number": null,
+          "sources": [
+            "RDApp-204897Manusco233.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1/7/1931",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled by sickness from January 7th through January 9th, 1931. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": null,
+          "finding": "Disabled by sickness",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco235.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "7/10/1931",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled by sickness from July 10th through July 15th, 1931. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": null,
+          "finding": "Disabled by sickness",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco234.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "Disabled by influenza"
+        },
+        {
+          "date": "1/14/1931",
+          "finding": "Disabled due to sickness"
+        }
+      ]
+    },
+    {
+      "name": "J. E. Huntly",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "Not specified in documents"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1-7-30",
+      "event": "Application for employment",
+      "significance": "Marks the beginning of Luigi Mancuso's documented career with B&O Railroad.",
+      "sources": [
+        "RDApp-204897Manusco231.jpg.json"
+      ]
+    },
+    {
+      "date": "7/28/1931",
+      "event": "Refund for contributions",
+      "significance": "Indicates a refund of $3.00 to Luigi Mancuso for the month of June 1931.",
+      "sources": [
+        "RDApp-204897Manusco232.jpg.json"
+      ]
+    },
+    {
+      "date": "6/15/1936",
+      "event": "Passed physical examination",
+      "significance": "Confirms Luigi Mancuso was physically qualified for his position.",
+      "sources": [
+        "RDApp-204897Manusco240.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1/7/30",
+      "latest": "6/15/1936"
+    },
+    "completeness_assessment": "The record is relatively complete, providing a detailed account of Luigi Mancuso's employment and health history. However, there are some inconsistencies in the spelling of his name across documents.",
+    "data_quality_notes": [
+      "Some documents have partially illegible handwriting which affects the accuracy of transcriptions.",
+      "There are contradictions regarding the exact address used for medical examinations."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the challenges faced by railroad employees in terms of health and disability, as well as the company's response through sickness payments and physical examinations.",
+      "They also provide insight into the administrative processes used by the Baltimore & Ohio Railroad Company for handling employee medical issues."
+    ],
+    "comparative_questions": [
+      "How did the treatment of disabled workers vary across different railroad companies during this period?",
+      "What were the typical durations and severities of illnesses among railroad employees, as evidenced in other cases?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

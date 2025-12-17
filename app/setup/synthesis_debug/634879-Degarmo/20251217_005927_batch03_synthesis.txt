@@ -1,0 +1,229 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {
+        "name": "Degarmo, Harry",
+        "confidence": "high",
+        "sources": [
+          "RDApp-634879Degarmo021.jpg.json",
+          "RDApp-634879Degarmo023.jpg.json"
+        ]
+      },
+      {
+        "name": "Harry De Garmo",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-634879Degarmo025.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634879",
+    "birth_year": 1881,
+    "confidence_notes": "The birth year is derived from the vision examination record dated May 20, 1929."
+  },
+  "biographical_narrative": "Harry Degarmo was a railroad worker employed by the Baltimore & Ohio Railroad Company in various capacities throughout his career. He began his service as a brakeman and later transitioned to trackman and yard helper positions within the Ohio Division. His employment spanned over several years, marked by multiple injuries that required medical attention and temporary disability leave. Despite these setbacks, Degarmo continued working for the railroad until at least 1930 when he was recorded as being off duty due to an ulcer of the cornea.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "742584",
+      "date_range": "unknown",
+      "context": "Residence as stated in the Surgeon\u2019s First Report of Accident.",
+      "sources": [
+        "RDApp-634879Degarmo025.jpg.json"
+      ]
+    },
+    {
+      "address": "Chillicothe, Ohio",
+      "date_range": "unknown",
+      "context": "Residence as stated in the Medical Examiner's Report of Disablement.",
+      "sources": [
+        "RDApp-634879Degarmo024.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Brakeman",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Began service as a brakeman, though the exact start date is not provided.",
+      "sources": []
+    },
+    {
+      "date": "1927-09-17",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Sustained a severe contusion to the right side of his face, neck, and eye due to an accident involving a distant signal lever.",
+      "sources": [
+        "RDApp-634879Degarmo025.jpg.json",
+        "RDApp-634879Degarmo026.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-09-21",
+      "event_type": "return_to_duty",
+      "position": "Brakeman",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Resumed duty after being reported disabled.",
+      "sources": [
+        "RDApp-634879Degarmo022.jpg.json"
+      ]
+    },
+    {
+      "date": "1929-05-20",
+      "event_type": "medical_examination",
+      "position": "Yard Helper",
+      "department": null,
+      "division": "Belmont Division",
+      "details": "Underwent a vision examination that confirmed his acuity and color perception.",
+      "sources": [
+        "RDApp-634879Degarmo028.jpg.json"
+      ]
+    },
+    {
+      "date": "1930-10-15",
+      "event_type": "injury",
+      "position": "Yard Helper",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Developed an ulcer of the cornea, leading to a period of disability.",
+      "sources": [
+        "RDApp-634879Degarmo030.jpg.json"
+      ]
+    },
+    {
+      "date": "1930-11-02",
+      "event_type": "return_to_duty",
+      "position": "Yard Helper",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Returned to duty after a period of disability due to an ulcer of the cornea.",
+      "sources": [
+        "RDApp-634879Degarmo030.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1927-09-17",
+      "injury_type": "Severe contusion of the face, neck and eye",
+      "body_part": "Right side of face, neck, and right eye",
+      "narrative": "Degarmo was injured while handling a distant signal switch when he dropped his tool and reached for it. The lever flew up and struck him in the face causing severe contusions.",
+      "medical_examinations": [
+        {
+          "date": "1927-09-19",
+          "examiner": "Dr. D. M. Meyers",
+          "finding": "disabled",
+          "notes": "Degarmo was reported to have a severe contusion of the face, right eye.",
+          "sources": [
+            "RDApp-634879Degarmo024.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1930-10-15",
+      "injury_type": "Ulcer of the cornea",
+      "body_part": "Eye",
+      "narrative": "Degarmo developed an ulcer of the cornea, leading to a period of disability from October 15th until November 2nd.",
+      "medical_examinations": [
+        {
+          "date": "1930-10-18",
+          "examiner": "Potter",
+          "finding": "disabled",
+          "notes": "Degarmo was reported to have an ulcer of the cornea, leading to a period of disability.",
+          "sources": [
+            "RDApp-634879Degarmo030.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1930-10-15",
+            "end": "1930-11-02"
+          },
+          "days": 19,
+          "amount": 28.5,
+          "check_number": "28520",
+          "sources": [
+            "RDApp-634879Degarmo030.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. D. M. Meyers",
+      "district": "25",
+      "examinations": [
+        {
+          "date": "1927-09-19",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "H.C. Potter",
+      "district": "22",
+      "examinations": [
+        {
+          "date": "1929-05-20",
+          "finding": "Good Vision and Hearing"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1921-09-21",
+      "latest": "1930-11-02"
+    },
+    "completeness_assessment": "The record is fairly complete for injury and medical examination details, but lacks information on family members or specific employment dates. There are some contradictions in the names used.",
+    "data_quality_notes": [
+      "Some documents have illegible sections which affect the completeness of certain fields.",
+      "There are discrepancies between different forms regarding Degarmo's name spelling."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the risks associated with railroad work in the early 20th century, particularly for brakemen and trackmen.",
+      "It also provides insight into the medical care and disability benefits provided by the Baltimore & Ohio Railroad Company."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different divisions of the railroad?",
+      "What were the typical durations of disability leave for injuries similar to Degarmo's?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

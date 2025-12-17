@@ -1,0 +1,147 @@
+{
+  "person_identity": {
+    "canonical_name": "Illario Panetta",
+    "name_variations": [
+      {"name": "J. Pascucci", "confidence": "low", "sources": ["RDApp-205699Panetta141.jpg.json"]},
+      {"name": "Elario Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta145.jpg.json"]},
+      {"name": "Illario Panaretta", "confidence": "high", "sources": ["RDApp-205699Panetta147.jpg.json"]}
+    ],
+    "employee_id": "205699",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on the most consistent name usage, Illario Panaretta. There are some variations in names that may indicate a possible mix-up with other employees."
+  },
+  
+  "biographical_narrative": "Illario Panetta was a car repairman employed by the Baltimore & Ohio Railroad Company during the early 20th century. His employment history is marked by several injuries, indicating the hazardous nature of his work. He suffered from multiple lacerations and contusions to his left thumb in separate incidents, which required medical attention and temporary disablement. Despite these setbacks, Panetta continued his career as a car repairman for at least 17 years. His family situation is less clear; he was married with one child under the age of 18, but specific details about his spouse are not provided in the documents.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "Not explicitly mentioned", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "606 Vernon St., Phila, PA",
+      "date_range": "unknown",
+      "context": "Residence at the time of injury report",
+      "sources": ["RDApp-205699Panetta141.jpg.json"]
+    },
+    {
+      "address": "66 Vermont St., Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence at the time of injury report",
+      "sources": ["RDApp-205699Panetta147.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Car Repairman",
+      "department": "Car Dept.",
+      "division": "Phila. Terminals",
+      "details": "Began working as a car repairman for the Baltimore & Ohio Railroad Company, though exact start date is not provided in documents.",
+      "sources": ["RDApp-205699Panetta141.jpg.json"]
+    },
+    {
+      "date": "1921-01-08",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Suffered a lacerated wound on his left thumb while working in Keyser, West Virginia.",
+      "sources": ["RDApp-205699Panetta147.jpg.json"]
+    },
+    {
+      "date": "1921-07-31",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to work after being disabled.",
+      "sources": ["RDApp-205699Panetta142.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1921-01-08",
+      "injury_type": "Lacerated wound and contusion",
+      "body_part": "Left thumb",
+      "narrative": "Panetta was injured while working as a car repairman in Keyser, West Virginia. He suffered a lacerated wound to his left thumb after it got caught between chairs during work.",
+      "medical_examinations": [
+        {
+          "date": "1921-01-12",
+          "examiner": "C. Hoffman M.D.",
+          "finding": "Disabled",
+          "notes": "Probable duration of disablement was a week or more.",
+          "sources": ["RDApp-205699Panetta145.jpg.json"]
+        },
+        {
+          "date": "1921-07-31",
+          "examiner": null,
+          "finding": "Able to return to duty",
+          "notes": "Certified able to resume work.",
+          "sources": ["RDApp-205699Panetta142.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1920-01-08",
+      "injury_type": "Contusion and laceration",
+      "body_part": "Left thumb",
+      "narrative": "Panetta suffered a contusion and laceration to his left thumb while handling pieces of iron at Harper. The probable duration of disablement was a few days.",
+      "medical_examinations": [
+        {
+          "date": "1920-01-10",
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": "Probable duration of disablement was a few days.",
+          "sources": ["RDApp-205699Panetta146.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "C. Hoffman M.D.", "district": null, "examinations": [{"date": "1921-01-12", "finding": "Disabled"}]}
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1920-01-08", "latest": "1921-07-31"},
+    "completeness_assessment": "The record is fairly complete for injury reports and medical examinations but lacks detailed personal information such as family details. There are some contradictions in the names used, which may indicate confusion with other employees.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have illegible portions.",
+      "Contradictions exist regarding the employee's name."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The case highlights the risks associated with railroad repair work and the company’s response to worker injuries, including medical attention and temporary disablement benefits."],
+    "comparative_questions": ["How did injury rates and responses vary across different divisions of the Baltimore & Ohio Railroad Company?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

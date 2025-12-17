@@ -1,0 +1,97 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo Verne Elbon",
+    "name_variations": [
+      {"name": "Leo Elbon", "confidence": "high", "sources": ["RDApp-635394Elbon011.jpg.json", "RDApp-635394Elbon012.jpg.json"]},
+      {"name": "L.V. Gillford", "confidence": "low", "sources": ["RDApp-635394Elbon019.jpg.json"]}, 
+      {"name": "Leo Verne Callow", "confidence": "medium", "sources": ["RDApp-635394Elbon015.jpg.json"]}
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "The birth year is consistent across multiple documents, but there are discrepancies in the name variations which may indicate different individuals or clerical errors."
+  },
+  
+  "biographical_narrative": "Leo Verne Elbon began his career with the Baltimore & Ohio Railroad Company as a fireman. He was born on November 16, 1896 and served in various capacities within the Conducting Transportation Department, including roles in the Cumberland Division. In September 1961, he sustained an off-duty injury to his left knee resulting in an avulsion fracture of the intercondyloid spine of the tibia. Despite this setback, Elbon's medical records indicate a series of examinations and consultations that delayed his return to work until further healing was confirmed. His career with B&O spanned several decades, during which he also applied for full membership in the Relief Feature of the company’s Relief Department.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No explicit mention of a spouse", "sources": []},
+    "parents": [
+      {"name": "Mother (unnamed)", "relationship": "mother", "evidence": "Named as beneficiary in application for Relief Feature membership", "sources": ["RDApp-635394Elbon020.jpg.json"]}
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "Keyser, West Virginia", "date_range": "unknown", "context": "Residence for Relief Feature application", "sources": ["RDApp-635394Elbon020.jpg.json"]},
+    {"address": "Sharpless Street, Keyser, West Virginia", "date_range": "unknown", "context": "Address in hospital letter", "sources": ["RDApp-635394Elbon014.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "12/1/1970", "event_type": "medical examination", "position": null, "department": null, "division": null, "details": "Vision and hearing examination conducted by J.H.D. Birch.", "sources": ["RDApp-635394Elbon017.jpg.json"]},
+    {"date": "1/19/1926", "event_type": "medical examination", "position": null, "department": null, "division": null, "details": "Vision and hearing examination conducted by J. Gilbert Selby.", "sources": ["RDApp-635394Elbon018.jpg.json"]},
+    {"date": "2/19/1940", "event_type": "furlough", "position": "Fireman", "department": null, "division": "East and Cumberland Division", "details": "Furloughed due to incapacity for train service.", "sources": ["RDApp-635394Elbon016.jpg.json"]},
+    {"date": "12/11/1928", "event_type": "application", "position": null, "department": null, "division": null, "details": "Application for Relief Feature membership.", "sources": ["RDApp-635394Elbon020.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "September 1961",
+      "injury_type": "Avulsion fracture of the intercondyloid spine of the left tibia",
+      "body_part": "Left knee",
+      "narrative": "Elbon sustained an avulsion fracture off-duty, which showed no significant healing over a period from September 5 to October 9, 1961. Medical advice was for him not to return to work until the fracture had healed.",
+      "medical_examinations": [
+        {"date": "October 4, 1961", "examiner": "Dr. T.R. Adams", "finding": "Disabled", "notes": "Avulsion fracture of intercondylar eminences without displacement or deformity.", "sources": ["RDApp-635394Elbon012.jpg.json"]},
+        {"date": "October 9, 1961", "examiner": "Dr. I. Kaplan", "finding": "Disabled", "notes": "Consulting surgeon advised no return to work until healing confirmed.", "sources": ["RDApp-635394Elbon011.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. I. Kaplan",
+      "district": null,
+      "examinations": [{"date": "October 9, 1961", "finding": "Disabled"}]
+    },
+    {"name": "Dr. T.R. Adams", "district": null, "examinations": [{"date": "October 4, 1961", "finding": "Disabled"}]}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "April 26, 1940",
+      "event": "Furlough update",
+      "significance": "Indicates a period of incapacity for train service.",
+      "sources": ["RDApp-635394Elbon016.jpg.json"]
+    },
+    {
+      "date": "December 11, 1928",
+      "event": "Application for Relief Feature membership",
+      "significance": "Shows Elbon's participation in the company’s benefit programs.",
+      "sources": ["RDApp-635394Elbon020.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "January 19, 1926", "latest": "October 9, 1961"},
+    "completeness_assessment": "The record is relatively complete for medical examinations and injury history but lacks details on promotions or transfers. There are discrepancies in the name variations which may indicate clerical errors.",
+    "data_quality_notes": ["Name variations suggest potential identity issues", "Some documents were truncated, affecting completeness"]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case reveals the importance of medical examinations and the company’s efforts to ensure employee health before allowing return to work.",
+      "It also highlights the role of benefit programs in supporting employees during periods of incapacity."
+    ],
+    "comparative_questions": ["How did injury management practices vary across different railroad companies?", "What was the typical duration of incapacity for similar injuries?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

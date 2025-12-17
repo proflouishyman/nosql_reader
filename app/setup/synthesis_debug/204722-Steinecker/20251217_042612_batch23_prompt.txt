@@ -1,0 +1,195 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records from the early 20th century.
+
+EMPLOYEE FOLDER: 204722-Steinecker
+EMPLOYEE ID: 204722
+FOLDER NAME: Steinecker
+NUMBER OF DOCUMENTS: 1 - Batch 23/23
+
+Below are ALL documents from this employee's personnel file. Read carefully and generate a comprehensive biographical synthesis.
+
+
+======================================================================
+DOCUMENT 1 of 1: RDApp-204722Steinecker221.jpg.json
+======================================================================
+
+OCR TEXT:
+B. & O. R. R. CO.—RELIEF DEPARTMENT. R.F. Form 5–Rev.
+NOTICE OF DISABLEMENT. No. 163683
+PART TWO (2).
+(Forward this PART TWO direct to SUPERINTENDENT RELIEF DEPARTMENT, and at the same time send PART THREE to the MEDICAL EXAMINER.)
+Notice sent from Curtiss Bay Yard ca 12/24/45 19
+Superintendent Relief Department: Dr. Bossyna Medical Examiner
+(Name): William Stolinecker (Certificate Number): 20217223
+(Residence): 101 n. 3rd Ave. Blkym. Pk. (Occupation): Helper
+(Department): C.T. (Division): B. To. Last Day Wages Allowed. 12/21/45 at 7.20 am
+Reported disabled by or beginning 12/22/45, 7.20 am M. SICKNESS
+Was he Injured on Duty? Answer "Yes" or "No": No Cause of Injury on Duty
+Signature and title of Official Issuing: J.M. Ohle
+(Do not write in spaces below; they are reserved for revisions by Relief Department.)
+(name) W. Stolinecker
+Class: [illegible] Rate of Contribution 3.60 Paid to cover
+1-17-82 DEATH BENEFIT $250. PAID COVER. F.R. AFTER 9.43.
+
+
+SUMMARY:
+This is a Notice of Disablement form from the Baltimore & Ohio Railroad Company Relief Department, dated December 24, 1945. It records the disablement of William Stolinecker, a helper in the C.T. department, on grounds of sickness (not an on-duty injury). The document includes personal and employment details, certifying official, and evidence of a death benefit payout.
+
+
+{'='*70}
+YOUR TASK: GENERATE COMPREHENSIVE BIOGRAPHICAL SYNTHESIS
+{'='*70}
+
+Create a structured JSON synthesis with the following schema. Be thorough and evidence-based.
+
+{
+  "person_identity": {
+    "canonical_name": "Full official name based on most common/official usage",
+    "name_variations": [
+      {
+        "name": "Variation as it appears",
+        "confidence": "high/medium/low",
+        "sources": ["list document filenames where this variation appears"]
+      }
+    ],
+    "employee_id": "Employee ID number",
+    "birth_year": 1895,
+    "confidence_notes": "Brief assessment of identity certainty"
+  },
+  
+  "biographical_narrative": "Write 2-4 paragraphs summarizing this person's railroad career. Include: when they started, positions held, major events (injuries, promotions, disputes), family situation, and any notable circumstances. Write in past tense as a professional historian would. Make it readable and informative.",
+  
+  "family": {
+    "spouse": {
+      "name": "Spouse name or null",
+      "evidence": "How we know this",
+      "sources": ["document filenames"]
+    },
+    "parents": [
+      {
+        "name": "Parent name",
+        "relationship": "father/mother",
+        "evidence": "How mentioned",
+        "sources": ["document filenames"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Full address as stated",
+      "date_range": "When associated with this address or 'unknown'",
+      "context": "Why this address appears (residence, beneficiary address, etc.)",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Job title",
+      "department": "Department name or null",
+      "division": "Division name or null",
+      "details": "Brief description of what happened",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "YYYY-MM-DD or best available",
+      "injury_type": "Description of injury",
+      "body_part": "Affected body part(s)",
+      "narrative": "2-3 sentence description of injury, treatment, and outcome",
+      "medical_examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "examiner": "Dr. Name",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Key details from examination",
+          "sources": ["document filenames"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"},
+          "days": 10,
+          "amount": 50.00,
+          "check_number": "Check number if available",
+          "sources": ["document filenames"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true or false,
+        "narrative": "If disputed, explain the conflict between doctors or administrators",
+        "resolution": "How was it resolved or 'unclear'"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Name",
+      "district": "District number if available",
+      "examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "finding": "Brief finding"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event": "What happened",
+      "significance": "Why this matters",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "YYYY-MM-DD or best guess",
+      "latest": "YYYY-MM-DD or best guess"
+    },
+    "completeness_assessment": "1-2 sentences: How complete is this record? What's well-documented? What's missing?",
+    "data_quality_notes": [
+      "List observations about OCR quality, contradictions, clarity, etc."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "What does this case reveal about railroad labor, medical practices, administration, etc.?"
+    ],
+    "comparative_questions": [
+      "What questions could be explored by comparing this case to others?"
+    ],
+    "research_value": "High/Medium/Low"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON - no preamble, no markdown fences, no explanation
+2. Use exact schema above - include all fields even if some are empty/null
+3. Always include "sources" arrays with actual document filenames for evidence
+4. Be thorough but concise
+5. Note contradictions or uncertainties explicitly
+6. Assign realistic confidence scores (0.0-1.0) based on evidence quality
+7. Write biographical_narrative in clear, professional prose
+8. If information is missing, use null or empty arrays - don't invent data
+9. For dates, use best available format (prefer YYYY-MM-DD, but accept what documents provide)
+10. Document filenames should match the filename shown in DOCUMENT headers above
+
+Begin your response with { and end with }. Return ONLY the JSON object.

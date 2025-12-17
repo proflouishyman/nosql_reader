@@ -1,0 +1,404 @@
+{
+  "person_identity": {
+    "canonical_name": "Dario Panetta",
+    "name_variations": [
+      {
+        "name": "Panatta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta255.jpg.json",
+          "RDApp-205699Panetta256.jpg.json"
+        ]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta257.jpg.json"
+        ]
+      },
+      {
+        "name": "Ilario Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta260.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist but 'Dario Panetta' is the most consistent."
+  },
+  "biographical_narrative": "Dario Panetta was a laborer for the Baltimore & Ohio Railroad Company, working in various departments and divisions across Maryland. His employment records from late 1934 to mid-1935 indicate frequent periods of disablement due to sickness or accident. These incidents spanned several months during which he did not receive wages, suggesting significant health challenges that impacted his ability to work consistently. Despite these setbacks, Panetta remained employed by the company, indicating a commitment from both him and his employer to maintain his position within the organization.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": null,
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "111 N. Mineral, Keyser, WVa",
+      "date_range": "unknown",
+      "context": "Residence address reported in the notice of disablement.",
+      "sources": [
+        "RDApp-205699Panetta260.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Laborer",
+      "department": "MMP Department",
+      "division": "Eu Division",
+      "details": "Initial employment details are not provided.",
+      "sources": []
+    },
+    {
+      "date": "1934-09-20",
+      "event_type": "injury",
+      "position": null,
+      "department": "MP Department",
+      "division": "Erie Division",
+      "details": "Totally disabled by sickness from September 2 to September 19, 1934.",
+      "sources": [
+        "RDApp-205699Panetta258.jpg.json",
+        "RDApp-205699Panetta259.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-10-20",
+      "event_type": "injury",
+      "position": null,
+      "department": "MP Department",
+      "division": "Eng Division",
+      "details": "Totally disabled by sickness from October 20 to November 19, 1934.",
+      "sources": [
+        "RDApp-205699Panetta257.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-11-20",
+      "event_type": "injury",
+      "position": null,
+      "department": "MP Department",
+      "division": "Eu Division",
+      "details": "Totally disabled by sickness from November 20 to December 19, 1934.",
+      "sources": [
+        "RDApp-205699Panetta256.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-12-28",
+      "event_type": "injury",
+      "position": null,
+      "department": "MP Department",
+      "division": "CW Division",
+      "details": "Totally disabled by sickness from December 28, 1934 to January 19, 1935.",
+      "sources": [
+        "RDApp-205699Panetta255.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-01-20",
+      "event_type": "injury",
+      "position": null,
+      "department": "MP Department",
+      "division": "EW Division",
+      "details": "Totally disabled by sickness from January 20 to February 19, 1935.",
+      "sources": [
+        "RDApp-205699Panetta254.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-02-20",
+      "event_type": "injury",
+      "position": null,
+      "department": "MMP Department",
+      "division": null,
+      "details": "Totally disabled by sickness from February 20 to March 14, 1935.",
+      "sources": [
+        "RDApp-205699Panetta253.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-03-20",
+      "event_type": "injury",
+      "position": null,
+      "department": "MP Department",
+      "division": "EW Division",
+      "details": "Totally disabled by sickness from March 20 to April 19, 1935.",
+      "sources": [
+        "RDApp-205699Panetta252.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-04-20",
+      "event_type": "injury",
+      "position": null,
+      "department": "MMP Department",
+      "division": "Eu Division",
+      "details": "Totally disabled by sickness from April 20 to May 19, 1935.",
+      "sources": [
+        "RDApp-205699Panetta251.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1934-09-02",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from September 2, 1934, until September 19, 1934. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1934-09-11",
+          "examiner": "Z.E. Cooper",
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta259.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1934-10-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from October 20, 1934, until November 19, 1934. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta257.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1934-11-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from November 20, 1934, until December 19, 1934. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta256.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1934-12-28",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from December 28, 1934 until January 19, 1935. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta255.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1935-01-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from January 20, 1935 until February 19, 1935. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta254.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1935-02-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from February 20, 1935 until March 14, 1935. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta253.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1935-03-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from March 20, 1935 until April 19, 1935. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta252.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1935-04-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Dario Panetta was reported disabled due to sickness from April 20, 1935 until May 19, 1935. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta251.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Z.E. Cooper",
+      "district": "62",
+      "examinations": [
+        {
+          "date": "1934-09-11",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "F.E. Cooper",
+      "district": "6",
+      "examinations": []
+    },
+    {
+      "name": "E.H. Guiswhite",
+      "district": "6",
+      "examinations": []
+    },
+    {
+      "name": "B.H. Guistwhite",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1934-09-06",
+      "event": "Notice of disablement sent to Relief Department.",
+      "significance": "Indicates the start of Panetta's disability period in September 1934.",
+      "sources": [
+        "RDApp-205699Panetta260.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1934-09-06",
+      "latest": "1935-05-20"
+    },
+    "completeness_assessment": "The record is fairly complete for the period from September 1934 to May 1935, with detailed documentation of disablement periods. However, there are no records of Panetta's hiring date or any promotions.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have missing information due to poor OCR accuracy.",
+      "There is a discrepancy in the spelling of Panetta's name across different documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The frequent disablement periods suggest that railroad laborers faced significant health risks, possibly related to working conditions or environmental factors.",
+      "The company's response to these injuries indicates a formal process for handling employee disabilities and wage allowances."
+    ],
+    "comparative_questions": [
+      "How did the frequency of disablements compare with other employees in similar positions?",
+      "What were the common causes of sickness among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

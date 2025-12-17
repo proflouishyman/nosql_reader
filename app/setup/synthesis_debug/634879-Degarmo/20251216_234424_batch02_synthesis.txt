@@ -1,0 +1,240 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {
+        "name": "Harry Higaama",
+        "confidence": "low",
+        "sources": [
+          "RDApp-634879Degarmo013.jpg.json"
+        ]
+      },
+      {
+        "name": "Gregory Sagarmo",
+        "confidence": "low",
+        "sources": [
+          "RDApp-634879Degarmo015.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634879",
+    "birth_year": 1888,
+    "confidence_notes": "The birth year is derived from the document dated September 20, 1927. The name variations are noted but considered low confidence due to potential OCR errors."
+  },
+  "biographical_narrative": "Harry Degarmo was a railroad worker with the Baltimore & Ohio Railroad Company in the early 20th century. He held positions as both a switchman and brakeman within the company's Ohio division, working primarily out of Chillicothe, Ohio. His career was marked by several injuries, including a severe blow to his left eye that occurred on September 12, 1923, which required medical attention and resulted in temporary disability. Another notable injury took place on September 17, 1927, when he suffered a contused face, leading to another period of disability. These injuries highlight the physical risks associated with railroad work during this era. Degarmo's career also saw administrative events such as his application for natural death benefits after leaving service in May 1924.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "811 Monroe Ave., Chillicothe, Ohio",
+      "date_range": "June 13th, 1924",
+      "context": "Payment notice address",
+      "sources": [
+        "RDApp-634879Degarmo014.jpg.json"
+      ]
+    },
+    {
+      "address": "413 E. Perry, Lima, O.",
+      "date_range": "September 21st, 1927",
+      "context": "Residence for Notice of Disablement",
+      "sources": [
+        "RDApp-634879Degarmo020.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "January 29th, 1921",
+      "event_type": "medical examination",
+      "position": "Brakeman",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Passed a medical examination for the position of Brakeman.",
+      "sources": [
+        "RDApp-634879Degarmo017.jpg.json"
+      ]
+    },
+    {
+      "date": "September 12th, 1923",
+      "event_type": "injury",
+      "position": "Switchman",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Suffered a severe blow to the left eye.",
+      "sources": [
+        "RDApp-634879Degarmo011.jpg.json"
+      ]
+    },
+    {
+      "date": "May 31st, 1924",
+      "event_type": "resignation",
+      "position": "Yard Foreman",
+      "department": "Transportation Department",
+      "division": "Ohio Division",
+      "details": "Left service by leave of absence or resignation.",
+      "sources": [
+        "RDApp-634879Degarmo016.jpg.json"
+      ]
+    },
+    {
+      "date": "September 17th, 1927",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Suffered a contused face.",
+      "sources": [
+        "RDApp-634879Degarmo018.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "September 12th, 1923",
+      "injury_type": "Blow to the eye",
+      "body_part": "Left Eye",
+      "narrative": "Degarmo suffered a severe blow over his left eye resulting in considerable hemorrhage into the conjunctiva. He was unable to resume duty until September 29th, 1923.",
+      "medical_examinations": [
+        {
+          "date": "September 13th, 1923",
+          "examiner": "Dr. Smylinger",
+          "finding": "disabled",
+          "notes": "Pupil dilated.",
+          "sources": [
+            "RDApp-634879Degarmo011.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": null,
+            "end": null
+          },
+          "days": 17,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-634879Degarmo011.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "September 17th, 1927",
+      "injury_type": "Contused face",
+      "body_part": "Face",
+      "narrative": "Degarmo suffered a contusion to his face on September 17th, 1927. He was unable to work from the morning of September 18th until September 20th.",
+      "medical_examinations": [
+        {
+          "date": "September 20th, 1927",
+          "examiner": "Dr. Burke",
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-634879Degarmo018.jpg.json",
+            "RDApp-634879Degarmo019.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "September 19th, 1927",
+            "end": "September 20th, 1927"
+          },
+          "days": 2,
+          "amount": 3.0,
+          "check_number": "46889",
+          "sources": [
+            "RDApp-634879Degarmo018.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Smylinger",
+      "district": null,
+      "examinations": [
+        {
+          "date": "September 13th, 1923",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W. L. Potter",
+      "district": "No. 32",
+      "examinations": [
+        {
+          "date": "September 23rd, 1923",
+          "finding": "disabled for three weeks"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Burke",
+      "district": null,
+      "examinations": [
+        {
+          "date": "September 20th, 1927",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "May 31st, 1924",
+      "event": "Left service by leave of absence or resignation.",
+      "significance": "This event marks a significant change in Degarmo's career with the Baltimore & Ohio Railroad Company.",
+      "sources": [
+        "RDApp-634879Degarmo016.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "January 29th, 1921",
+      "latest": "September 21st, 1927"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered but lacks detailed family information and some employment details. The injury history is well-documented.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors leading to name variations (e.g., Harry Higaama, Gregory Sagarmo).",
+      "Several fields in document 5 are unclear or incomplete."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the occupational hazards faced by railroad workers and the company's response to injuries.",
+      "They also highlight the administrative processes involved in managing employee benefits and disability claims within a major railroad corporation of the early 20th century."
+    ],
+    "comparative_questions": [
+      "How did injury rates compare across different divisions or departments within the Baltimore & Ohio Railroad Company?",
+      "What was the typical duration and compensation for injuries compared to other contemporary industries?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

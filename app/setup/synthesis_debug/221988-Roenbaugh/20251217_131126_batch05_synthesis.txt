@@ -1,0 +1,258 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Rombaugh",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh045.jpg.json",
+          "RDApp-221988Roenbaugh046.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rohrbaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh043.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude B. Boerbaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh047.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 221988,
+    "birth_year": 1882,
+    "confidence_notes": "The birth year of 1882 appears in multiple documents, but there is a conflicting document suggesting the birth year might be 1859. The canonical name 'Claude Roenbaugh' is derived from the most consistent usage across records."
+  },
+  "biographical_narrative": "Claude Roenbaugh began his career with the Baltimore & Ohio Railroad Company in various capacities, including as a Clerk Fireman and later an Engineer. His employment spanned several decades, during which he experienced multiple transfers and changes in occupational roles. Roenbaugh faced significant health challenges, particularly a diagnosis of anxiety neurosis that led to periods of disability and medical leave. Despite these setbacks, he continued his service until at least the late 1940s when he was examined for fitness to return to duty after a period of illness.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "531 W. 7th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address during disability period",
+      "sources": [
+        "RDApp-221988Roenbaugh047.jpg.json"
+      ]
+    },
+    {
+      "address": "551 W. 21st Stc., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in medical reporting form",
+      "sources": [
+        "RDApp-221988Roenbaugh050.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1932-07-01",
+      "event_type": "transfer",
+      "position": "Transfer L. Farm",
+      "department": null,
+      "division": null,
+      "details": "Transferred to a new location on July 1, 1932.",
+      "sources": [
+        "RDApp-221988Roenbaugh046.jpg.json"
+      ]
+    },
+    {
+      "date": "1935-04-07",
+      "event_type": "transfer",
+      "position": "O.T. Whg. Fiscalai",
+      "department": null,
+      "division": null,
+      "details": "Transferred to a new position on April 7, 1935.",
+      "sources": [
+        "RDApp-221988Roenbaugh046.jpg.json"
+      ]
+    },
+    {
+      "date": "1936-09-17",
+      "event_type": "transfer",
+      "position": "C.T. Whg.",
+      "department": null,
+      "division": null,
+      "details": "Transferred to a new position on September 17, 1936.",
+      "sources": [
+        "RDApp-221988Roenbaugh046.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-05-31",
+      "event_type": "disability_begin",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Began disability leave due to anxiety neurosis.",
+      "sources": [
+        "RDApp-221988Roenbaugh047.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-08-12",
+      "event_type": "disability_end",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Case closed and disability leave ended.",
+      "sources": [
+        "RDApp-221988Roenbaugh047.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1947-05-31",
+      "injury_type": "Neurosis",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was diagnosed with anxiety neurosis, leading to a period of disability leave from May 31, 1947. He received medical treatment and payments for his condition.",
+      "medical_examinations": [
+        {
+          "date": "1947-06-26",
+          "examiner": null,
+          "finding": "Indefinite Able to Resume Duty",
+          "notes": "Diagnosis of mild anxiety neurosis with relapse. Roenbaugh was able to resume duty on August 3, 1947.",
+          "sources": [
+            "RDApp-221988Roenbaugh050.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1947-05-31",
+            "end": "1947-06-24"
+          },
+          "days": 25,
+          "amount": 10.41,
+          "check_number": "65525",
+          "sources": [
+            "RDApp-221988Roenbaugh047.jpg.json"
+          ]
+        },
+        {
+          "period": {
+            "start": "1947-06-25",
+            "end": "1947-07-08"
+          },
+          "days": 14,
+          "amount": 5.86,
+          "check_number": "66298",
+          "sources": [
+            "RDApp-221988Roenbaugh047.jpg.json"
+          ]
+        },
+        {
+          "period": {
+            "start": "1947-07-09",
+            "end": "1947-07-30"
+          },
+          "days": 22,
+          "amount": 9.21,
+          "check_number": "66740",
+          "sources": [
+            "RDApp-221988Roenbaugh047.jpg.json"
+          ]
+        },
+        {
+          "period": {
+            "start": "1947-07-30",
+            "end": "1947-08-12"
+          },
+          "days": 13,
+          "amount": 5.4,
+          "check_number": "67199",
+          "sources": [
+            "RDApp-221988Roenbaugh047.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Fuller Nance",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1947-06-26",
+          "finding": "Indefinite Able to Resume Duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1935-04-07",
+      "event": "Transfer from T. T. Transfer L. Farm to O.T. Whg. Fiscalai.",
+      "significance": "Indicates a change in role and department, likely reflecting Roenbaugh's career progression within the company.",
+      "sources": [
+        "RDApp-221988Roenbaugh046.jpg.json"
+      ]
+    },
+    {
+      "date": "1936-09-17",
+      "event": "Transfer from O.T. Whg. Fiscalai to C.T. Whg.",
+      "significance": "Reflects another shift in Roenbaugh's role within the company, possibly indicating a change in responsibilities or departmental structure.",
+      "sources": [
+        "RDApp-221988Roenbaugh046.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-05-31",
+      "event": "Start of disability leave due to anxiety neurosis.",
+      "significance": "Marks a significant period in Roenbaugh's career, during which he was unable to perform his duties and required medical attention.",
+      "sources": [
+        "RDApp-221988Roenbaugh047.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1932-07-01",
+      "latest": "1947-11-20"
+    },
+    "completeness_assessment": "The record is fairly complete, with detailed information on employment history and medical leave. However, there are some contradictions in the birth year and name variations.",
+    "data_quality_notes": [
+      "There are discrepancies between documents regarding Roenbaugh's full name and birth year.",
+      "Some data entries are faded or illegible."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Claude Roenbaugh highlights the challenges faced by railroad employees, particularly in terms of health issues and their impact on career progression. The detailed documentation of disability leaves suggests a structured approach to employee welfare.",
+      "Roenbaugh's multiple transfers within the company indicate a dynamic organizational structure with evolving roles and responsibilities."
+    ],
+    "comparative_questions": [
+      "How did Roenbaugh's experience compare to other employees in terms of career progression and health issues?",
+      "What were the typical durations and causes of disability leaves among railroad workers?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

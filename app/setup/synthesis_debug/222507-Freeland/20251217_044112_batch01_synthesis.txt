@@ -1,0 +1,177 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thos. B. Freeland",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland001.jpg.json",
+          "RDApp-222507Freeland002.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas P. Freeland",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland009.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1889,
+    "confidence_notes": "Confidence in identity is high based on consistent documentation across multiple records."
+  },
+  "biographical_narrative": "Thomas B. Freeland was a carman employed by the Baltimore & Ohio Railroad Company, working in Cumberland Division of the MP Department. His career spanned several decades with notable events including an injury that led to his temporary disablement and medical treatment. On August 9, 1950, he sustained a laceration on his right leg, which required him to be placed on relief duty. Freeland's case highlights the railroad company\u2019s response to employee injuries, including medical examinations, disability benefits processing, and hospital bills management. Despite his injury, he was able to return to work shortly after treatment.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va",
+      "date_range": "unknown",
+      "context": "Residence address as stated in official records.",
+      "sources": [
+        "RDApp-222507Freeland002.jpg.json",
+        "RDApp-222507Freeland010.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Carman",
+      "department": "MP",
+      "division": "Cumb.",
+      "details": "Began employment as a carman in the MP Department, Cumberland Division.",
+      "sources": []
+    },
+    {
+      "date": "1950-08-09",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a laceration on the right leg.",
+      "sources": [
+        "RDApp-222507Freeland010.jpg.json"
+      ]
+    },
+    {
+      "date": "1950-08-24",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Deemed able for duty after medical assessment.",
+      "sources": [
+        "RDApp-222507Freeland010.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1950-08-09",
+      "injury_type": "contusion and laceration",
+      "body_part": "right mid leg",
+      "narrative": "Freeland sustained a contusion and laceration to his right leg while working at Cumberland, MD. He was treated at Allgay Hospital and returned to duty on August 24, 1950.",
+      "medical_examinations": [
+        {
+          "date": "1950-08-21",
+          "examiner": "Dr. Roy T. Agostini",
+          "finding": "disabled",
+          "notes": "Examination showed contusion and laceration, ulcer, and moderate deafness.",
+          "sources": [
+            "RDApp-222507Freeland010.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1950-08-09",
+            "end": "1950-08-20"
+          },
+          "days": 12,
+          "amount": 4.65,
+          "check_number": null,
+          "sources": [
+            "RDApp-222507Freeland003.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Roy T. Agostini",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1950-08-21",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "S. M. English, M.D.",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1950-08-27",
+      "event": "bill submission for medical services",
+      "significance": "Indicates the company's process of paying hospital bills for injured employees.",
+      "sources": [
+        "RDApp-222507Freeland003.jpg.json"
+      ]
+    },
+    {
+      "date": "1950-08-14",
+      "event": "medical examination by Dr. Roy T. Agostini",
+      "significance": "Part of the process to determine eligibility for disability benefits.",
+      "sources": [
+        "RDApp-222507Freeland009.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1948-01-10",
+      "latest": "1950-10-27"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing injury and disability processing. However, there are no records of Freeland's initial hiring or any promotions.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text.",
+      "There is a discrepancy in the name 'Thomas B. Freeland' vs. 'Thos. P. Freeland'."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case provides insight into railroad labor practices, including disability benefits and medical care for injured employees.",
+      "It also highlights the bureaucratic process involved in managing employee injuries."
+    ],
+    "comparative_questions": [
+      "How did injury management differ between different divisions of the B&O Railroad?",
+      "What were the typical durations and amounts of disability payments?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

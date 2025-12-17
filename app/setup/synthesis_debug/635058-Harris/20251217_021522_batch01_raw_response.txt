@@ -1,0 +1,137 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {"name": "C. Harris", "confidence": "high", "sources": ["RDApp-635058Harris001.jpg.json"]},
+      {"name": "Chas Harris", "confidence": "medium", "sources": ["RDApp-635058Harris008.jpg.json"]}
+    ],
+    "employee_id": "635058",
+    "birth_year": 1893,
+    "confidence_notes": "Name variations are consistent with common abbreviations, but birth year is certain from document RDApp-635058Harris002.jpg.json."
+  },
+  
+  "biographical_narrative": "Charley Harris was a fireman employed by the Baltimore & Ohio Railroad Company in the early 20th century. He began his career as a fireman, working under various divisions and departments within the railroad system. On June 11, 1928, Harris suffered an injury to his right foot when it was caught between the apron and step of the cab during a collision with an automobile at Apple Grove, West Virginia. This incident led to several days of disability and required medical attention from Dr. Funk and Dr. Stotts. Despite the severity of the accident, Harris returned to duty on June 17, 1928, after receiving appropriate treatment and clearance from his medical examiner.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence in documents", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Ceredo-Kenova",
+      "date_range": "unknown",
+      "context": "Residence as stated on accident and return-to-duty notices.",
+      "sources": ["RDApp-635058Harris002.jpg.json", "RDApp-635058Harris006.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": "Ct",
+      "division": "Whg.",
+      "details": "Began working as a fireman, but the exact date of hire is not specified in the documents.",
+      "sources": ["RDApp-635058Harris002.jpg.json"]
+    },
+    {
+      "date": "1928-06-11",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Sustained a contused right foot injury during an accident involving a collision with an automobile.",
+      "sources": ["RDApp-635058Harris002.jpg.json", "RDApp-635058Harris007.jpg.json"]
+    },
+    {
+      "date": "1928-06-17",
+      "event_type": "return to duty",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Returned to work after a period of disability.",
+      "sources": ["RDApp-635058Harris006.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1928-06-11",
+      "injury_type": "Contusion",
+      "body_part": "Right foot",
+      "narrative": "Charley Harris was injured on June 11, 1928, when his right foot was caught between the apron and step of the cab during a collision with an automobile. He was disabled for several days and received medical attention.",
+      "medical_examinations": [
+        {
+          "date": "1928-06-11",
+          "examiner": "Dr. Funk",
+          "finding": "disabled",
+          "notes": "Examined Harris after the accident; injury was reported as a contused right foot.",
+          "sources": ["RDApp-635058Harris002.jpg.json"]
+        },
+        {
+          "date": "1928-06-18",
+          "examiner": "Dr. Stotts",
+          "finding": "able to return",
+          "notes": "Certified Harris was able to resume duty on June 15, 1928.",
+          "sources": ["RDApp-635058Harris007.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1928-06-12", "end": "1928-06-14"},
+          "days": 3,
+          "amount": 7.50,
+          "check_number": "30480",
+          "sources": ["RDApp-635058Harris002.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "Dr. Funk", "district": "10", "examinations": [{"date": "1928-06-11", "finding": "disabled"}]},
+    {"name": "Dr. Stotts", "district": null, "examinations": [{"date": "1928-06-18", "finding": "able to return"}]}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1928-06-20",
+      "event": "Accident payments processed",
+      "significance": "Indicates the company's administrative process for handling employee injuries.",
+      "sources": ["RDApp-635058Harris002.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1928-06-11", "latest": "1928-06-30"},
+    "completeness_assessment": "The record is relatively complete for the period of injury and recovery, but lacks details on Harris's career before or after this incident.",
+    "data_quality_notes": [
+      "Some documents contain handwritten information that was not fully captured by OCR, leading to missing data in certain fields."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The case highlights the risks faced by railroad workers and the company's response through its relief department."],
+    "comparative_questions": [
+      "How did injury rates and responses vary across different divisions of the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability for similar injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

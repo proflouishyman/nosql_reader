@@ -1,0 +1,66 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {"name": "L. Mancuso", "confidence": "high", "sources": ["RDApp-204897Manusco343.jpg.json"]},
+      {"name": "A Mancuso", "confidence": "medium", "sources": ["RDApp-204897Manusco348.jpg.json", "RDApp-204897Manusco347.jpg.json"]},
+      {"name": "Antonio Mancuso", "confidence": "low", "sources": ["RDApp-204897Manusco349.jpg.json"]}
+    ],
+    "employee_id": "204897",
+    "birth_year": 1887,
+    "confidence_notes": "The birth year is based on the affidavit and medical examination forms, but there are slight inconsistencies in the name."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso began his career with the Baltimore & Ohio Railroad Company as a laborer in Connellsville, Pennsylvania. His employment spanned several years from at least October 1912 to July 1926. Over this period, he transitioned into roles such as car repairer and engineer within the Motive Power Department. Mancuso's career was marked by his consistent applications for full membership in the Relief Feature of the company’s Relief Department, which provided him with a safety net against potential financial hardships due to illness or injury. His family situation is notable, including his marriage to Maria Mancuso and his designation as beneficiary for her welfare. Despite some confusion over his name variations across documents, Luigi's dedication to his work and the company is evident from his multiple applications and certifications.",
+  
+  "family": {
+    "spouse": {"name": "Maria Mancuso", "evidence": "Designated as beneficiary in application forms.", "sources": ["RDApp-204897Manusco341.jpg.json"]},
+    "parents": [
+      {"name": "Father", "relationship": "father", "evidence": "Mentioned in medical examination form, died at age 44 from an accident.", "sources": ["RDApp-204897Manusco350.jpg.json"]},
+      {"name": "Mother", "relationship": "mother", "evidence": "Alive and aged 46 according to the medical examination form.", "sources": ["RDApp-204897Manusco350.jpg.json"]}
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "118 Faget St., Connellsville, PA", "date_range": "unknown", "context": "Address of Maria Mancuso as noted in medical examiner's form.", "sources": ["RDApp-204897Manusco346.jpg.json"]},
+    {"address": "Connellsville, Fayette County, Pennsylvania", "date_range": "1912 - 1926", "context": "Residence during employment with the Baltimore & Ohio Railroad Company.", "sources": ["RDApp-204897Manusco341.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "1912-10-12", "event_type": "application", "position": "laborer", "department": "MP", "division": "Circle BMO", "details": "Application for full membership in the Relief Feature.", "sources": ["RDApp-204897Manusco343.jpg.json"]},
+    {"date": "1917-10-01", "event_type": "application", "position": "car repairer", "department": null, "division": "Connellsville Division", "details": "Application for full membership in the Relief Feature.", "sources": ["RDApp-204897Manusco344.jpg.json"]},
+    {"date": "1926-07-30", "event_type": "application", "position": "car repairer", "department": null, "division": "Connellsville Division", "details": "Application for full membership in the Relief Feature.", "sources": ["RDApp-204897Manusco341.jpg.json"]}
+  ],
+  
+  "injury_history": [],
+  
+  "medical_examiners": [
+    {"name": null, "district": null, "examinations": [{"date": "unknown", "finding": "In good health and without infirmity or weakness."}, {"date": "1926-07-30", "finding": "No significant medical issues noted."}]}
+  ],
+  
+  "administrative_events": [
+    {"date": "1911-10-10", "event": "Sworn affidavit confirming birth date and age.", "significance": "Legal documentation of personal details for employment purposes.", "sources": ["RDApp-204897Manusco347.jpg.json"]},
+    {"date": "1911-10-11", "event": "Application for full membership in the Relief Feature cancelled.", "significance": "Indicates a change or error in application process.", "sources": ["RDApp-204897Manusco348.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1911-10-10", "latest": "1926-07-30"},
+    "completeness_assessment": "The record is fairly complete, covering applications for Relief Feature membership and medical examinations. However, there are inconsistencies in the name usage across documents.",
+    "data_quality_notes": ["Name variations (Luigi Mancuso, A Mancuso) noted.", "Some forms are partially truncated."]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The application process for Relief Feature membership highlights the importance of health and financial security among railroad workers during this period.", "Medical examinations were a critical part of employment eligibility, indicating stringent health requirements."],
+    "comparative_questions": ["How did the benefits provided by the Relief Department compare with those offered by other railroads?", "What was the typical career progression for laborers in the Baltimore & Ohio Railroad Company?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.90,
+    "injury_details": 0.75,
+    "overall": 0.83
+  }
+}

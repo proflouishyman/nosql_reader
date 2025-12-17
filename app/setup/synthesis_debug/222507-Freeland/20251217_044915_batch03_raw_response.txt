@@ -1,0 +1,188 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Freeland, Thomas B.",
+        "confidence": "high",
+        "sources": ["RDApp-222507Freeland021.jpg.json", "RDApp-222507Freeland022.jpg.json"]
+      },
+      {
+        "name": "THOMAS B FREELAND",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland029.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": null,
+    "confidence_notes": "Identity is certain based on consistent naming across documents."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland was a carman for the Baltimore & Ohio Railroad Company, working in Cumberland Division. His career spanned several years, with notable periods of sickness and disability that impacted his employment status. In late 1952, Freeland experienced significant health issues, including cerebral arteriosclerosis with vertigo, which led to multiple periods of total disability. Despite these challenges, he was able to return to work after medical clearance. His case highlights the importance of comprehensive medical support and relief programs for railroad employees during this period.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va",
+      "date_range": "unknown",
+      "context": "Residence address as stated in medical documents.",
+      "sources": ["RDApp-222507Freeland022.jpg.json", "RDApp-222507Freeland029.jpg.json"]
+    },
+    {
+      "address": "Valley Post, W. Va",
+      "date_range": "unknown",
+      "context": "Address for annuity plan communication.",
+      "sources": ["RDApp-222507Freeland030.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Carman",
+      "department": "mp Dept.",
+      "division": "Cumb Div'n",
+      "details": "Employed as a carman in the Cumberland Division, details of hire date are not provided.",
+      "sources": ["RDApp-222507Freeland021.jpg.json", "RDApp-222507Freeland022.jpg.json"]
+    },
+    {
+      "date": "1952-11-07",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Became totally disabled by sickness, reported to the company on November 7, 1952.",
+      "sources": ["RDApp-222507Freeland024.jpg.json"]
+    },
+    {
+      "date": "1952-11-20",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Another period of total disability due to sickness, reported on November 20, 1952.",
+      "sources": ["RDApp-222507Freeland021.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1952-11-07",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland was totally disabled by sickness from November 7 to November 19, 1952. He was treated for cerebral arteriosclerosis with vertigo and was not allowed wages during this period.",
+      "medical_examinations": [
+        {
+          "date": "1952-11-14",
+          "examiner": "Dr. Roy T. Anderson",
+          "finding": "disabled",
+          "notes": "Felt nervous, weak, and had been constipated for two weeks before the incident.",
+          "sources": ["RDApp-222507Freeland027.jpg.json"]
+        },
+        {
+          "date": "1952-11-24",
+          "examiner": "Dr. Roy T. Agostini",
+          "finding": "disabled",
+          "notes": "Diagnosed with cerebral arteriosclerosis and vertigo.",
+          "sources": ["RDApp-222507Freeland028.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1952-11-20",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland was again totally disabled by sickness from November 20 to December 14, 1952. He was treated for cerebral arteriosclerosis with vertigo and was not allowed wages during this period.",
+      "medical_examinations": [
+        {
+          "date": "1952-11-28",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Inspected by the Medical Examiner, District No. 6.",
+          "sources": ["RDApp-222507Freeland021.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Roy T. Anderson",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1952-11-14",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Roy T. Agostini",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1952-11-24",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1954-11-22",
+      "event": "Payment notification for annuity plan contributions.",
+      "significance": "Indicates ongoing financial obligations and the administration of employee benefits.",
+      "sources": ["RDApp-222507Freeland030.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1952-11-07",
+      "latest": "1954-11-22"
+    },
+    "completeness_assessment": "The records are relatively complete for the period of sickness and disability, but lack information on employment start date or other career milestones.",
+    "data_quality_notes": [
+      "OCR quality is generally good, though some text is truncated or illegible."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Thomas B. Freeland reveals the extent to which railroad employees were affected by health issues and the role of company medical services in managing employee disabilities.",
+      "It also highlights the administrative processes involved in disability claims and wage allowances."
+    ],
+    "comparative_questions": [
+      "How did the treatment and support for disabled workers vary across different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of sickness-related absences among railroad employees during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

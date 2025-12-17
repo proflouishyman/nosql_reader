@@ -1,0 +1,190 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O.D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood103.jpg.json",
+          "RDApp-204801Proudfood106.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto S. Proudfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood102.jpg.json",
+          "RDApp-204801Proudfood105.jpg.json"
+        ]
+      },
+      {
+        "name": "O. Q. Proudfoot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood103.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is reasonably certain based on consistent use of the name 'Otto D. Proudfoot' in most documents, though variations exist."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was a fireman for the Baltimore & Ohio Railroad Company during the early 20th century. His career with the railroad began sometime before September 1907 when he suffered an injury on duty in Cumberland, Maryland. On September 16, 1907, while working at Conn. yard, Proudfoot's arm was scalded when a sprinkling hose came unconnected. This incident led to seven days of disability benefits and medical attention from Dr. Wailes. After his recovery, he returned to duty on September 25, 1907. In January 1929, at the age of 38, Proudfoot underwent a vision examination as part of his ongoing employment with the railroad.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No mention of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "111-1/2 Grand Ave south Cumberland",
+      "date_range": "September 1907 (approximate)",
+      "context": "Residence at the time of injury report",
+      "sources": [
+        "RDApp-204801Proudfood103.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": "CT",
+      "division": "Cumberland",
+      "details": "Exact date of hire is not provided, but he was a fireman by 1907.",
+      "sources": [
+        "RDApp-204801Proudfood101.jpg.json",
+        "RDApp-204801Proudfood103.jpg.json"
+      ]
+    },
+    {
+      "date": "1907-09-16",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Suffered a scald injury to his arm while on duty.",
+      "sources": [
+        "RDApp-204801Proudfood103.jpg.json",
+        "RDApp-204801Proudfood105.jpg.json"
+      ]
+    },
+    {
+      "date": "1907-09-25",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work after a week of disability leave.",
+      "sources": [
+        "RDApp-204801Proudfood105.jpg.json"
+      ]
+    },
+    {
+      "date": "1929-01-30",
+      "event_type": "medical examination",
+      "position": "Engineer",
+      "department": null,
+      "division": "EW.",
+      "details": "Underwent a vision examination as part of his ongoing employment with the railroad.",
+      "sources": [
+        "RDApp-204801Proudfood110.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1907-09-16",
+      "injury_type": "Scald injury to arm caused by a disconnected sprinkling hose.",
+      "body_part": "Arm",
+      "narrative": "On September 16, 1907, while on duty at Conn. yard in Cumberland, Otto D. Proudfoot suffered a scalded arm when a sprinkling hose came unconnected. He was entitled to benefits for seven days.",
+      "medical_examinations": [
+        {
+          "date": "1907-09-26",
+          "examiner": "J.A. Doerner, M.D.",
+          "finding": "Disabled (initially), then able to return to duty on September 25, 1907.",
+          "notes": "Prognosis was for one week of disability.",
+          "sources": [
+            "RDApp-204801Proudfood109.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1907-09-17",
+            "end": "1907-09-24"
+          },
+          "days": 7,
+          "amount": 7.0,
+          "check_number": "46679",
+          "sources": [
+            "RDApp-204801Proudfood101.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.A. Doerner, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1907-09-26",
+          "finding": "Disabled (initially), then able to return to duty on September 25, 1907."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Vision examination",
+      "significance": "Indicates ongoing health monitoring for railroad employees.",
+      "sources": [
+        "RDApp-204801Proudfood110.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1907-09-16",
+      "latest": "1929-01-30"
+    },
+    "completeness_assessment": "The record is fairly complete for the injury and return to duty in 1907, but lacks details on his hiring date or any other career events. The vision examination from 1929 provides some later context.",
+    "data_quality_notes": [
+      "Some OCR errors exist, particularly with names (e.g., 'Prindafast' instead of 'Proudfoot').",
+      "There are minor inconsistencies in the spelling and formatting of his name across documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of workplace safety measures for railroad employees, as well as the provision of disability benefits.",
+      "It also underscores the role of medical examiners in assessing and certifying worker disabilities and returns to duty."
+    ],
+    "comparative_questions": [
+      "How did injury rates and benefit provisions vary across different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What was the typical duration and amount of disability benefits for injuries among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

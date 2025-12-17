@@ -1,0 +1,225 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Larry Vannetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta011.jpg.json",
+          "RDApp-205699Panetta012.jpg.json"
+        ]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta014.jpg.json",
+          "RDApp-205699Panetta016.jpg.json"
+        ]
+      },
+      {
+        "name": "Llario Panetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta020.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": null,
+    "confidence_notes": "The identity of Ilario Panetta is reasonably certain, but variations in name spelling and the absence of birth year information reduce confidence."
+  },
+  "biographical_narrative": "Ilario Panetta was a laborer for the Baltimore & Ohio Railroad Company during the early 20th century. His employment records indicate that he experienced several injuries on the job, including one incident in May 1906 where he received benefits for five days due to an unspecified injury. Another record from June 1906 shows he was entitled to benefits for a period of time but returned to duty shortly thereafter. The documents also suggest some confusion over his name and possibly his membership status within the company's relief department, as there are references to 'Larry Vannetta' which may be an error or another individual entirely.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Keyser",
+      "date_range": "unknown",
+      "context": "Location of employment",
+      "sources": [
+        "RDApp-205699Panetta015.jpg.json",
+        "RDApp-205699Panetta016.jpg.json"
+      ]
+    },
+    {
+      "address": "St. Denis, MD",
+      "date_range": "unknown",
+      "context": "PO Box address",
+      "sources": [
+        "RDApp-205699Panetta011.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "laborer",
+      "department": "MW",
+      "division": "Cumberland",
+      "details": "Ilario Panetta was hired as a laborer in the MW department of the Cumberland division.",
+      "sources": [
+        "RDApp-205699Panetta015.jpg.json",
+        "RDApp-205699Panetta016.jpg.json"
+      ]
+    },
+    {
+      "date": "1906-05-01",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Ilario Panetta was injured and received benefits for five days.",
+      "sources": [
+        "RDApp-205699Panetta015.jpg.json"
+      ]
+    },
+    {
+      "date": "1906-03",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Ilario Panetta was injured and required hospitalization.",
+      "sources": [
+        "RDApp-205699Panetta014.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1906-03",
+      "injury_type": "unspecified injury requiring hospitalization",
+      "body_part": null,
+      "narrative": "Ilario Panetta was hospitalized from March 3 to March 31, 1906. The nature of the injury is not specified in the records.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Hospital bill for this period was requested and likely processed.",
+          "sources": [
+            "RDApp-205699Panetta014.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": null,
+            "end": null
+          },
+          "days": 30,
+          "amount": 21.5,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta016.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1906-05-01",
+      "injury_type": "unspecified injury",
+      "body_part": null,
+      "narrative": "Ilario Panetta was injured and received benefits for five days from May 1 to May 6, 1906. The nature of the injury is not specified in the records.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": "Dr. W. H. Prichard",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta015.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1906-05-01",
+            "end": "1906-05-06"
+          },
+          "days": 5,
+          "amount": 2.5,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta015.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. W. H. Prichard",
+      "district": "7",
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "M. V. Reeder",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1906-05-26",
+      "event": "Clarification request for hospital bill",
+      "significance": "Indicates administrative confusion over Ilario Panetta's name and membership status.",
+      "sources": [
+        "RDApp-205699Panetta011.jpg.json",
+        "RDApp-205699Panetta012.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1904",
+      "latest": "1906"
+    },
+    "completeness_assessment": "The records are relatively complete for the period covered, but there is some confusion over Ilario Panetta's name and membership status. The documents also lack details on his family life or personal circumstances.",
+    "data_quality_notes": [
+      "Some OCR text was truncated or unclear, leading to incomplete information in certain fields.",
+      "There are discrepancies in the spelling of Ilario Panetta's name across different documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical and administrative practices of railroad companies during this period, including how injuries were documented and compensated.",
+      "They also highlight the potential for confusion in record-keeping systems, even within a large organization like the Baltimore & Ohio Railroad."
+    ],
+    "comparative_questions": [
+      "How did injury compensation vary between different railroad companies or regions?",
+      "What was the typical duration of disability leave for laborers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

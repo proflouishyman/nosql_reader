@@ -1,0 +1,184 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {"name": "Thomas B. Ireland", "confidence": "low", "sources": ["RDApp-222507Freeland073.jpg.json"]},
+      {"name": "Thomas E. Freeland", "confidence": "medium", "sources": ["RDApp-222507Freeland075.jpg.json"]},
+      {"name": "Thos. B. Freeland", "confidence": "high", "sources": ["RDApp-222507Freeland077.jpg.json"]}
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations exist, but 'Thomas B. Freeland' is the most consistent across documents."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland was a car repairman for the Baltimore and Ohio Railroad Company, based in Wiley Ford, West Virginia. His career with the railroad spanned several decades, during which he experienced multiple injuries that required medical attention and disability leave. In June 1942, while working at Cumberland Yards, he sustained a laceration on his right side of the face when a jack slipped from under a truck frame. This injury was treated promptly with sutures and tetanus antitoxin but did not result in any lost work time. Later that year, Freeland suffered an inguinal hernia while working at Cumberland Yards, which required surgical intervention on December 3, 1946, leading to a disability leave of eight weeks.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct mention of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": ["RDApp-222507Freeland071.jpg.json", "RDApp-222507Freeland074.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Carman/Car Repairman",
+      "department": "MP",
+      "division": "Cumb/Au Ee",
+      "details": "Began employment as a car repairman in the MP department, Cumberland division.",
+      "sources": ["RDApp-222507Freeland073.jpg.json", "RDApp-222507Freeland074.jpg.json"]
+    },
+    {
+      "date": "1946-12-03",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Surgery for right inguinal hernia.",
+      "sources": ["RDApp-222507Freeland071.jpg.json"]
+    },
+    {
+      "date": "1942-06-17",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Laceration on the right side of face.",
+      "sources": ["RDApp-222507Freeland074.jpg.json", "RDApp-222507Freeland075.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1946-10-22",
+      "injury_type": "Inguinal hernia",
+      "body_part": "Lower right side of abdomen",
+      "narrative": "On October 22, 1946, while working on repair track in Cumberland Yards, Freeland felt a pull in his lower right side of the abdomen. This led to an inguinal hernia that required surgery on December 3, 1946.",
+      "medical_examinations": [
+        {
+          "date": "1946-12-06",
+          "examiner": null,
+          "finding": "disabled for 8 weeks post-operation",
+          "notes": "Operation performed to repair the right inguinal hernia.",
+          "sources": ["RDApp-222507Freeland071.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 8 * 7,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland071.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    },
+    {
+      "injury_date": "1942-06-17",
+      "injury_type": "Laceration",
+      "body_part": "Right side of face",
+      "narrative": "On June 17, 1942, while working at the Cumberland shops, Freeland sustained a laceration on his right side of the face when a jack slipped and struck him. The injury was treated with two sutures and tetanus antitoxin.",
+      "medical_examinations": [
+        {
+          "date": "1942-06-17",
+          "examiner": "Dr R M Moler",
+          "finding": "disabled for no time lost",
+          "notes": "Tetanus antitoxin given, laceration closed by two sutures.",
+          "sources": ["RDApp-222507Freeland074.jpg.json", "RDApp-222507Freeland075.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 0,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland074.jpg.json", "RDApp-222507Freeland075.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    },
+    {
+      "injury_date": "1942-05-31",
+      "injury_type": "Cholecystitis",
+      "body_part": null,
+      "narrative": "Freeland was disabled due to cholecystitis from May 31, 1942, to June 8, 1942. Wages were not allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "T C Speake",
+          "finding": "disabled from May 31, 1942, to June 8, 1942",
+          "notes": "",
+          "sources": ["RDApp-222507Freeland079.jpg.json", "RDApp-222507Freeland080.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1942-06-07", "end": "1942-06-08"},
+          "days": 2,
+          "amount": null,
+          "check_number": "42059",
+          "sources": ["RDApp-222507Freeland079.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr R M Moler",
+      "district": null,
+      "examinations": [{"date": "1942-06-17", "finding": "disabled for no time lost"}]
+    },
+    {
+      "name": "T C Speake",
+      "district": 6,
+      "examinations": [
+        {"date": null, "finding": "disabled from May 31, 1942 to June 8, 1942"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1922-06-17", "latest": "1946-12-3"},
+    "completeness_assessment": "The record is relatively complete for injury and disability events, but lacks details on his personal life or career progression beyond these incidents.",
+    "data_quality_notes": [
+      "Name variations exist across documents, which may indicate OCR errors or actual name changes.",
+      "Some documents are truncated, leading to incomplete information."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the risks associated with manual labor in rail repair and maintenance during the early-mid 20th century.",
+      "It also demonstrates the railroad's administrative processes for handling employee injuries, including medical examinations and disability payments."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different divisions of the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability leave compared to other industries during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

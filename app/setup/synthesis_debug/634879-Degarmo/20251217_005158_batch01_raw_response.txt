@@ -1,0 +1,204 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {
+        "name": "Harry Legasmo",
+        "confidence": "low",
+        "sources": ["RDApp-634879Degarmo001.jpg.json"]
+      },
+      {
+        "name": "H. D. Garamo",
+        "confidence": "medium",
+        "sources": ["RDApp-634879Degarmo010.jpg.json"]
+      }
+    ],
+    "employee_id": "634879",
+    "birth_year": 1888,
+    "confidence_notes": "Name variations exist but 'Harry Degarmo' is most consistently used."
+  },
+  
+  "biographical_narrative": "Harry Degarmo, born in 1888, served as a railroad worker for the Baltimore & Ohio Railroad Company (B&O) from at least the early 20th century. His career spanned various roles including switchman and yard helper within the Ohio division. He experienced significant health issues throughout his tenure, notably suffering from an eye contusion in September of 1923 that led to a period of disability. Degarmo's employment record also indicates periods when he was furloughed or suspended, suggesting some administrative disputes over payments and deductions. Despite these challenges, he remained with the company for several years, contributing monthly to his benefits.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "111 Monrose Ave",
+      "date_range": "unknown",
+      "context": "Residence address as of September 17, 1923.",
+      "sources": ["RDApp-634879Degarmo010.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1925",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Applied for employment or benefits.",
+      "sources": ["RDApp-634879Degarmo001.jpg.json"]
+    },
+    {
+      "date": "June 30, 1925",
+      "event_type": "furloughed",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "No time July A.",
+      "sources": ["RDApp-634879Degarmo004.jpg.json"]
+    },
+    {
+      "date": "September 17, 1923",
+      "event_type": "injury",
+      "position": "Yard Gman",
+      "department": null,
+      "division": "Lga. Ohio",
+      "details": "Reported disabled by accident or sickness.",
+      "sources": ["RDApp-634879Degarmo010.jpg.json"]
+    },
+    {
+      "date": "September 13, 1923",
+      "event_type": "injury",
+      "position": "Switchman",
+      "department": null,
+      "division": null,
+      "details": "Contused eye led to off-duty status.",
+      "sources": ["RDApp-634879Degarmo007.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "September 13, 1923",
+      "injury_type": "Contused eye",
+      "body_part": "Eye",
+      "narrative": "Degarmo suffered a contusion to his eye on September 13, 1923. This injury led to a period of disability and off-duty status.",
+      "medical_examinations": [
+        {
+          "date": "September 13, 1923",
+          "examiner": "N. Cotter",
+          "finding": "disabled",
+          "notes": "Eye contusion reported by N. Cotter on September 13, 1923.",
+          "sources": ["RDApp-634879Degarmo007.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "September 7", "end": null},
+          "days": 7,
+          "amount": 10.50,
+          "check_number": "62834",
+          "sources": ["RDApp-634879Degarmo007.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "September 12, 1923",
+      "injury_type": "Accident/Sickness",
+      "body_part": null,
+      "narrative": "Degarmo was reported totally disabled by accident or sickness from September 12 to October 26, 1923. Wages were not allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "September 12-18, 1923",
+          "examiner": "C.C. Trichler M.D.",
+          "finding": "disabled",
+          "notes": "Total disability reported by C.C. Trichler M.D., Medical Examiner, District No. 22.",
+          "sources": ["RDApp-634879Degarmo008.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "N. Cotter",
+      "district": null,
+      "examinations": [
+        {
+          "date": "January 16, 1920",
+          "finding": "Vision and hearing tests conducted."
+        }
+      ]
+    },
+    {
+      "name": "C.C. Trichler M.D.",
+      "district": "No. 22",
+      "examinations": [
+        {
+          "date": "September 12-18, 1923",
+          "finding": "Totally disabled by accident or sickness."
+        }
+      ]
+    },
+    {
+      "name": "EL Porter",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "August 8, 1955",
+      "event": "Account arrears reported.",
+      "significance": "Degarmo's account was in arrears by $2.45 as of June 30th.",
+      "sources": ["RDApp-634879Degarmo003.jpg.json"]
+    },
+    {
+      "date": "July 27, 1935",
+      "event": "Discrepancy list clarification requested.",
+      "significance": "Clarification was sought regarding the supersession of discrepancy lists for Degarmo's account.",
+      "sources": ["RDApp-634879Degarmo005.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "January 16, 1920",
+      "latest": "August 8, 1955"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of employment and includes medical exams, injury reports, and administrative communications. However, there are some inconsistencies in name spelling.",
+    "data_quality_notes": [
+      "Name variations exist between documents (Legasmo vs Degarmo).",
+      "Some dates are not fully specified."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical and administrative practices of railroad companies in handling employee injuries.",
+      "They also highlight the financial challenges faced by workers, such as account arrears."
+    ],
+    "comparative_questions": [
+      "How did injury management and benefits differ between various railroads?",
+      "What were the common causes of injuries among railroad employees?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

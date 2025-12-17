@@ -1,0 +1,296 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Slane Panella",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta131.jpg.json"
+        ]
+      },
+      {
+        "name": "Blaine Panitta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta132.jpg.json"
+        ]
+      },
+      {
+        "name": "I. Pauetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta133.jpg.json"
+        ]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta134.jpg.json"
+        ]
+      },
+      {
+        "name": "Ilario Panetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta135.jpg.json",
+          "RDApp-205699Panetta137.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "The birth year is not explicitly stated in the documents. The name variations suggest a high likelihood of referring to the same individual, but some discrepancies exist."
+  },
+  "biographical_narrative": "Ilario Panetta was employed as a car repairman for the Baltimore & Ohio Railroad Company from at least April 1915 until July 1921. His career with the railroad company included several instances of injury and sickness, which led to periods of disability and medical attention. In April 1915, he reported strained muscles in his right shoulder and side of the neck after carrying a rail on his shoulder, though this did not result in him reporting off work. Later, in June 1919, Panetta was treated for acute bronchitis and nasal obstruction at Columbus Hospital in New York City, where he underwent surgery to correct deviation of the nasal septum and hypertrophy of the middle turbinate bone. He returned to duty on July 30, 1919. In January 1921, Panetta sustained a laceration to his thumb, which led to another period of disability and subsequent benefits until he was able to return to work in July of that year.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": null,
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Keyser, W. Va.",
+      "date_range": "Unknown",
+      "context": "Residence as stated in multiple documents.",
+      "sources": [
+        "RDApp-205699Panetta133.jpg.json",
+        "RDApp-205699Panetta137.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1915-04-25",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": null,
+      "division": null,
+      "details": "Reported strained muscles in the right shoulder and side of neck after carrying a rail on his shoulder.",
+      "sources": [
+        "RDApp-205699Panetta133.jpg.json"
+      ]
+    },
+    {
+      "date": "1919-06-30",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after treatment for acute bronchitis and nasal obstruction.",
+      "sources": [
+        "RDApp-205699Panetta131.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-01-08",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Sustained a laceration to his thumb.",
+      "sources": [
+        "RDApp-205699Panetta137.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-07-11",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after a laceration injury.",
+      "sources": [
+        "RDApp-205699Panetta137.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1915-04-25",
+      "injury_type": "Strain",
+      "body_part": "Right shoulder and side of neck",
+      "narrative": "Panetta reported strained muscles in his right shoulder and side of the neck after carrying a rail on his shoulder. No disability was noted.",
+      "medical_examinations": [
+        {
+          "date": "1915-05-08",
+          "examiner": "M.D. Maxwell",
+          "finding": "Not disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta133.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1919",
+      "injury_type": "Acute bronchitis and nasal obstruction",
+      "body_part": "Lungs and nose",
+      "narrative": "Panetta was treated for acute bronchitis and nasal obstruction at Columbus Hospital in New York City, where he underwent surgery to correct deviation of the nasal septum. He returned to duty on July 30, 1919.",
+      "medical_examinations": [
+        {
+          "date": "1919-06-24",
+          "examiner": "W.H. Orison",
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta132.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1921-01-08",
+      "injury_type": "Laceration",
+      "body_part": "Thumb",
+      "narrative": "Panetta sustained a lacerated thumb on January 8, 1921. He was paid benefits for the period from January 9 to February 24 and again from June 25 to July 10.",
+      "medical_examinations": [
+        {
+          "date": "1921-01-14",
+          "examiner": "Brier",
+          "finding": "Disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-205699Panetta137.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1921-01-09",
+            "end": "1921-02-24"
+          },
+          "days": 47,
+          "amount": 76.58,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta137.jpg.json"
+          ]
+        },
+        {
+          "period": {
+            "start": "1921-06-25",
+            "end": "1921-07-10"
+          },
+          "days": 16,
+          "amount": 47.15,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta137.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "M.D. Maxwell",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1915-05-08",
+          "finding": "Not disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.H. Orison",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1919-06-24",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "Brier",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-01-14",
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1915-04-25",
+      "event": "Employee reported strained muscles in the right shoulder and side of neck.",
+      "significance": "Indicates an injury event that did not result in disability leave.",
+      "sources": [
+        "RDApp-205699Panetta133.jpg.json"
+      ]
+    },
+    {
+      "date": "1919-06-30",
+      "event": "Employee returned to duty after treatment for acute bronchitis and nasal obstruction.",
+      "significance": "Marks the end of a disability period due to medical treatment.",
+      "sources": [
+        "RDApp-205699Panetta131.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-07-11",
+      "event": "Employee returned to duty after sustaining a laceration injury.",
+      "significance": "Marks the end of another disability period due to medical treatment.",
+      "sources": [
+        "RDApp-205699Panetta137.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1915-04-25",
+      "latest": "1921-07-11"
+    },
+    "completeness_assessment": "The record is fairly complete, with detailed documentation of injuries and medical treatments. However, there are some discrepancies in the employee's name across documents.",
+    "data_quality_notes": [
+      "Name variations exist across documents, which may indicate OCR errors or actual name changes.",
+      "Some dates are incomplete (e.g., month or year missing), affecting precise dating."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the medical and administrative processes involved in managing employee injuries and disabilities, including detailed documentation of treatments and benefits.",
+      "They also show the importance of maintaining accurate records for insurance claims and disability payments."
+    ],
+    "comparative_questions": [
+      "How did injury management practices vary across different railroad companies during this period?",
+      "What were the typical durations and types of injuries among car repairmen in the early 20th century?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "C. Roenbaugh",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh001.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude E. Roenbaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh002.jpg.json",
+          "RDApp-221988Roenbaugh005.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rosenbaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh010.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "The birth year is derived from the document dated June $4.40, which lists Claude Roenbaugh's date of birth as 1882."
+  },
+  "biographical_narrative": "Claude Roenbaugh began his career with the Baltimore & Ohio Railroad Company in an unspecified capacity and was later promoted to the position of engineer by at least 1944. His employment spanned several decades, during which he faced significant health challenges that impacted his ability to work. In September 1945, Roenbaugh reported being disabled due to sickness or old age, marking a period where he received disability benefits from the company's Relief Department. By June 3, 1950, Roenbaugh was officially documented as having Meniere\u2019s Syndrome, which led to his permanent disablement and subsequent annuity payments. Throughout this time, Roenbaugh resided in Lorain, Ohio.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "381-W 27th ST",
+      "date_range": "unknown",
+      "context": "Residence address at the time of disablement reporting in September 1944.",
+      "sources": [
+        "RDApp-221988Roenbaugh002.jpg.json"
+      ]
+    },
+    {
+      "address": "331 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address at the time of his disability case closure and annuity payments.",
+      "sources": [
+        "RDApp-221988Roenbaugh004.jpg.json",
+        "RDApp-221988Roenbaugh005.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Exact date of hire is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1944",
+      "event_type": "promotion/transfer",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "By 1944, Roenbaugh was employed as an engineer.",
+      "sources": [
+        "RDApp-221988Roenbaugh002.jpg.json"
+      ]
+    },
+    {
+      "date": "6-3-50",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Whg.",
+      "details": "Claude Roenbaugh was officially documented as having Meniere\u2019s Syndrome, leading to his permanent disablement and annuity payments.",
+      "sources": [
+        "RDApp-221988Roenbaugh004.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "6-3-50",
+      "injury_type": "Meniere\u2019s Syndrome",
+      "body_part": null,
+      "narrative": "On June 3, 1950, Claude Roenbaugh was diagnosed with Meniere\u2019s Syndrome, a condition affecting his balance and hearing. This led to permanent disablement and annuity payments.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. Prystel",
+          "finding": "disabled",
+          "notes": "Diagnosis of Meniere\u2019s Syndrome, lasting 6 weeks.",
+          "sources": [
+            "RDApp-221988Roenbaugh005.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "6-10",
+            "end": "7-19/50"
+          },
+          "days": 10,
+          "amount": 20.0,
+          "check_number": "11487",
+          "sources": [
+            "RDApp-221988Roenbaugh004.jpg.json"
+          ]
+        },
+        {
+          "period": {
+            "start": "7-20",
+            "end": "8-19/50"
+          },
+          "days": 30,
+          "amount": 60.0,
+          "check_number": "11817",
+          "sources": [
+            "RDApp-221988Roenbaugh004.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. J. M. Saylor",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "D.A. Wiener",
+      "district": 18,
+      "examinations": [
+        {
+          "date": "2-6-51",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "7-11, 1912",
+      "event": "Application for half-rate benefits under Regulation 41",
+      "significance": "Roenbaugh applied for half-rate benefits and was found eligible due to his active service.",
+      "sources": [
+        "RDApp-221988Roenbaugh010.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "7-11, 1912",
+      "latest": "5m. *10-3-47"
+    },
+    "completeness_assessment": "The record is well-documented for Roenbaugh's disability and medical history but lacks detailed information on his early career and family life.",
+    "data_quality_notes": [
+      "Some documents contain handwritten notes that are partially legible, leading to some uncertainty in the details of Roenbaugh's condition.",
+      "There are minor discrepancies in name spelling (Roenbaugh vs. Rosenbaugh)."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case provides insight into the medical and administrative practices of railroad companies regarding employee disability, including the process for annuity applications and payments.",
+      "It highlights the challenges faced by employees with chronic conditions like Meniere\u2019s Syndrome in maintaining employment."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad Company's policies on disability compare to other railroads of the same era?",
+      "What were the typical durations and amounts of annuity payments for similar disabilities?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

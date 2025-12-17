@@ -1,0 +1,198 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "Wm H Steinicker",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204722Steinecker112.jpg.json"
+        ]
+      },
+      {
+        "name": "W. Srivastik",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker111.jpg.json"
+        ]
+      },
+      {
+        "name": "Williams Steinecker",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker120.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 204722,
+    "birth_year": 1895,
+    "confidence_notes": "The identity is reasonably certain based on multiple documents, but there are some name variations."
+  },
+  "biographical_narrative": "William Steinecker was a railroad worker employed by the Baltimore & Ohio Railroad Company in various capacities during the early 20th century. Initially serving as a fireman and later as a brakeman, Steinecker's career was marked by several periods of disability due to rheumatism, which affected his left leg. His employment records indicate that he faced significant health challenges, including an extended period of disability from February to July 1917. Despite these setbacks, Steinecker resumed duties multiple times after medical clearance and continued working for the railroad. The documents suggest a pattern of illness and recovery typical of workers in physically demanding jobs during this era.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "9 Maryland Ave West",
+      "date_range": "unknown",
+      "context": "Residence reported after disability",
+      "sources": [
+        "RDApp-204722Steinecker111.jpg.json"
+      ]
+    },
+    {
+      "address": "W. W. Grand Ave",
+      "date_range": "unknown",
+      "context": "Residence at the time of disablement reporting",
+      "sources": [
+        "RDApp-204722Steinecker115.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "Balto Div. C J Dept.",
+      "details": "William Steinecker was hired as a fireman, though the exact date of hire is not specified in the records.",
+      "sources": [
+        "RDApp-204722Steinecker113.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "promotion/transfer",
+      "position": "Brakeman",
+      "department": null,
+      "division": "Balto & Central Bay Division",
+      "details": "William Steinecker was later employed as a brakeman in the Balto & Central Bay division.",
+      "sources": [
+        "RDApp-204722Steinecker112.jpg.json"
+      ]
+    },
+    {
+      "date": "1917-07-30",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty after a period of disability.",
+      "sources": [
+        "RDApp-204722Steinecker117.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1917-02-15",
+      "injury_type": "Rheumatism in left leg",
+      "body_part": "Left leg",
+      "narrative": "William Steinecker was disabled due to rheumatism from February 15, 1917, until July 29, 1917. He received benefits during this period and resumed duty after medical clearance.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "E. H. Mathers",
+          "finding": "disabled",
+          "notes": "Certified that Steinecker was disabled due to rheumatism in the left leg with an expected duration of 10-15 days.",
+          "sources": [
+            "RDApp-204722Steinecker119.jpg.json"
+          ]
+        },
+        {
+          "date": null,
+          "examiner": "W.T. Rogers",
+          "finding": "able to return to duty",
+          "notes": "Certified that Steinecker was able to resume work after a period of disability.",
+          "sources": [
+            "RDApp-204722Steinecker112.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1917-07-22",
+            "end": "1917-07-29"
+          },
+          "days": 6,
+          "amount": 9.0,
+          "check_number": "42940",
+          "sources": [
+            "RDApp-204722Steinecker113.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "E. H. Mathers",
+      "district": "36",
+      "examinations": [
+        {
+          "date": "1917-02-15",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W.T. Rogers",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "able to return to duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1922-03-03",
+      "event": "Resumed duty after disability",
+      "significance": "Indicates Steinecker's recovery and return to work.",
+      "sources": [
+        "RDApp-204722Steinecker111.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1916",
+      "latest": "1922"
+    },
+    "completeness_assessment": "The record is fairly complete for tracking disability and return to duty events, but lacks detailed information on Steinecker's initial hiring date or any family details.",
+    "data_quality_notes": [
+      "Some documents have OCR errors, particularly in names and dates. Variations in name spelling are noted.",
+      "Several documents lack specific dates or monetary amounts."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the prevalence of rheumatism among railroad workers during this period and the company's structured process for handling employee disabilities.",
+      "This case provides insight into early 20th-century medical practices in industrial settings, including disability certification processes."
+    ],
+    "comparative_questions": [
+      "How did the duration and nature of Steinecker's disability compare to other workers with similar conditions?",
+      "What were the typical durations for recovery and return to duty among railroad employees?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

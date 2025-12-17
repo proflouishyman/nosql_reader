@@ -1,0 +1,224 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thos. B. Freeland",
+        "confidence": "high",
+        "sources": ["RDApp-222507Freeland014.jpg.json", "RDApp-222507Freeland015.jpg.json"]
+      },
+      {
+        "name": "Thomas Freeland",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland011.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1889,
+    "confidence_notes": "High confidence in identity based on consistent documentation and employee ID."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland was a dedicated carman for the Baltimore & Ohio Railroad Company, starting his career around 1920. His long tenure with the company spanned over three decades, during which he faced multiple health challenges that affected his work and required medical attention. In July 1950, Freeland suffered an injury on duty when he struck his leg against a wrench left on a tool box, resulting in bruising and cuts to his shin. This incident was part of several other health issues including recurrent ulcers affecting his right mid-leg and cerebral arteriosclerosis that led to periods of disability. Despite these setbacks, Freeland continued to work diligently until his contributions were reduced due to changes in the company's relief department rates.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "Marital status is mentioned as 'married' but no specific name provided",
+      "sources": ["RDApp-222507Freeland011.jpg.json"]
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address stated in multiple documents",
+      "sources": ["RDApp-222507Freeland011.jpg.json", "RDApp-222507Freeland012.jpg.json"]
+    },
+    {
+      "address": "Mt. Roy, Field, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address in medical certificate",
+      "sources": ["RDApp-222507Freeland017.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "mp",
+      "division": "Cumb.",
+      "details": "Began working as a carman for the Baltimore & Ohio Railroad Company around 1920 based on his length of experience mentioned in documents.",
+      "sources": ["RDApp-222507Freeland011.jpg.json"]
+    },
+    {
+      "date": "1958-10-01",
+      "event_type": "administrative change",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Contribution rate for relief department was reduced from $4.80 to $3.72 per month.",
+      "sources": ["RDApp-222507Freeland019.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1950-07-26",
+      "injury_type": "Bruised and cut shin",
+      "body_part": "Right shin",
+      "narrative": "Freeland injured his right shin when he struck it against a wrench left on a tool box. He continued working until August 9th, with treatment by Dr. Rozum.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. Rozum",
+          "finding": "Treated for injury",
+          "notes": "No further details provided in the documents about this examination.",
+          "sources": ["RDApp-222507Freeland011.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1952-11-07",
+      "injury_type": "Cerebral arteriosclerosis",
+      "body_part": "Brain",
+      "narrative": "Freeland was diagnosed with cerebral arteriosclerosis, leading to a period of disability from November 7th to December 25th, 1952. He received benefit payments totaling $7.50.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "1952-11-07", "end": "1952-11-12"},
+          "days": 6,
+          "amount": 1.50,
+          "check_number": "56935",
+          "sources": ["RDApp-222507Freeland020.jpg.json"]
+        },
+        {
+          "period": {"start": "1952-11-20", "end": "1952-12-25"},
+          "days": 25,
+          "amount": 6.25,
+          "check_number": "57244",
+          "sources": ["RDApp-222507Freeland020.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-09-15",
+      "injury_type": "Recurrent ulcer of right mid leg",
+      "body_part": "Right mid leg",
+      "narrative": "Freeland was reported to be disabled due to a recurrent ulcer in his right mid-leg, leading to periods where he could not work. He received medical attention and benefit payments.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. AJ Midkin",
+          "finding": "Disabled",
+          "notes": "Attending physician for ulcer treatment.",
+          "sources": ["RDApp-222507Freeland016.jpg.json"]
+        },
+        {
+          "date": "1950-10-16",
+          "examiner": "Roy T. Agostini, Medical Examiner",
+          "finding": "Able for duty",
+          "notes": "Certified Freeland was able to return to work.",
+          "sources": ["RDApp-222507Freeland016.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 31,
+          "amount": 7.50,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland020.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Roy T. Agostini",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1950-10-16",
+          "finding": "Able for duty"
+        }
+      ]
+    },
+    {
+      "name": "Dr. AJ Midkin",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "Dr. J. Muren",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1950-10-06",
+          "finding": "Ulcer was healed, may work with precautions"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1958-10-01",
+      "event": "Contribution rate reduced from $4.80 to $3.72 per month.",
+      "significance": "Reflects changes in the company's relief department policies and employee contributions.",
+      "sources": ["RDApp-222507Freeland019.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1943-03-09",
+      "latest": "1959-04-10"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing Freeland's injuries and medical treatments. However, there are gaps in family details and full employment history.",
+    "data_quality_notes": [
+      "Some documents have unclear signatures or missing dates which affect the completeness of information."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers, including injuries on duty and chronic health issues that impacted their ability to work.",
+      "It also shows how the company's relief department managed employee benefits during periods of disability."
+    ],
+    "comparative_questions": [
+      "How did injury rates and medical treatments vary across different divisions or departments within the Baltimore & Ohio Railroad Company?",
+      "What were the broader trends in railroad worker health and safety practices in the early 20th century?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

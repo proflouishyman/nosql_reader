@@ -1,0 +1,249 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {
+        "name": "H. Degero",
+        "confidence": "low",
+        "sources": [
+          "RDApp-634879Degarmo026.jpg.json"
+        ]
+      },
+      {
+        "name": "Sarno, Harry",
+        "confidence": "low",
+        "sources": [
+          "RDApp-634879Degarmo029.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634879",
+    "birth_year": 1881,
+    "confidence_notes": "The birth year is derived from the vision examination record dated May 20, 1929."
+  },
+  "biographical_narrative": "Harry Degarmo was a railroad worker employed by the Baltimore & Ohio Railroad Company. He began his career as a brakeman and later transitioned to roles such as trackman and yard helper. Throughout his tenure with the company, he faced several workplace injuries that required medical attention and temporary disability leave. His first recorded injury occurred on September 17, 1921, when he was burnt while working in Ohio. In 1927, he suffered a severe contusion to his face and eye after an incident involving a distant signal lever at Frost, Ohio. Despite these setbacks, Degarmo returned to duty shortly after each injury. His career spanned several decades, during which he demonstrated resilience and dedication to the railroad industry.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Chillicothe",
+      "date_range": "unknown",
+      "context": "Residence as stated in the medical examination record.",
+      "sources": [
+        "RDApp-634879Degarmo025.jpg.json"
+      ]
+    },
+    {
+      "address": "112 E. Hazelhurst, Ohio",
+      "date_range": "unknown",
+      "context": "Residence of Dr. O.O. James as stated in the Notice of Disablement.",
+      "sources": [
+        "RDApp-634879Degarmo021.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "unknown",
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Began working for the Baltimore & Ohio Railroad Company as a brakeman.",
+      "sources": []
+    },
+    {
+      "date": "9/17/1921",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": null,
+      "division": null,
+      "details": "Injured while on duty, burnt.",
+      "sources": [
+        "RDApp-634879Degarmo021.jpg.json"
+      ]
+    },
+    {
+      "date": "9/19/1927",
+      "event_type": "injury",
+      "position": "Trackman",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Suffered a severe contusion to the face, neck, and eye while handling a distant signal lever.",
+      "sources": [
+        "RDApp-634879Degarmo024.jpg.json",
+        "RDApp-634879Degarmo025.jpg.json"
+      ]
+    },
+    {
+      "date": "10/15/1930",
+      "event_type": "injury",
+      "position": "Yard Helper",
+      "department": null,
+      "division": "Ohio Division",
+      "details": "Developed an ulcer cornea, leading to temporary disability.",
+      "sources": [
+        "RDApp-634879Degarmo030.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "9/17/1921",
+      "injury_type": "Burnt",
+      "body_part": null,
+      "narrative": "Harry Degarmo was injured on duty, suffering burns. He was reported disabled and required medical attention.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": "Dr. O.O. James",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-634879Degarmo021.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "9/19/1927",
+      "injury_type": "Severe contusion",
+      "body_part": "Face, neck, eye",
+      "narrative": "Degarmo was injured while handling a distant signal lever. He suffered severe contusions to his face and right eye but resumed duty shortly after the incident.",
+      "medical_examinations": [
+        {
+          "date": "9/19/1927",
+          "examiner": "Dr. D.M. Meyers",
+          "finding": "disabled",
+          "notes": "Degarmo was able to return to duty on 9/21/1927.",
+          "sources": [
+            "RDApp-634879Degarmo024.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "10/15/1930",
+      "injury_type": "Ulcer cornea",
+      "body_part": "Eye",
+      "narrative": "Degarmo developed an ulcer in his cornea, leading to a period of disability from October 15th to November 2nd, 1930.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": "Dr. Potter",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-634879Degarmo030.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "10/15",
+            "end": "11/2"
+          },
+          "days": 19,
+          "amount": 28.5,
+          "check_number": "28520",
+          "sources": [
+            "RDApp-634879Degarmo030.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. O.O. James",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. D.M. Meyers",
+      "district": null,
+      "examinations": [
+        {
+          "date": "9/19/1927",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "H.C. Potter, Medical Examiner.",
+      "district": "22",
+      "examinations": [
+        {
+          "date": "5/20 1929",
+          "finding": null
+        }
+      ]
+    },
+    {
+      "name": "Dr. Potter",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "9/21/1921",
+      "latest": "3/16/1925"
+    },
+    "completeness_assessment": "The records are relatively complete for injury and medical examination events but lack detailed information on Degarmo's personal life or family. Employment history is partially documented, with several gaps.",
+    "data_quality_notes": [
+      "Some documents contain illegible sections, particularly signatures and certain fields in the forms.",
+      "There are discrepancies between names (e.g., Harry Sarno vs. Harry Degarmo)."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the hazardous nature of railroad work during the early 20th century and the company's response to employee injuries.",
+      "It also provides insight into medical practices and disability benefits in the industry."
+    ],
+    "comparative_questions": [
+      "How did injury rates and responses vary across different divisions or regions within the Baltimore & Ohio Railroad Company?",
+      "What were the typical durations of disability leave for similar injuries?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

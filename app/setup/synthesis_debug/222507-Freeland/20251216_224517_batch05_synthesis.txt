@@ -1,0 +1,240 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thomas B. Fackman",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland101.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas R. Freeland",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland115.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is generally consistent across documents, but some variations in name and birth year exist."
+  },
+  "biographical_narrative": "Thomas B. Freeland began his career with the Baltimore & Ohio Railroad Company as a carman in the Cumberland division around 1930. His employment was marked by several periods of disability due to medical conditions such as gastric ulcer, influenza, and cholecystitis. These disabilities often led to furloughs and temporary suspensions from work, but Freeland consistently sought to return to duty after recovery. Despite the challenges posed by his health issues, he remained with the company for over a decade, demonstrating loyalty and resilience in the face of significant medical setbacks.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No explicit mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence",
+      "sources": [
+        "RDApp-222507Freeland102.jpg.json"
+      ]
+    },
+    {
+      "address": "Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Work address",
+      "sources": [
+        "RDApp-222507Freeland108.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1930",
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "MP",
+      "division": "Cumberland",
+      "details": "",
+      "sources": [
+        "RDApp-222507Freeland101.jpg.json"
+      ]
+    },
+    {
+      "date": "6/5/37",
+      "event_type": "furlough",
+      "position": "Carman",
+      "department": "MP",
+      "division": "Cumberland",
+      "details": "",
+      "sources": [
+        "RDApp-222507Freeland102.jpg.json"
+      ]
+    },
+    {
+      "date": "9/6/37",
+      "event_type": "hire/application",
+      "position": "Truckman",
+      "department": "Transportation",
+      "division": "Cumberland",
+      "details": "",
+      "sources": [
+        "RDApp-222507Freeland111.jpg.json"
+      ]
+    },
+    {
+      "date": "9/5/39",
+      "event_type": "injury",
+      "position": "Trucker",
+      "department": "CT",
+      "division": "Cumberland",
+      "details": "",
+      "sources": [
+        "RDApp-222507Freeland116.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "11/27/36",
+      "injury_type": "Gastric Ulcer",
+      "body_part": null,
+      "narrative": "",
+      "medical_examinations": [
+        {
+          "date": "12/8/36",
+          "examiner": "Dr. B.H. Guisewhite",
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-222507Freeland109.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "4/23/37",
+      "injury_type": "Cholecystitis",
+      "body_part": null,
+      "narrative": "",
+      "medical_examinations": [
+        {
+          "date": "5/16/37",
+          "examiner": "Dr. C E Durrett",
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-222507Freeland122.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "9/5/39",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "",
+      "medical_examinations": [
+        {
+          "date": "9/18/39",
+          "examiner": "Dr. MEB Owens",
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-222507Freeland20.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. B.H. Guisewhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "12/8/36",
+          "finding": "disabled"
+        },
+        {
+          "date": "5/16/37",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. MEB Owens",
+      "district": null,
+      "examinations": [
+        {
+          "date": "9/18/39",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "2-6-39",
+      "event": "transfer to GT Department",
+      "significance": "",
+      "sources": [
+        "RDApp-222507Freeland111.jpg.json"
+      ]
+    },
+    {
+      "date": "12/8/37",
+      "event": "request for natural death benefits membership retention",
+      "significance": "",
+      "sources": [
+        "RDApp-222507Freeland14.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 25,
+    "date_range": {
+      "earliest": "6/7/37",
+      "latest": "9/18/39"
+    },
+    "completeness_assessment": "The record is relatively complete, with detailed documentation of Freeland's medical conditions and employment status. However, there are some inconsistencies in name spelling and birth year.",
+    "data_quality_notes": [
+      "Name variations exist across documents",
+      "Some OCR errors present"
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers due to health issues and the company's response through disability benefits."
+    ],
+    "comparative_questions": [
+      "How did Freeland's experience compare with other employees in terms of medical support and employment stability?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

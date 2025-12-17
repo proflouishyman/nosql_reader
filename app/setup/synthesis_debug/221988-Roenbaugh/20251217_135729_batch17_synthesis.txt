@@ -1,0 +1,231 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Roenbaugh Claude",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh162.jpg.json"
+        ]
+      },
+      {
+        "name": "Roanbaugh Claude",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh163.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rosbrough",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh161.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist, but 'Claude Roenbaugh' appears most consistently."
+  },
+  "biographical_narrative": "Claude Roenbaugh was an engineer employed by the Baltimore & Ohio Railroad Company in the Akron Division. His career with the railroad involved several health-related absences and recoveries from injuries. In late December of 1929, he suffered a sore throat and cold that led to laryngitis, which kept him out of work for two to three weeks. Roenbaugh was also diagnosed with tonsillitis at some point in early 1930, though the exact date is unclear from the records. Additionally, he experienced a muscular strain in his right leg, an injury that occurred while off duty and led to further disability. Despite these setbacks, medical examinations indicated that Roenbaugh would eventually make a full recovery if he followed prescribed activities.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No information provided",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence or location of employment records",
+      "sources": [
+        "RDApp-221988Roenbaugh161.jpg.json",
+        "RDApp-221988Roenbaugh162.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Akron",
+      "details": "Claude Roenbaugh was hired as an engineer in the Akron Division of the Baltimore & Ohio Railroad Company. The exact date of hire is not provided in the records.",
+      "sources": [
+        "RDApp-221988Roenbaugh163.jpg.json"
+      ]
+    },
+    {
+      "date": "1924",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Claude Roenbaugh experienced a series of medical issues, including chronic pain and inability to perform duties.",
+      "sources": [
+        "RDApp-221988Roenbaugh163.jpg.json"
+      ]
+    },
+    {
+      "date": "12/17/1929",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Claude Roenbaugh suffered from a sore throat and cold, leading to laryngitis.",
+      "sources": [
+        "RDApp-221988Roenbaugh162.jpg.json"
+      ]
+    },
+    {
+      "date": "5/27/1930",
+      "event_type": "return_to_duty",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Claude Roenbaugh was cleared to return to duty after his illness.",
+      "sources": [
+        "RDApp-221988Roenbaugh161.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "12/17/1929",
+      "injury_type": "Sore throat and cold, leading to laryngitis",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was diagnosed with a sore throat and cold that led to laryngitis. He was out of work for two to three weeks before being cleared to return on May 27, 1930.",
+      "medical_examinations": [
+        {
+          "date": "5/27/1930",
+          "examiner": "J.H. Morgan",
+          "finding": "able_to_return_to_duty",
+          "notes": null,
+          "sources": [
+            "RDApp-221988Roenbaugh161.jpg.json",
+            "RDApp-221988Roenbaugh162.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "unknown",
+      "injury_type": "Muscular strain of right leg (accident off duty)",
+      "body_part": "Right leg",
+      "narrative": "Claude Roenbaugh suffered a muscular strain in his right leg while off duty. The injury led to further disability and required medical attention.",
+      "medical_examinations": [
+        {
+          "date": "5/1/1930",
+          "examiner": "J.H. Minor",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-221988Roenbaugh168.jpg.json"
+          ]
+        },
+        {
+          "date": "5/7/1930",
+          "examiner": "R.W. Locher",
+          "finding": "recovery_possible_with_care",
+          "notes": null,
+          "sources": [
+            "RDApp-221988Roenbaugh170.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.H. Morgan",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "5/27/1930",
+          "finding": "able_to_return_to_duty"
+        }
+      ]
+    },
+    {
+      "name": "J.H. Minor",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "2/1/1930",
+          "finding": "disabled"
+        },
+        {
+          "date": "5/1/1930",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "R.W. Locher",
+      "district": null,
+      "examinations": [
+        {
+          "date": "5/7/1930",
+          "finding": "recovery_possible_with_care"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "5/27/1930",
+      "event": "Return to duty after illness",
+      "significance": "Marked Roenbaugh's return to work following his recovery from laryngitis.",
+      "sources": [
+        "RDApp-221988Roenbaugh161.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "unknown",
+      "latest": "5/30/1930"
+    },
+    "completeness_assessment": "The records provide a detailed account of Roenbaugh's medical history and employment status, but lack information on his personal life and the exact dates of some events.",
+    "data_quality_notes": [
+      "Some documents contain incomplete or unclear data, such as missing injury details or partial addresses.",
+      "There are slight variations in name spelling across different records."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Claude Roenbaugh highlights the challenges faced by railroad workers due to health issues and the role of medical examiners in determining their fitness for duty.",
+      "It also underscores the importance of detailed medical records and the process involved in returning an employee to work after a prolonged illness."
+    ],
+    "comparative_questions": [
+      "How common were similar injuries among engineers during this period?",
+      "What was the typical duration of disability leave for railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

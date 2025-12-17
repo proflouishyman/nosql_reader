@@ -1,0 +1,148 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinacker",
+    "name_variations": [
+      {"name": "Wm Steinecker", "confidence": "high", "sources": ["RDApp-204722Steinecker011.jpg.json"]},
+      {"name": "W. Hennecart", "confidence": "low", "sources": ["RDApp-204722Steinecker012.jpg.json"]},
+      {"name": "W Steinacker", "confidence": "high", "sources": ["RDApp-204722Steinecker014.jpg.json"]},
+      {"name": "William Steinacker", "confidence": "high", "sources": ["RDApp-204722Steinecker015.jpg.json", "RDApp-204722Steinecker019.jpg.json"]},
+      {"name": "Wm. Steinecker", "confidence": "high", "sources": ["RDApp-204722Steinecker016.jpg.json"]}
+    ],
+    "employee_id": "204722",
+    "birth_year": null,
+    "confidence_notes": "The identity is fairly certain, but there are some name variations that could be due to typographical errors or different spellings."
+  },
+  
+  "biographical_narrative": "William Steinacker was a fireman employed by the Baltimore & Ohio Railroad Company in the early 20th century. He suffered severe burns and injuries on January 18, 1903, while working at Monrovia, which led to his hospitalization and subsequent benefits claim for disability. After receiving medical treatment and being paid benefits for several months, he was able to return to duty in September of the same year. However, due to the severity of his injuries, Steinacker was permanently relocated from Baltimore City Hospital to Westport, Maryland, where he continued to receive care under Dr. J. H. Tearney.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Baltimore City Hospital",
+      "date_range": "1/18/1903 - unknown",
+      "context": "Hospitalization due to injury",
+      "sources": ["RDApp-204722Steinecker012.jpg.json", "RDApp-204722Steinecker014.jpg.json"]
+    },
+    {
+      "address": "Westport, Md.",
+      "date_range": "5/6/1903 - unknown",
+      "context": "Permanent relocation for medical care",
+      "sources": ["RDApp-204722Steinecker016.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": "Baeto.",
+      "details": "Started as a fireman in the Baeto. division, but exact start date is unknown.",
+      "sources": ["RDApp-204722Steinecker011.jpg.json"]
+    },
+    {
+      "date": "1/18/1903",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered severe burns and cuts by glass due to an engine dropping from a chute.",
+      "sources": ["RDApp-204722Steinecker012.jpg.json", "RDApp-204722Steinecker014.jpg.json"]
+    },
+    {
+      "date": "9/1/1903",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified as able to return to work by Dr. Tearney.",
+      "sources": ["RDApp-204722Steinecker015.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1/18/1903",
+      "injury_type": "Severely burned and cut by glass",
+      "body_part": null,
+      "narrative": "Steinacker was severely injured on January 18, 1903, due to an engine dropping from a chute. He received medical treatment at Baltimore City Hospital and was later relocated to Westport for continued care.",
+      "medical_examinations": [
+        {
+          "date": "1/21/1903",
+          "examiner": "Dr. Adams",
+          "finding": "disabled",
+          "notes": "Injured in a wreck at Monrovia, now at Baltimore City Hospital.",
+          "sources": ["RDApp-204722Steinecker017.jpg.json"]
+        },
+        {
+          "date": "9/1/1903",
+          "examiner": "Dr. Tearney",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": ["RDApp-204722Steinecker015.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1/19/1903", "end": "12/31/1903"},
+          "days": 88,
+          "amount": 88.00,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker016.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Adams",
+      "district": "3",
+      "examinations": [{"date": "1/21/1903", "finding": "disabled"}]
+    },
+    {
+      "name": "Dr. Tearney",
+      "district": null,
+      "examinations": [{"date": "9/1/1903", "finding": "able to return to duty"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "2/21/1905",
+      "event": "Sent copies of releases executed by William Steinrocker.",
+      "significance": "Indicates administrative follow-up on the case.",
+      "sources": ["RDApp-204722Steinecker020.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1/18/1903", "latest": "2/21/1905"},
+    "completeness_assessment": "The record is fairly complete regarding injury and medical care, but lacks details on his employment history before the injury.",
+    "data_quality_notes": ["Name variations exist across documents.", "Some dates are not fully specified."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the risks faced by railroad workers in the early 20th century and the company's response to workplace injuries, including medical care and disability benefits.",
+      "The documentation also reveals the administrative processes involved in handling injured employees."
+    ],
+    "comparative_questions": ["How did injury rates compare across different divisions of the B&O Railroad?", "What were the typical durations for which workers received disability payments?"],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

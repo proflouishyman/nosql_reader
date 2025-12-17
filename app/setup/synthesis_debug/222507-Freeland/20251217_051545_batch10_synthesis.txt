@@ -1,0 +1,176 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "T.B.Freeland",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland091.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas B. Freeland",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland092.jpg.json",
+          "RDApp-222507Freeland093.jpg.json",
+          "RDApp-222507Freeland094.jpg.json",
+          "RDApp-222507Freeland095.jpg.json",
+          "RDApp-222507Freeland096.jpg.json",
+          "RDApp-222507Freeland098.jpg.json",
+          "RDApp-222507Freeland099.jpg.json",
+          "RDApp-222507Freeland100.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1886,
+    "confidence_notes": "Birth year is inferred from the age provided in document RDApp-222507Freeland092.jpg.json."
+  },
+  "biographical_narrative": "Thomas B. Freeland began his career with the Baltimore & Ohio Railroad Company, serving for a period of thirteen years before being dismissed due to an accident involving engine 5097 and eight cars at Preston Mine Switch on February 8th, 1920. He was reinstated in a non-inspector role after showing remorse and learning from his mistake. Freeland's employment record also reflects that he resigned during the strike of June 15, 1916, returning to service in January 1917. His career included various positions such as Carman and Trucker within different divisions including Cumberland Division. He was furloughed multiple times, requiring him to manage his insurance contributions while not actively working.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va",
+      "date_range": "1937-06-23 to unknown",
+      "context": "Residence address for payment and correspondence purposes",
+      "sources": [
+        "RDApp-222507Freeland098.jpg.json",
+        "RDApp-222507Freeland099.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1907-01-01",
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Inferred start date based on the dismissal after 13 years of service.",
+      "sources": [
+        "RDApp-222507Freeland092.jpg.json"
+      ]
+    },
+    {
+      "date": "1920-02-08",
+      "event_type": "dispute/injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Co-responsible for an accident involving engine 5097 and eight cars at Preston Mine Switch, Cumberland Division.",
+      "sources": [
+        "RDApp-222507Freeland092.jpg.json"
+      ]
+    },
+    {
+      "date": "1921-03-14",
+      "event_type": "reinstatement",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reinstated in a non-inspector role after showing remorse and learning from his mistake.",
+      "sources": [
+        "RDApp-222507Freeland092.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-06-15",
+      "event_type": "resignation/strike",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resigned in lieu of strike.",
+      "sources": [
+        "RDApp-222507Freeland093.jpg.json"
+      ]
+    },
+    {
+      "date": "1917-01-15",
+      "event_type": "return to service",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to service after the strike.",
+      "sources": [
+        "RDApp-222507Freeland093.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-09-16",
+      "event_type": "transfer",
+      "position": "Trucker",
+      "department": "Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Transferred to Cumberland Division Motive Power Department.",
+      "sources": [
+        "RDApp-222507Freeland094.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-06-05",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed and retained membership for natural death benefits.",
+      "sources": [
+        "RDApp-222507Freeland100.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [],
+  "administrative_events": [
+    {
+      "date": "1937-06-12",
+      "event": "Received Form 216 for furloughed membership retention",
+      "significance": "Ensured continued insurance coverage during furlough.",
+      "sources": [
+        "RDApp-222507Freeland100.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-08-07",
+      "event": "Form 216 signed to retain membership while on furlough",
+      "significance": "Documented Freeland's intention to maintain insurance benefits during his absence.",
+      "sources": [
+        "RDApp-222507Freeland096.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1921-03-14",
+      "latest": "1939-09-22"
+    },
+    "completeness_assessment": "The record is fairly complete for administrative and employment details but lacks personal information such as family or medical history.",
+    "data_quality_notes": [
+      "Some documents have unclear handwriting, leading to low confidence in certain name variations.",
+      "Dates are sometimes ambiguous due to partial year notation."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Thomas B. Freeland provides insight into the disciplinary and reinstatement processes within railroad companies during the early 20th century, as well as the management of employee insurance benefits during periods of furlough.",
+      "It highlights the importance of maintaining good conduct records for job security and the impact of labor strikes on individual employment."
+    ],
+    "comparative_questions": [
+      "How did disciplinary actions and reinstatement policies vary across different railroad companies?",
+      "What were the typical durations and reasons for employee furloughs during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 1.0,
+    "overall": 0.88
+  }
+}

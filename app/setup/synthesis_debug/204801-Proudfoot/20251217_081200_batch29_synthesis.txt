@@ -1,0 +1,193 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O T O DELBERT PROUDFOOT",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood286.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood289.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1884,
+    "confidence_notes": "The birth year is derived from the date of birth provided in one document. The name variations are noted, with 'Otto D. Proudfoot' being the most consistently used."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company during the early to mid-20th century. His career spanned several decades and included various positions within the company, including roles as a road hand and later as an engineer in the Cumberland Division of the CT Department. Proudfoot's employment record is marked by significant health issues, particularly his struggle with osteoporosis which led to lumbago and collapsed vertebrae in 1952-1953. Despite these challenges, he was able to return to duty after a period of medical leave and examination by company physicians. His case highlights the complexities of railroad labor management during this era, especially concerning employee health and disability benefits.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "130 Seymour St",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-204801Proudfood281.jpg.json",
+        "RDApp-204801Proudfood289.jpg.json"
+      ]
+    },
+    {
+      "address": "300 blks. 50 sets each",
+      "date_range": "unknown",
+      "context": "Possibly an administrative or office address",
+      "sources": [
+        "RDApp-204801Proudfood287.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Exact date of hire is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1952-12-13",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT Department",
+      "division": "Cumberland Division",
+      "details": "Proudfoot was reported disabled due to lumbago and collapsed vertebrae.",
+      "sources": [
+        "RDApp-204801Proudfood281.jpg.json",
+        "RDApp-204801Proudfood285.jpg.json"
+      ]
+    },
+    {
+      "date": "1953-02-24",
+      "event_type": "resume duty",
+      "position": "Engineer",
+      "department": "CT Department",
+      "division": "Cumberland Division",
+      "details": "Proudfoot resumed his duties after a period of disability.",
+      "sources": [
+        "RDApp-204801Proudfood281.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1952-12-13",
+      "injury_type": "Lumbago with collapsed vertebrae due to osteoporosis",
+      "body_part": "7th and 9th dorsal vertebrae",
+      "narrative": "Proudfoot suffered from lumbago and the collapse of his 7th and 9th dorsal vertebrae, a condition attributed to osteoporosis. This non-traumatic injury led to a period of disability during which he was examined by multiple medical professionals.",
+      "medical_examinations": [
+        {
+          "date": "1952-12-13",
+          "examiner": "Dr. Roy T. Agostini, Medical Examiner, District No. 6",
+          "finding": "disabled",
+          "notes": "Proudfoot was reported as totally disabled from December 13, 1952.",
+          "sources": [
+            "RDApp-204801Proudfood285.jpg.json"
+          ]
+        },
+        {
+          "date": "1953-01-19",
+          "examiner": "Dr. Roy T. Agostini, Medical Examiner, District No. 6",
+          "finding": "able to resume duty",
+          "notes": "Proudfoot was cleared for duty after examination.",
+          "sources": [
+            "RDApp-204801Proudfood289.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1952-12-13",
+            "end": "1953-02-19"
+          },
+          "days": 70,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204801Proudfood285.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Roy T. Agostini",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1952-12-13",
+          "finding": "disabled"
+        },
+        {
+          "date": "1953-01-19",
+          "finding": "able to resume duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1952-12-13",
+      "event": "Reported disabled due to lumbago and collapsed vertebrae.",
+      "significance": "This event marks the start of Proudfoot's disability leave.",
+      "sources": [
+        "RDApp-204801Proudfood285.jpg.json"
+      ]
+    },
+    {
+      "date": "1953-02-24",
+      "event": "Resumed duty after medical clearance.",
+      "significance": "This event marks the end of Proudfoot's disability leave and his return to work.",
+      "sources": [
+        "RDApp-204801Proudfood281.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1951-10-29",
+      "latest": "1953-02-24"
+    },
+    "completeness_assessment": "The records are relatively complete for the period of Proudfoot's disability and his return to work. However, there is no information regarding his initial employment or any other events in his career outside this timeframe.",
+    "data_quality_notes": [
+      "Some OCR text contains errors, such as 'Proudfood' instead of 'Proudfoot'.",
+      "The documents do not provide a comprehensive timeline of Proudfoot's entire career with the railroad."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the challenges faced by rail workers in maintaining health and the company\u2019s approach to managing employee disability.",
+      "It also provides insight into the medical practices and administrative processes of the Baltimore & Ohio Railroad Company during this period."
+    ],
+    "comparative_questions": [
+      "How did other employees' experiences with similar injuries compare?",
+      "What were the broader trends in railroad labor management and health policies?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

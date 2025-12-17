@@ -1,0 +1,191 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris102.jpg.json",
+          "RDApp-635058Harris104.jpg.json"
+        ]
+      },
+      {
+        "name": "Charley Harris Freeman",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635058Harris115.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the context of his service and age-related discussions."
+  },
+  "biographical_narrative": "Charley Harris, a fireman for the Baltimore & Ohio Railroad Company, had a career marked by periods of service and furlough. He was initially employed as a fireman but was furloughed on March 22, 1937, due to economic conditions or company policy. Harris resumed his duties in October 10, 1939, after being recalled from furlough within the three-year eligibility period for automatic restoration of membership benefits. However, he faced medical challenges that led to his rejection by the Medical Examiner on October 7, 1939, due to an aortic systolic murmur and chronic valvular myocarditis. His inability to work was further confirmed by additional examinations in Baltimore, where he was found to have serious heart conditions that rendered him unsafe for engine service. Harris sought financial assistance and annuity benefits from the Railroad Retirement Board but faced difficulties due to his age and medical condition.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "811 Hill Street, Ceredo, W. Va",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in multiple documents",
+      "sources": [
+        "RDApp-635058Harris111.jpg.json",
+        "RDApp-635058Harris124.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1922",
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Began employment as a fireman, contributing to the Relief Department.",
+      "sources": [
+        "RDApp-635058Harris124.jpg.json"
+      ]
+    },
+    {
+      "date": "March 22, 1937",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed from service.",
+      "sources": [
+        "RDApp-635058Harris104.jpg.json"
+      ]
+    },
+    {
+      "date": "October 10, 1939",
+      "event_type": "resumption of duty",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Resumed duties after being recalled from furlough.",
+      "sources": [
+        "RDApp-635058Harris104.jpg.json"
+      ]
+    },
+    {
+      "date": "November 9, 1939",
+      "event_type": "termination due to medical condition",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Removed from service due to a medical rejection.",
+      "sources": [
+        "RDApp-635058Harris104.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "October 7, 1939",
+      "injury_type": "Heart condition",
+      "body_part": "Heart",
+      "narrative": "Charley Harris was found to have an aortic systolic murmur and chronic valvular myocarditis during his medical examination. This led to his rejection from returning to engine service.",
+      "medical_examinations": [
+        {
+          "date": "October 7, 1939",
+          "examiner": "Dr. Tinsley",
+          "finding": "disabled",
+          "notes": "Aortic murmur and overage disqualified him for membership in the Relief Department.",
+          "sources": [
+            "RDApp-635058Harris104.jpg.json"
+          ]
+        },
+        {
+          "date": "December 14, 1939",
+          "examiner": "Consulting Physicians at Baltimore",
+          "finding": "disabled",
+          "notes": "Diagnosed with chronic valvular myocarditis and aortic stenosis.",
+          "sources": [
+            "RDApp-635058Harris121.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Tinsley",
+      "district": null,
+      "examinations": [
+        {
+          "date": "October 7, 1939",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Consulting Physicians at Baltimore",
+      "district": null,
+      "examinations": [
+        {
+          "date": "December 14, 1939",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "March 20, 1940",
+      "event": "Clarification of eligibility for restoration to membership",
+      "significance": "Discussed Harris's eligibility based on age and physical condition.",
+      "sources": [
+        "RDApp-635058Harris107.jpg.json"
+      ]
+    },
+    {
+      "date": "January 30, 1940",
+      "event": "Application for annuity with Railroad Retirement Board",
+      "significance": "Initiated process to seek annuity due to physical disability.",
+      "sources": [
+        "RDApp-635058Harris123.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 25,
+    "date_range": {
+      "earliest": "January 17, 1940",
+      "latest": "April 17, 1940"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of January to April 1940 but lacks details on Harris's earlier career and family life.",
+    "data_quality_notes": [
+      "Some documents are truncated, leading to incomplete information.",
+      "Conflicting names (Charles vs. Charley) appear in different documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Charley Harris highlights the challenges faced by railroad employees due to age and medical conditions that disqualified them from service, despite their long-term contributions.",
+      "It also reveals the complexities involved in seeking financial assistance or annuities through both company relief departments and external boards."
+    ],
+    "comparative_questions": [
+      "How did other railroad companies handle similar cases of employees with health issues?",
+      "What were the typical outcomes for employees who applied for annuities due to medical conditions?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

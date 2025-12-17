@@ -1,0 +1,89 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {"name": "Steinecker, William", "confidence": "high", "sources": ["RDApp-204722Steinecker201.jpg.json"]},
+      {"name": "W. N. Steinocker", "confidence": "medium", "sources": ["RDApp-204722Steinecker208.jpg.json"]},
+      {"name": "William Steinecke", "confidence": "low", "sources": ["RDApp-204722Steinecker213.jpg.json"]}
+    ],
+    "employee_id": 204722,
+    "birth_year": 1883,
+    "confidence_notes": "High confidence in canonical name and birth year based on multiple consistent records."
+  },
+  
+  "biographical_narrative": "William Steinecker began his career with the Baltimore & Ohio Railroad Company as a Yard Helper, working primarily in the Curtis Bay division. His employment spanned several decades, during which he experienced various medical examinations and changes in job status. In August 1952, Steinecker was diagnosed with generalized arteriosclerosis, leading to indefinite disablement. He subsequently applied for an annuity from the Railroad Retirement Board based on his age and service length, effective February 21, 1953. Throughout his career, he maintained membership in the Relief Feature of the company’s Relief Department, which provided him with death benefits and other forms of support.",
+  
+  "family": {
+    "spouse": {"name": "Florence A. Steinocker", "evidence": "Certificate of Membership in the Relief Feature", "sources": ["RDApp-204722Steinecker208.jpg.json"]},
+    "parents": [
+      {"name": "Father (age 45)", "relationship": "father", "evidence": "Medical Examiner's Questionnaire", "sources": ["RDApp-204722Steinecker214.jpg.json"]},
+      {"name": "Mother (age 42)", "relationship": "mother", "evidence": "Medical Examiner's Questionnaire", "sources": ["RDApp-204722Steinecker214.jpg.json"]}
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "957 Stoll Street", "date_range": "unknown", "context": "Residence at time of disablement report", "sources": ["RDApp-204722Steinecker201.jpg.json"]},
+    {"address": "914 Garden Drive, Apt. 2 - B.", "date_range": "March 1955", "context": "Residence at time of letter regarding natural death benefits after retirement", "sources": ["RDApp-204722Steinecker204.jpg.json"]},
+    {"address": "1016 Borough St.", "date_range": "January 1882", "context": "Residence at time of disablement due to sickness", "sources": ["RDApp-204722Steinecker220.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "September 7, 1912", "event_type": "application", "position": null, "department": null, "division": null, "details": "Applied for membership in the Relief Feature of the Baltimore and Ohio Railroad Company.", "sources": ["RDApp-204722Steinecker213.jpg.json"]},
+    {"date": "February 20, 1953", "event_type": "promotion", "position": null, "department": null, "division": null, "details": "Became eligible for Railroad Retirement Board annuity based on age and length of service.", "sources": ["RDApp-204722Steinecker202.jpg.json"]},
+    {"date": "August 16, 1952", "event_type": "injury", "position": null, "department": null, "division": null, "details": "Diagnosed with generalized arteriosclerosis leading to indefinite disablement.", "sources": ["RDApp-204722Steinecker201.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "August 16, 1952",
+      "injury_type": "Generalized arteriosclerosis",
+      "body_part": null,
+      "narrative": "William Steinecker was diagnosed with generalized arteriosclerosis on August 16, 1952. This condition led to his indefinite disablement and subsequent application for Railroad Retirement Board annuity.",
+      "medical_examinations": [
+        {"date": "August 26, 1952", "examiner": "Dr. I. Kaplan, M.D.", "finding": "disabled", "notes": "Diagnosed with generalized arteriosclerosis; indefinite probable duration of disablement.", "sources": ["RDApp-204722Steinecker201.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. I. Kaplan, M.D.",
+      "district": null,
+      "examinations": [{"date": "August 26, 1952", "finding": "disabled due to generalized arteriosclerosis"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {"date": "February 19, 1953", "event": "Application for annuity", "significance": "Signifies the transition from active employment to retirement benefits.", "sources": ["RDApp-204722Steinecker202.jpg.json"]},
+    {"date": "March 19, 1955", "event": "Supplemental application for natural death benefits after retirement", "significance": "Ensures continued benefit coverage post-retirement.", "sources": ["RDApp-204722Steinecker204.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 21,
+    "date_range": {"earliest": "January 17, 1851", "latest": "March 19, 1955"},
+    "completeness_assessment": "The record is relatively complete for Steinecker's medical history and employment status. However, details about his family beyond the spouse are missing.",
+    "data_quality_notes": ["Some documents have OCR errors or truncated text.", "There are inconsistencies in name spelling."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the importance of retirement and disability benefits for railroad workers, especially those with long-term health issues.",
+      "The documentation reveals the detailed process involved in applying for and receiving Railroad Retirement Board annuities."
+    ],
+    "comparative_questions": [
+      "How do the medical practices and administrative procedures vary across different railroads?",
+      "What were the typical durations of disablement among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

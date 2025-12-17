@@ -1,0 +1,163 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Claude Hoenbaugh", "confidence": "high", "sources": ["RDApp-221988Roenbaugh072.jpg.json"]},
+      {"name": "Claude Koenbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh073.jpg.json"]},
+      {"name": "Claude Rosenbaug", "confidence": "low", "sources": ["RDApp-221988Roenbaugh075.jpg.json"]},
+      {"name": "Claude Rosenbauth", "confidence": "low", "sources": ["RDApp-221988Roenbaugh076.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "Birth year calculated based on age of 63 in July 15, 1947 medical examination."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh began his career as a locomotive engineer for the Baltimore and Ohio Railroad Company around 1904. He was born and raised in Fort Washington, Ohio, where he experienced typical childhood illnesses before joining the Pennsylvania R.R. as a fireman for about thirteen years. Roenbaugh's tenure with B&O was marked by his dedication to both railroad work and union activities. In May 1947, he suffered an episode of vertigo and vomiting following strenuous gardening work, which led to temporary disability and medical examinations. Despite the incident, Roenbaugh returned to work briefly before being taken out of service again due to relapse concerns.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No specific name provided but mentioned as 'well'", "sources": ["RDApp-221988Roenbaugh074.jpg.json"]},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "331 W. 7th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address for medical records.",
+      "sources": ["RDApp-221988Roenbaugh071.jpg.json"]
+    },
+    {
+      "address": "531 W. 27th St., Loraine, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address for medical records.",
+      "sources": ["RDApp-221988Roenbaugh074.jpg.json"]
+    },
+    {
+      "address": "331 W. 27th Street, Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address for medical records.",
+      "sources": ["RDApp-221988Roenbaugh077.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1904",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Locomotive Engineer",
+      "department": null,
+      "division": null,
+      "details": "Started working for B&O Railroad as a locomotive engineer.",
+      "sources": ["RDApp-221988Roenbaugh074.jpg.json"]
+    },
+    {
+      "date": "May 31, 1947",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Experienced vertigo and vomiting episode.",
+      "sources": ["RDApp-221988Roenbaugh071.jpg.json"]
+    },
+    {
+      "date": "June 30, 1947",
+      "event_type": "return to work",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work for a week.",
+      "sources": ["RDApp-221988Roenbaugh075.jpg.json"]
+    },
+    {
+      "date": "July 6, 1947",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Taken out of service for further examination.",
+      "sources": ["RDApp-221988Roenbaugh075.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "May 31, 1947",
+      "injury_type": "Vertigo and vomiting episode",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh experienced vertigo and vomiting following strenuous gardening work. He was under medical care for a period of time before being allowed to return to work.",
+      "medical_examinations": [
+        {
+          "date": "June 2, 1947",
+          "examiner": "Dr. Paul Smith",
+          "finding": "disabled",
+          "notes": "Diagnosed with mild anxiety neurosis with symptoms referable to digestive tract.",
+          "sources": ["RDApp-221988Roenbaugh071.jpg.json"]
+        },
+        {
+          "date": "July 15, 1947",
+          "examiner": "Dr. Carroll Lockard",
+          "finding": "able to return",
+          "notes": "Examined and found fit for service after vertigo episode.",
+          "sources": ["RDApp-221988Roenbaugh073.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Paul Smith",
+      "district": null,
+      "examinations": [{"date": "June 2, 1947", "finding": "disabled"}]
+    },
+    {
+      "name": "Dr. Carroll Lockard",
+      "district": null,
+      "examinations": [
+        {"date": "July 15, 1947", "finding": "able to return"},
+        {"date": "July 15, 1947", "finding": "fit for service"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "June 30, 1947",
+      "event": "Return to work after a week of absence.",
+      "significance": "Indicates Roenbaugh's determination and the company's willingness to have him back despite his recent health issues.",
+      "sources": ["RDApp-221988Roenbaugh075.jpg.json"]
+    },
+    {
+      "date": "July 6, 1947",
+      "event": "Taken out of service for further examination due to relapse concerns.",
+      "significance": "Highlights the company's caution in ensuring employee fitness before allowing them back into active duty.",
+      "sources": ["RDApp-221988Roenbaugh075.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "May 31, 1947", "latest": "July 18, 1947"},
+    "completeness_assessment": "The record is relatively complete for the period covered but lacks detailed information on Roenbaugh's earlier career and family life.",
+    "data_quality_notes": [
+      "Multiple name variations exist in the documents.",
+      "Some medical records are truncated and may contain additional relevant details."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The case provides insight into the medical practices of B&O Railroad for assessing employee fitness, particularly concerning mental health issues."],
+    "comparative_questions": ["How did B&O's approach to handling employee disabilities compare with other railroads during this period?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

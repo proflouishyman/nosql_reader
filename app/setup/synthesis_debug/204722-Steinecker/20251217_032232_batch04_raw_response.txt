@@ -1,0 +1,158 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "Wm. Steineska",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker035.jpg.json"]
+      },
+      {
+        "name": "William Stanecker",
+        "confidence": "high",
+        "sources": ["RDApp-204722Steinecker036.jpg.json", "RDApp-204722Steinecker038.jpg.json"]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": null,
+    "confidence_notes": "Identity is consistent across documents, but variations in spelling exist."
+  },
+  
+  "biographical_narrative": "William Steinecker began his career with the Baltimore and Ohio Railroad Company as a fireman on January 6th, 1903. He was injured while learning the road just twelve days later, on January 18th, which led to him being placed on disability benefits. Throughout the early part of 1903, Steinecker's case was managed by various medical examiners and administrators due to difficulties in locating him for inspections at his home address. He reported for inspections at Mount Clare instead. His condition involved a purulent discharge from the ear, which caused significant health issues and led to multiple examinations and claims for benefits. By April 12th, 1907, Steinecker had undergone another medical examination that indicated he was fit for duty without glasses, though his left eye vision was slightly impaired.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "ST. DENIS, MD",
+      "date_range": "unknown",
+      "context": "PO address for correspondence",
+      "sources": ["RDApp-204722Steinecker031.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1903-01-06",
+      "event_type": "application",
+      "position": "Fireman",
+      "department": null,
+      "division": "B&O",
+      "details": "Steinecker applied for a position as Fireman with the B&O Railroad.",
+      "sources": ["RDApp-204722Steinecker036.jpg.json"]
+    },
+    {
+      "date": "1903-01-18",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured while learning the road before earning wages.",
+      "sources": ["RDApp-204722Steinecker038.jpg.json"]
+    },
+    {
+      "date": "1907-04-12",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Medical examination indicating he was fit for duty without glasses.",
+      "sources": ["RDApp-204722Steinecker040.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1903-01-18",
+      "injury_type": "purulent discharge from the ear",
+      "body_part": "ear",
+      "narrative": "Steinecker was injured on January 18th, 1903, while learning his route. He suffered a purulent discharge from the ear which led to multiple medical examinations and claims for disability benefits.",
+      "medical_examinations": [
+        {
+          "date": "1907-04-12",
+          "examiner": "E. S. Raphael for J. A. Rabb Medical Examiner",
+          "finding": "fit for duty without glasses",
+          "notes": "Left eye vision slightly impaired.",
+          "sources": ["RDApp-204722Steinecker040.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "E. S. Raphael for J. A. Rabb Medical Examiner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1907-04-12",
+          "finding": "fit for duty without glasses"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Robb",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "purulent discharge from the ear, total disability since June 1st"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1903-02-18",
+      "event": "$3.60 deducted from Steinecker's claim for contributions up to February 28th.",
+      "significance": "Indicates financial management of disability claims.",
+      "sources": ["RDApp-204722Steinecker038.jpg.json"]
+    },
+    {
+      "date": "1905-03-01",
+      "event": "Payment to Baltimore City Hospital for services related to sickness during March 1st to April 30th, 1905.",
+      "significance": "Reflects medical care provided during his disability period.",
+      "sources": ["RDApp-204722Steinecker039.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1903-01-06",
+      "latest": "1907-04-12"
+    },
+    "completeness_assessment": "The records are fairly complete, covering Steinecker's injury and subsequent medical examinations. However, there is no information about his family or personal life outside of work.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in securing disability benefits and the bureaucratic processes involved. It also reflects the medical practices of the early 20th century, particularly concerning ear infections and their impact on employment."
+    ],
+    "comparative_questions": [
+      "How did other injured employees fare in obtaining disability benefits? What were common injuries among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

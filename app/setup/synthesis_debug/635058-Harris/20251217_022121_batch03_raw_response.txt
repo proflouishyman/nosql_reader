@@ -1,0 +1,122 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {"name": "Charles B. Harris", "confidence": "medium", "sources": ["RDApp-635058Harris026.jpg.json"]},
+      {"name": "C. L. Humes", "confidence": "low", "sources": ["RDApp-635058Harris022.jpg.json"]}
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the application date and age at that time. The name variations are noted, but 'Charley Harris' appears most frequently."
+  },
+  
+  "biographical_narrative": "Charley Harris began his career with the Baltimore & Ohio Railroad Company in the early 20th century, initially working as a Fireman on the Wheeling Division and later transitioning to roles such as Section Laborer. His employment record spans several decades, from at least 1920 through the mid-1930s. Harris was involved with the company's Relief Department, securing membership for himself in various capacities throughout his career. He faced a furlough on July 14, 1930, but returned to service after obtaining medical clearance and completing necessary examinations. His health status remained a focus of attention, as evidenced by multiple physical examination records that confirmed his fitness for duty.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct mention of spouse", "sources": []},
+    "parents": [],
+    "children": [
+      {"name": "Mary", "age_at_time_of_application": 18, "date_of_birth_estimate": 1907, "sources": ["RDApp-635058Harris028.jpg.json"]},
+      {"name": "John", "age_at_time_of_application": 17, "date_of_birth_estimate": 1908, "sources": ["RDApp-635058Harris028.jpg.json"]},
+      {"name": "George", "age_at_time_of_application": 16, "date_of_birth_estimate": 1910, "sources": ["RDApp-635058Harris028.jpg.json"]},
+      {"name": "William", "age_at_time_of_application": 14, "date_of_birth_estimate": 1921, "sources": ["RDApp-635058Harris028.jpg.json"]}
+    ]
+  },
+  
+  "addresses": [
+    {
+      "address": "PARKERSBURG, in the County of WOOD, and State of West Virginia",
+      "date_range": "1922 or earlier",
+      "context": "Residence at time of Relief Feature application",
+      "sources": ["RDApp-635058Harris023.jpg.json"]
+    },
+    {
+      "address": "Benwood, in the County of Marshall and State of West Virginia",
+      "date_range": "1935 or earlier",
+      "context": "Residence at time of Relief Feature application",
+      "sources": ["RDApp-635058Harris029.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1920-11-19",
+      "event_type": "application/promotion",
+      "position": "Fireman",
+      "department": "Conducting - Transportation Department",
+      "division": "Wheeling Division",
+      "details": "Applied for membership in the Relief Feature of the Relief Department.",
+      "sources": ["RDApp-635058Harris021.jpg.json"]
+    },
+    {
+      "date": "1930-07-14",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed from service.",
+      "sources": ["RDApp-635058Harris027.jpg.json"]
+    },
+    {
+      "date": "1935-06-03",
+      "event_type": "application/promotion",
+      "position": "Section Laborer",
+      "department": "Maintenance of Way Department",
+      "division": null,
+      "details": "Applied for membership in the Relief Feature.",
+      "sources": ["RDApp-635058Harris029.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Ridgway",
+      "district": null,
+      "examinations": [{"date": "1921-09-20", "finding": "Not specified"}]
+    },
+    {
+      "name": "Medical Examiner",
+      "district": null,
+      "examinations": [
+        {"date": "1936-02-21", "finding": "Physically qualified"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1935-06-03",
+      "event": "Signed power of attorney for wage assignment to Relief Department.",
+      "significance": "Ensured monthly contributions were automatically deducted from wages.",
+      "sources": ["RDApp-635058Harris025.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1920-11-19", "latest": "1936-02-21"},
+    "completeness_assessment": "The record is fairly complete, covering employment applications and medical examinations. However, there are no detailed records of injuries or disputes.",
+    "data_quality_notes": ["Some documents contain truncated text due to OCR limitations.", "Name variations exist but are not well-explained."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The application process for the Relief Feature highlights the importance of health and insurance in railroad employment.",
+      "Harris's career demonstrates the typical progression from Fireman to Section Laborer within a major railway company."
+    ],
+    "comparative_questions": [
+      "How did the medical examination processes vary between different divisions or departments?",
+      "What were the common reasons for furloughs among employees of this era?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

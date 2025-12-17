@@ -1,0 +1,220 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {"name": "Harris Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta123.jpg.json"]},
+      {"name": "Mario Panetta", "confidence": "low", "sources": ["RDApp-205699Panetta128.jpg.json"]},
+      {"name": "Ilario Panetta", "confidence": "high", "sources": ["RDApp-205699Panetta124.jpg.json"]}
+    ],
+    "employee_id": "205699",
+    "birth_year": 1895,
+    "confidence_notes": "High confidence in Ilario Panetta as canonical name due to multiple documents. Variations may be errors or different individuals."
+  },
+  
+  "biographical_narrative": "Ilario Panetta, an employee of the Baltimore & Ohio Railroad Company, had a career marked by several health-related absences and injuries. His employment began sometime before 1912, as evidenced by his certificate of ability to return to duty dated June 30th, 1912. Throughout his tenure with the railroad company, Panetta held positions such as Car Ref. Keeper (Car Repairman) in the M.P. Department and Division Cw., and later as a Coach Cleaner in the MO Department and Atlantic Division. He experienced multiple medical issues including an operation on his nose, shoulder strain, and acute bronchitis with nasal obstruction. These health concerns led to periods of disability from which he eventually returned to work after receiving medical clearance.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information provided", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "267 Seventh Avenue New York, N.Y.", "date_range": "unknown", "context": "Residence of Mario Panetta (possibly Ilario)", "sources": ["RDApp-205699Panetta128.jpg.json"]},
+    {"address": null, "date_range": "unknown", "context": "No residential address provided in documents", "sources": []}
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1912-07-08",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified by Dr. Biser as able to return to work after an unspecified period of disability.",
+      "sources": ["RDApp-205699Panetta130.jpg.json"]
+    },
+    {
+      "date": "1919-04-29",
+      "event_type": "disablement",
+      "position": "Car Ref. Keeper",
+      "department": "M.P.",
+      "division": "Cw.",
+      "details": "Totally disabled by accident or sickness from April 29, 1919 to June 24, 1919.",
+      "sources": ["RDApp-205699Panetta125.jpg.json"]
+    },
+    {
+      "date": "1919-06-25",
+      "event_type": "disablement",
+      "position": "Car Repairman",
+      "department": null,
+      "division": "MD",
+      "details": "Totally disabled by accident or sickness from June 25, 1919 to July 9, 1919.",
+      "sources": ["RDApp-205699Panetta124.jpg.json"]
+    },
+    {
+      "date": "1919-07-08",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified by Dr. Biser as able to return to work after an unspecified period of disability.",
+      "sources": ["RDApp-205699Panetta130.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1919-04-29",
+      "injury_type": "Accident/Sickness",
+      "body_part": null,
+      "narrative": "Panetta was totally disabled due to an accident or sickness from April 29, 1919 until June 24, 1919. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1919-05-03",
+          "examiner": "A.H. Ralyez",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta125.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1919-04-29", "end": "1919-06-24"},
+          "days": 57,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-205699Panetta125.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1919-06-25",
+      "injury_type": "Accident/Sickness",
+      "body_part": null,
+      "narrative": "Panetta was totally disabled due to an accident or sickness from June 25, 1919 until July 9, 1919. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1919-06-25",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta124.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1919-06-25", "end": "1919-07-09"},
+          "days": 13,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-205699Panetta124.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "unknown",
+      "injury_type": "Operation on nose",
+      "body_part": "Nose",
+      "narrative": "Panetta underwent an operation on his nose and reported disability from May to June 1919.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta123.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1919-05-06", "end": "1919-07-01"},
+          "days": 47,
+          "amount": 86.00,
+          "check_number": "17237",
+          "sources": ["RDApp-205699Panetta123.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "unknown",
+      "injury_type": "Shoulder strain",
+      "body_part": "Right shoulder",
+      "narrative": "Panetta sustained a right shoulder muscle strain while carrying a heavy rack in the shop.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": null,
+          "notes": null,
+          "sources": ["RDApp-205699Panetta127.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "unknown",
+      "injury_type": "Acute bronchitis and nasal obstruction",
+      "body_part": "Nose and lungs",
+      "narrative": "Panetta experienced acute bronchitis with nasal obstruction, which required an operation at Columbus Hospital in New York.",
+      "medical_examinations": [
+        {
+          "date": "1916-05-05",
+          "examiner": null,
+          "finding": "not improved",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta129.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "A.H. Ralyez",
+      "district": null,
+      "examinations": [{"date": "1919-05-03", "finding": "disabled"}]
+    },
+    {
+      "name": "Dr. Biser",
+      "district": 25,
+      "examinations": [
+        {"date": "1912-07-08", "finding": "able to return"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1916-05-05", "latest": "1919-07-25"},
+    "completeness_assessment": "The record is fairly complete, documenting several health issues and periods of disability. However, there are some inconsistencies in names and positions.",
+    "data_quality_notes": ["OCR quality varies; some dates and names are unclear.", "Some documents contain conflicting information about the employee's name."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the frequent health issues faced by railroad workers, including injuries from heavy lifting and respiratory illnesses.",
+      "They also demonstrate the administrative processes in place for handling worker disabilities and medical clearances."
+    ],
+    "comparative_questions": [
+      "How did injury rates compare between different departments or divisions within the Baltimore & Ohio Railroad?",
+      "What was the overall health of railroad workers compared to other industries at this time?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

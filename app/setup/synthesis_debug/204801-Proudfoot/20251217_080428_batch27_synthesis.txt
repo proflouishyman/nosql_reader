@@ -1,0 +1,171 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O.D. Trautfort",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood266.jpg.json"
+        ]
+      },
+      {
+        "name": "Thos Jordan",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood262.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the earliest documented event and typical age of employment. Name variations are noted but considered low confidence due to lack of direct evidence linking them."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company, working primarily in Cumberland, Maryland. His career spanned several decades, with records indicating his employment from at least the early 1920s to the early 1950s. Throughout his tenure, he faced multiple injuries on duty, including a foreign body entering his left eye on March 9, 1931, and another incident in 1951 where a cinder lodged in his eye during stormy weather. These incidents highlight the hazardous nature of his work as an engineer. Despite these setbacks, Proudfoot continued to serve with the railroad company until at least 1951.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "The only reference is in a 1951 report where he was listed as married but no spouse's name was provided.",
+      "sources": [
+        "RDApp-204801Proudfood267.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence listed in medical examiner's report.",
+      "sources": [
+        "RDApp-204801Proudfood265.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1931-03-09",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumb",
+      "details": "Sustained a foreign body injury to the left eye while on duty.",
+      "sources": [
+        "RDApp-204801Proudfood265.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-03-12",
+      "event_type": "disablement",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Certified as totally disabled by accident from March 12, 1931 to March 13, 1931.",
+      "sources": [
+        "RDApp-204801Proudfood261.jpg.json"
+      ]
+    },
+    {
+      "date": "1951-03-09",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": "Cumberland Division",
+      "details": "Sustained a cinder injury to the left eye while on duty during stormy weather.",
+      "sources": [
+        "RDApp-204801Proudfood267.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1931-03-09",
+      "injury_type": "Foreign body in left eye",
+      "body_part": "Left eye",
+      "narrative": "On March 9, 1931, while on duty as an engineer, Otto D. Proudfoot sustained a foreign body injury to his left eye. He continued working until the following day and was cleared for duty on March 14th.",
+      "medical_examinations": [
+        {
+          "date": "1931-03-13",
+          "examiner": "Dr. G C Sharrett",
+          "finding": "Disabled",
+          "notes": "Foreign body removed from left eye under local anesthesia.",
+          "sources": [
+            "RDApp-204801Proudfood265.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1951-03-09",
+      "injury_type": "Cinder in left eye",
+      "body_part": "Left eye",
+      "narrative": "On March 9, 1951, while on duty as an engineer during stormy weather, Otto D. Proudfoot sustained a cinder injury to his left eye.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. G C Sharrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1931-03-13",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "J.G. Selby",
+      "district": 6,
+      "examinations": [
+        {
+          "date": "1931-03-19",
+          "finding": "Able to return to duty on March 14th"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1929-03-04",
+      "latest": "1951-03-13"
+    },
+    "completeness_assessment": "The record is relatively complete for injury and disablement events but lacks detailed information on employment history, promotions, or transfers. Family details are also sparse.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors leading to incomplete data (e.g., missing dates).",
+      "Name variations exist without clear linkage to Otto D. Proudfoot."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the risks faced by railroad engineers and the company's response through medical care and disablement certification.",
+      "It also underscores the importance of safety measures in industrial settings during the early to mid-20th century."
+    ],
+    "comparative_questions": [
+      "How did injury rates vary across different departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability and recovery times for similar injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

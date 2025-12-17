@@ -1,0 +1,177 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "Wm Stenicer",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker196.jpg.json"
+        ]
+      },
+      {
+        "name": "William Steinckock",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker199.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": null,
+    "confidence_notes": "Identity is certain based on multiple documents, but variations in spelling and abbreviation exist."
+  },
+  "biographical_narrative": "William Steinecker was a Yard Helper employed by the Baltimore & Ohio Railroad Company. His career with the railroad spanned several years during which he faced numerous health challenges that led to periods of disability. From August 16, 1952, through January 10, 1953, Steinecker experienced multiple episodes of sickness and was unable to work for extended periods. Each episode resulted in a certificate of disablement from the Relief Department, indicating that he did not receive wages during these times. His medical records show that he had an asthmatic condition which required ongoing attention. Despite his health issues, there is no indication that Steinecker left the company or was promoted; rather, he remained as a Yard Helper throughout the documented period.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "957 Stoll St",
+      "date_range": "unknown",
+      "context": "Residence address on disablement notices and medical examination report.",
+      "sources": [
+        "RDApp-204722Steinecker198.jpg.json",
+        "RDApp-204722Steinecker199.jpg.json"
+      ]
+    },
+    {
+      "address": "914 Garden Dewi",
+      "date_range": "October 1, 1955 - unknown",
+      "context": "New address noted in a handwritten note.",
+      "sources": [
+        "RDApp-204722Steinecker196.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Yard Helper",
+      "department": "C.T. Dept.",
+      "division": "Baltimore Div'n",
+      "details": "No specific date of hire is provided in the documents, but Steinecker was employed as a Yard Helper in the C.T. Department.",
+      "sources": [
+        "RDApp-204722Steinecker191.jpg.json",
+        "RDApp-204722Steinecker192.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1952-08-16",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Steinecker was reported disabled due to sickness starting on August 16, 1952. This led to a series of disablement certificates and medical examinations.",
+      "medical_examinations": [
+        {
+          "date": "1952-08-15",
+          "examiner": "Dr. Schonfeld",
+          "finding": "disabled",
+          "notes": "Asthmatic condition noted, with mention of dynamic repairs.",
+          "sources": [
+            "RDApp-204722Steinecker200.jpg.json"
+          ]
+        },
+        {
+          "date": "1952-08-16",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Reported disabled by sickness, no wages allowed from 8/16/52.",
+          "sources": [
+            "RDApp-204722Steinecker197.jpg.json",
+            "RDApp-204722Steinecker198.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1953-01-10",
+      "injury_type": "Sickness/accident",
+      "body_part": null,
+      "narrative": "Steinecker was again reported disabled by accident or sickness from January 10, 1953.",
+      "medical_examinations": [
+        {
+          "date": "1953-01-23",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "No wages allowed during the period of disablement from January 10, 1953.",
+          "sources": [
+            "RDApp-204722Steinecker191.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J. M. Ohle",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1952-08-16",
+          "finding": "disabled"
+        },
+        {
+          "date": "1953-01-10",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Schonfeld",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1952-08-15",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1952-08-15",
+      "latest": "1955-10-01"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of disability, but lacks details on Steinecker's hiring date and any promotions or transfers. There are no records indicating disputes over medical findings.",
+    "data_quality_notes": [
+      "Variations in spelling of name exist across documents (e.g., 'Steinecker', 'Stenicer', 'Steinckock').",
+      "Some dates and details are incomplete, particularly in the disablement certificates."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of William Steinecker highlights the challenges faced by railroad employees with chronic health conditions during the early to mid-20th century.",
+      "It also underscores the role of medical examiners and relief departments in managing employee disability claims."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases?",
+      "What were the broader trends in railroad labor practices regarding health and safety?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

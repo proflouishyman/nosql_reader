@@ -1,0 +1,758 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records from the early 20th century.
+
+EMPLOYEE FOLDER: 222427-Lowther
+EMPLOYEE ID: 222427
+FOLDER NAME: Lowther
+NUMBER OF DOCUMENTS: 25 - Batch 1/7
+
+Below are ALL documents from this employee's personnel file. Read carefully and generate a comprehensive biographical synthesis.
+
+
+======================================================================
+DOCUMENT 1 of 25: RDApp-222427Lowther001.jpg.json
+======================================================================
+
+OCR TEXT:
+No. 222427
+R. F. Form 3 A
+500 11-6-40
+THE BALTIMORE & OHIO RAILROAD COMPANY
+RELIEF DEPARTMENT
+RELIEF FEATURE
+Name, Ira E. Lowther
+PILOT, SERVICE RECORD BUREAU
+
+SUMMARY:
+This document is a form from the Baltimore & Ohio Railroad Company's Relief Department. It is related to the Relief Feature program. The form records the name of an individual, Ira E. Lowther, and includes an identification number. The document appears to be meant for service record purposes.
+
+
+======================================================================
+DOCUMENT 2 of 25: RDApp-222427Lowther002.jpg.json
+======================================================================
+
+OCR TEXT:
+FORM R.F. 3
+THE BALTIMORE & OHIO R. R. CO.---RELIEF DEPARTMENT
+DATE OF BIRTH 6/15/65
+DISTRICT Nimal 10
+CERTIFICATE NO. 222427
+NAME Ira F. Lowther
+PLACE Mineral Wells, W. Va.
+OCCUPN. Firekmocker DEPT. MP DIV. Mon
+CLASS B $1.90
+A.N.D.B.
+A.D.B.S.F.
+CONTS. PAID FOR March $1.90
+DISABILITY BEGAN 3/5/42
+FORM 5 NO. 61636
+CASE CLOSED APR 13 1942
+DISABILITY RATE
+FIRST 52 WKS. $1- 
+PERMANENT
+DIED
+DEATH RECORD
+TOTAL DEATH BENEFITS PAYABLE
+B. F. L. 
+NATURE OF DISABILITY 21 Sprain of right adducter muscles
+From 3/5 To 4/4/42 Days 30 Dues 20 Amount 20 Check No. 37000 Date APR 16 '42
+TOTAL 20 20 20-
+Termination 3/24/42 Ret'd to Duty 3/25/42
+PAID TO
+PAID TO
+
+SUMMARY:
+This is a Baltimore & Ohio Railroad Company Relief Department disability record for Ira F. Lowther. The document includes personal and employment information, the nature and details of a disability (sprain of right adductor muscles), relevant dates, monetary payments, departmental classification, and payment records for the period of disability in 1942.
+
+
+======================================================================
+DOCUMENT 3 of 25: RDApp-222427Lowther003.jpg.json
+======================================================================
+
+OCR TEXT:
+April 1 1942
+Mr. Ira Lowther, Rt. 3, Mineral Wells, W. Va.
+TO THE CITY OF PARKERSBURG
+CAMDEN-CLARK HOSPITAL ACCOUNT
+PARKERSBURG, W. VA.
+PAID & COMPARED
+TO BOARD FROM 3-7-42
+TO _____
+3 days @ $3.00 9.00
+Laboratory CHECKED 5.00
+Total $14.00
+OFFICE OF DIVISION ACCOUNTANT
+APR 18 1942
+GRAFTON, W. VA.
+APPROVED APR 30 1942
+E. H. Mitchell
+MEDICAL & SURGICAL DIRECTOR.
+ALL BILLS PAYABLE IN ADVANCE
+
+SUMMARY:
+This document is an invoice dated April 1, 1942, addressed to Mr. Ira Lowther from Camden-Clark Hospital Account for the City of Parkersburg, West Virginia. The invoice details a hospital board charge for 3 days at $3.00 per day and a laboratory fee, totaling $14.00. The bill has been stamped as approved by the medical and surgical director and includes approval and processing dates.
+
+
+======================================================================
+DOCUMENT 4 of 25: RDApp-222427Lowther004.jpg.json
+======================================================================
+
+OCR TEXT:
+Mr. C. N. Mays
+Division Accountant
+Grafton, W. Va.
+Dear Sir :-
+
+Parkersburg, W. Va.
+April 11, 1942
+
+Herewith bill which I have approved for the amount of $14.00 received from the Camden-Clark hospital of this city for hospitalization of Firelmookor Ira E. Lowther, necessitated by reason of injury sustained on March 4, 1942.
+
+Respectfully
+
+Copy to E. V. Milholland, M.D.
+Medical and Surgical Director
+
+SUMMARY:
+A letter dated April 11, 1942, from Parkersburg, West Virginia, to Mr. C. N. Mays regarding approval of a $14.00 hospital bill from Camden-Clark Hospital for the hospitalization of Ira E. Lowther due to an injury sustained on March 4, 1942. The letter is also copied to E. V. Milholland, M.D., Medical and Surgical Director.
+
+
+======================================================================
+DOCUMENT 5 of 25: RDApp-222427Lowther005.jpg.json
+======================================================================
+
+OCR TEXT:
+12m. 6-12-41. 25x34-41c R. F. Form 11. THE BALTIMORE & OHIO R. R. CO.—Relief Department. CERTIFICATE OF DISABLEMENT. The Medical Examiner will forward this form to the Division Accountant, Timekeeper, or other officer in direct charge, who will ascertain from the time record of the member whether or not wages were allowed during period stated, and after so certifying, forward form direct to Superintendent Relief Department, Baltimore, Md. Form 5 No. 61686 Cert. No. 222427 Mr. Ira E. Lowther employed as Firemanocker in the MP-Mong Dept., Div'n. Was totally disabled by ACCIDENT SICKNESS FROM 3-5-42 19 B M., TO MAR 31 1942 Inc. Disablement reported by W. J. Hehr Inspected 3/17-20-24 Medical Examiner, District No. Examination of the Time Record shows that WAGES WERE NOT ALLOWED From 3-5-1942 M., To 3-31-1942 Inc. (Over) O.H. Mays Division Accountant or Timekeeper.
+
+SUMMARY:
+This document is a Certificate of Disablement issued by The Baltimore & Ohio Railroad Company Relief Department. It certifies that Ira E. Lowther, employed as a Fireman in the MP-Mong Department, was totally disabled due to accident or sickness from March 5, 1942 through March 31, 1942. Wages were not allowed for this period as reported by the examination of the time record.
+
+
+======================================================================
+DOCUMENT 6 of 25: RDApp-222427Lowther006.jpg.json
+======================================================================
+
+OCR TEXT:
+Sm. 8-7-40.  R. F. Form 211.
+Name  Lowther, Ira E.  Address  Mineral Wells, W. Va.
+Form 5 No. 61636  (Accident) (Sickness) Beginning 3-5-42 19  Cert. No. 222427
+Occupation Fireknooker  Department MP  Division Mong  Class B
+Employing Officer W. J. Hehr, EHF  Location Parkersburg, W. Va.
+Diagnosis and Remarks Rheumatism or Sprain of adductor muscles of right thigh
+Dr. T. L. Harris
+M&SD says accident on duty.
+
+Notethat Form 11 was prepared to include 3-31.
+ABLE TO RESUME DUTY 3/25/42
+Last Claim Sent To C. N. Mays, DA On 4/6/42
+
+(signed)
+Medical Examiner, Dist. No. 20
+
+SUMMARY:
+This document is an accident/illness report for Ira E. Lowther, a Fireknooker employed in Parkersburg, West Virginia. The document details an accident on duty resulting in rheumatism or a sprain of the right thigh's adductor muscles. The form records dates of injury and return to duty, related officers, claims processed, and medical evaluation details.
+
+
+======================================================================
+DOCUMENT 7 of 25: RDApp-222427Lowther007.jpg.json
+======================================================================
+
+OCR TEXT:
+B. & O. R. R. CO. – RELIEF DEPARTMENT. NOTICE OF DISABLEMENT. N! 61636 PART TWO (2). (Forward this PART TWO direct to SUPERINTENDENT RELIEF DEPARTMENT, and at the same time send PART THREE to the MEDICAL EXAMINER.) Notice sent from Parkersburg, W. Va. on Mch. 5-42 Superintendent Relief Department: Dr. B. W. Munsil Medical Examiner has been notified that IRA E. LOWTHER (Certificate Number) 202427 (Residence) MINERAL WELLS, W. Va. (Occupation) FIREMOMOTER (Department) 1717 (Division) 14th (Last Day Wages Allowed) 3-4-42 Reported disabled by SICKNESS or beginning 3-5-42 Was he Injured on Duty? Answer "Yes" or "No" No Cause of Injury on Duty ruptured Signature and title of Official Issuing: Lowther 6/15/55 (Name) Ira E. Lowther (Class) B Rate of Contribution $ 1.90 Paid to cover Mar/10
+
+SUMMARY:
+This is a railroad company relief department form serving as a notice of disablement for an employee named Ira E. Lowther. The notice reports sickness (not injury on duty), with the last day wages allowed dated March 4, 1942, and disablement beginning March 5, 1942. The form was issued and signed by Ira E. Lowther, referencing a certificate number and contribution payment.
+
+
+======================================================================
+DOCUMENT 8 of 25: RDApp-222427Lowther008.jpg.json
+======================================================================
+
+OCR TEXT:
+B. & O. R. R. CO. - RELIEF DEPARTMENT
+NOTICE OF DISABLEMENT. No. 61636
+PART THREE (3).
+(Forward this PART THREE direct to the MEDICAL EXAMINER.)
+Notice sent from Parkersburg W.Va on Mar. 5, 1942
+Medical Examiner Dr. A. J. Himel is hereby notified that IRA E. CONNER (Certificate Number _____)
+Residence: Ripley W Va (Occupation) Trackmaster
+Department: MofW (Division) West
+ACCIDENT
+Last Day Wages Allowed 3-4-42 3 PM
+Reported disabled by ______ or beginning SICKNESS 3-5-42 9 AM
+Was he Injured on Duty? Answer "Yes" or "No": No
+Cause of Injury on Duty: Ruptured
+Signature and title of Official issuing: C. L. Hahn, M.P.
+
+SUMMARY:
+This is a B&O Railroad Company Relief Department form (Notice of Disablement) from March 5, 1942, notifying the medical examiner Dr. A. J. Himel that IRA E. CONNER of Ripley, WV (trackmaster, Maintenance of Way, West Division) was reported disabled due to sickness (not an on-duty injury). The cause was given as 'ruptured'. The notice was issued and signed by C. L. Hahn.
+
+
+======================================================================
+DOCUMENT 9 of 25: RDApp-222427Lowther009.jpg.json
+======================================================================
+
+OCR TEXT:
+10m. 12-3-40. 22x31-26c R. F. Form 43-Rev. THE BALTIMORE AND OHIO RAILROAD COMPANY RELIEF DEPARTMENT OFFICE OF MEDICAL EXAMINER 43 Place----------------------------------------Date. MAR 17 1942 I have this day inspected. I. E. LOWTHER Occupation. FIREKNOCKER Department MP Division MONONG Form 5 No. 446436 Nature of disability, etc. SAYS ON KNEES CLEANING FIRE, WHEN HE STARTED TO GET UP HE FELT PAIN IN RT. TESTICLE SENT TO HOSP IN AMBULANCE IN HOSP LEFT 3/17 P.M. PAIN AND TENDERNESS IS IN GROIN AND ATTACHMENT OF MUSCLES TO RAMUS - NO HERNIA - HAD PAIN IN RT. KNEE - HAD IT BEFORE 'INJURY.' 3/24 STILL HAS IT. MAY TRY TO RE E --------------------------- Medical Examiner, District No. (10)
+
+SUMMARY:
+This document is a medical examination report from the Office of Medical Examiner, Baltimore and Ohio Railroad Company Relief Department, dated March 17, 1942. The report concerns I. E. Lowther, a Fireknocker in the Monongah division, who experienced pain in his right testicle and groin while cleaning a fire on his knees. He was sent to the hospital in an ambulance due to the pain and tenderness, but no hernia was found. The report notes a history of right knee pain and provides a brief update of symptoms one week later. The examination was documented by a medical examiner from district 10.
+
+
+======================================================================
+DOCUMENT 10 of 25: RDApp-222427Lowther010.jpg.json
+======================================================================
+
+OCR TEXT:
+THE BALTIMORE AND OHIO RAILROAD CO., Relief Department, MEDICAL EXAMINER'S REPORT OF DISABLEMENT.
+Name....Ira E. Lowther........................................... Address....Mineral Wells, W.Va......................................... Form 5 No....61586
+Occupation....Firemanocker.................................. Dept....MP-.... Div....Mong............................ Certificate of Membership No....222427
+1. Nature of Disablement..... Rheumatism. Dr. Harris reports sprain of right adductor muscles of thigh....................................................................................................................... Probable Duration. reserved
+2. If accident, write whether....on....duty [Place]....Parkersburg, W.Va.... [Date]....March 4, 1942.... 19....
+3. Describe how accident occurred....Was on his knees on deck of engine cleaning fire. When he started to get up he felt pain in right testicle, so severe that he was sent to hospital in ambulance, left hospital March 7th. Sinc
+... [truncated for length]
+
+SUMMARY:
+Medical examiner's report for Ira E. Lowther, a railroad employee, documenting a disablement incident where he experienced severe pain in the right testicle and thigh muscles while cleaning an engine. The examining physician, Dr. T. L. Harris, diagnosed a sprain of the right adductor muscles and noted the decision on whether the case is to be handled as sickness or accident is pending. Incident occurred on duty in Parkersburg, West Virginia, and the patient was hospitalized at Camden-Clark.
+
+
+======================================================================
+DOCUMENT 11 of 25: RDApp-222427Lowther011.jpg.json
+======================================================================
+
+OCR TEXT:
+THE BALTIMORE AND OHIO RAILROAD—RELIEF DEPARTMENT.
+Form 5 No. SURGEON’S FIRST REPORT OF ACCIDENT. (TO BE FORWARDED THROUGH MEDICAL EXAMINER WHO WILL INSERT FORM 5 NO. AND CERTIFICATE NO.)
+Name I. E. Lowther Residence
+If employe, give occupation; if passenger, traveler on highway, trespasser, &c., so state: Fireman
+*1—History of accident, date and place of occurrence, as given by injured person. 3-4-42 - 7:00 P.M.
+Cleaning fire #4003, down on knees on apron and as he started to get up, felt pain in right testicle.
+*Statement should be taken at time of first visit and noted at once. Do not rely on later recollection.
+2—Nature, location and extent of injuries; exact point of amputation and other operation, if any.
+Sprain of right abductor muscle.
+3—Estimated length of disability—in days, weeks or months. sent to Camden clerk (hosp)
+4—Remarks:
+March 5, 1942 Place and date of examination.
+NOTE: USE OTHER SIDE OF THIS FORM, IF NECESSARY, TO ELABORATE UPON ANY PART OF THIS REPORT.
+W. C. Harri
+... [truncated for length]
+
+SUMMARY:
+This is a historical accident report form from the Baltimore and Ohio Railroad Relief Department, documenting an injury sustained by an employee named I. E. Lowther, a fireman. The incident involved cleaning a fire, during which Lowther experienced pain in his right testicle. The injury was diagnosed as a sprain of the right abductor muscle. The report was completed by the company surgeon, Dr. W. C. Harris, on March 5, 1942, and recommends the employee be sent to Camden clerk (hospital) for further care.
+
+
+======================================================================
+DOCUMENT 12 of 25: RDApp-222427Lowther012.jpg.json
+======================================================================
+
+OCR TEXT:
+File 311 - Re: Ira E. Lowther -
+Parkersburg, W. Va., March 23, 1942.
+Mr. H. W. Hinal:
+Referring to HD Form 196, regarding Ira E. Lowther, the reason this man was reported "sick" instead of "injured" was due to fact he advised me while in Hospital that had been troubled and had been wearing suspension and that he had stooped over and when he started to raise up the pain struck him and he could not get up and for this reason was taken to Hospital.
+If this is a reportable injury, will you please advise so can make proper report? Also, advise what you would term his injury, if reportable.
+Thanks.
+W. J. Hohr
+
+SUMMARY:
+This letter, dated March 23, 1942, from W. J. Hohr in Parkersburg, West Virginia, addresses an issue with a report regarding Ira E. Lowther. The letter explains that Lowther was initially reported as 'sick' instead of 'injured' because he experienced pain while wearing a suspension and could not get up after stooping, which led to his hospitalization. The author asks Mr. H. W. Hinal if this should be reported as an injury and requests advice on how to classify it.
+
+
+======================================================================
+DOCUMENT 13 of 25: RDApp-222427Lowther013.jpg.json
+======================================================================
+
+OCR TEXT:
+THE BALTIMORE AND OHIO RAILROAD COMPANY
+RELIEF DEPARTMENT—RELIEF DEPARTMENT
+To Mrs. W. J. Hohn
+E. H. Foreman
+Parkersburg March 17, 1942
+Place Date 193…
+In reference to Ira E. Lowther
+Occupation: Fireknocker
+Employed by: Yog
+Examined ________
+Form 5 No. 61536 Dated 5-5-42 193…
+PLEASE FURNISH INFORMATION OR COMPLY WITH REQUEST CHECKED (✓).
+#6 Dr. Himel Medical Examiner
+1
+2 He is unable to work,. Send Form 5.
+3 He is reported injured on. Send Form 790.
+4 Has he resumed work? Advise or send Form 7.
+5 Advise first day made by him after _____.
+6 Form 5 reports “sickness.” He claims injury on duty. Send Form 790 or advise.
+7 Form 5 reports him disabled Claims he notified you ________ to report him on relief. Advise.
+8 Does not live at ________. Advise correct address.
+9 If he has resumed work advise in what position and at what pay.
+10 Return Check No. ________ sent you.
+11 Send him to my office to correct application. Have him bring this letter with him. If out of service, advise.
+12 Have hi
+... [truncated for length]
+
+SUMMARY:
+This document is a form from the Baltimore and Ohio Railroad Company's Relief Department, dated March 17, 1942, referencing an employee, Ira E. Lowther, who was employed as a Fireknocker. The form lists several procedural requests regarding the status and injury claims of the employee, including verification of work status, injury, disability, and official documents. The form also requests various actions or additional forms to be submitted based on the employee’s status.
+
+
+======================================================================
+DOCUMENT 14 of 25: RDApp-222427Lowther014.jpg.json
+======================================================================
+
+OCR TEXT:
+5m. 3-17-37. 22x34-32s R.F. Form 196-A.
+THE BALTIMORE AND OHIO RAILROAD COMPANY
+RELIEF DEPARTMENT—RELIEF FEATURE
+In reference to
+To Mrs. W. G. Rohr Ira R. Lowther Occupation: Fire Inspector
+E. H. Foreman
+Parkersburg March 17, 1943
+Employed by B&O Examined
+Place Date 193 Form 5 No. 41,656 Dated 5-5-42 193
+PLEASE FURNISH INFORMATION OR COMPLY WITH REQUEST CHECKED (✓).
+1
+Relative to No. 46 Dr. Hami Medical Examiner.
+
+SUMMARY:
+This document is a form from the Baltimore and Ohio Railroad Company's Relief Department, dated March 17, 1943, in Parkersburg. It concerns a request related to Ira R. Lowther, a Fire Inspector, with references to employment and examination information and a specific form number. It is addressed to Mrs. W. G. Rohr. The form requests information to be furnished or a request to be complied with. There are references to supervisors and a medical examiner.
+
+
+======================================================================
+DOCUMENT 15 of 25: RDApp-222427Lowther015.jpg.json
+======================================================================
+
+OCR TEXT:
+Cert. No. 220427
+Baltimore, Md. March 31st, 1942.
+
+Dr., Mimli:-
+We are in receipt of your Form 17, dated March 30th, 1942, reporting Ira L. Lowther, Fireknocker, as totally disabled and asking for a decision as to whether or not the case should be handled as one of sickness or accident.
+
+In view of the fact that the pain struck him while he was on duty, at the time he was clearing a fire, and the fact Dr. Harris, Company's Surgeon, states he has a sprain of his right adductor muscle, I do not see how we can get out of handling it as an accident on duty, and we will so handle it, after you have secured through the proper source Form 790 and forwarded it to this office.
+
+E. V. Milholland.
+
+PM/H.
+Copy, Mr. P. C. Garvett, General Claim Agent, Baltimore, Maryland.
+
+SUMMARY:
+This document is a letter dated March 31, 1942, from Baltimore, confirming receipt of Form 17 regarding Ira L. Lowther, a Fireknocker who was reported totally disabled. The letter discusses whether the case should be classified as sickness or an accident. It concludes that since the injury occurred while on duty and was confirmed as a sprain by the company surgeon, it will be handled as an accident on duty, pending submission of Form 790.
+
+
+======================================================================
+DOCUMENT 16 of 25: RDApp-222427Lowther016.jpg.json
+======================================================================
+
+OCR TEXT:
+Parkersburg, W. Va.
+April 11, 1942
+
+Mr. C. M. Mays
+Division Accountant
+Grafton, W. Va.
+Dear Sir:
+
+Herewith bill which I have approved for the amount of $14.00 received from the Camden-Clark hospital of this city for hospitalization of Fireknocker Ira E. Lowther, necessitated by reason of injury sustained on March 4, 1942.
+
+Respectfully
+
+
+Copy to E. V. Milholland, M.D.
+Medical and Surgical Director
+
+3 days @ $3.00 - $9.00
+Lab. $5.00
+
+SUMMARY:
+This document is a formal approval letter dated April 11, 1942, regarding a $14.00 hospital bill for Ira E. Lowther’s hospitalization due to an injury on March 4, 1942. The expenses were for three days of stay and laboratory costs at Camden-Clark hospital. The letter was sent from Parkersburg, West Virginia, to a Division Accountant in Grafton, West Virginia, with a copy to the Medical and Surgical Director.
+
+
+======================================================================
+DOCUMENT 17 of 25: RDApp-222427Lowther017.jpg.json
+======================================================================
+
+OCR TEXT:
+THE BALTIMORE AND OHIO RAILROAD COMPANY
+REPORT OF PERSONAL INJURY
+Report No. 53 
+(Date of Report) Dec 5, 1942
+Division: Cumberland
+Location: Gypsy, W. Va. to Uleo.
+State: W. Va.
+Date: 12-4-42
+Time: 4:00 P.M. (Began work: 8:30 AM) Injured: 4:00 PM
+Train: Engine 4003 Loads Empties Adj. Tons Speed Weather: Clear
+Number of cars with air brakes in working order Was bell rung Was whistle sounded
+Engineer Porter
+Fireman Brakeman
+Conductor Brakeman
+Baggage Master Brakeman
+Person Injured: Jno. Jones Age 35
+Single, married, widowed or divorced: M
+Residence: Uleo, W. Va.
+Nationality: American
+Race: C
+Speak English: Yes
+Number children under 18 years: 3
+Member of Relief Dept: Yes
+RD Cert. No. 68
+Occupation: Section Laborer
+Length of experience: 15 yrs Piece or time worker: Time
+Working days per week: 5
+Hours per day: 8
+Nature and extent of injury: Sprained left thigh and back strain
+Cause: Slipped and fell off icy steps on B & O tool house at Uleo, W. Va.
+If accident due to defect describe fully: 
+... [truncated for length]
+
+SUMMARY:
+The document is a Report of Personal Injury for a Baltimore and Ohio Railroad Company employee named Jno. Jones, who suffered a sprained thigh and back strain after slipping on icy steps at Uleo, W. Va. The report details the incident, cause, actions to prevent future accidents, and follow-up medical care. Witnesses and recommendations are included. The form was submitted and filled by the section foreman.
+
+
+======================================================================
+DOCUMENT 18 of 25: RDApp-222427Lowther018.jpg.json
+======================================================================
+
+OCR TEXT:
+THE BALTIMORE AND OHIO RAILROAD COMPANY
+RELIEF DEPARTMENT—RELIEF DEPARTMENT
+To: Mr. W. J. Hoke
+E. H. Foreman
+Place: Parkersburg
+Date: April 4, 1942
+In reference to: Ira E. Lowther
+Occupation: Fireknocker
+Employed by: you
+Form 5 No.: 61656
+R. F. Form 196
+PLEASE FURNISH INFORMATION OR COMPLY WITH REQUEST CHECKED (✓)
+Dr. Ninal, Medical Examiner
+2. He is unable to work. Send Form 5.
+3. He is reported injured on. Send Form 790.
+4. Has he resumed work? Advise or send Form 7.
+5. Advise first day made by him after 
+6. Form 5 reports "sickness". He claims injury on duty. Send Form 790 or advise.
+7. Form 5 reports him disabled. Claims he notified you to report him on relief. Advise.
+8. Does not live at Advise correct address.
+10. Return Check No. sent you.
+11. Send him to my office to correct application. Have him bring this letter with him. If out of service, advise.
+12. Have him furnish affidavit as to date of birth, which does not agree with that given in previous application, or have him cal
+... [truncated for length]
+
+SUMMARY:
+The document is a communication form from the Baltimore and Ohio Railroad Company's Relief Department, dated April 4, 1942, requesting information or actions regarding an employee, Ira E. Lowther, who is referenced for being unable to work, possibly injured, or otherwise needing action on his relief status. The medical examiner and various actions/forms are mentioned for follow-up, reporting, or clarification.
+
+
+======================================================================
+DOCUMENT 19 of 25: RDApp-222427Lowther019.jpg.json
+======================================================================
+
+OCR TEXT:
+5m. 3-17-37. 22x34-32s R. F. Form 196-A.
+THE BALTIMORE AND OHIO RAILROAD COMPANY
+RELIEF DEPARTMENT—RELIEF FEATURE
+To . . W. J. Hohr ------------------------------------ In reference to ---------------------------------
+B. H. Foreman ------------------------------------------------------------------------
+-------------------------------------------------------------
+Place. Parkersburg. Date. April 4th, 1942. 193- Form 5 No. 61936. Dated ------------------- 193- 
+ Iva E. Lougther Occupation. Firelatcher
+Employed by. you. Examined --------------------------------------------------
+PLEASE FURNISH INFORMATION OR COMPLY WITH REQUEST CHECKED (✓).
+1
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+Relative to No. 24 Dr. Vinal. Medical Examiner.
+
+
+SUMMARY:
+This document is a form from the Baltimore and Ohio Railroad Company's Relief Department, dated April 4, 1942, and concerns an employee named Iva E. Lougther, who is a firelatcher. The form is directed to W. J. Hohr and B. H. Foreman in Parkersburg and requests information or compliance with a checked request. The form includes reference numbers and was signed by Medical Examiner Dr. Vinal.
+
+
+======================================================================
+DOCUMENT 20 of 25: RDApp-222427Lowther020.jpg.json
+======================================================================
+
+OCR TEXT:
+No. 222427
+50,000-8-15-1902. R. D. Form 1
+Balto. & Ohio R. R. Co.
+RELIEF DEPARTMENT.
+Application for Full Membership in the Relief Feature.
+CARD.
+DO NOT FILL UP THESE BLANKS.
+Name I. E. Lowther
+Department MP
+Division CR MORS
+
+SUMMARY:
+This document is an application card for full membership in the Relief Feature of the Baltimore & Ohio Railroad Company Relief Department. It is issued to I. E. Lowther, contains a department and division assignment, and includes a unique document number. The card is a standardized bureaucratic form dating from around 1902 and is marked by a cancellation stamp.
+
+
+======================================================================
+DOCUMENT 21 of 25: RDApp-222427Lowther021.jpg.json
+======================================================================
+
+OCR TEXT:
+Baltimore and Ohio Railroad Co. RELIEF DEPARTMENT. APPLICATION FOR FULL MEMBERSHIP IN THE RELIEF FEATURE. To the Superintendent of the Relief Department: I, Ira E. Lowther, of Parkersburg, in the County of Wood and State of West Virginia, desiring to be employed in the service of the Baltimore and Ohio Railroad Company, as Madonna Shops Laborer, in the Ohio River Department, Ohio River Division, do hereby, as one of the conditions of such employment, apply for membership in the Relief Feature, and consent and agree to be bound by all the Regulations of the Relief Department now in force, and by any other Regulations of said Department hereafter adopted, applicable to the Relief Feature; for which Regulations now in force reference is hereby had to any copy of the last edition of the book of Regulations of said Department issued by the Superintendent. I ALSO AGREE that the said Company, by its proper agents and in the manner provided in said Regulations, shall apply monthly, in advance,
+... [truncated for length]
+
+SUMMARY:
+This document is an application for full membership in the Baltimore and Ohio Railroad Company's Relief Department, completed by Ira E. Lowther of Parkersburg, West Virginia, in August 1903. The applicant agrees to the terms and regulations of the department, including monthly wage deductions for membership, benefit arrangements for a designated beneficiary, and various legal and contractual obligations concerning employment, benefits, and waiver of claims against the company. The form also includes attestations regarding the applicant's age and health.
+
+
+======================================================================
+DOCUMENT 22 of 25: RDApp-222427Lowther022.jpg.json
+======================================================================
+
+OCR TEXT:
+Questions to be Asked the Applicant by the Medical Examiner.
+
+1—Were you ever before employed by either the Baltimore & Ohio, Pitts. & Western, Pitts. Junct., or Clev. Term’l & Valley R. R. Co’s.; if so, by what Co., how employed, and in what Department and Division? _____
+2—Have you ever been rejected for life insurance by any life insurance company or beneficial association? If so, why, when and where? Yes. No. _____
+3—Have you now any infirmity or weakness, tending to impair your health, or do you know any reason why you should not be accepted? Yes. No. _____
+4—Have you been vaccinated? Yes. No. 5—Date of birth June 16 - 1882
+6—Were you ever married? Yes. No. 7—Give names and ages of children by present or previous marriage separately. If any of them are married, give their present names: ___________
+8—Father alive, aged 41 5/12. Father died, aged _____ of ________. 9—Mother alive aged 32 of _____ of _______.
+10—Of brothers and sisters—how many? Original number 3. Number dead 0. Age
+... [truncated for length]
+
+SUMMARY:
+This document is a medical examination form used for evaluating candidates for employment, likely on the railroad, in the early 20th century. The form collects personal information, family medical history, previous employment, and a thorough health assessment conducted by a medical examiner. It includes a physical evaluation (vital statistics, chest and abdominal measurements, overall health), as well as observations about any deformities, family health history, and color vision. The form concludes with a certification by the examiner, attesting to the candidate's health and suitability for employment. This specific document includes handwritten data confirming the candidate's date of birth, physical measurements, parental ages, and examiner's signature.
+
+
+======================================================================
+DOCUMENT 23 of 25: RDApp-222427Lowther023.jpg.json
+======================================================================
+
+OCR TEXT:
+222427
+DATE OF EXAMINATION 12/14 1938
+NAME Lawther Wra Ed.
+Occupation Hostler
+Division Wabash
+Date of Birth 2/16/88
+Acuteness of Vision
+Without Glasses:
+Right Eye 10/20
+Left Eye 8/30
+Both Eyes
+Near Vision Both Eyes 50 D
+Field of Vision Good Defective
+Wears Glasses? No Yes
+With Glasses:
+Right Eye
+Left Eye
+Both Eyes
+Both Eyes D
+Skeln Name Given
+Green Green
+Rose Pink
+Red Red
+1-3-5-7-9-11-13-15-17-19-41-43-45-47-49-51-53-55-57-59-61-63-65-67-69-97-99
+21-23-25-27-71-73-79-81-83-85-87-89-91
+29-31-33-35-75-77-93-95
+No.Shown Name Given Numbers Selected Flag Shown Name and Use Numbers Selected
+Hearing Good Defective
+Condition of Vision F18
+Signature: W.A. Gensley
+Medical Examiner.
+
+SUMMARY:
+This is a medical examination form from 1938 for an individual named Lawther Wra Ed., who worked as a hostler in the Wabash division. The form records information about his vision (both with and without glasses), field of vision, near vision, and hearing conditions. Color vision test results and examiner's signature are included.
+
+
+======================================================================
+DOCUMENT 24 of 25: RDApp-222427Lowther024.jpg.json
+======================================================================
+
+OCR TEXT:
+DATE OF BIRTH 09/17/18 CERT. No. 772427 NAME Ira Edwin Lowther
+Date of Application Feb. 5/34 
+Old Plan NDR1, NDR2, NDR3, NDR4 
+New Plans TM Cost, Dept, Division, Original, Occupation (Stoker), Changed, Position, Details (Relief), Termination, Cause, Date, Reference R
+CONTRIBUTIONS PAID
+NOTES: Yr: 1934, 1935, 1936, 1937, 1938, 1939, 1940, 1941, 1942, 1943, 1944
+Mo. JAN: 1.55, 1.45, .90, .90, .90, .90, .90, .90, .90, .90, .90
+FEB: 1.50, .40, .90, .90, .90, .90, .90, .90, .90, .90, .90
+MAR: 1.05, .40, .90, .90, .90, .90, .90, .90, .90, .90, .90
+APR: 1.45, .40, .85, 1.00, .90, .90, .90, .90, .90, .90, .90
+MAY: .95, .90, .90, .90, .90, .90, .90, .90, .90, .90, .90
+JUNE-DEC: values continue similar pattern for each month up to December
+CONTRIBUTION REFUSED (section empty)
+Furloughed, Suspended, Leave of Absence: many entries with initials, dates, and references
+S.H. & C. 3/10/44 R.F. Form 20.
+
+
+SUMMARY:
+This document is an employment and contribution record for Ira Edwin Lowther, including date of birth, certification number, occupation, employment divisions, and detailed monthly contributions from 1934-1944. The records track payroll contributions made by month and year, any employment changes, as well as notes on periods of furlough, leave, or absence, with multiple references for official actions.
+
+
+======================================================================
+DOCUMENT 25 of 25: RDApp-222427Lowther025.jpg.json
+======================================================================
+
+OCR TEXT:
+10M 11-27-43 DCR FORM R.F.8 THE BALTIMORE & OHIO R.R.CO.–RELIEF DEPARTMENT FORM R.F.8 DATE OF BIRTH 6-15-85 DISTRICT 10 Nimal CERTIFICATE No. 222427 NAME Ira E. Lowther PLACE R #6, Mineral Wells, W. Va. OCCUPN. Turntable opr. DEPT. MP DIVISION Mong CLASS B $1.90 A.N.D.B. $ A.D.B.S.F. $ SEPT. AUG. $1.00 DISABILITY BEGAN 8-25-48 DISABILITY RATE FORM U NO. 158582 FIRST 52 WEEKS $1.00 PERMANENT $ CASE CLOSED NOV. 5, 1948 DIED DEATH RECORD TOTAL DEATH BENEFITS PAYABLE $ B. F. L. NATURE OF DISABILITY Left herniorrhaphy op. From To Days Dues Amount Check No. Date 9 21 10 28 48 20 30 874627 OCT 6 '48 10 11 10 29 48 29 1.90 27.60 910662 NOV 6 '48 Termination 10 29 48.19 Ret'd to Duty 11 30 48.19
+
+SUMMARY:
+This document is a relief department claim record from the Baltimore & Ohio Railroad Company for Ira E. Lowther. It includes details about his employment, disability due to a left herniorrhaphy operation, periods and amounts of disability payments, and administrative notes. His disability began on August 25, 1948. Payment periods and check details are included, along with notes on termination and return to duty dates.
+
+
+{'='*70}
+YOUR TASK: GENERATE COMPREHENSIVE BIOGRAPHICAL SYNTHESIS
+{'='*70}
+
+Create a structured JSON synthesis with the following schema. Be thorough and evidence-based.
+
+{
+  "person_identity": {
+    "canonical_name": "Full official name based on most common/official usage",
+    "name_variations": [
+      {
+        "name": "Variation as it appears",
+        "confidence": "high/medium/low",
+        "sources": ["list document filenames where this variation appears"]
+      }
+    ],
+    "employee_id": "Employee ID number",
+    "birth_year": 1895,
+    "confidence_notes": "Brief assessment of identity certainty"
+  },
+  
+  "biographical_narrative": "Write 2-4 paragraphs summarizing this person's railroad career. Include: when they started, positions held, major events (injuries, promotions, disputes), family situation, and any notable circumstances. Write in past tense as a professional historian would. Make it readable and informative.",
+  
+  "family": {
+    "spouse": {
+      "name": "Spouse name or null",
+      "evidence": "How we know this",
+      "sources": ["document filenames"]
+    },
+    "parents": [
+      {
+        "name": "Parent name",
+        "relationship": "father/mother",
+        "evidence": "How mentioned",
+        "sources": ["document filenames"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Full address as stated",
+      "date_range": "When associated with this address or 'unknown'",
+      "context": "Why this address appears (residence, beneficiary address, etc.)",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Job title",
+      "department": "Department name or null",
+      "division": "Division name or null",
+      "details": "Brief description of what happened",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "YYYY-MM-DD or best available",
+      "injury_type": "Description of injury",
+      "body_part": "Affected body part(s)",
+      "narrative": "2-3 sentence description of injury, treatment, and outcome",
+      "medical_examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "examiner": "Dr. Name",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Key details from examination",
+          "sources": ["document filenames"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"},
+          "days": 10,
+          "amount": 50.00,
+          "check_number": "Check number if available",
+          "sources": ["document filenames"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true or false,
+        "narrative": "If disputed, explain the conflict between doctors or administrators",
+        "resolution": "How was it resolved or 'unclear'"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Name",
+      "district": "District number if available",
+      "examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "finding": "Brief finding"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event": "What happened",
+      "significance": "Why this matters",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "YYYY-MM-DD or best guess",
+      "latest": "YYYY-MM-DD or best guess"
+    },
+    "completeness_assessment": "1-2 sentences: How complete is this record? What's well-documented? What's missing?",
+    "data_quality_notes": [
+      "List observations about OCR quality, contradictions, clarity, etc."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "What does this case reveal about railroad labor, medical practices, administration, etc.?"
+    ],
+    "comparative_questions": [
+      "What questions could be explored by comparing this case to others?"
+    ],
+    "research_value": "High/Medium/Low"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON - no preamble, no markdown fences, no explanation
+2. Use exact schema above - include all fields even if some are empty/null
+3. Always include "sources" arrays with actual document filenames for evidence
+4. Be thorough but concise
+5. Note contradictions or uncertainties explicitly
+6. Assign realistic confidence scores (0.0-1.0) based on evidence quality
+7. Write biographical_narrative in clear, professional prose
+8. If information is missing, use null or empty arrays - don't invent data
+9. For dates, use best available format (prefer YYYY-MM-DD, but accept what documents provide)
+10. Document filenames should match the filename shown in DOCUMENT headers above
+
+Begin your response with { and end with }. Return ONLY the JSON object.

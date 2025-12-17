@@ -1,0 +1,189 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "W. Schumacher",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker101.jpg.json"
+        ]
+      },
+      {
+        "name": "Williams Stenicker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker107.jpg.json"
+        ]
+      },
+      {
+        "name": "J. Steinesheiner",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker109.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is primarily based on the name 'William Steinecker' in document RDApp-204722Steinecker106.jpg.json. Other names are likely variations or errors."
+  },
+  "biographical_narrative": "William Steinecker was an employee of the Baltimore & Ohio Railroad Company, with his career spanning at least from the late 1910s to early 1930s. He experienced periods of disability and returned to duty multiple times during this period. In March 1918, he reported sick but resumed work shortly after without filing a claim for benefits. Steinecker's records indicate that he worked in various capacities within the railroad system, though specific job titles are not clearly documented. His career was marked by periods of illness and recovery, with no significant disputes or major administrative issues noted.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "101 21st and Valley W.V.",
+      "date_range": "unknown",
+      "context": "Address of Mr. Schumacher, possibly a relative or another individual with the same employee ID.",
+      "sources": [
+        "RDApp-204722Steinecker101.jpg.json"
+      ]
+    },
+    {
+      "address": "91 Maryland Ave., Washington",
+      "date_range": "unknown",
+      "context": "Residence of W. S. Tennant, another individual possibly related to the file.",
+      "sources": [
+        "RDApp-204722Steinecker104.jpg.json"
+      ]
+    },
+    {
+      "address": "919 Maryland Ave",
+      "date_range": "unknown",
+      "context": "Residence of J. Steinesheiner, another individual possibly related to the file.",
+      "sources": [
+        "RDApp-204722Steinecker109.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1918-03-11",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported sick, resumed work shortly after.",
+      "sources": [
+        "RDApp-204722Steinecker106.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-09-19",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed duty after a period of disability.",
+      "sources": [
+        "RDApp-204722Steinecker101.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1918-03-11",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Steinecker reported sick on March 11, 1918. He resumed work shortly after without filing a claim for benefits.",
+      "medical_examinations": [
+        {
+          "date": "1918-03-11",
+          "examiner": "E. H. Mathers",
+          "finding": "Resumed duty",
+          "notes": null,
+          "sources": [
+            "RDApp-204722Steinecker106.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1931-09-18",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "W. Schumacher reported sick on September 18, 1931 and resumed work the following day at 11 PM.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "E. H. Mathers",
+      "district": "26",
+      "examinations": [
+        {
+          "date": "1918-03-11",
+          "finding": "Resumed duty"
+        }
+      ]
+    },
+    {
+      "name": "Mathers",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1918-03-11",
+      "event": "Medical Examiner's Report of Disablement",
+      "significance": "Indicates Steinecker's temporary disability and return to work.",
+      "sources": [
+        "RDApp-204722Steinecker106.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-09-19",
+      "event": "Return to Duty Notice",
+      "significance": "Indicates Schumacher's return after a period of disability.",
+      "sources": [
+        "RDApp-204722Steinecker101.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1918-03-11",
+      "latest": "1931-09-19"
+    },
+    "completeness_assessment": "The record is relatively complete for the period between March 1918 and September 1931, with multiple documents detailing periods of disability and return to work. However, there are inconsistencies in names and addresses which complicate a clear narrative.",
+    "data_quality_notes": [
+      "Some documents contain partially legible handwritten entries.",
+      "There is inconsistency between the name 'William Steinecker' and other variations such as 'W. Schumacher', 'Williams Stenicker', and 'J. Steinesheiner'."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of William Steinecker highlights the importance of medical examinations in determining an employee's ability to return to work, as well as the bureaucratic processes involved.",
+      "It also demonstrates the role of the Relief Department in managing disability claims and ensuring employees resume their duties."
+    ],
+    "comparative_questions": [
+      "How did the policies and procedures for handling disabilities vary between different railroad companies?",
+      "What was the typical duration of disability leave compared to other industries?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

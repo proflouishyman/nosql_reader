@@ -1,0 +1,199 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "A Mancuso",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco052.jpg.json"]
+      },
+      {
+        "name": "David Mancuso",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco053.jpg.json"]
+      },
+      {
+        "name": "Luigi Mannino",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco054.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1887,
+    "confidence_notes": "Identity is primarily based on the payroll certification form, but there are variations in names and potential confusion with another individual named Luigi Mannino."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso was a car repairman employed by the Baltimore & Ohio Railroad Company. His career spanned several decades, during which he faced multiple health challenges that affected his employment status. In April 1914, Mancuso experienced a furuncle on his neck but recovered quickly enough to return to work shortly thereafter. However, in February 1936, he suffered an injury at Glenwood, Pennsylvania, when he caught his thumb in the truck of a car while replacing a wheel. This incident led to extended medical treatment and several bills from Mercy Hospital in Pittsburgh. Mancuso was furloughed for some time but eventually returned to work. His case highlights the challenges faced by railroad workers during this period, including injuries, medical treatments, and the administrative processes involved with worker's compensation.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "118 East Fayette St",
+      "date_range": "April 1916",
+      "context": "Residence when returning to duty after a period of disability.",
+      "sources": ["RDApp-204897Manusco052.jpg.json"]
+    },
+    {
+      "address": "111 Pulaski St., Connellsville, Pa.",
+      "date_range": "December 1936",
+      "context": "Residence when inquiring about death benefit payments.",
+      "sources": ["RDApp-204897Manusco053.jpg.json", "RDApp-204897Manusco055.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1914",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Had a furuncle on the right side of his neck.",
+      "sources": ["RDApp-204897Manusco051.jpg.json"]
+    },
+    {
+      "date": "April 8, 1916",
+      "event_type": "disabled",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported as disabled.",
+      "sources": ["RDApp-204897Manusco052.jpg.json"]
+    },
+    {
+      "date": "April 10, 1916",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work after a period of disability.",
+      "sources": ["RDApp-204897Manusco052.jpg.json"]
+    },
+    {
+      "date": "February 8, 1936",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": "Pittsburgh Division",
+      "details": "Injured on duty at Glenwood, Pennsylvania.",
+      "sources": ["RDApp-204897Manusco056.jpg.json"]
+    },
+    {
+      "date": "November 28, 1936",
+      "event_type": "furloughed",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed and inquiring about death benefit payments.",
+      "sources": ["RDApp-204897Manusco055.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "April 8, 1914",
+      "injury_type": "Furuncle",
+      "body_part": "Right side of neck",
+      "narrative": "Luigi Mancuso had a furuncle on the right side of his neck but was able to return to work shortly after.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "February 8, 1936",
+      "injury_type": "Caught thumb in truck of a car while replacing a wheel",
+      "body_part": "Thumb",
+      "narrative": "Mancuso was injured on duty at Glenwood, Pennsylvania. He received medical treatment and the bills were settled by the company.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "February 5, 1936", "end": "April 23, 1936"},
+          "days": null,
+          "amount": 76.50 + 61.00 + 11.25,
+          "check_number": null,
+          "sources": ["RDApp-204897Manusco057.jpg.json", "RDApp-204897Manusco058.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "E. V. Milholland",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "M. N. Koehler",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "April 28, 1914",
+      "event": "Medical note recorded for furuncle recovery.",
+      "significance": "Indicates the company's attention to employee health and return-to-work protocols.",
+      "sources": ["RDApp-204897Manusco051.jpg.json"]
+    },
+    {
+      "date": "October 7, 1936",
+      "event": "Settlement made for injury on duty at Glenwood.",
+      "significance": "Reflects the company's process in handling worker's compensation claims.",
+      "sources": ["RDApp-204897Manusco056.jpg.json"]
+    },
+    {
+      "date": "December 10, 1936",
+      "event": "Inquiry about death benefit payments.",
+      "significance": "Indicates the employee's concern over insurance benefits and administrative processes.",
+      "sources": ["RDApp-204897Manusco055.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "April 8, 1914",
+      "latest": "December 13, 1936"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from 1914 to 1936. However, there are some inconsistencies in names and limited information on family or personal life.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have unclear text.",
+      "There is a potential confusion between Luigi Mancuso and Luigi Mannino."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Luigi Mancuso illustrates the challenges faced by railroad workers in terms of health, injury management, and worker's compensation.",
+      "It also highlights the administrative processes involved with handling employee injuries and medical treatments."
+    ],
+    "comparative_questions": [
+      "How did other railroad companies handle similar cases during this period?",
+      "What were the typical durations of disability and recovery times for workers in this industry?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

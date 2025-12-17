@@ -1,0 +1,240 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "A. Mason",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco176.jpg.json"]
+      },
+      {
+        "name": "Antonio Mamino",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco180.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1887,
+    "confidence_notes": "The birth year is derived from the accident relief payment record. Variations in name suggest possible confusion with other individuals."
+  },
+  
+  "biographical_narrative": "Antonio Mancuso, born in 1887, was a car repairman for the Baltimore & Ohio Railroad Company during the early 20th century. He worked primarily out of Connellsville and Culleo, Pennsylvania, where he faced several injuries on the job. His career with the railroad included multiple instances of injury that required medical attention and compensation from the company's relief department. Despite these setbacks, Mancuso continued to work as a car repairman until his last documented injury in 1924.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Coville",
+      "date_range": "unknown",
+      "context": "Residence as stated in accident relief payment record.",
+      "sources": ["RDApp-204897Manusco172.jpg.json"]
+    },
+    {
+      "address": "111 Pulaski St. Oakville, PA",
+      "date_range": "unknown",
+      "context": "Residence as stated in medical examiner's report.",
+      "sources": ["RDApp-204897Manusco178.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Car Repairman",
+      "department": "M.P.",
+      "division": "Cville Div'n",
+      "details": "Began employment as a car repairman in the M.P. Department, Cville Division.",
+      "sources": ["RDApp-204897Manusco173.jpg.json", "RDApp-204897Manusco175.jpg.json"]
+    },
+    {
+      "date": "1/16/1924",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Sustained a contusion to the left thumb, resulting in disability.",
+      "sources": ["RDApp-204897Manusco177.jpg.json"]
+    },
+    {
+      "date": "1/17/1924",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Began disability period due to an accident or sickness.",
+      "sources": ["RDApp-204897Manusco175.jpg.json", "RDApp-204897Manusco174.jpg.json"]
+    },
+    {
+      "date": "1/29",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after a contusion injury.",
+      "sources": ["RDApp-204897Manusco177.jpg.json"]
+    },
+    {
+      "date": "11/6/1924",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a contusion to the left knee while repairing brake on car.",
+      "sources": ["RDApp-204897Manusco178.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1/16/1924",
+      "injury_type": "Contusion",
+      "body_part": "Left thumb",
+      "narrative": "Antonio Mancuso sustained a contusion to his left thumb while working as a car repairman. He was able to resume duty on 3/3/1924.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "H.N. McIntire",
+          "finding": "Able to return to duty",
+          "notes": "Medical examination confirmed contusion of the left thumb.",
+          "sources": ["RDApp-204897Manusco177.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 39,
+          "amount": 58.50,
+          "check_number": ["76779", "77982"],
+          "sources": ["RDApp-204897Manusco172.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1/17/1924",
+      "injury_type": "Contusion",
+      "body_part": "Leg",
+      "narrative": "Mancuso was injured in an accident or due to sickness, leading to a disability period from 1/17/1924 to 3/3/1924.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "B. Youngblood",
+          "finding": "Totally disabled by accident or sickness",
+          "notes": "Medical examiner reported disability from January 17, 1924 to February 19, 1924.",
+          "sources": ["RDApp-204897Manusco174.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 39,
+          "amount": 58.50,
+          "check_number": ["76779", "77982"],
+          "sources": ["RDApp-204897Manusco172.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "11/6/1924",
+      "injury_type": "Contusion",
+      "body_part": "Left knee",
+      "narrative": "While repairing a brake on a car, Mancuso slipped and fell, resulting in a contusion to his left knee. The injury was expected to last three weeks.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "N.A. McInturke",
+          "finding": "Totally disabled by accident or sickness",
+          "notes": "Medical examiner reported disability from November 6, 1924 due to a contusion of the left knee.",
+          "sources": ["RDApp-204897Manusco178.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "H.N. McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "B. Youngblood",
+      "district": "15",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Totally disabled by accident or sickness"
+        }
+      ]
+    },
+    {
+      "name": "N.A. McInturke",
+      "district": "5",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Contusion of left knee, expected to last three weeks."
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "7-21-19",
+      "latest": "11/6/1924"
+    },
+    "completeness_assessment": "The record is relatively complete for injury and disability documentation, but lacks detailed employment history or family information.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors that affect readability and accuracy.",
+      "Name variations suggest possible confusion with other individuals."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the hazardous nature of railroad work in the early 20th century, as well as the company's response to employee injuries through its relief department.",
+      "These documents also highlight the medical practices and administrative procedures used by railroads for handling workplace accidents."
+    ],
+    "comparative_questions": [
+      "How did injury rates and compensation vary across different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability periods, and how did these compare to other railroad companies?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

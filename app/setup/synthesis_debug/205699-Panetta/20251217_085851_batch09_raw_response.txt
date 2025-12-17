@@ -1,0 +1,129 @@
+{
+  "person_identity": {
+    "canonical_name": "Harris Panetta",
+    "name_variations": [
+      {"name": "Mark Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta084.jpg.json"]},
+      {"name": "Ilario Panetta", "confidence": "high", "sources": ["RDApp-205699Panetta086.jpg.json"]},
+      {"name": "Larry Pannett", "confidence": "medium", "sources": ["RDApp-205699Panetta087.jpg.json"]},
+      {"name": "Harry Panetta", "confidence": "high", "sources": ["RDApp-205699Panetta089.jpg.json"]},
+      {"name": "Claris Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta090.jpg.json"]}
+    ],
+    "employee_id": "205699",
+    "birth_year": null,
+    "confidence_notes": "The identity is somewhat uncertain due to multiple name variations, but 'Harris Panetta' appears most frequently and in the context of a brakeman."
+  },
+  
+  "biographical_narrative": "Harris Panetta was employed as a brakeman by the Baltimore & Ohio Railroad Company during the early 20th century. His career was marked by several incidents involving injuries, including an accident where he sustained a contused left leg after heavy timber fell off his shoulder while on duty at Koppers in Pittsburgh (September 1914). He also suffered from bronchitis that led to disability and subsequent sick leave payments (December 30, 1915 - March 24, 1916). Panetta's employment records indicate he was a laborer on the Cumberland Division at times, suggesting he had multiple roles within the company. His career with B&O Railroad included periods of disability and recovery, reflecting the risks associated with railroad work during this era.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No explicit mention", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "Vernon St.", "date_range": "unknown", "context": "Residence of Larry Pannett in Keyser, WVa.", "sources": ["RDApp-205699Panetta087.jpg.json"]},
+    {"address": null, "date_range": "unknown", "context": "No other addresses provided in documents", "sources": []}
+  ],
+  
+  "employment_timeline": [
+    {"date": "1914-09-08", "event_type": "return_to_duty", "position": "Brakeman", "department": null, "division": null, "details": "Certified able to return to duty after a previous injury.", "sources": ["RDApp-205699Panetta083.jpg.json"]},
+    {"date": "1914-09-11", "event_type": "resume_work", "position": "Laborer", "department": null, "division": null, "details": "Mark Panetta resumed work after being certified able to return.", "sources": ["RDApp-205699Panetta084.jpg.json"]},
+    {"date": "1914-09-11", "event_type": "medical_examination", "position": null, "department": null, "division": null, "details": "Medical examination by Dr. Watson certifying Harris Panetta able to return to duty.", "sources": ["RDApp-205699Panetta083.jpg.json"]},
+    {"date": "1914-09-11", "event_type": "medical_examination", "position": null, "department": null, "division": null, "details": "Medical examination by Dr. Hoffman certifying Ilario Panetta's contused left leg.", "sources": ["RDApp-205699Panetta086.jpg.json"]},
+    {"date": "1914-08-25", "event_type": "injury_reported", "position": "Laborer", "department": null, "division": null, "details": "Larry Pannett reported an inflamed and swollen injury to the posterior part of his left leg.", "sources": ["RDApp-205699Panetta087.jpg.json"]},
+    {"date": "1915-12-30", "event_type": "disability_begin", "position": "Laborer", "department": null, "division": null, "details": "Harry Panetta reported disability due to bronchitis.", "sources": ["RDApp-205699Panetta089.jpg.json"]},
+    {"date": "1916-03-01", "event_type": "certificate_of_disablement", "position": "Laborer", "department": null, "division": null, "details": "Claris Panetta certified totally disabled by accident from February 11 to February 29, 1916.", "sources": ["RDApp-205699Panetta090.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1914-08-25",
+      "injury_type": "Inflamed and swollen condition of posterior part of left leg between calf of leg and ankle.",
+      "body_part": "Left leg",
+      "narrative": "Larry Pannett sustained an inflamed and swollen injury to the posterior part of his left leg while carrying heavy timber. The prognosis was good, but he did not report until his leg became too sore to continue working.",
+      "medical_examinations": [
+        {"date": "1914-08-25", "examiner": "O. Hoffman, M.D.", "finding": "Inflamed and swollen condition of posterior part of left leg between calf of leg and ankle with a good prognosis.", "notes": null, "sources": ["RDApp-205699Panetta087.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1914-09-08",
+      "injury_type": "Contused left leg.",
+      "body_part": "Left leg",
+      "narrative": "Ilario Panetta suffered a contused left leg after heavy timber fell off his shoulder while on duty at Koppers in Pittsburgh. He was certified able to return to work by Dr. Watson and Medical Examiner L.D. Norris.",
+      "medical_examinations": [
+        {"date": "1914-09-11", "examiner": "L. D. Morris, M.D.", "finding": "Certified able to return to duty on September 8, 1914.", "notes": null, "sources": ["RDApp-205699Panetta083.jpg.json"]},
+        {"date": "1914-09-11", "examiner": "D.H. Morrin, M.D.", "finding": "Certified able to return to duty on September 6, 1914.", "notes": null, "sources": ["RDApp-205699Panetta084.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1915-12-30",
+      "injury_type": "Bronchitis.",
+      "body_part": null,
+      "narrative": "Harry Panetta reported disability due to bronchitis and was paid sick leave benefits from January 4, 1916, to February 24, 1916. He returned to duty on February 25, 1916.",
+      "medical_examinations": [
+        {"date": "1915-12-30", "examiner": null, "finding": "Disabled due to bronchitis.", "notes": null, "sources": ["RDApp-205699Panetta089.jpg.json"]}
+      ],
+      "payments": [
+        {"period": {"start": "1916-01-04", "end": "1916-01-14"}, "days": 10, "amount": 10.00, "check_number": "69000", "sources": ["RDApp-205699Panetta089.jpg.json"]},
+        {"period": {"start": "1916-01-15", "end": "1916-02-14"}, "days": 26, "amount": 26.00, "check_number": "72550", "sources": ["RDApp-205699Panetta089.jpg.json"]},
+        {"period": {"start": "1916-02-15", "end": "1916-02-24"}, "days": 9, "amount": 9.00, "check_number": "76330", "sources": ["RDApp-205699Panetta089.jpg.json"]}
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "L. D. Morris",
+      "district": "58",
+      "examinations": [{"date": "1914-09-11", "finding": "Certified able to return to duty on September 8, 1914."}]
+    },
+    {
+      "name": "L. D. Norris",
+      "district": "21",
+      "examinations": [{"date": "1916-03-01", "finding": "Certified totally disabled by accident from February 11 to February 29, 1916."}]
+    },
+    {
+      "name": "O. Hoffman, M.D.",
+      "district": null,
+      "examinations": [{"date": "1914-08-25", "finding": "Inflamed and swollen condition of posterior part of left leg between calf of leg and ankle with a good prognosis."}]
+    },
+    {
+      "name": "D.H. Morrin, M.D.",
+      "district": null,
+      "examinations": [{"date": "1914-09-11", "finding": "Certified able to return to duty on September 6, 1914."}]
+    }
+  ],
+  
+  "administrative_events": [
+    {"date": "1914-08-25", "event": "First report of injury by O. Hoffman, M.D.", "significance": "Initial documentation of injury.", "sources": ["RDApp-205699Panetta087.jpg.json"]},
+    {"date": "1914-09-11", "event": "Certification of ability to return to duty by L. D. Morris, M.D.", "significance": "Employee cleared for work after injury.", "sources": ["RDApp-205699Panetta083.jpg.json"]},
+    {"date": "1914-09-11", "event": "Certification of ability to return to duty by D.H. Morrin, M.D.", "significance": "Employee cleared for work after injury.", "sources": ["RDApp-205699Panetta084.jpg.json"]},
+    {"date": "1916-03-01", "event": "Certificate of disablement by L. D. Norris, M.D.", "significance": "Employee certified totally disabled for a period due to an accident.", "sources": ["RDApp-205699Panetta090.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1914-08-25", "latest": "1931"},
+    "completeness_assessment": "The record is relatively complete for injury and medical documentation but lacks details on the employee's full career timeline.",
+    "data_quality_notes": ["Multiple name variations exist, complicating identity resolution.", "Some documents are truncated or contain incomplete information."]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The records highlight the risks of railroad work and the company’s response to employee injuries through medical examinations and sick leave benefits.", "Panetta's case illustrates the process for reporting, treating, and compensating injured workers in early 20th-century American railroads."],
+    "comparative_questions": ["How did injury compensation practices vary across different railroad companies during this period?", "What were the typical durations of disability and recovery periods for common injuries among railroad employees?"],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

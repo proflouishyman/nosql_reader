@@ -1,0 +1,387 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records from the early 20th century.
+
+EMPLOYEE FOLDER: 221988-Roenbaugh
+EMPLOYEE ID: 221988
+FOLDER NAME: Roenbaugh
+NUMBER OF DOCUMENTS: 10 - Batch 19/38
+
+Below are ALL documents from this employee's personnel file. Read carefully and generate a comprehensive biographical synthesis.
+
+
+======================================================================
+DOCUMENT 1 of 10: RDApp-221988Roenbaugh181.jpg.json
+======================================================================
+
+OCR TEXT:
+GERALD KRUPP, M. D. REGISTRY NO. 10047 2750 BROADWAY PHONE 5773 LORAIN, OHIO FOR 'Claud' Roenbaugh ADDRESS 331 W. 27 St. DATE 2/29/37 Diagnosis: Popliteal Cellulitis (left) Prognosis: Good, following rest and gradual use.
+
+SUMMARY:
+This document is a medical note from Dr. Gerald Krupp, M.D. dated February 29, 1937, concerning a patient named Claud Roenbaugh. The diagnosis is popliteal cellulitis on the left side. The prognosis is good, contingent upon rest and gradual use.
+
+
+======================================================================
+DOCUMENT 2 of 10: RDApp-221988Roenbaugh182.jpg.json
+======================================================================
+
+OCR TEXT:
+21988
+Mr. S. H. Jewett, Division Accountant, Marion, Ohio.
+Dear Sir:-
+In reply to your letter of April 14th, 1927 under file R-8c-Bl-F, please make no refund to Claude Koenbaugh, Brakeman, as he made application to this office to pay his full rate dues while serving as a committeeman.
+Very respectfully,
+Superintendent Relief Dept.
+Copy to:
+Mr. Claude Koenbaugh,
+If you do not resume duty before May 1st, this letter will be your authority to pay your full rate contributions if presented to the agent on or before May 1st.
+
+SUMMARY:
+The document is a correspondence from the Superintendent of the Relief Department responding to a previous inquiry by Mr. S. H. Jewett, Division Accountant. It directs that no refund is to be made to Claude Koenbaugh for union dues, as he has already arranged to pay the full dues while serving as a committeeman. The letter also grants Koenbaugh authority to pay full dues if he does not resume duty by May 1st.
+
+
+======================================================================
+DOCUMENT 3 of 10: RDApp-221988Roenbaugh183.jpg.json
+======================================================================
+
+OCR TEXT:
+K-28  Re' Relief Department Matters - Claude Roenbaugh -
+
+Akron, Ohio.  April 11th, 1927.
+
+Mr. W. J. Dudloy,
+Supt. Relief Dept.,
+Baltimore, Md.
+
+Replying to your letter of March 28th, file 221988.
+
+Our records indicate that Claude Roenbaugh, Engineer, performed his last day's service March 18th, however, as we received no information that this man was serving as a Committeeman the regular deduction of $4.00 was made on our payrolls for the second period of March covering his Relief for the month of April.
+
+Bl/F
+
+S. H. Jewett.
+
+SUMMARY:
+This letter, dated April 11, 1927, from S. H. Jewett in Akron, Ohio, is addressed to Mr. W. J. Dudloy of the Relief Department in Baltimore, Maryland. It responds to a previous letter regarding Claude Roenbaugh. The letter shares payroll information, noting that Roenbaugh's last service day was March 18 and that a $4 deduction was made for Relief for April, as there was no indication Roenbaugh served as a Committeeman.
+
+
+======================================================================
+DOCUMENT 4 of 10: RDApp-221988Roenbaugh184.jpg.json
+======================================================================
+
+OCR TEXT:
+Claude Roentnaugh
+AC&K - 221988
+Baltimore, Maryland,
+March 26th, 1927.
+
+Mr. S. H. Jewett,
+Division Accountant,
+Akron, Ohio.
+
+Dear Sir:-
+
+Claude Roentnaugh, Engineer, called at this office on March 23rd, advising that he had been serving as a Committeeman at a conference in Baltimore, in the interest of the Baltimore & Ohio Railroad, since March 21st.
+
+Please advise the last date, wages were earned and amount refunded.
+
+Very respectfully,
+Superintendent Relief Dept.
+
+AWAITING REPLY FILE
+
+SUMMARY:
+This document is an internal letter dated March 26, 1927, from the Relief Department Superintendent regarding Claude Roentnaugh, an engineer. The letter requests information from the Division Accountant about the last date of wages earned and any amount refunded to Roentnaugh, who served as a committeeman at a Baltimore & Ohio Railroad conference since March 21st.
+
+
+======================================================================
+DOCUMENT 5 of 10: RDApp-221988Roenbaugh185.jpg.json
+======================================================================
+
+OCR TEXT:
+Cert. 321988. Date last appl. 2/11/17 Name Claude Roenbaugh Payroll occupation Engr Dept. OT Div. Ave. Cl. 2D Rate 4 Payroll notation OT March / 17 Ref'd due time March Disabled Sept. 17/17 to 3/4/17 Registered S.M.P Date 3/24/17 Called an officer today & told her was a fireman com'n in conference Balt. from mech 3/17/17 KCB 30
+
+SUMMARY:
+The document appears to be a bureaucratic or employment form, likely from 1917, referencing an individual named Claude Roenbaugh. The form lists job-related details (e.g., payroll occupation 'Engr', department 'OT', division 'Ave'). It also documents related dates, payroll notations, and other comments, such as time off for disability and an officer being called regarding a fireman in a conference. Handwritten notes provide further context about workplace events.
+
+
+======================================================================
+DOCUMENT 6 of 10: RDApp-221988Roenbaugh186.jpg.json
+======================================================================
+
+OCR TEXT:
+Form 726 L-Spl. 10m 7-14-09    No. 21988         DATE OF EXAMINATION   APR 20 1911
+NAME Roenbaugh, Chas.             Occupation Engr.   Division Clem
+Acueness of Vision
+Without Glasses | Right Eye 20/20   | Both Eyes | From 6 to 18 inches | Field of Vision Good - Defective
+                 Left Eye  20/20   | Both Eyes | From 6 to 18 inches | Wears Glasses? No - Yes
+With Glasses    | Right Eye        | Both Eyes | From    to    inches
+                 Left Eye          | Both Eyes | From    to    inches
+Skein   Name Given
+Green   Green     1,3,5,7,9,11,13,15,17,19,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,87,99
+Rose    Pink      21,23,25,27,71,77,79,81,83,85,87,101
+Red     Red       29,31,33,35,75,77,93,95,73-89-91
+No. Shown   Name Given    Numbers Selected   Flag Shown    Name and Use   Numbers Selected
+             Apr 27
+Hearing Good - Defective
+Signature: _____________________________   Medical Examiner.
+
+
+SUMMARY:
+This document is a medical examination form dated April 20, 1911, for an individual named Chas. Roenbaugh, who worked as an engineer in the Clem division. The exam records vision acuity (20/20 in both eyes without glasses), field of vision, hearing status, and color perception using skeins of different colors. The individual does not wear glasses and had good hearing. The document was completed and signed by a medical examiner.
+
+
+======================================================================
+DOCUMENT 7 of 10: RDApp-221988Roenbaugh187.jpg.json
+======================================================================
+
+OCR TEXT:
+Claude Moonbaugh,
+532 W. 27th Street,
+Lorain, Ohio.
+
+KK: - 221988
+Baltimore, Md.
+June 13th, 1928.
+
+29th instant 2.00
+balance of May to part of July, 1928.
+On or before July 1st you should deposit ten cents to cover the balance of the month.
+
+W. J. Dudley,
+
+SUMMARY:
+This is a dated letter from Baltimore, Maryland, sent by W. J. Dudley to Claude Moonbaugh of Lorain, Ohio. The letter mentions an account balance of $2.00 for the period from May to part of July 1928, and instructs Claude Moonbaugh to deposit ten cents by July 1st to cover the balance for that month.
+
+
+======================================================================
+DOCUMENT 8 of 10: RDApp-221988Roenbaugh188.jpg.json
+======================================================================
+
+OCR TEXT:
+R. F. Form 216.
+THE BALTIMORE AND OHIO RAILROAD COMPANY
+RELIEF DEPARTMENT—RELIEF FEATURE
+Place Akron Ohio Date May 29th 1928
+Superintendent, Relief Department:
+I desire to retain my membership for natural death benefits in the Relief Feature of the Relief Department.
+I was employed as a Fireman (Occupation) in the Transportation Department, Akron Division, and left the service by Leave of Absence on May 28th 1928
+Please send papers to be executed and instructions concerning payment of monthly contributions to my home address at 351 W. 27th St., Lorain, Lorain, Ohio. (City) (County) (State)
+(Name) Claude Bouslaugh
+CERTIFICATE OF DIVISION ACCOUNTANT OR TIMEKEEPER.
+Place Akron O. Date May 29th
+Pay rolls and time records show that the above-named person was furloughed, granted leave of absence, suspended, dismissed, resigned from the service, effective May 28th 1928.
+Refund of $4.08 unearned contributions for the month of May 1928 was included in the pay draft or service voucher issued to 
+... [truncated for length]
+
+SUMMARY:
+This document is a Baltimore and Ohio Railroad Company Relief Department form for an employee, Claude Bouslaugh, who was employed as a fireman in the Transportation Department, Akron Division. He left service on May 28, 1928, due to a leave of absence. The form certifies his termination, the refund of $4.08 for unearned contributions, and includes instructions for retaining membership for natural death benefits and the proper routing of the form within the company.
+
+
+======================================================================
+DOCUMENT 9 of 10: RDApp-221988Roenbaugh189.jpg.json
+======================================================================
+
+OCR TEXT:
+277988  Date 1st appl. 7/11/17
+Name Claude Rosenbaugh
+Payroll occupation Engr
+Dept. OT  Div. all Cl. D Rate 4-
+Payroll notation May
+Pd. to com Ref’d due
+Disabled?
+4/13 1887 Registrar, Emil Gebhr
+Check for 2- credit 10 May
+1- June
+90 July
+10 July
+1- TA
+Dep
+
+SUMMARY:
+This document appears to be a bureaucratic payroll or employment record form. It lists personal information for an individual named Claude Rosenbaugh, including relevant dates, job title, department, and payroll notations for multiple months. It includes references to payments and credits, a registrar’s name, and potentially other administrative actions or notes regarding employment or payroll.
+
+
+======================================================================
+DOCUMENT 10 of 10: RDApp-221988Roenbaugh190.jpg.json
+======================================================================
+
+OCR TEXT:
+R-28/5-18 Re' Voucher for earnings due Claude Roenbaugh - Natural Death Benefits -
+
+Akron, Ohio.
+May 29th, 1928.
+
+Mr. W. J. Wisenbaugh,
+Asst. Road Foreman,
+Lorain, Ohio.
+
+With reference to your letter of May 28th regarding voucher covering earnings due Claude Roenbaugh for the second period of May.
+
+This to advise voucher has been forwarded to our Agent at Lorain today covering this man's earnings. I note, however, you have requested that we make a deduction from his wages to cover natural death benefits for the months of June and July.
+
+It is not possible for this office to make deductions from the wages of employes who are temporarily leaving the service as it is necessary for them to execute an Out of Service Application and for this reason I am attaching hereto Form 216 which is request to the Relief Department to retain natural death benefits.
+
+You will kindly get in touch with Mr. Roenbaugh and have him sign this Form, showing his home address as called for by the Form, and forwa
+... [truncated for length]
+
+SUMMARY:
+The document concerns a voucher for earnings due to Claude Roenbaugh and the handling of natural death benefits in the context of temporary leave from employment. The letter discusses processing of earnings, handling of benefit deductions, and administrative steps for out-of-service employees to retain life insurance benefits during a temporary absence. It requests completion of a form and provides information about Roenbaugh's temporary leave to attend a convention. The document is addressed chiefly to company officials and includes a home address for Roenbaugh.
+
+
+{'='*70}
+YOUR TASK: GENERATE COMPREHENSIVE BIOGRAPHICAL SYNTHESIS
+{'='*70}
+
+Create a structured JSON synthesis with the following schema. Be thorough and evidence-based.
+
+{
+  "person_identity": {
+    "canonical_name": "Full official name based on most common/official usage",
+    "name_variations": [
+      {
+        "name": "Variation as it appears",
+        "confidence": "high/medium/low",
+        "sources": ["list document filenames where this variation appears"]
+      }
+    ],
+    "employee_id": "Employee ID number",
+    "birth_year": 1895,
+    "confidence_notes": "Brief assessment of identity certainty"
+  },
+  
+  "biographical_narrative": "Write 2-4 paragraphs summarizing this person's railroad career. Include: when they started, positions held, major events (injuries, promotions, disputes), family situation, and any notable circumstances. Write in past tense as a professional historian would. Make it readable and informative.",
+  
+  "family": {
+    "spouse": {
+      "name": "Spouse name or null",
+      "evidence": "How we know this",
+      "sources": ["document filenames"]
+    },
+    "parents": [
+      {
+        "name": "Parent name",
+        "relationship": "father/mother",
+        "evidence": "How mentioned",
+        "sources": ["document filenames"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Full address as stated",
+      "date_range": "When associated with this address or 'unknown'",
+      "context": "Why this address appears (residence, beneficiary address, etc.)",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Job title",
+      "department": "Department name or null",
+      "division": "Division name or null",
+      "details": "Brief description of what happened",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "YYYY-MM-DD or best available",
+      "injury_type": "Description of injury",
+      "body_part": "Affected body part(s)",
+      "narrative": "2-3 sentence description of injury, treatment, and outcome",
+      "medical_examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "examiner": "Dr. Name",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Key details from examination",
+          "sources": ["document filenames"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"},
+          "days": 10,
+          "amount": 50.00,
+          "check_number": "Check number if available",
+          "sources": ["document filenames"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true or false,
+        "narrative": "If disputed, explain the conflict between doctors or administrators",
+        "resolution": "How was it resolved or 'unclear'"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Name",
+      "district": "District number if available",
+      "examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "finding": "Brief finding"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event": "What happened",
+      "significance": "Why this matters",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "YYYY-MM-DD or best guess",
+      "latest": "YYYY-MM-DD or best guess"
+    },
+    "completeness_assessment": "1-2 sentences: How complete is this record? What's well-documented? What's missing?",
+    "data_quality_notes": [
+      "List observations about OCR quality, contradictions, clarity, etc."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "What does this case reveal about railroad labor, medical practices, administration, etc.?"
+    ],
+    "comparative_questions": [
+      "What questions could be explored by comparing this case to others?"
+    ],
+    "research_value": "High/Medium/Low"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON - no preamble, no markdown fences, no explanation
+2. Use exact schema above - include all fields even if some are empty/null
+3. Always include "sources" arrays with actual document filenames for evidence
+4. Be thorough but concise
+5. Note contradictions or uncertainties explicitly
+6. Assign realistic confidence scores (0.0-1.0) based on evidence quality
+7. Write biographical_narrative in clear, professional prose
+8. If information is missing, use null or empty arrays - don't invent data
+9. For dates, use best available format (prefer YYYY-MM-DD, but accept what documents provide)
+10. Document filenames should match the filename shown in DOCUMENT headers above
+
+Begin your response with { and end with }. Return ONLY the JSON object.

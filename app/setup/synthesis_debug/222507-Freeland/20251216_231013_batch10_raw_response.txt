@@ -1,0 +1,204 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thos B. Freeland",
+        "confidence": "high",
+        "sources": ["RDApp-222507Freeland238.jpg.json", "RDApp-222507Freeland239.jpg.json"]
+      },
+      {
+        "name": "H.B. Finland",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland228.jpg.json"]
+      },
+      {
+        "name": "J. B. Freelund",
+        "confidence": "low",
+        "sources": ["RDApp-222507Freeland237.jpg.json"]
+      }
+    ],
+    "employee_id": 222507,
+    "birth_year": 1869,
+    "confidence_notes": "The birth year is derived from the medical examination form, but there are inconsistencies in name variations across documents."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland began his career with the Baltimore & Ohio Railroad Company as a cleaner and later worked as a day cleaner in Cumberland. He experienced several injuries during his tenure, including an arm sprain and a stomach ailment that required him to take sick leave. His employment spanned from at least 1903 through the early 1940s, with records indicating he was involved in various departments such as motive power and maintenance of way. Freeland's career was marked by periods of disability, which were managed through the company’s Relief Department, providing him with benefits during his recovery. His family situation is not extensively detailed beyond parental consent forms for employment when he may have been a minor.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of spouse in documents",
+      "sources": []
+    },
+    "parents": [
+      {
+        "name": "Philip G. Freeland (Father)",
+        "relationship": "father",
+        "evidence": "Signed parental consent form for employment",
+        "sources": ["RDApp-222507Freeland240.jpg.json"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "39 Mary St.",
+      "date_range": "1903-unknown",
+      "context": "Residence address for disability claims and reporting",
+      "sources": ["RDApp-222507Freeland238.jpg.json", "RDApp-222507Freeland239.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1903",
+      "event_type": "application",
+      "position": "Cleaner",
+      "department": null,
+      "division": null,
+      "details": "Applied for full membership in the Relief Feature.",
+      "sources": ["RDApp-222507Freeland241.jpg.json"]
+    },
+    {
+      "date": "1903-10",
+      "event_type": "injury",
+      "position": "Cleaner",
+      "department": null,
+      "division": null,
+      "details": "Reported sick with stomach trouble.",
+      "sources": ["RDApp-222507Freeland227.jpg.json"]
+    },
+    {
+      "date": "1903-10",
+      "event_type": "injury",
+      "position": "Day Cleaner",
+      "department": null,
+      "division": null,
+      "details": "Reported sick with cycloidal joints.",
+      "sources": ["RDApp-222507Freeland236.jpg.json"]
+    },
+    {
+      "date": "1907-10",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured by snow.",
+      "sources": ["RDApp-222507Freeland238.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1903-10",
+      "injury_type": "Stomach trouble",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland was reported sick with stomach trouble in October 1903 and received benefits for a period of time.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": "Dr. J.A. Doerner, M.D.",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-222507Freeland236.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1903-10", "end": "unknown"},
+          "days": 15,
+          "amount": 7.50,
+          "check_number": null,
+          "sources": ["RDApp-222507Freeland236.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1907-10",
+      "injury_type": "Injured by snow",
+      "body_part": null,
+      "narrative": "Freeland was injured in October 1907 due to an accident involving snow. He received benefits during the recovery period.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-222507Freeland238.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. J.A. Doerner, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Poerner",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1903-12",
+      "event": "Request for proof of disability",
+      "significance": "Superintendent S.R. Barr requested proof of Thomas B. Freeland's disability from November 1st to 22nd, indicating a need for verification.",
+      "sources": ["RDApp-222507Freeland239.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 25,
+    "date_range": {
+      "earliest": "1903",
+      "latest": "1940"
+    },
+    "completeness_assessment": "The record is fairly complete for the early years of Thomas B. Freeland's career, but there are gaps in later years and inconsistencies in name variations.",
+    "data_quality_notes": [
+      "Some documents have OCR errors that affect readability",
+      "There are contradictions in names across different forms"
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal the extent of medical support provided by the Baltimore & Ohio Railroad Company to its employees during periods of disability.",
+      "They also highlight the importance of family consent for employment, particularly when dealing with minors."
+    ],
+    "comparative_questions": [
+      "How did the benefits and medical practices compare between different railroad companies?",
+      "What were the typical durations and causes of disabilities among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

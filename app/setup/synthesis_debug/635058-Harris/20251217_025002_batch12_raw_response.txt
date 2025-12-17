@@ -1,0 +1,156 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Freeman Charley Harris",
+        "confidence": "medium",
+        "sources": ["RDApp-635058Harris115.jpg.json"]
+      },
+      {
+        "name": "Charley Harris Freeman",
+        "confidence": "low",
+        "sources": ["RDApp-635058Harris115.jpg.json"]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the context of his age and service record, but not explicitly stated."
+  },
+  
+  "biographical_narrative": "Charley Harris was a fireman for the Baltimore & Ohio Railroad, serving in the Wheeling Division. He began his career with the company at an unspecified date before October 7, 1939, when he was examined and found to have an aortic murmur, leading to his rejection from further service due to physical disability. Harris had been contributing to the Relief Department's sick benefit fund for twelve years but never drew benefits until he became disabled in late 1939 at age 46. He sought assistance from both the company and the Railroad Retirement Board, facing challenges in obtaining medical support and financial aid due to his condition.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "811 Hill Street, Ceredo, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address in correspondence with the company and medical professionals",
+      "sources": ["RDApp-635058Harris111.jpg.json", "RDApp-635058Harris115.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Began service with the Baltimore & Ohio Railroad as a fireman, exact start date unknown.",
+      "sources": []
+    },
+    {
+      "date": "1939-10-07",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Rejected for further service due to a physical disability (aortic murmur).",
+      "sources": ["RDApp-635058Harris120.jpg.json"]
+    },
+    {
+      "date": "1940-02-17",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Applied for an annuity through the Railroad Retirement Board.",
+      "sources": ["RDApp-635058Harris116.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Physical disability",
+      "body_part": "Heart (aortic murmur)",
+      "narrative": "Charley Harris was found to have an aortic murmur during his medical examination on October 7, 1939. This condition led to his rejection from further service with the company.",
+      "medical_examinations": [
+        {
+          "date": "1939-10-07",
+          "examiner": "[signature]",
+          "finding": "disabled",
+          "notes": "Aortic murmur found in heart, rejected for membership due to this finding.",
+          "sources": ["RDApp-635058Harris120.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "[signature]",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-10-07",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Roscoe Stotts",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1940-02-27",
+      "event": "Summary statement of contributions and benefits",
+      "significance": "Clarifies Harris's financial standing with the Relief Department.",
+      "sources": ["RDApp-635058Harris113.jpg.json"]
+    },
+    {
+      "date": "1940-02-21",
+      "event": "Correspondence regarding Harris’s application for an annuity and physical condition",
+      "significance": "Details the company's stance on his eligibility for benefits.",
+      "sources": ["RDApp-635058Harris116.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1940-02-17",
+      "latest": "1940-03-14"
+    },
+    "completeness_assessment": "The record is relatively complete regarding Harris's medical condition and his attempts to receive assistance from the company. However, it lacks detailed information about his family or earlier employment history.",
+    "data_quality_notes": [
+      "Some documents have truncated text which limits understanding of full context.",
+      "There are variations in how Charley Harris's name is recorded."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the challenges faced by railroad employees with disabilities and the limitations of company-provided relief programs for such conditions.",
+      "It also showcases the bureaucratic process involved in applying for disability assistance through both internal company programs and external Railroad Retirement Board."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases of employee disability during this period?",
+      "What were the typical outcomes for employees seeking annuities from the Railroad Retirement Board?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {"name": "Thomas C. Freeland", "confidence": "medium", "sources": ["RDApp-222507Freeland202.jpg.json"]},
+      {"name": "Thomas J. Greenland", "confidence": "low", "sources": ["RDApp-222507Freeland205.jpg.json"]},
+      {"name": "Thomas B. Ireland", "confidence": "low", "sources": ["RDApp-222507Freeland204.jpg.json"]}
+    ],
+    "employee_id": "222507",
+    "birth_year": null,
+    "confidence_notes": "The identity is primarily based on the name 'Thomas B. Freeland', but variations exist with lower confidence."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland, an employee of the Baltimore & Ohio Railroad Company, worked in various capacities including as a carman and possibly as an engineer. His career spanned several years from at least 1912 to 1932. Freeland experienced periods of disability due to sickness, which impacted his employment status and led to interactions with the company's Relief Department for benefits claims. He was furloughed in April 1932 but requested to retain membership for natural death benefits. His career also involved administrative adjustments such as refunds related to dues payments.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "Wiley Ford, W. Va.", "date_range": "unknown", "context": "Home address for natural death benefits", "sources": ["RDApp-222507Freeland203.jpg.json"]},
+    {"address": "(illegible, possibly 'Car Shop')", "date_range": "1912", "context": "Residence on sick claim form", "sources": ["RDApp-222507Freeland208.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "4/29/1912", "event_type": "injury", "position": "Engineer", "department": null, "division": null, "details": "Began sick leave due to an unspecified sickness.", "sources": ["RDApp-222507Freeland208.jpg.json"]},
+    {"date": "4/30/1932", "event_type": "furloughed", "position": "Carman", "department": null, "division": null, "details": "Furloughed from service.", "sources": ["RDApp-222507Freeland203.jpg.json"]},
+    {"date": "5/6/1932", "event_type": "administrative_adjustment", "position": null, "department": null, "division": null, "details": "Credit of $1.35 applied to natural death dues.", "sources": ["RDApp-222507Freeland201.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "4/29/1912",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland began a period of sick leave on April 29, 1912 due to an unspecified sickness.",
+      "medical_examinations": [],
+      "payments": []
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "George", "district": null, "examinations": []}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "5/6/1932",
+      "event": "Credit applied to dues",
+      "significance": "Indicates administrative handling of employee benefits.",
+      "sources": ["RDApp-222507Freeland201.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "4/29/1912", "latest": "5/6/1932"},
+    "completeness_assessment": "The records are somewhat complete, covering employment status and benefits claims. However, there is a lack of detailed information on medical examinations or specific payments.",
+    "data_quality_notes": [
+      "Some documents have OCR issues leading to unclear names and details.",
+      "There are inconsistencies in the name spelling."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal the bureaucratic process of handling employee benefits and sick leave, highlighting the importance of membership in benefit programs for railroad workers.",
+      "They also show how furloughs were managed during economic downturns."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's policies on disability and furlough compare to other railroads?",
+      "What was the typical duration of sick leave in this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

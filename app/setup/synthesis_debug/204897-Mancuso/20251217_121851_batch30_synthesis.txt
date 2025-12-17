@@ -1,0 +1,214 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Louis J. Marchese",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco291.jpg.json"
+        ]
+      },
+      {
+        "name": "Luigi Manuso",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco298.jpg.json",
+          "RDApp-204897Manusco296.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on the name Luigi Mancuso, with some variations noted but likely not referring to the same individual."
+  },
+  "biographical_narrative": "Luigi Mancuso was a carman for the Baltimore and Ohio Railroad Company. His career spanned several decades, beginning in the early 1920s as evidenced by his membership certificate dated April 11, 1923. Throughout his tenure with B&O, he faced multiple health challenges including an injury on duty at Glenwood, PA, on January 27, 1944, and a period of disability due to influenza and cholecystitis in late 1947. Mancuso's personal life was marked by the death of his wife Maria, after which he sought to change the beneficiary of his insurance policy to his daughter Ella Mae Klimick.",
+  "family": {
+    "spouse": {
+      "name": "Maria Mancuso",
+      "evidence": "Death mentioned in request for changing beneficiary",
+      "sources": [
+        "RDApp-204897Manusco295.jpg.json",
+        "RDApp-204897Manusco294.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": [
+      {
+        "name": "Ella Mae Klimick",
+        "relationship": "daughter",
+        "evidence": "Named as new beneficiary in documents",
+        "sources": [
+          "RDApp-204897Manusco295.jpg.json",
+          "RDApp-204897Manusco294.jpg.json"
+        ]
+      }
+    ]
+  },
+  "addresses": [
+    {
+      "address": "Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address on medical reports and beneficiary change requests",
+      "sources": [
+        "RDApp-204897Manusco293.jpg.json",
+        "RDApp-204897Manusco295.jpg.json"
+      ]
+    },
+    {
+      "address": "111 Pulaski St, Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Former residence of Louis J. Marchese (possibly not Mancuso)",
+      "sources": [
+        "RDApp-204897Manusco291.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1923-04-11",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application for membership in the Relief Feature of B&O Railroad Company.",
+      "sources": [
+        "RDApp-204897Manusco296.jpg.json"
+      ]
+    },
+    {
+      "date": "1944-01-27",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "M.P.D. Pgh.",
+      "division": null,
+      "details": "Injured on duty at Glenwood, PA, with contusion and abrasions to the right ear.",
+      "sources": [
+        "RDApp-204897Manusco298.jpg.json",
+        "RDApp-204897Manusco300.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-12-19",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": null,
+      "division": null,
+      "details": "Suffered from influenza and cholecystitis, expected to be out of work for four weeks.",
+      "sources": [
+        "RDApp-204897Manusco293.jpg.json",
+        "RDApp-204897Manusco292.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1944-01-27",
+      "injury_type": "Contusion and abrasions",
+      "body_part": "Right ear",
+      "narrative": "Luigi Mancuso was injured on duty at Glenwood, PA. He struck his right side of face on a release rod bracket while working under a car.",
+      "medical_examinations": [
+        {
+          "date": "1944-03-06",
+          "examiner": "Dr. G.J. Edmunds",
+          "finding": "No time lost",
+          "notes": "Contusion of lobe of right ear with abrasions and lacerations just anterior to right ear.",
+          "sources": [
+            "RDApp-204897Manusco298.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1947-12-19",
+      "injury_type": "Influenza and cholecystitis",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was treated for influenza complicated by cholecystitis. He was expected to be out of work for four weeks.",
+      "medical_examinations": [
+        {
+          "date": "1948-01-05",
+          "examiner": "Dr. M.C. DeAngelis",
+          "finding": "Disabled",
+          "notes": "Expected to return in about two weeks.",
+          "sources": [
+            "RDApp-204897Manusco293.jpg.json",
+            "RDApp-204897Manusco292.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. G.J. Edmunds",
+      "district": "46",
+      "examinations": [
+        {
+          "date": "1944-03-06",
+          "finding": "No time lost"
+        }
+      ]
+    },
+    {
+      "name": "Dr. M.C. DeAngelis",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1948-01-05",
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1945-12-20",
+      "event": "Request to change beneficiary on insurance policy",
+      "significance": "Reflects personal life changes and family dynamics.",
+      "sources": [
+        "RDApp-204897Manusco295.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1923-04-11",
+      "latest": "1948-01-05"
+    },
+    "completeness_assessment": "The record is fairly complete for employment and medical history, but lacks details on promotions or transfers. Personal life events are sparsely documented.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors that affect readability.",
+      "There's a discrepancy in the name 'Louis J. Marchese' which may not be related to Luigi Mancuso."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the medical support and insurance benefits provided by B&O Railroad Company for its employees.",
+      "It also shows how personal family changes were managed within the company's administrative framework."
+    ],
+    "comparative_questions": [
+      "How did injury management practices vary across different railroad companies?",
+      "What was the typical duration of disability leave in similar industries during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

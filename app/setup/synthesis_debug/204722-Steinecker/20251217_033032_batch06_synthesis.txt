@@ -1,0 +1,188 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "William Himecker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker051.jpg.json"
+        ]
+      },
+      {
+        "name": "W. Hainesker",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker052.jpg.json"
+        ]
+      },
+      {
+        "name": "Williams Heinacker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker053.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on the name 'William Steinecker' and employee ID, with some variations noted."
+  },
+  "biographical_narrative": "William Steinecker was a dedicated employee of the Baltimore & Ohio Railroad Company. His career began in the early 20th century, where he served as a fireman and later as yard help. Throughout his tenure, he faced several health challenges that affected his work. In February 1912, he suffered an injury to his right finger while on duty at Curtiss Bay, which required medical attention from Dr. R.V. Glann. Despite initial difficulties in proving the extent of his disability, Steinecker was eventually able to return to duty after receiving necessary treatment and certification. His career also included a visual and hearing examination conducted in 1929, indicating ongoing health monitoring by the company.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "West Coast Baltic Co",
+      "date_range": "unknown",
+      "context": "Residence or workplace address mentioned in disability report.",
+      "sources": [
+        "RDApp-204722Steinecker054.jpg.json"
+      ]
+    },
+    {
+      "address": "West Port Butler Co",
+      "date_range": "unknown",
+      "context": "Residence of W. Hainesker, possibly William Steinecker.",
+      "sources": [
+        "RDApp-204722Steinecker052.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1912",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": "Balt.",
+      "details": "Sustained a contusion and infection to his right third finger while on duty at Curtiss Bay.",
+      "sources": [
+        "RDApp-204722Steinecker054.jpg.json"
+      ]
+    },
+    {
+      "date": "1929",
+      "event_type": "medical examination",
+      "position": "Yard Help",
+      "department": null,
+      "division": "Buffalo",
+      "details": "Underwent a visual and hearing examination.",
+      "sources": [
+        "RDApp-204722Steinecker056.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1912-02-09",
+      "injury_type": "Contusion and infection of back of third right finger",
+      "body_part": "Right third finger",
+      "narrative": "William Steinecker suffered a contusion and subsequent infection to his right third finger on February 9, 1912. He was treated by Dr. R.V. Glann from February 9th to the 18th.",
+      "medical_examinations": [
+        {
+          "date": "1912-03-21",
+          "examiner": "Dr. R.V. Glann",
+          "finding": "Treated for infected finger",
+          "notes": null,
+          "sources": [
+            "RDApp-204722Steinecker053.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "There was a dispute over the evidence of disability, with Steinecker needing to provide additional documentation by March 1st.",
+        "resolution": "Unclear"
+      }
+    },
+    {
+      "injury_date": "2022-07-09",
+      "injury_type": null,
+      "body_part": null,
+      "narrative": "William Steinecker was able to return to duty on July 9, 2022.",
+      "medical_examinations": [
+        {
+          "date": "2022-07-22",
+          "examiner": "Medical Examiner, District No. 2",
+          "finding": "Able to return to duty",
+          "notes": null,
+          "sources": [
+            "RDApp-204722Steinecker060.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. R.V. Glann",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1912-03-21",
+          "finding": "Treated for infected finger"
+        }
+      ]
+    },
+    {
+      "name": "Medical Examiner, District No. 2",
+      "district": "District No. 2",
+      "examinations": [
+        {
+          "date": "2022-07-22",
+          "finding": "Able to return to duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1912-03-26",
+      "event": "Request for additional evidence of disability",
+      "significance": "Indicates a bureaucratic process requiring proof of injury.",
+      "sources": [
+        "RDApp-204722Steinecker055.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1912",
+      "latest": "2022"
+    },
+    "completeness_assessment": "The record is relatively complete for injury and medical examination details but lacks comprehensive employment history or family information.",
+    "data_quality_notes": [
+      "Variations in the employee's name suggest potential OCR errors or aliases.",
+      "Some documents are incomplete, such as the certificate of ability from 1922."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical and administrative processes of railroad companies in handling employee injuries and disability claims.",
+      "They highlight the importance of documentation and evidence in securing benefits for injured employees."
+    ],
+    "comparative_questions": [
+      "How did injury management practices vary across different railroads?",
+      "What were the typical durations of disability periods among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

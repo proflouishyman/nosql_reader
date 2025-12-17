@@ -1,0 +1,167 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "C. Rombough", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh245.jpg.json"]},
+      {"name": "Cloude Rombaugh", "confidence": "high", "sources": ["RDApp-221988Roenbaugh242.jpg.json"]},
+      {"name": "Claude Roeneaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh248.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist, but 'Claude Roenbaugh' is the most consistent form across documents."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh was an engineer for the Baltimore & Ohio Railroad Company. His career spanned several years during which he experienced multiple periods of disablement due to sickness and injury, including lumbago and Herpes Zoster. He faced delays in reporting his absences, leading to administrative inquiries into these discrepancies. Despite these challenges, Roenbaugh was certified fit for duty on various occasions, indicating a resilient career despite health setbacks.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No mention of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Cupper",
+      "date_range": "1918",
+      "context": "Residence for sick claim",
+      "sources": ["RDApp-221988Roenbaugh249.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1916-02-05",
+      "event_type": "furlough",
+      "position": "Engineman",
+      "department": null,
+      "division": null,
+      "details": "Detached by absence due to sickness.",
+      "sources": ["RDApp-221988Roenbaugh241.jpg.json"]
+    },
+    {
+      "date": "1916-02-08",
+      "event_type": "disablement",
+      "position": "Engineer",
+      "department": null,
+      "division": "Clsm Div.",
+      "details": "Totally disabled by sickness from February 8, 1916 to March 11, 1916. No wages allowed during this period.",
+      "sources": ["RDApp-221988Roenbaugh242.jpg.json"]
+    },
+    {
+      "date": "1918-03-20",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty.",
+      "sources": ["RDApp-221988Roenbaugh245.jpg.json"]
+    },
+    {
+      "date": "1918-01-11",
+      "event_type": "disablement",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Totally disabled by sickness from January 11, 1918 to January 22, 1918. No wages allowed during this period.",
+      "sources": ["RDApp-221988Roenbaugh250.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1916-02-08",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was totally disabled by sickness from February 8, 1916 to March 11, 1916. He did not receive wages during this period.",
+      "medical_examinations": [
+        {
+          "date": "1916-02-08",
+          "examiner": "B. L. Farrell",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh242.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    },
+    {
+      "injury_date": "1918-01-11",
+      "injury_type": "Herpes Zoster",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was totally disabled by Herpes Zoster from January 11, 1918 to January 22, 1918. He did not receive wages during this period but received benefits.",
+      "medical_examinations": [
+        {
+          "date": "1918-01-15",
+          "examiner": "M. L. Garrett",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-221988Roenbaugh249.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1918-01-18", "end": "1918-01-21"},
+          "days": 4,
+          "amount": 50.00,
+          "check_number": null,
+          "sources": ["RDApp-221988Roenbaugh249.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "B. L. Farrell",
+      "district": null,
+      "examinations": [{"date": "1916-02-08", "finding": "disabled"}]
+    },
+    {
+      "name": "M. L. Garrett",
+      "district": null,
+      "examinations": [{"date": "1918-01-15", "finding": "disabled"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1916-03-08",
+      "event": "Delay in reporting absence",
+      "significance": "Investigation into the delay of submitting a form regarding Roenbaugh's detachment by sickness.",
+      "sources": ["RDApp-221988Roenbaugh241.jpg.json"]
+    },
+    {
+      "date": "1916-03-14",
+      "event": "Explanation for delayed reporting",
+      "significance": "Clarification provided regarding the delay in reporting Roenbaugh's sickness.",
+      "sources": ["RDApp-221988Roenbaugh248.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1916-02-05", "latest": "1918-05-20"},
+    "completeness_assessment": "The record is relatively complete for the period covered, with detailed documentation of Roenbaugh's disablements and returns to duty. However, there are some inconsistencies in name spelling.",
+    "data_quality_notes": ["Name variations exist across documents", "Some forms have incomplete information"]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers due to health issues and the administrative processes involved in managing such situations."
+    ],
+    "comparative_questions": [
+      "How did other employees' experiences with disablement compare to Roenbaugh's?",
+      "What were the typical durations of sickness-related absences among railroad engineers?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

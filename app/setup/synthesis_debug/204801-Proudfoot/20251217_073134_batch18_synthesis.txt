@@ -1,0 +1,238 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D Proudfoot",
+    "name_variations": [
+      {
+        "name": "O. D. Provoost",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood171.jpg.json"
+        ]
+      },
+      {
+        "name": "E. J. Prowfent?",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood172.jpg.json"
+        ]
+      },
+      {
+        "name": "O. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood173.jpg.json",
+          "RDApp-204801Proudfood176.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood174.jpg.json",
+          "RDApp-204801Proudfood175.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto L. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood178.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is primarily based on the name variations and employee ID, but there are some discrepancies in names which suggest potential confusion with other employees."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was a fireman for the Baltimore & Ohio Railroad Company (B&O) during the early 20th century. His employment began sometime before March 9, 1903, when he first reported an incident of disablement due to sickness or accident. Over his career, he experienced several periods of disability and returned to duty multiple times. In 1905, he resumed work after a period of disablement, and in 1920, he was listed as an engineer and sustained a minor injury that required medical attention but did not prevent him from returning to work shortly thereafter.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "154 Ard St, So Ca",
+      "date_range": "March 8, 1903",
+      "context": "Residence address during disablement report",
+      "sources": [
+        "RDApp-204801Proudfood171.jpg.json"
+      ]
+    },
+    {
+      "address": "154 Arch St. S. S.",
+      "date_range": "May 8, 1903",
+      "context": "Residence address during disablement report for E.J. Prowfent (potential confusion with O.D. Proudfoot)",
+      "sources": [
+        "RDApp-204801Proudfood172.jpg.json"
+      ]
+    },
+    {
+      "address": "Cumberland",
+      "date_range": "June 13, 1920 - June 24, 1920",
+      "context": "Residence address during injury report in 1920",
+      "sources": [
+        "RDApp-204801Proudfood178.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "March 9, 1903",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to sickness or accident.",
+      "sources": [
+        "RDApp-204801Proudfood176.jpg.json"
+      ]
+    },
+    {
+      "date": "May 15, 1905",
+      "event_type": "return_to_duty",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty.",
+      "sources": [
+        "RDApp-204801Proudfood173.jpg.json"
+      ]
+    },
+    {
+      "date": "June 13, 1920",
+      "event_type": "injury",
+      "position": "Engineer C.P.",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to a bruised eye injury.",
+      "sources": [
+        "RDApp-204801Proudfood178.jpg.json"
+      ]
+    },
+    {
+      "date": "June 24, 1920",
+      "event_type": "return_to_duty",
+      "position": "Engineer C.P.",
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after a minor injury.",
+      "sources": [
+        "RDApp-204801Proudfood178.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "March 9, 1903",
+      "injury_type": "Sickness or accident",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot reported disabled due to sickness or an unspecified accident on March 9, 1903.",
+      "medical_examinations": [
+        {
+          "date": "March 14, 1903",
+          "examiner": null,
+          "finding": "able_to_return",
+          "notes": "Certified able to return to duty on March 15, 1903.",
+          "sources": [
+            "RDApp-204801Proudfood173.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "June 13, 1920",
+      "injury_type": "Bruised eye",
+      "body_part": "Eye",
+      "narrative": "Otto L. Proudfoot sustained a bruised eye injury on June 13, 1920, and was certified to return to duty on June 24, 1920.",
+      "medical_examinations": [
+        {
+          "date": "June 15, 1920",
+          "examiner": null,
+          "finding": "able_to_return",
+          "notes": "Certified able to return to duty on June 24, 1920.",
+          "sources": [
+            "RDApp-204801Proudfood178.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "June 13, 1920",
+            "end": "June 15, 1920"
+          },
+          "days": 2,
+          "amount": 5.0,
+          "check_number": "56125",
+          "sources": [
+            "RDApp-204801Proudfood178.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Jas Doane",
+      "district": null,
+      "examinations": [
+        {
+          "date": "May 15, 1905",
+          "finding": "able_to_return"
+        }
+      ]
+    },
+    {
+      "name": "Dr. J. Gilbert Selby",
+      "district": "7",
+      "examinations": [
+        {
+          "date": "June 13, 1920",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "March 8, 1903",
+      "latest": "June 24, 1920"
+    },
+    "completeness_assessment": "The records are fairly complete for injury and return to duty events but lack details on promotions or transfers. There is some confusion with names that could indicate possible mix-ups in the employee files.",
+    "data_quality_notes": [
+      "There are discrepancies in the name variations, which may suggest potential errors or confusion with other employees' records.",
+      "Some documents have missing information such as nature of injury and how it was caused."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in terms of health and safety, as well as the company's response through its Relief Department.",
+      "It also underscores the importance of medical examinations and the role they played in determining an employee's ability to return to work."
+    ],
+    "comparative_questions": [
+      "How did the B&O Railroad Company's policies on worker health compare with other contemporary railroads?",
+      "What were the typical durations and causes of disablement among railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

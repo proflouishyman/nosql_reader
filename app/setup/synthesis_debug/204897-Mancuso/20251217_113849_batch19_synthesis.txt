@@ -1,0 +1,320 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "A. Mancuso",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204897Manusco184.jpg.json"
+        ]
+      },
+      {
+        "name": "Tony Mancuso",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco188.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonous Mancuso",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco185.jpg.json"
+        ]
+      },
+      {
+        "name": "Marcuss Antois",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco187.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is reasonably certain based on consistent references to Antonio Mancuso, though some name variations exist."
+  },
+  "biographical_narrative": "Antonio Mancuso was a car repairman for the Baltimore & Ohio Railroad Company. His employment record spans from at least December 1915 through July 10, 1918. He experienced multiple injuries during his tenure, including a contused left patella in December 1916 and another injury to his knee on December 2, 1916, both of which occurred while he was on duty. Mancuso's career is marked by several instances where he was temporarily disabled due to workplace accidents, indicating the hazardous nature of his job as a car repairman. Despite these setbacks, he continued working for the railroad company and was able to return to work after each injury.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "Married status is mentioned but no spouse name provided",
+      "sources": [
+        "RDApp-204897Manusco189.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Pulaski Street",
+      "date_range": "unknown",
+      "context": "Residence address as stated in multiple documents",
+      "sources": [
+        "RDApp-204897Manusco184.jpg.json",
+        "RDApp-204897Manusco189.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Car Repairman",
+      "department": "M. P.",
+      "division": "Carlisle Div.",
+      "details": "Began working as a car repairman for the Baltimore & Ohio Railroad Company, though exact start date is not provided in documents.",
+      "sources": []
+    },
+    {
+      "date": "1915-12-01",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": "Castle Dep't.",
+      "details": "Injured hand while walking behind a car that moved, causing injury twice. Wages were not allowed from this period.",
+      "sources": [
+        "RDApp-204897Manusco184.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-12-09",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": "Carlisle Div.",
+      "details": "Totally disabled by accident from December 9 to December 13, 1916. No wages were allowed during this period.",
+      "sources": [
+        "RDApp-204897Manusco181.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-12-12",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Contused left patella while winding up a door in the bottom of a gondola car. A wrench slipped and struck his knee.",
+      "sources": [
+        "RDApp-204897Manusco183.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-12-2",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Injured knee while winding doors on a car when a wrench slipped off. Continued working the rest of the day and then went to see a doctor.",
+      "sources": [
+        "RDApp-204897Manusco189.jpg.json",
+        "RDApp-204897Manusco190.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-12-1",
+      "event_type": "return_to_work",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Cleared to return to duty on December 1, 1916.",
+      "sources": [
+        "RDApp-204897Manusco186.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-07-10",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Injured knee after being struck by the end of a car-wrench.",
+      "sources": [
+        "RDApp-204897Manusco188.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1915-12-01",
+      "injury_type": "Hand injury",
+      "body_part": "Hands",
+      "narrative": "On December 1, 1915, Antonio Mancuso injured his hand twice while walking behind a car that moved. He was not allowed wages during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "H.O. Turner",
+          "finding": "Disabled",
+          "notes": "Injured hand on duty, no wages allowed from December 1 to the same day.",
+          "sources": [
+            "RDApp-204897Manusco184.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-12-09",
+      "injury_type": "Totally disabled by accident",
+      "body_part": "Unspecified",
+      "narrative": "From December 9 to December 13, 1916, Antonio Mancuso was totally disabled due to an unspecified accident. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "W.W. Kohler",
+          "finding": "Disabled",
+          "notes": "Totally disabled by accident from December 9 to December 13, 1916.",
+          "sources": [
+            "RDApp-204897Manusco181.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-12-12",
+      "injury_type": "Contused left patella",
+      "body_part": "Left Patella",
+      "narrative": "On December 12, 1916, Antonio Mancuso contused his left patella while winding up a door in the bottom of a gondola car. A wrench slipped and struck his knee.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. McCaul",
+          "finding": "Disabled",
+          "notes": "Contused left patella, estimated duration about 14 days.",
+          "sources": [
+            "RDApp-204897Manusco183.jpg.json",
+            "RDApp-204897Manusco187.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-12-02",
+      "injury_type": "Injured knee",
+      "body_part": "Knee",
+      "narrative": "On December 2, 1916, Antonio Mancuso injured his knee while winding doors on a car when a wrench slipped off. He continued working the rest of the day and then went to see a doctor.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "Injured",
+          "notes": "Knee injury, no negligence or equipment defect involved.",
+          "sources": [
+            "RDApp-204897Manusco189.jpg.json",
+            "RDApp-204897Manusco190.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1918-07-10",
+      "injury_type": "Bruise over left knee-cap",
+      "body_part": "Left Knee-Cap",
+      "narrative": "On July 10, 1918, Antonio Mancuso sustained a bruise over his left knee-cap after being struck by the end of a car-wrench.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "E.W. Comb",
+          "finding": "Injured",
+          "notes": "Bruised left knee-cap, no evidence of injury due to intoxication or negligence.",
+          "sources": [
+            "RDApp-204897Manusco188.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "W.W. Kohler",
+      "district": "58",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. McCaul",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Contused left patella, estimated duration about 14 days."
+        }
+      ]
+    },
+    {
+      "name": "E.W. Comb",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "Bruised left knee-cap"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1915-12-01",
+      "latest": "1918-07-10"
+    },
+    "completeness_assessment": "The record is relatively complete, detailing multiple injuries and medical examinations. However, some documents are partially legible or contain missing information.",
+    "data_quality_notes": [
+      "Some documents have incomplete or unreadable sections (e.g., Document 2).",
+      "Name variations exist across different documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the hazardous conditions faced by railroad workers, particularly car repairmen.",
+      "They also illustrate the company's response to workplace injuries through medical examinations and disability certifications."
+    ],
+    "comparative_questions": [
+      "How did injury rates and responses vary across different divisions or departments within the Baltimore & Ohio Railroad Company?",
+      "What were the broader labor conditions for railroad workers during this period, and how did they compare with other industries?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

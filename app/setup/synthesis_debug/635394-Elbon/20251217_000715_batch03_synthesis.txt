@@ -1,0 +1,202 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo Verne Elbon",
+    "name_variations": [
+      {
+        "name": "L. V. Ebon",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635394Elbon027.jpg.json",
+          "RDApp-635394Elbon028.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Verne Elbon",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635394Elbon023.jpg.json",
+          "RDApp-635394Elbon028.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist but are consistent with the canonical name. Birth year is not provided in documents."
+  },
+  "biographical_narrative": "Leo Verne Elbon was a fireman for the Baltimore & Ohio Railroad Company, working primarily on the Cumberland Division. His career spanned several decades and included periods of furlough and re-examination due to health concerns. In 1940, he faced rejection from service due to a faint systolic murmur detected by Dr. Baker during an examination. However, subsequent examinations in 1941 found him fit for duty after no heart murmurs were detected and his blood pressure was within normal range. Elbon's career also involved participation in the Relief Department of the railroad company, where he contributed monthly to secure benefits.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "R.F.D. #1, Buckhannon, W.Va.",
+      "date_range": "unknown",
+      "context": "Residence address provided in correspondence for examination arrangements.",
+      "sources": [
+        "RDApp-635394Elbon028.jpg.json",
+        "RDApp-635394Elbon030.jpg.json"
+      ]
+    },
+    {
+      "address": "Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Address used for application and correspondence with the Relief Department.",
+      "sources": [
+        "RDApp-635394Elbon022.jpg.json",
+        "RDApp-635394Elbon023.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Started working as a fireman in an unspecified year.",
+      "sources": [
+        "RDApp-635394Elbon023.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "furlough",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Faced a period of furlough, possibly due to health concerns.",
+      "sources": [
+        "RDApp-635394Elbon028.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "re-examination",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Re-examined in 1940 and found unfit due to a faint systolic murmur.",
+      "sources": [
+        "RDApp-635394Elbon028.jpg.json"
+      ]
+    },
+    {
+      "date": null,
+      "event_type": "re-examination",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Re-examined in 1941 and found fit for duty.",
+      "sources": [
+        "RDApp-635394Elbon028.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Faint systolic murmur",
+      "body_part": "Heart",
+      "narrative": "Initially rejected from service in 1940 due to a faint systolic murmur detected by Dr. Baker, but later cleared for duty after further examinations found no issues.",
+      "medical_examinations": [
+        {
+          "date": "1940-02-19",
+          "examiner": "Dr. Baker",
+          "finding": "disabled",
+          "notes": "Detected a faint systolic murmur.",
+          "sources": [
+            "RDApp-635394Elbon028.jpg.json"
+          ]
+        },
+        {
+          "date": "1941-06-16",
+          "examiner": "Dr. Stine",
+          "finding": "able to return",
+          "notes": "No heart murmur detected, blood pressure normal.",
+          "sources": [
+            "RDApp-635394Elbon028.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Baker",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1940-02-19",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Stine",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1941-06-16",
+          "finding": "able to return"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1926-01-19",
+      "event": "Application for Relief Department membership",
+      "significance": "Elbon applied and was accepted into the Relief Department, agreeing to monthly contributions.",
+      "sources": [
+        "RDApp-635394Elbon022.jpg.json"
+      ]
+    },
+    {
+      "date": "1941-06-18",
+      "event": "Re-examination approval",
+      "significance": "Elbon was approved for re-examination to determine fitness for duty.",
+      "sources": [
+        "RDApp-635394Elbon027.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1920",
+      "latest": "1941"
+    },
+    "completeness_assessment": "The record is fairly complete regarding Elbon's medical history and employment status, but lacks personal details such as family information.",
+    "data_quality_notes": [
+      "Name variations exist between documents but are consistent with the canonical name.",
+      "Some dates are not fully specified (e.g., month or day missing).",
+      "OCR quality is generally good, though some truncation occurs in document summaries."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the rigorous health standards and re-examination processes for railroad employees during this period.",
+      "It also demonstrates the importance of employee benefits programs like the Relief Department, which required regular contributions from workers."
+    ],
+    "comparative_questions": [
+      "How did medical practices and employment policies vary between different railroads?",
+      "What were the typical durations of furloughs for health reasons during this era?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

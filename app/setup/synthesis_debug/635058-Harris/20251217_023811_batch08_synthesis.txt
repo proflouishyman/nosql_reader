@@ -1,0 +1,161 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris075.jpg.json"
+        ]
+      },
+      {
+        "name": "Charley Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris071.jpg.json",
+          "RDApp-635058Harris072.jpg.json",
+          "RDApp-635058Harris074.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": null,
+    "confidence_notes": "The identity is certain based on consistent references to Charley Harris/Charles Harris in the documents."
+  },
+  "biographical_narrative": "Charley Harris, employed by the Baltimore and Ohio Railroad Company (B&O), was involved in a legal dispute with the company as of early June 1941. The case, which had been set for trial at Huntington, West Virginia, experienced several continuances before being rescheduled for June 6th. Harris's medical records were central to this dispute, involving X-rays and interpretations by various doctors including Dr. Walton and Dr. Lockard. The B&O Railroad Company was meticulous in arranging the presence of its medical examiners at each trial date, highlighting the significance of Harris\u2019s case within the company\u2019s legal framework.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": null,
+      "date_range": "unknown",
+      "context": "The documents do not specify Harris's residence or beneficiary address, focusing instead on the legal and medical aspects of his case.",
+      "sources": [
+        "RDApp-635058Harris071.jpg.json",
+        "RDApp-635058Harris072.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "The exact date of hire or application is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Harris was involved in an injury that led to a legal dispute with B&O, but the specific nature of his employment and position is not detailed.",
+      "sources": [
+        "RDApp-635058Harris071.jpg.json",
+        "RDApp-635058Harris072.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": null,
+      "body_part": null,
+      "narrative": "The documents indicate that Harris was involved in an injury leading to a legal dispute with B&O, but the specifics of his injury are not detailed.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. Walton",
+          "finding": "negative interpretation on X-rays",
+          "notes": "X-rays were requested and interpreted negatively by Dr. Walton.",
+          "sources": [
+            "RDApp-635058Harris072.jpg.json"
+          ]
+        },
+        {
+          "date": null,
+          "examiner": "Dr. Lockard",
+          "finding": "agreed with the negative interpretation of X-rays",
+          "notes": "Dr. Lockard agreed with Dr. Walton's findings.",
+          "sources": [
+            "RDApp-635058Harris072.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "The dispute centered around the interpretation of X-rays and their implications for Harris's case against B&O.",
+        "resolution": "unclear"
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Walton",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "negative interpretation on X-rays"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Lockard",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "agreed with the negative interpretation of X-rays"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1941-06-06",
+      "event": "Legal trial for Harris's case against B&O was set to take place.",
+      "significance": "This event marks a critical point in the legal proceedings involving Harris and his injury claim.",
+      "sources": [
+        "RDApp-635058Harris072.jpg.json",
+        "RDApp-635058Harris074.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1941-05-19",
+      "latest": "1941-06-10"
+    },
+    "completeness_assessment": "The documents are focused on the legal and medical aspects of Harris's case, providing detailed information about trial dates and medical examinations. However, they lack details regarding his employment history or personal life.",
+    "data_quality_notes": [
+      "OCR quality is generally good but some text truncation occurs."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of medical evidence in railroad injury claims and the meticulous record-keeping practices of B&O Railroad Company.",
+      "It also underscores the role of medical examiners in resolving disputes over injuries sustained by employees."
+    ],
+    "comparative_questions": [
+      "How do similar cases from other railroads compare in terms of legal proceedings and medical evidence?",
+      "What were the common types of injuries among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

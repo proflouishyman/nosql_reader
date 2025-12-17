@@ -1,0 +1,198 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Harris, Charley",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris141.jpg.json",
+          "RDApp-635058Harris142.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is certain based on consistent references to Charley Harris in all documents."
+  },
+  "biographical_narrative": "Charley Harris, a fireman for the Baltimore & Ohio Railroad Company, began his career around the early 20th century. His employment was marked by medical scrutiny due to an aortic systolic murmur detected during routine examinations. Despite these health concerns, he sought full membership in the Relief Department of the railroad's relief feature on October 7, 1939, indicating his commitment to continuing his service. Harris faced administrative hurdles and medical evaluations that required careful management by both himself and the company\u2019s medical staff. His case highlights the challenges of maintaining employment with a significant health condition during an era when such conditions could severely impact one's ability to work in physically demanding jobs.",
+  "family": {
+    "spouse": {
+      "name": "Stella V. Harris",
+      "evidence": "Designated as beneficiary on application for Relief Feature membership.",
+      "sources": [
+        "RDApp-635058Harris145.jpg.json"
+      ]
+    },
+    "parents": [
+      {
+        "name": "George W.",
+        "relationship": "father",
+        "evidence": "Mentioned in the application form for office/club membership.",
+        "sources": [
+          "RDApp-635058Harris146.jpg.json"
+        ]
+      }
+    ],
+    "children": [
+      {
+        "name": "J. Dayman, Regina, Myrtle Thacker, Maurice, Lewis",
+        "ages": [
+          23,
+          21,
+          17,
+          13,
+          10
+        ],
+        "evidence": "Listed in the application form for office/club membership.",
+        "sources": [
+          "RDApp-635058Harris146.jpg.json"
+        ]
+      }
+    ]
+  },
+  "addresses": [
+    {
+      "address": "Parkersburg, Wood County, West Virginia",
+      "date_range": "unknown",
+      "context": "Residence as stated in the application for Relief Feature membership.",
+      "sources": [
+        "RDApp-635058Harris145.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1939-10-07",
+      "event_type": "application",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Wheeling Division",
+      "details": "Applied for membership in the Relief Feature of the Relief Department.",
+      "sources": [
+        "RDApp-635058Harris145.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-10-25",
+      "event_type": "medical examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division",
+      "details": "Examined for return to duty from furlough, found medically and administratively ineligible due to age limit and prolonged absence.",
+      "sources": [
+        "RDApp-635058Harris144.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-11-27",
+      "event_type": "medical examination",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Scheduled for a medical examination at University Hospital by the Diagnostic Unit.",
+      "sources": [
+        "RDApp-635058Harris141.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "unknown",
+      "injury_type": "Heart condition (aortic systolic murmur)",
+      "body_part": "Heart",
+      "narrative": "Charley Harris was found to have a heart lesion, specifically an aortic systolic murmur. This condition led to his rejection for employment and required further medical examination before he could be considered safe for train service.",
+      "medical_examinations": [
+        {
+          "date": "1939-10-25",
+          "examiner": "Dr. Nimal",
+          "finding": "Not disabled but not suitable for train service without observation and further examination.",
+          "notes": "The condition was noted as a serious heart condition, affecting his eligibility for employment in train service.",
+          "sources": [
+            "RDApp-635058Harris144.jpg.json"
+          ]
+        },
+        {
+          "date": "1939-11-27",
+          "examiner": "Dr. E. V. Milholland",
+          "finding": "Required further examination for employment decision.",
+          "notes": "Scheduled for a detailed medical examination at University Hospital to determine his fitness for work.",
+          "sources": [
+            "RDApp-635058Harris141.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. E. V. Milholland",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-10-25",
+          "finding": "Not suitable for train service without further examination."
+        },
+        {
+          "date": "1939-11-27",
+          "finding": "Scheduled for detailed medical examination."
+        }
+      ]
+    },
+    {
+      "name": "Dr. Nimal",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1939-10-25",
+          "finding": "Not disabled but not suitable for train service without observation."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1939-10-31",
+      "event": "Decision to examine Charley Harris before allowing him to work.",
+      "significance": "Reflects the company\u2019s cautious approach towards employing individuals with serious health conditions in train service.",
+      "sources": [
+        "RDApp-635058Harris143.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 6,
+    "date_range": {
+      "earliest": "1939-10-25",
+      "latest": "1939-11-27"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered, providing detailed information on medical examinations and employment status. However, it lacks comprehensive details about Harris's earlier career or any subsequent developments after November 1939.",
+    "data_quality_notes": [
+      "OCR quality is generally good but contains minor errors such as 'Certf.' instead of 'Cert.'",
+      "Some documents are partially truncated, affecting the completeness of information."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Charley Harris reveals the stringent medical standards and cautious employment practices in railroad companies during the early 20th century.",
+      "It also highlights the importance of health insurance and relief features for employees facing medical challenges."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases involving heart conditions?",
+      "What were the broader implications of these practices on employee morale and retention?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

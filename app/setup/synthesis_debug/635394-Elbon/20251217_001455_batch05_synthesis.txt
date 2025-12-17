@@ -1,0 +1,255 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo V. Elbon",
+    "name_variations": [
+      {
+        "name": "L.J. Alvin",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635394Elbon041.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo W. Ellons",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635394Elbon042.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Verna Ellor",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635394Elbon043.jpg.json"
+        ]
+      },
+      {
+        "name": "Les V. Elson",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635394Elbon045.jpg.json",
+          "RDApp-635394Elbon048.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "There is a discrepancy in the birth year between documents, but most records indicate 1896."
+  },
+  "biographical_narrative": "Leo V. Elbon was an employee of the Baltimore & Ohio Railroad Company from at least 1927 onwards, initially working as a Fireman and later transitioning to roles in personnel management. He experienced several periods of disability due to illness, notably influenza in February 1933 and again in March 1927, which required medical attention and sick leave. His employment spanned different departments including the ET Department and General Personnel Division, with his location primarily being Grafton, West Virginia. Elbon's career was marked by periods of disablement and return to duty, reflecting the challenges faced by railroad workers during this era.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "106 Mulberry St",
+      "date_range": "unknown",
+      "context": "Residence of L.J. Alvin, possibly related to Elbon.",
+      "sources": [
+        "RDApp-635394Elbon041.jpg.json"
+      ]
+    },
+    {
+      "address": "Keyser, W.Va.",
+      "date_range": "unknown",
+      "context": "Residence of Leo W. Ellons, possibly related to Elbon.",
+      "sources": [
+        "RDApp-635394Elbon042.jpg.json"
+      ]
+    },
+    {
+      "address": "Grafton",
+      "date_range": "1927 - unknown",
+      "context": "Residence and employment location of Leo V. Elbon.",
+      "sources": [
+        "RDApp-635394Elbon044.jpg.json",
+        "RDApp-635394Elbon048.jpg.json"
+      ]
+    },
+    {
+      "address": "220 Thayer St",
+      "date_range": "unknown",
+      "context": "Residence of Leo V. Elbon.",
+      "sources": [
+        "RDApp-635394Elbon047.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1928-01-23",
+      "event_type": "application",
+      "position": null,
+      "department": "General Personnel",
+      "division": "Personnel",
+      "details": "Application date for contributions.",
+      "sources": [
+        "RDApp-635394Elbon043.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-02-22",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": "ET Department",
+      "division": "Cu Division",
+      "details": "Disabled due to influenza.",
+      "sources": [
+        "RDApp-635394Elbon048.jpg.json",
+        "RDApp-635394Elbon047.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-03-11",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed duty after recovery from influenza.",
+      "sources": [
+        "RDApp-635394Elbon048.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-03-10",
+      "event_type": "termination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Termination due to LaFSID (Reported Transferable).",
+      "sources": [
+        "RDApp-635394Elbon043.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-03-11",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to duty after termination.",
+      "sources": [
+        "RDApp-635394Elbon048.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1927-02-22",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Leo V. Elbon was disabled due to influenza from February 22, 1927, and received sick leave until March 10, 1927.",
+      "medical_examinations": [
+        {
+          "date": "1927-03-10",
+          "examiner": "Dr. Guddant",
+          "finding": "Able to return to duty on 3/11/1927",
+          "notes": null,
+          "sources": [
+            "RDApp-635394Elbon048.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1927-03-01",
+            "end": "1927-10-27"
+          },
+          "days": 9,
+          "amount": 36.27,
+          "check_number": null,
+          "sources": [
+            "RDApp-635394Elbon044.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1933-02",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Leo V. Elbon was disabled due to influenza in February 1933, and the exact dates of disablement are not specified.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": "Dr. Stine",
+          "finding": null,
+          "notes": null,
+          "sources": [
+            "RDApp-635394Elbon044.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Guddant",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1927-03-10",
+          "finding": "Able to return to duty on 3/11/1927"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Stine",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1948-12-19",
+      "event": "Notice of disablement for L.J. Alvin (possibly related to Elbon)",
+      "significance": "Indicates a possible connection between Leo V. Elbon and L.J. Alvin.",
+      "sources": [
+        "RDApp-635394Elbon041.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1927-02-22",
+      "latest": "1948-12-19"
+    },
+    "completeness_assessment": "The records are fairly complete for the period of employment and medical history, but there is some inconsistency in names and details.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have partially illegible text.",
+      "There are discrepancies in names and birth years."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical support systems for railroad workers during the early 20th century, including sick leave benefits and disability payments.",
+      "They also highlight the challenges faced by employees due to illnesses like influenza."
+    ],
+    "comparative_questions": [
+      "How did the medical practices of the B&O Railroad compare with other railroads or industries?",
+      "What were the typical durations of disablement for different types of injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.9,
+    "overall": 0.82
+  }
+}

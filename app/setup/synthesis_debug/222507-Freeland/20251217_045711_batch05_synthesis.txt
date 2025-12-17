@@ -1,0 +1,234 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Freeland, Thomas B.",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland041.jpg.json",
+          "RDApp-222507Freeland043.jpg.json"
+        ]
+      },
+      {
+        "name": "THOMAS B FREELAND",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland050.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1889,
+    "confidence_notes": "High confidence in identity and birth year based on consistent documentation."
+  },
+  "biographical_narrative": "Thomas B. Freeland was a carman employed by the Baltimore & Ohio Railroad Company, working primarily in the Cumberland Division of West Virginia. His career with the railroad spanned several decades, marked by multiple instances of disability due to both illness and injury. Freeland's first recorded instance of disablement occurred on August 24, 1949, when he was diagnosed with a varicose ulcer on his right leg, which kept him from work until September 19, 1949. He returned to duty on September 26, 1949. Another significant event in Freeland's career occurred on March 18, 1950, when he was disabled by influenza, leading to a temporary suspension of his duties and subsequent medical examination. Throughout these periods, Freeland received disability benefits from the company as per their relief department policies.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address as stated on multiple documents",
+      "sources": [
+        "RDApp-222507Freeland041.jpg.json",
+        "RDApp-222507Freeland049.jpg.json"
+      ]
+    },
+    {
+      "address": "W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address as stated on a document",
+      "sources": [
+        "RDApp-222507Freeland043.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "mp",
+      "division": "Cumb",
+      "details": "Started as a carman in the Cumberland Division.",
+      "sources": [
+        "RDApp-222507Freeland041.jpg.json"
+      ]
+    },
+    {
+      "date": "1949-08-24",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "mp",
+      "division": "Cumb",
+      "details": "Disabled by varicose ulcer on right leg.",
+      "sources": [
+        "RDApp-222507Freeland048.jpg.json",
+        "RDApp-222507Freeland049.jpg.json"
+      ]
+    },
+    {
+      "date": "1949-09-26",
+      "event_type": "return to duty",
+      "position": "Carman",
+      "department": "mp",
+      "division": "Cumb",
+      "details": "Returned to work after varicose ulcer disability.",
+      "sources": [
+        "RDApp-222507Freeland049.jpg.json"
+      ]
+    },
+    {
+      "date": "1950-03-18",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "mp",
+      "division": "Cumb",
+      "details": "Disabled by influenza.",
+      "sources": [
+        "RDApp-222507Freeland041.jpg.json",
+        "RDApp-222507Freeland042.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1949-08-24",
+      "injury_type": "Varicose ulcer right leg",
+      "body_part": "Right leg",
+      "narrative": "Freeland was disabled by a varicose ulcer on his right leg from August 24, 1949, to September 19, 1949. He resumed duty on September 26, 1949.",
+      "medical_examinations": [
+        {
+          "date": "1949-08-31",
+          "examiner": "Dr. W.B. Baker",
+          "finding": "disabled",
+          "notes": "Examination of the time record shows that wages were not allowed during this period.",
+          "sources": [
+            "RDApp-222507Freeland049.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1949-08-30",
+            "end": null
+          },
+          "days": 20,
+          "amount": 30.0,
+          "check_number": "5813",
+          "sources": [
+            "RDApp-222507Freeland046.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1950-03-18",
+      "injury_type": "Influenza",
+      "body_part": "N/A",
+      "narrative": "Freeland was disabled by influenza from March 18, 1950 to March 29, 1950. He resumed duty on March 31, 1950.",
+      "medical_examinations": [
+        {
+          "date": "1950-03-24",
+          "examiner": "Dr. R.T. Agostini",
+          "finding": "disabled",
+          "notes": "Inspected and certified as disabled by influenza.",
+          "sources": [
+            "RDApp-222507Freeland041.jpg.json",
+            "RDApp-222507Freeland042.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1950-03-25",
+            "end": "1950-03-31"
+          },
+          "days": 7,
+          "amount": 1.5,
+          "check_number": "91247",
+          "sources": [
+            "RDApp-222507Freeland041.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. R.T. Agostini",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1950-03-24",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. W.B. Baker",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1949-08-31",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1952-03-21",
+      "event": "Notice of disablement sent to Relief Department and Medical Examiner.",
+      "significance": "Indicates ongoing administrative process for disability claims.",
+      "sources": [
+        "RDApp-222507Freeland043.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1946-11-12",
+      "latest": "1952-03-21"
+    },
+    "completeness_assessment": "The record is fairly complete with detailed documentation of Freeland's injuries and disability benefits. However, there are no documents detailing his initial hiring or any promotions.",
+    "data_quality_notes": [
+      "OCR quality varies; some dates and amounts were truncated in the OCR text.",
+      "Some fields contain conflicting information, such as occupation listed differently across documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case reveals the extent of medical support provided by railroad companies to their employees during periods of disability due to illness and injury.",
+      "It also highlights the bureaucratic process involved in managing employee health and safety, including the role of medical examiners and relief departments."
+    ],
+    "comparative_questions": [
+      "How did the benefits and administrative processes for disabled workers vary between different railroad companies?",
+      "What were the typical durations and causes of disability among carmen during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

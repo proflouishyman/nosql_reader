@@ -1,0 +1,244 @@
+{
+  "person_identity": {
+    "canonical_name": "Hilario Panetta",
+    "name_variations": [
+      {
+        "name": "Hilario Parnella",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta181.jpg.json"
+        ]
+      },
+      {
+        "name": "Panetta Harris",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta182.jpg.json"
+        ]
+      },
+      {
+        "name": "Hlario Panette",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta183.jpg.json"
+        ]
+      },
+      {
+        "name": "Ilaric Panetta",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205699Panetta184.jpg.json"
+        ]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta186.jpg.json"
+        ]
+      },
+      {
+        "name": "Dario Panetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta187.jpg.json"
+        ]
+      },
+      {
+        "name": "Glario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta189.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": 1875,
+    "confidence_notes": "The birth year is derived from the document dated March 1, 1927. Name variations are noted but 'Hilario Panetta' appears most frequently."
+  },
+  "biographical_narrative": "Hilario Panetta was a laborer employed by the Baltimore & Ohio Railroad Company in various capacities throughout his career from at least the early 1920s until at least 1927. His employment records indicate multiple instances of sickness and disability, including influenza and bronchial pneumonia, which often required medical examination and temporary suspension of wages. Despite these health issues, Panetta continued to work for the railroad company, demonstrating his commitment to his job despite significant health challenges.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Keyser, W.Va.",
+      "date_range": "unknown",
+      "context": "Residence for medical examination",
+      "sources": [
+        "RDApp-205699Panetta181.jpg.json"
+      ]
+    },
+    {
+      "address": "Vernon St - Sayre",
+      "date_range": "unknown",
+      "context": "Residence for medical examination",
+      "sources": [
+        "RDApp-205699Panetta189.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Laborer",
+      "department": "MD",
+      "division": "unknown",
+      "details": "Began employment as a laborer, exact date not specified.",
+      "sources": [
+        "RDApp-205699Panetta181.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-03-01",
+      "event_type": "injury",
+      "position": "Track Laborer",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to bronchial pneumonia.",
+      "sources": [
+        "RDApp-205699Panetta187.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-03-27",
+      "event_type": "injury",
+      "position": "Shop Laborer",
+      "department": "M.P.",
+      "division": "Cu.",
+      "details": "Reported disabled due to influenza.",
+      "sources": [
+        "RDApp-205699Panetta184.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1927-03-27",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Hilario Panetta was reported disabled due to influenza from March 27, 1927. He received sickness payments for several weeks.",
+      "medical_examinations": [
+        {
+          "date": "1927-03-27",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-205699Panetta184.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1927-02-27",
+            "end": "1927-03-31"
+          },
+          "days": 25,
+          "amount": 25.32,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta184.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1927-03-01",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Panetta was reported disabled due to bronchial pneumonia from March 1, 1927. He was not allowed wages during this period.",
+      "medical_examinations": [
+        {
+          "date": "1927-03-01",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-205699Panetta187.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Burchett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1922-03-11",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. R. H. Ghostwhite",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1926-03-17",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1927-04-11",
+      "event": "Inspection Record Updated",
+      "significance": "Indicates ongoing medical review and management of Panetta's condition.",
+      "sources": [
+        "RDApp-205699Panetta190.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1922-03-11",
+      "latest": "1927-04-11"
+    },
+    "completeness_assessment": "The records are fairly complete for the period covered, but there is some inconsistency in names and positions.",
+    "data_quality_notes": [
+      "Name variations make identity resolution challenging.",
+      "Some documents have incomplete or missing information."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the challenges faced by railroad workers due to frequent illnesses, particularly during flu seasons.",
+      "They also show the company's response in terms of medical examination and wage suspension."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases?",
+      "What were the broader health trends among railroad workers at this time?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.9,
+    "overall": 0.82
+  }
+}

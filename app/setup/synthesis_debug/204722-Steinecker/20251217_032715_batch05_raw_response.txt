@@ -1,0 +1,207 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {"name": "Steinecker", "confidence": "high", "sources": ["RDApp-204722Steinecker041.jpg.json"]},
+      {"name": "William Steinbaker", "confidence": "medium", "sources": ["RDApp-204722Steinecker042.jpg.json"]},
+      {"name": "William S. Einecker", "confidence": "low", "sources": ["RDApp-204722Steinecker043.jpg.json"]},
+      {"name": "Wm Steiner", "confidence": "medium", "sources": ["RDApp-204722Steinecker046.jpg.json"]},
+      {"name": "William Heinacker", "confidence": "low", "sources": ["RDApp-204722Steinecker048.jpg.json"]},
+      {"name": "W. Steinstock", "confidence": "low", "sources": ["RDApp-204722Steinecker049.jpg.json"]},
+      {"name": "W. S. Steinicker", "confidence": "medium", "sources": ["RDApp-204722Steinecker050.jpg.json"]}
+    ],
+    "employee_id": "204722",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is based on the most common name usage and employment records. There are several variations in spelling, which may be due to clerical errors or different individuals."
+  },
+  
+  "biographical_narrative": "William Steinecker began his career as a fireman with the Baltimore & Ohio Railroad Company around the early 1900s, based on available documents. His employment spanned several years and involved various positions within the railroad system. He experienced multiple injuries during his tenure, including an incident in November 1910 where he was sick and unable to work for a period, and another injury in July 1911 when he hurt his second cone finger. Steinecker also had at least one accident on February 9, 1912, where he injured his hand while working as a fireman. Throughout these incidents, Steinecker received medical attention and was provided with disability benefits by the company's Relief Department.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information on spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "West Port",
+      "date_range": "unknown",
+      "context": "Residence address as stated in documents",
+      "sources": ["RDApp-204722Steinecker042.jpg.json", "RDApp-204722Steinecker043.jpg.json"]
+    },
+    {
+      "address": "West End",
+      "date_range": "unknown",
+      "context": "Residence address as stated in documents",
+      "sources": ["RDApp-204722Steinecker043.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1901-04-13",
+      "event_type": "medical examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Balls",
+      "details": "William Steinecker underwent a medical examination as part of his employment.",
+      "sources": ["RDApp-204722Steinecker046.jpg.json"]
+    },
+    {
+      "date": "1910-11-07",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "William Steinecker reported being sick and unable to work.",
+      "sources": ["RDApp-204722Steinecker042.jpg.json"]
+    },
+    {
+      "date": "1911-07-09",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "William Steinecker injured his second cone finger.",
+      "sources": ["RDApp-204722Steinecker047.jpg.json"]
+    },
+    {
+      "date": "1912-02-09",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "William Steinecker injured his hand while working.",
+      "sources": ["RDApp-204722Steinecker048.jpg.json", "RDApp-204722Steinecker049.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1910-11-07",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Steinecker reported being sick and unable to work, leading to a period of disability benefits.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "1910-11-07", "end": null},
+          "days": 1,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker042.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    },
+    {
+      "injury_date": "1911-07-09",
+      "injury_type": "Injury to second cone finger",
+      "body_part": "Second Cone Finger",
+      "narrative": "William Steinecker injured his second cone finger and was provided with disability benefits for eight days.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "1911-07-06", "end": "1911-07-13"},
+          "days": 8,
+          "amount": null,
+          "check_number": "98531",
+          "sources": ["RDApp-204722Steinecker047.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    },
+    {
+      "injury_date": "1912-02-09",
+      "injury_type": "Hand injury on gate",
+      "body_part": "Hand",
+      "narrative": "William Steinecker injured his hand while working as a fireman and was unable to work for ten days.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "1912-02-09", "end": "1912-02-19"},
+          "days": 10,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-204722Steinecker048.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "C.L. Robb Jr.",
+      "district": null,
+      "examinations": [{"date": "1901-04-13", "finding": "Wears no glasses, hearing defective"}]
+    },
+    {
+      "name": "J.D. Iglehart",
+      "district": 1,
+      "examinations": [{"date": "1912-02-19", "finding": "Totally disabled by accident from Feb 9 to Feb 19, 1912"}]
+    },
+    {
+      "name": "J. A. Robb Jr.",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1901-04-13",
+      "event": "Medical examination conducted for William Steinecker",
+      "significance": "Ensured he was fit to perform his duties as a fireman.",
+      "sources": ["RDApp-204722Steinecker046.jpg.json"]
+    },
+    {
+      "date": "1910-11-07",
+      "event": "Sickness reported by William Steinecker",
+      "significance": "Resulted in a period of disability benefits.",
+      "sources": ["RDApp-204722Steinecker042.jpg.json"]
+    },
+    {
+      "date": "1911-07-09",
+      "event": "Injury to second cone finger reported by William Steinecker",
+      "significance": "Led to a period of disability benefits.",
+      "sources": ["RDApp-204722Steinecker047.jpg.json"]
+    },
+    {
+      "date": "1912-02-09",
+      "event": "Hand injury reported by William Steinecker",
+      "significance": "Resulted in a period of disability benefits.",
+      "sources": ["RDApp-204722Steinecker048.jpg.json", "RDApp-204722Steinecker049.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1901-04-13", "latest": "1912-02-19"},
+    "completeness_assessment": "The records are fairly complete for injury and medical examination events, but lack details on the start date of employment or any promotions. There is also no information about family members.",
+    "data_quality_notes": [
+      "There are several variations in name spelling across documents which may indicate clerical errors.",
+      "Some forms have incomplete sections, such as missing payment amounts and check numbers."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal the extent of medical support provided to railroad employees during this period, including disability benefits for sickness and injury.",
+      "Medical examinations were a regular part of employment, indicating the importance placed on employee health."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's policies compare with other railroads in terms of medical support?",
+      "What was the average duration of disability claims for different types of injuries?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

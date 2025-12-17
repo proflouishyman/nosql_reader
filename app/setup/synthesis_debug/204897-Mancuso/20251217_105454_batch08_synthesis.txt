@@ -1,0 +1,132 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "L. Mecanno",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco076.jpg.json"
+        ]
+      },
+      {
+        "name": "Luigi Marquez",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco075.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1886,
+    "confidence_notes": "High confidence in birth year based on medical examination record."
+  },
+  "biographical_narrative": "Luigi Mancuso, a carman for the Baltimore and Ohio Railroad Company, had a career marked by periods of furlough and reinstatement. His first documented furlough began on May 28, 1931, following which he was reinstated on June 26, 1933. Mancuso's employment records indicate that he faced challenges with maintaining his insurance benefits during periods of absence from active service. Despite these difficulties, he continued to seek reinstatement and maintain his membership in the company\u2019s relief department. His career also included medical examinations and handling overpayments for contributions.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "111 Pulaski St., Connellsville, Pa",
+      "date_range": "unknown",
+      "context": "Residential address for payment and correspondence",
+      "sources": [
+        "RDApp-204897Manusco078.jpg.json",
+        "RDApp-204897Manusco080.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1931-05-28",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Mancuso was furloughed from his position as a carman.",
+      "sources": [
+        "RDApp-204897Manusco074.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-06-26",
+      "event_type": "reinstatement",
+      "position": "Carman",
+      "department": null,
+      "division": "Pittsburgh C division",
+      "details": "Mancuso was reinstated after a furlough.",
+      "sources": [
+        "RDApp-204897Manusco074.jpg.json",
+        "RDApp-204897Manusco076.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [],
+  "medical_examiners": [
+    {
+      "name": "Dr. J. E. Hurley",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1933-07-03",
+          "finding": "Physically O.K."
+        }
+      ]
+    },
+    {
+      "name": "E. V. Milholland, M.D.",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1936-02-12",
+      "event": "Notification of ineligibility for benefits due to furlough period",
+      "significance": "Mancuso was informed he would not receive benefits for a recent disability.",
+      "sources": [
+        "RDApp-204897Manusco072.jpg.json",
+        "RDApp-204897Manusco073.jpg.json"
+      ]
+    },
+    {
+      "date": "1936-02-12",
+      "event": "Request for physical inspection upon return to duty",
+      "significance": "Mancuso was instructed to report for a medical examination.",
+      "sources": [
+        "RDApp-204897Manusco072.jpg.json",
+        "RDApp-204897Manusco073.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1933-06-26",
+      "latest": "1936-02-12"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered, with detailed information on furloughs and reinstatements. However, there are no records of injuries or disputes.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors that affect readability."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in maintaining benefits during periods of unemployment and the administrative processes involved in reinstatement.",
+      "It also reveals the importance of regular medical examinations for employment eligibility and benefit maintenance."
+    ],
+    "comparative_questions": [
+      "How did furlough policies vary across different divisions or years within the Baltimore and Ohio Railroad Company?",
+      "What were the typical durations of furloughs and how did they impact workers' ability to maintain benefits?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": null,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "person_identity": {
+    "canonical_name": "Lewis Panetta",
+    "name_variations": [
+      {"name": "L. Fametta", "confidence": "low", "sources": ["RDApp-205699Panetta117.jpg.json"]},
+      {"name": "J. Pannett", "confidence": "medium", "sources": ["RDApp-205699Panetta112.jpg.json"]},
+      {"name": "C. Pannetti", "confidence": "low", "sources": ["RDApp-205699Panetta113.jpg.json"]},
+      {"name": "Clario Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta114.jpg.json"]},
+      {"name": "Alexia Panetta", "confidence": "low", "sources": ["RDApp-205699Panetta115.jpg.json"]},
+      {"name": "Harry Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta119.jpg.json"]},
+      {"name": "Dario Panetta", "confidence": "low", "sources": ["RDApp-205699Panetta118.jpg.json"]}
+    ],
+    "employee_id": "205699",
+    "birth_year": null,
+    "confidence_notes": "The identity is somewhat uncertain due to multiple name variations and lack of a clear official record."
+  },
+  
+  "biographical_narrative": "Lewis Panetta was employed as a laborer by the Baltimore & Ohio Railroad Company, working in various capacities within different divisions. His career spanned at least from 1910 through 1917, with notable periods of disablement due to sickness. In January 1916, he experienced a prolonged period of disability that lasted until early 1917. He was also involved in a strike in July 1917 but was reinstated shortly thereafter. Throughout his career, Panetta faced several health issues, including an influenza episode and other unspecified sicknesses, which required medical attention and certification from the company's Relief Department.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": null, "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "Keyser St. Keyser", "date_range": "unknown", "context": "Residence for J. Pannett", "sources": ["RDApp-205699Panetta112.jpg.json"]},
+    {"address": "Alleyson St. Skye", "date_range": "unknown", "context": "Residence for C. Pannetti", "sources": ["RDApp-205699Panetta113.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1910-06-06",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application for membership in class B $1.50.",
+      "sources": ["RDApp-205699Panetta116.jpg.json"]
+    },
+    {
+      "date": "1917-07-01",
+      "event_type": "strike",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Left service during the strike.",
+      "sources": ["RDApp-205699Panetta116.jpg.json"]
+    },
+    {
+      "date": "1917-07-16",
+      "event_type": "reinstatement",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reinstated after the strike.",
+      "sources": ["RDApp-205699Panetta116.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1916-01-07",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Lewis Panetta was totally disabled by sickness from January 7, 1916, to January 10, 1917. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1917-01-29",
+          "examiner": "L.D. Norris",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta111.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1916-12-21",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "On December 21, 1916, Lewis Panetta reported sickness at 7:30 AM.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1916-12-21",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "On December 21, 1916, another record indicates sickness at 4:00 AM.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1916-01-03",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Alexia Panetta was reported to have influenza on January 3, 1916.",
+      "medical_examinations": [
+        {
+          "date": "1916-01-03",
+          "examiner": "F.L. Norris",
+          "finding": null,
+          "notes": "Probable duration of three weeks.",
+          "sources": ["RDApp-205699Panetta115.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1917-04-21",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Harry Panetta reported sickness on April 21, 1919.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "L.D. Norris",
+      "district": "28",
+      "examinations": [{"date": "1917-01-29", "finding": "disabled"}]
+    },
+    {"name": "F.L. Norris", "district": "31", "examinations": []}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1916-12-22",
+      "event": "Notice of disablement sent from Keyser.",
+      "significance": "Indicates administrative processing for disability claims.",
+      "sources": ["RDApp-205699Panetta112.jpg.json"]
+    },
+    {
+      "date": "1917-08-30",
+      "event": "Explanation of contributions and deductions after strike and reinstatement.",
+      "significance": "Reflects financial implications of labor disputes.",
+      "sources": ["RDApp-205699Panetta116.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1916-01-03", "latest": "1917-08-30"},
+    "completeness_assessment": "The record is somewhat fragmented, with multiple name variations and incomplete information on family and specific employment details. However, it provides a clear picture of disability claims and administrative processes.",
+    "data_quality_notes": [
+      "Multiple name variations exist for the same individual, leading to some uncertainty in identity resolution.",
+      "Some documents are truncated or have illegible signatures."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["The records highlight the prevalence of sickness among railroad workers and the administrative processes involved in handling disability claims."],
+    "comparative_questions": ["How did the medical practices for handling worker disabilities vary across different divisions or regions within the B&O Railroad?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.83
+  }
+}

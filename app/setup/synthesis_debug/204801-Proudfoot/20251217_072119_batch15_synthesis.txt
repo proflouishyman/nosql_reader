@@ -1,0 +1,173 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O.D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood143.jpg.json",
+          "RDApp-204801Proudfood147.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto F. Proudfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood141.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1881,
+    "confidence_notes": "The birth year is consistent across documents, but name variations exist."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was a fireman for the Baltimore & Ohio Railroad Company from at least 1904 until his last recorded injury in August 1932. His career spanned several decades and included periods of sickness and minor injuries, such as typhoid fever in 1904 and a contusion over his left chest in 1932. Proudfoot's employment history shows that he was based primarily in Cumberland, Maryland, with some work assignments in West Virginia. He experienced at least one period of disability due to sickness for which he received benefits, as well as an injury while working on the railroad. Despite these incidents, there is no evidence of significant disputes or terminations, suggesting a stable employment history.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Cumberland",
+      "date_range": "unknown",
+      "context": "Residence as stated in multiple documents",
+      "sources": [
+        "RDApp-204801Proudfood141.jpg.json",
+        "RDApp-204801Proudfood147.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1904",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "First documented employment as a fireman, receiving benefits for typhoid fever.",
+      "sources": [
+        "RDApp-204801Proudfood149.jpg.json"
+      ]
+    },
+    {
+      "date": "August 13, 1932",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Sustained a contusion over his left chest while using a shaker bar.",
+      "sources": [
+        "RDApp-204801Proudfood147.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "August 13, 1932",
+      "injury_type": "Contusion over left chest and traumatic intercostal neuritis",
+      "body_part": "Left chest",
+      "narrative": "Proudfoot was injured while using a shaker bar on August 13, 1932. He sustained a contusion over his left chest and experienced traumatic intercostal neuritis but did not lose any work time.",
+      "medical_examinations": [
+        {
+          "date": "August 17, 1932",
+          "examiner": "Dr B H Guistwhite",
+          "finding": "Able to return to duty",
+          "notes": "X-ray was negative for fractures in the ribs.",
+          "sources": [
+            "RDApp-204801Proudfood147.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "September 3, 1904",
+      "injury_type": "Typhoid fever",
+      "body_part": null,
+      "narrative": "Proudfoot was disabled due to typhoid fever from September 3, 1904. He received benefits for his sickness.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "September 10, 1904",
+            "end": "November 9, 1904"
+          },
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204801Proudfood149.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr B H Guistwhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "August 17, 1932",
+          "finding": "Able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "Doenan",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "August 19, 1932",
+      "event": "Payment for X-ray examination",
+      "significance": "Indicates medical attention was provided after the injury.",
+      "sources": [
+        "RDApp-204801Proudfood141.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "September 3, 1904",
+      "latest": "August 19, 1932"
+    },
+    "completeness_assessment": "The record is fairly complete for the years documented but lacks information on family and personal life. Employment details are well-documented.",
+    "data_quality_notes": [
+      "Name variations exist between documents (Otto D., O.D., Otto F.).",
+      "Some forms contain incomplete or partially handwritten data."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Otto D. Proudfoot provides insight into the medical and administrative practices of railroad companies during the early 20th century, including injury reporting and disability benefits.",
+      "It highlights the physical demands and risks associated with being a fireman on the Baltimore & Ohio Railroad."
+    ],
+    "comparative_questions": [
+      "How did the treatment and compensation for injuries vary across different railroads?",
+      "What was the typical duration of sickness or injury-related absences among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "person_identity": {
+    "canonical_name": "George Aloysius Crudden",
+    "name_variations": [
+      {
+        "name": "George A. Crudden",
+        "confidence": "high",
+        "sources": [
+          "RDAPP-634503Crudden051.jpg.json",
+          "RDAPP-634503Crudden054.jpg.json"
+        ]
+      },
+      {
+        "name": "George (Aloysious) Cruddon",
+        "confidence": "medium",
+        "sources": [
+          "RDAPP-634503Crudden053.jpg.json"
+        ]
+      },
+      {
+        "name": "Geo Brude",
+        "confidence": "low",
+        "sources": [
+          "RDAPP-634503Crudden061.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634503",
+    "birth_year": 1891,
+    "confidence_notes": "The birth year is derived from the most consistent document. Name variations exist but are likely due to OCR errors or clerical mistakes."
+  },
+  "biographical_narrative": "George Aloysius Crudden was a long-serving employee of the Baltimore & Ohio Railroad Company, initially employed as a checker in Philadelphia and later transitioning into other roles such as operator and tallyman. His career spanned several decades with notable periods of disability due to health issues, particularly involving his left leg. Crudden's employment records indicate he faced medical challenges that impacted his ability to work, including suspected osteomyelitis. He was also involved in administrative processes related to retaining membership for natural death benefits after leaving service and updating beneficiary designations.",
+  "family": {
+    "spouse": {
+      "name": "Hazel",
+      "evidence": "Designated as the new beneficiary on a supplementary application.",
+      "sources": [
+        "RDAPP-634503Crudden054.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "1917 No. Newkirk St., Philadelphia, Pa",
+      "date_range": "unknown",
+      "context": "Residence address associated with medical reports and disablement documentation.",
+      "sources": [
+        "RDAPP-634503Crudden057.jpg.json",
+        "RDAPP-634503Crudden064.jpg.json"
+      ]
+    },
+    {
+      "address": "206 Witherspoon Ave., N. Merchantsville, NJ",
+      "date_range": "unknown",
+      "context": "Address of the designated beneficiary (Hazel).",
+      "sources": [
+        "RDAPP-634503Crudden054.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1922-04-08",
+      "event_type": "application",
+      "position": "Checker",
+      "department": null,
+      "division": "Phila Checker",
+      "details": "Applied for employment as a checker.",
+      "sources": [
+        "RDAPP-634503Crudden051.jpg.json"
+      ]
+    },
+    {
+      "date": "unknown",
+      "event_type": "promotion",
+      "position": "Operator",
+      "department": null,
+      "division": "Phila Checker",
+      "details": "Position changed from checker to operator.",
+      "sources": [
+        "RDAPP-634503Crudden051.jpg.json"
+      ]
+    },
+    {
+      "date": "unknown",
+      "event_type": "transfer",
+      "position": "Tallyman",
+      "department": null,
+      "division": "Phila Div'n",
+      "details": "Transferred to the position of tallyman.",
+      "sources": [
+        "RDAPP-634503Crudden064.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1921-07-27",
+      "injury_type": "Pains left leg, suspected osteomyelitis",
+      "body_part": "Left Leg",
+      "narrative": "Crudden was diagnosed with pain in his left leg and suspected osteomyelitis. He was unable to perform all standing duties required by his job.",
+      "medical_examinations": [
+        {
+          "date": "1921-08-05",
+          "examiner": "Dr. A.H. Clagett",
+          "finding": "disabled",
+          "notes": "Pain has subsided but not fully recovered.",
+          "sources": [
+            "RDAPP-634503Crudden057.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. A.H. Clagett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-08-05",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "G.O. Prance",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1925-04-22",
+      "event": "Updated beneficiary designation to wife Hazel.",
+      "significance": "Ensured benefits would go to his spouse in case of death.",
+      "sources": [
+        "RDAPP-634503Crudden054.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-unknown",
+      "event": "Applied for natural death benefit after leaving service.",
+      "significance": "Sought continued membership benefits post-retirement or departure from active duty.",
+      "sources": [
+        "RDAPP-634503Crudden055.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 15,
+    "date_range": {
+      "earliest": "1921-07-27",
+      "latest": "1925-05-01"
+    },
+    "completeness_assessment": "The record is relatively complete for employment and medical history but lacks details on family beyond the spouse.",
+    "data_quality_notes": [
+      "Name variations exist due to OCR errors or clerical mistakes.",
+      "Some documents contain truncated text, affecting completeness."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of health and disability benefits in railroad employment during the early 20th century.",
+      "It also shows how employees managed their medical conditions while maintaining employment."
+    ],
+    "comparative_questions": [
+      "How did other railroad companies handle similar cases?",
+      "What were common medical issues among railroad workers?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

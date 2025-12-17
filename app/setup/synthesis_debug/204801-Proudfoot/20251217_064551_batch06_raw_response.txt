@@ -1,0 +1,185 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto Prundfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood051.jpg.json"]
+      },
+      {
+        "name": "Otto D. Cloudfoot",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood055.jpg.json"]
+      },
+      {
+        "name": "Otto D. Trumfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood058.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the documents, but there are no explicit records of it. Name variations indicate possible OCR errors or typographical inconsistencies."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore and Ohio Railroad Company during the early to mid-20th century. His career with the railroad spanned several years, during which he faced multiple health issues that required medical attention and disability leave. In August of 1944, Proudfoot suffered from gastritis, a condition that kept him out of work for nearly two weeks. He was also affected by influenza in November of the same year, indicating recurring health challenges. Despite these setbacks, his employment with the railroad continued, showcasing the resilience and dedication typical among railroad workers during this period.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "139 Seymour St., Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence address during medical examination for influenza and sinus issues",
+      "sources": ["RDApp-204801Proudfood052.jpg.json"]
+    },
+    {
+      "address": "130 Seymour St., Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence address during disability benefit case documentation for gastritis",
+      "sources": ["RDApp-204801Proudfood053.jpg.json"]
+    },
+    {
+      "address": "150 Seymour St., Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence address during another disability benefit case for gastritis",
+      "sources": ["RDApp-204801Proudfood059.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumb/Cincinnati",
+      "details": "Otto D. Proudfoot worked as an engineer in the CT department, with divisions including Cincinnati and Cumberland.",
+      "sources": ["RDApp-204801Proudfood053.jpg.json", "RDApp-204801Proudfood059.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1944-06-23",
+      "injury_type": "Gastritis",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was disabled by gastritis from June 23, 1944 to July 12, 1944. He received disability benefits for this period.",
+      "medical_examinations": [
+        {
+          "date": "1944-07-06",
+          "examiner": "Dr. Dunton",
+          "finding": "able for duty as of July 6, 1944",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood058.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1944-06-23", "end": "1944-07-06"},
+          "days": 13,
+          "amount": 32.50,
+          "check_number": "96152",
+          "sources": ["RDApp-204801Proudfood059.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1944-11-24",
+      "injury_type": "Influenza & Sinus",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was disabled by influenza and sinus issues from November 24, 1944 to December 2, 1944.",
+      "medical_examinations": [
+        {
+          "date": "1944-11-24",
+          "examiner": null,
+          "finding": "disabled by influenza and sinus issues",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood051.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "W.R. Baker",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1944-12-13",
+          "finding": "able for duty as of December 2, 1944"
+        }
+      ]
+    },
+    {
+      "name": "W.P. Prame",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1944-09-07",
+          "finding": "able for duty as of September 7, 1944"
+        }
+      ]
+    },
+    {
+      "name": "B. Durette",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1944-09-23",
+          "finding": "disabled by gastritis"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1944-06-23",
+      "latest": "1944-12-13"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered, with detailed documentation of medical examinations and disability payments. However, there are some inconsistencies in name spelling and lack of information regarding family or employment history beyond health records.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents contain significant errors in names and dates."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case reveals the frequent health challenges faced by railroad workers, particularly engineers, during this period. It also highlights the structured process for handling disability claims within the Baltimore & Ohio Railroad Company.",
+      "The documentation provides insight into medical practices and administrative procedures of the time, including the role of medical examiners in assessing fitness to return to work."
+    ],
+    "comparative_questions": [
+      "How did the health challenges faced by railroad workers compare with those in other industries during this period?",
+      "What were the typical durations and causes for disability among railroad employees?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

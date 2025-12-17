@@ -1,0 +1,201 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo V. Elbon",
+    "name_variations": [
+      {
+        "name": "L. V. Elbon",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635394Elbon031.jpg.json",
+          "RDApp-635394Elbon032.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Verne Elber",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635394Elbon039.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "Identity is certain based on multiple documents, though there are minor variations in name spelling."
+  },
+  "biographical_narrative": "Leo V. Elbon began his career with the Baltimore & Ohio Railroad Company as a fireman by December 1st, 1920. His employment was marked by periods of furlough and medical examinations due to a heart condition. In February 1940, after returning from a long furlough starting July 8th, 1927, Elbon underwent a re-examination that revealed a faint systolic mitral murmur, leading to his rejection for membership in the Relief Department and employment as an engineer due to safety concerns. Despite this setback, he sought medical clearance through various examinations and consultations with doctors to resume service. His case highlights the stringent health standards required by railroad companies during the early 20th century.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence or place of examination",
+      "sources": [
+        "RDApp-635394Elbon031.jpg.json",
+        "RDApp-635394Elbon032.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1920-12-01",
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": "Third Division",
+      "details": "Elbon began his career as a fireman on the Third Division.",
+      "sources": [
+        "RDApp-635394Elbon032.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-07-08",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Elbon went on furlough.",
+      "sources": [
+        "RDApp-635394Elbon031.jpg.json"
+      ]
+    },
+    {
+      "date": "1940-02-19",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Elbon was examined and found to have a faint systolic mitral murmur, leading to his rejection for membership in the Relief Department.",
+      "sources": [
+        "RDApp-635394Elbon031.jpg.json",
+        "RDApp-635394Elbon036.jpg.json"
+      ]
+    },
+    {
+      "date": "1941-03-03",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Dr. Basil L. Page examined Elbon and found him in good health.",
+      "sources": [
+        "RDApp-635394Elbon032.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Heart Condition",
+      "body_part": "Heart",
+      "narrative": "Elbon was found to have a faint systolic mitral murmur, which led to his rejection for employment as an engineer due to safety concerns.",
+      "medical_examinations": [
+        {
+          "date": "1940-02-19",
+          "examiner": "Dr. E. M. Guistwhite",
+          "finding": "disabled",
+          "notes": "Elbon was found to have a faint systolic mitral murmur and was deemed unfit for duty.",
+          "sources": [
+            "RDApp-635394Elbon031.jpg.json",
+            "RDApp-635394Elbon033.jpg.json"
+          ]
+        },
+        {
+          "date": "1941-03-03",
+          "examiner": "Dr. Basil L. Page",
+          "finding": "not disabled",
+          "notes": "Elbon was found to be in good health and fit for duty.",
+          "sources": [
+            "RDApp-635394Elbon032.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "There was a discrepancy between the findings of Dr. Guistwhite and Dr. Basil L. Page regarding Elbon's fitness for duty.",
+        "resolution": "Unclear"
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. E. M. Guistwhite",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1940-02-19",
+          "finding": "Elbon was found to have a faint systolic mitral murmur and was deemed unfit for duty."
+        }
+      ]
+    },
+    {
+      "name": "Dr. Basil L. Page",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1941-03-03",
+          "finding": "Elbon was found to be in good health and fit for duty."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1940-02-29",
+      "event": "Request for clarification on Elbon's rejection from Relief Department membership.",
+      "significance": "Indicates the company\u2019s need to justify its decision regarding Elbon's employment status.",
+      "sources": [
+        "RDApp-635394Elbon037.jpg.json"
+      ]
+    },
+    {
+      "date": "1940-03-28",
+      "event": "Decision made to drop Elbon from the Fireman\u2019s Seniority Roster due to physical disability.",
+      "significance": "Reflects the company's adherence to medical advice in employment decisions.",
+      "sources": [
+        "RDApp-635394Elbon035.jpg.json"
+      ]
+    },
+    {
+      "date": "1941-05-06",
+      "event": "Arrangement for Elbon to be re-examined by Dr. B. H. Gustwhite.",
+      "significance": "Shows the Brotherhood's continued advocacy on behalf of Elbon and his desire to return to service.",
+      "sources": [
+        "RDApp-635394Elbon031.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1927-07-08",
+      "latest": "1941-05-06"
+    },
+    "completeness_assessment": "The record is relatively complete, detailing medical examinations and employment status changes. However, it lacks detailed information about Elbon's family or personal life outside of work.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors that affect readability.",
+      "There are discrepancies in the spelling of Elbon\u2019s name across different documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case reveals the stringent health standards required by railroad companies for employees, particularly in roles like fireman and engineer where physical fitness is critical.",
+      "It also highlights the role of labor unions in advocating for their members' rights to employment despite medical conditions."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar cases involving heart conditions?",
+      "What were the broader implications of such stringent health requirements on workforce demographics and turnover?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

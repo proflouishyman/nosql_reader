@@ -1,0 +1,205 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records from the early 20th century.
+
+EMPLOYEE FOLDER: 204897-Mancuso
+EMPLOYEE ID: 204897
+FOLDER NAME: Mancuso
+NUMBER OF DOCUMENTS: 2 - Batch 38/38
+
+Below are ALL documents from this employee's personnel file. Read carefully and generate a comprehensive biographical synthesis.
+
+
+======================================================================
+DOCUMENT 1 of 2: RDApp-204897Manusco371.jpg.json
+======================================================================
+
+OCR TEXT:
+Baltimore and Ohio Railroad Co.
+RELIEF DEPARTMENT.
+APPLICATION FOR FULL MEMBERSHIP IN THE RELIEF FEATURE.
+To the Superintendent of the Relief Department:
+I, L. R. Hughey, of Connellsville, in the County of Fayette and State of Pennsylvania, desiring to be employed in the service of the Baltimore and Ohio Railroad Company, as Maintenance of Way Department, Division, do hereby, as one of the conditions of such employment, apply for membership in the Relief Feature, and consent and agree to be bound by all the Regulations of the Relief Department now in force, and by any other Regulations of said Department hereafter adopted, applicable to the Relief Feature; for which Regulations now in force reference is hereby had to any copy of the last edition of the book of Regulations of said Department issued by the Superintendent.
+I ALSO AGREE that the said Company, by its proper agents and in the manner provided in said Regulations, shall apply monthly, in advance, from the first wages earned by
+... [truncated for length]
+
+SUMMARY:
+The document is an application for full membership in the Relief Feature of the Baltimore and Ohio Railroad Co. Relief Department. L. R. Hughey of Connellsville, Pennsylvania, applies for membership as a precondition of employment, agreeing to regular payroll deduction for relief benefits. Beneficiaries are designated, and terms for substitution of beneficiaries are included. The applicant agrees to abide by departmental regulations and releases the company from claims related to injury or death if benefits are accepted. The agreement is certified by the applicant and a witness, and the form awaits acceptance by the department superintendent.
+
+
+======================================================================
+DOCUMENT 2 of 2: RDApp-204897Manusco372.jpg.json
+======================================================================
+
+OCR TEXT:
+Questions to be Asked the Applicant by the Medical Examiner.
+1—Were you ever before employed by either the Baltimore & Ohio, Pitts. & Western, Pitts. Junct., or Cley. Term'l & Valley R. R. Co.'s; if so, by what Co., how employed, and in what Department and Division? No.
+2—Have you ever been rejected for life insurance by any life insurance company or beneficial association? If so, Why, when and where? Yes. No.
+3—Have you now any infirmity or weakness, tending to impair your health, or do you know any reason why you should not be accepted? Yes. No.
+4—Have you been vaccinated? Yes. No. 5—Date of birth? Jan 8th 1850
+6—Were you ever married? Yes. No. 7—Give names and ages of children by present or previous marriage separately. If any of them are married, give their present names:
+8—Father alive, aged 45. Father died, aged _______ of _______ .
+9—Mother 50 Mother " ________ .
+10—Of brothers and sisters—how many dead above 14 years of age? _______ Original number. 2 Number dead 0 Age at death
+... [truncated for length]
+
+SUMMARY:
+This document is a medical examination form for a railroad applicant, J.P. Adams, dated January 8, 1880. The form includes detailed questions about the applicant’s employment history, medical history, vaccination status, family health, examination findings, physical measurements, and the examiner's assessment of the applicant’s fitness for railroad work. It certifies good health, fitness for duty, and makes a recommendation regarding insurability or employability.
+
+
+{'='*70}
+YOUR TASK: GENERATE COMPREHENSIVE BIOGRAPHICAL SYNTHESIS
+{'='*70}
+
+Create a structured JSON synthesis with the following schema. Be thorough and evidence-based.
+
+{
+  "person_identity": {
+    "canonical_name": "Full official name based on most common/official usage",
+    "name_variations": [
+      {
+        "name": "Variation as it appears",
+        "confidence": "high/medium/low",
+        "sources": ["list document filenames where this variation appears"]
+      }
+    ],
+    "employee_id": "Employee ID number",
+    "birth_year": 1895,
+    "confidence_notes": "Brief assessment of identity certainty"
+  },
+  
+  "biographical_narrative": "Write 2-4 paragraphs summarizing this person's railroad career. Include: when they started, positions held, major events (injuries, promotions, disputes), family situation, and any notable circumstances. Write in past tense as a professional historian would. Make it readable and informative.",
+  
+  "family": {
+    "spouse": {
+      "name": "Spouse name or null",
+      "evidence": "How we know this",
+      "sources": ["document filenames"]
+    },
+    "parents": [
+      {
+        "name": "Parent name",
+        "relationship": "father/mother",
+        "evidence": "How mentioned",
+        "sources": ["document filenames"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Full address as stated",
+      "date_range": "When associated with this address or 'unknown'",
+      "context": "Why this address appears (residence, beneficiary address, etc.)",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Job title",
+      "department": "Department name or null",
+      "division": "Division name or null",
+      "details": "Brief description of what happened",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "YYYY-MM-DD or best available",
+      "injury_type": "Description of injury",
+      "body_part": "Affected body part(s)",
+      "narrative": "2-3 sentence description of injury, treatment, and outcome",
+      "medical_examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "examiner": "Dr. Name",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Key details from examination",
+          "sources": ["document filenames"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"},
+          "days": 10,
+          "amount": 50.00,
+          "check_number": "Check number if available",
+          "sources": ["document filenames"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true or false,
+        "narrative": "If disputed, explain the conflict between doctors or administrators",
+        "resolution": "How was it resolved or 'unclear'"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Name",
+      "district": "District number if available",
+      "examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "finding": "Brief finding"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event": "What happened",
+      "significance": "Why this matters",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "YYYY-MM-DD or best guess",
+      "latest": "YYYY-MM-DD or best guess"
+    },
+    "completeness_assessment": "1-2 sentences: How complete is this record? What's well-documented? What's missing?",
+    "data_quality_notes": [
+      "List observations about OCR quality, contradictions, clarity, etc."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "What does this case reveal about railroad labor, medical practices, administration, etc.?"
+    ],
+    "comparative_questions": [
+      "What questions could be explored by comparing this case to others?"
+    ],
+    "research_value": "High/Medium/Low"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON - no preamble, no markdown fences, no explanation
+2. Use exact schema above - include all fields even if some are empty/null
+3. Always include "sources" arrays with actual document filenames for evidence
+4. Be thorough but concise
+5. Note contradictions or uncertainties explicitly
+6. Assign realistic confidence scores (0.0-1.0) based on evidence quality
+7. Write biographical_narrative in clear, professional prose
+8. If information is missing, use null or empty arrays - don't invent data
+9. For dates, use best available format (prefer YYYY-MM-DD, but accept what documents provide)
+10. Document filenames should match the filename shown in DOCUMENT headers above
+
+Begin your response with { and end with }. Return ONLY the JSON object.

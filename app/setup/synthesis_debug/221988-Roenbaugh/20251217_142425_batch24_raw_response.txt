@@ -1,0 +1,111 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Rosenbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh232.jpg.json", "RDApp-221988Roenbaugh240.jpg.json"]},
+      {"name": "Hornbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh238.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is certain but name variations exist."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh began his career with the Baltimore & Ohio Railroad Company as a local engineman in the Cond Train Division. His employment spanned several decades, during which he experienced multiple injuries that required medical attention and disability claims. In February 1918, Roenbaugh was reported sick and received benefits until April of the same year when he returned to duty. A significant injury occurred on January 10, 1929, where he strained his right leg while off-duty but on company property, leading to a period of disability that lasted between two to five weeks. Roenbaugh also experienced another strain in September 1929 and had a sprain in May 1929. Despite these setbacks, he continued working as an engineman until at least March 1935.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "Lorain, Ohio", "date_range": "unknown", "context": "Residence for medical examination", "sources": ["RDApp-221988Roenbaugh236.jpg.json"]},
+    {"address": "Logan, O", "date_range": "February 8, 1918", "context": "Reported residence at time of sickness", "sources": ["RDApp-221988Roenbaugh239.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": "unknown", "event_type": "hire", "position": "Loc. Engineman", "department": "Cond Train Division", "division": "Cleveland", "details": null, "sources": []},
+    {"date": "February 8, 1918", "event_type": "sickness", "position": "Loc. Engineman", "department": "Cond Train Division", "division": "Cleveland", "details": "Reported sick at 7 o'clock A.M.", "sources": ["RDApp-221988Roenbaugh239.jpg.json"]},
+    {"date": "April 12, 1918", "event_type": "return to duty", "position": "Loc. Engineman", "department": null, "division": null, "details": "Certified able to return to duty after sickness.", "sources": ["RDApp-221988Roenbaugh240.jpg.json"]},
+    {"date": "January 10, 1929", "event_type": "injury", "position": "Engineman", "department": null, "division": "Akron", "details": "Strained muscles of right leg while off-duty but on company property.", "sources": ["RDApp-221988Roenbaugh236.jpg.json"]},
+    {"date": "May 1, 1929", "event_type": "injury", "position": "Engineman", "department": null, "division": "Akron", "details": "Sprained right leg (calf).", "sources": ["RDApp-221988Roenbaugh231.jpg.json"]},
+    {"date": "September 26, 1929", "event_type": "injury", "position": "Car repair Dept.", "department": null, "division": "Akron", "details": "Strain of right leg, possibly rupture of muscle fiber.", "sources": ["RDApp-221988Roenbaugh232.jpg.json"]},
+    {"date": "March 8, 1935", "event_type": "administrative issue", "position": null, "department": null, "division": null, "details": "Form submission delay investigated.", "sources": ["RDApp-221988Roenbaugh238.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "January 10, 1929",
+      "injury_type": "Strain of muscles in the right leg",
+      "body_part": "Right leg (muscles)",
+      "narrative": "Claude Roenbaugh suffered a severe strain to his right leg while off-duty but on company property. The injury was expected to last between two and five weeks.",
+      "medical_examinations": [
+        {"date": "January 19, 1929", "examiner": "J.H. Minder", "finding": "disabled", "notes": "Strained muscles of right leg (severe).", "sources": ["RDApp-221988Roenbaugh236.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "May 1, 1929",
+      "injury_type": "Sprain of the right leg (calf)",
+      "body_part": "Right calf",
+      "narrative": "Roenbaugh was examined for a sprained right leg and was expected to recover with a good prognosis.",
+      "medical_examinations": [
+        {"date": "May 1, 1929", "examiner": "J. H. Minor", "finding": "disabled", "notes": "Sprained right leg (calf). Injury of duty.", "sources": ["RDApp-221988Roenbaugh231.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "September 26, 1929",
+      "injury_type": "Strain of the right leg (possibly rupture of muscle fiber)",
+      "body_part": "Right leg",
+      "narrative": "Roenbaugh was examined for a strain in his right leg and sent home with supporting lab notes.",
+      "medical_examinations": [
+        {"date": "September 26, 1929", "examiner": null, "finding": "disabled", "notes": "Strain of the right leg.", "sources": ["RDApp-221988Roenbaugh232.jpg.json"]}
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J. H. Minor",
+      "district": "18",
+      "examinations": [{"date": "May 1, 1929", "finding": "disabled"}, {"date": "August 1, 1929", "finding": "improving slowly"}]
+    },
+    {
+      "name": "J.H. Minder",
+      "district": "18",
+      "examinations": [{"date": "January 19, 1929", "finding": "disabled"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {"date": "March 8, 1935", "event": "Investigation into late form submission.", "significance": "Indicates administrative oversight and potential delays in reporting injuries.", "sources": ["RDApp-221988Roenbaugh238.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "February 8, 1918", "latest": "March 8, 1935"},
+    "completeness_assessment": "The record is fairly complete for injury and medical examination details but lacks information on Roenbaugh's family life or personal circumstances outside of work.",
+    "data_quality_notes": ["Name variations exist (Roenbaugh, Rosenbaugh, Hornbaugh).", "Some documents are truncated or partially legible."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the frequent injuries experienced by railroad workers and the company's process for handling such incidents.",
+      "It also shows the importance of timely reporting in administrative processes, as evidenced by the late submission investigation."
+    ],
+    "comparative_questions": ["How did injury rates vary across different divisions or departments within the B&O Railroad?", "What were the typical durations and severities of injuries among railroad workers?"],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

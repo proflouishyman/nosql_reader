@@ -1,0 +1,183 @@
+{
+  "person_identity": {
+    "canonical_name": "O.D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "D.D. Proudfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood151.jpg.json"]
+      },
+      {
+        "name": "O D Provogor",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood156.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": null,
+    "confidence_notes": "Identity is reasonably certain but variations in name suggest potential for confusion with other employees."
+  },
+  
+  "biographical_narrative": "O.D. Proudfoot was a fireman employed by the Baltimore & Ohio Railroad Company, working primarily in the coal and locomotive divisions during the early 20th century. His career records indicate multiple instances of sickness-related absences, which were managed through the company's Relief Department. Notably, he experienced periods of disability due to various health issues including typhoid fever and liver problems. Despite these challenges, Proudfoot continued his service as a fireman throughout the period documented in the records.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "South Cumberland",
+      "date_range": "unknown",
+      "context": "Residence for medical examination purposes",
+      "sources": ["RDApp-204801Proudfood153.jpg.json"]
+    },
+    {
+      "address": "Rowlesburg W. Va",
+      "date_range": "unknown",
+      "context": "Residence",
+      "sources": ["RDApp-204801Proudfood158.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": "Coal",
+      "division": "Cumberland",
+      "details": "Started as a fireman in the coal division.",
+      "sources": ["RDApp-204801Proudfood151.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": "Locomotive",
+      "division": "Cumberland",
+      "details": "Sick leave due to unspecified illness.",
+      "sources": ["RDApp-204801Proudfood152.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": "Trans",
+      "division": "Cumberland",
+      "details": "Sick leave due to liver illness.",
+      "sources": ["RDApp-204801Proudfood160.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Unspecified sickness",
+      "body_part": null,
+      "narrative": "O.D. Proudfoot took sick leave due to an unspecified illness, receiving benefits for 26 days.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "J.A. Doerner, M.D.",
+          "finding": "disabled",
+          "notes": "Certified by medical examiner in District No. 6.",
+          "sources": ["RDApp-204801Proudfood151.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 26,
+          "amount": 26.00,
+          "check_number": null,
+          "sources": ["RDApp-204801Proudfood151.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": null,
+      "injury_type": "Liver illness",
+      "body_part": "Liver",
+      "narrative": "O.D. Proudfoot took sick leave due to liver illness, receiving benefits for an unspecified period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. Kleeman",
+          "finding": "disabled",
+          "notes": "",
+          "sources": ["RDApp-204801Proudfood160.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J.A. Doerner, M.D.",
+      "district": "6",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Kleeman",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1902-07-31",
+      "latest": "1904-09-15"
+    },
+    "completeness_assessment": "The records are relatively complete for sickness claims and benefit payments but lack detailed information on employment history, family details, or specific dates.",
+    "data_quality_notes": [
+      "Name variations exist across documents which may indicate potential confusion with other employees.",
+      "Some forms contain truncated text making full context unclear."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the health challenges faced by railroad workers and the company's response through its Relief Department.",
+      "They also highlight the importance of medical examinations in determining eligibility for benefits."
+    ],
+    "comparative_questions": [
+      "How did sickness rates vary among different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What was the average duration and cost of sick leave claims?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

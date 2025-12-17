@@ -1,0 +1,172 @@
+{
+  "person_identity": {
+    "canonical_name": "George A. Crudden",
+    "name_variations": [
+      {
+        "name": "Geo Brude",
+        "confidence": "medium",
+        "sources": [
+          "RDAPP-634503Crudden061.jpg.json"
+        ]
+      },
+      {
+        "name": "George A. Crullin",
+        "confidence": "low",
+        "sources": [
+          "RDAPP-634503Crudden062.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634503",
+    "birth_year": null,
+    "confidence_notes": "The identity of George A. Crudden is certain, but variations in name and potential confusion with other individuals exist."
+  },
+  "biographical_narrative": "George A. Crudden was a tallyman employed by the Baltimore & Ohio Railroad Company during the early twentieth century. His career was marked by at least one significant injury that occurred on July 27, 1917, while he was on duty as a tollman. This incident led to his disablement and subsequent medical attention. Crudden's employment history also includes another notable event in which he suffered from pains in the left leg, suspected to be osteomyelitis, beginning on July 27, 1921. Despite these setbacks, Crudden was able to return to work after receiving clearance from medical examiners.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "1947 No. Fremont St.",
+      "date_range": "July 27, 1917",
+      "context": "Residence at the time of his first injury report",
+      "sources": [
+        "RDAPP-634503Crudden061.jpg.json"
+      ]
+    },
+    {
+      "address": "1917 No. Newkirk St.",
+      "date_range": "July 27, 1921 - August 5, 1921",
+      "context": "Residence at the time of his second injury report",
+      "sources": [
+        "RDAPP-634503Crudden064.jpg.json",
+        "RDAPP-634503Crudden065.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "July 27, 1917",
+      "event_type": "injury",
+      "position": "Tollman",
+      "department": null,
+      "division": null,
+      "details": "Suffered an accident while on duty.",
+      "sources": [
+        "RDAPP-634503Crudden061.jpg.json"
+      ]
+    },
+    {
+      "date": "August 18, 1921",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty after a period of disablement.",
+      "sources": [
+        "RDAPP-634503Crudden062.jpg.json",
+        "RDAPP-634503Crudden063.jpg.json"
+      ]
+    },
+    {
+      "date": "July 27, 1921",
+      "event_type": "injury",
+      "position": "Tallyman",
+      "department": null,
+      "division": null,
+      "details": "Reported pains in the left leg, suspected osteomyelitis.",
+      "sources": [
+        "RDAPP-634503Crudden064.jpg.json",
+        "RDAPP-634503Crudden065.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "July 27, 1917",
+      "injury_type": "Accident",
+      "body_part": null,
+      "narrative": "Crudden suffered an accident while on duty as a tollman. The nature of the injury is not specified in the records.",
+      "medical_examinations": [],
+      "payments": []
+    },
+    {
+      "injury_date": "July 27, 1921",
+      "injury_type": "Pains left leg suspected osteomyelitis",
+      "body_part": "Left upper leg",
+      "narrative": "Crudden reported pains in his left leg on July 27, 1921. The condition was suspected to be osteomyelitis and led to a period of disablement.",
+      "medical_examinations": [
+        {
+          "date": "August 5, 1921",
+          "examiner": "Dr. A. H. Clagett",
+          "finding": null,
+          "notes": "Pains left upper leg, suspected osteomyelitis.",
+          "sources": [
+            "RDAPP-634503Crudden064.jpg.json",
+            "RDAPP-634503Crudden065.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. A. H. Clagett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "August 5, 1921",
+          "finding": "Pains left upper leg, suspected osteomyelitis."
+        }
+      ]
+    },
+    {
+      "name": "G.O. Prance",
+      "district": null,
+      "examinations": [
+        {
+          "date": "August 18, 1921",
+          "finding": "Certified able to return to duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 5,
+    "date_range": {
+      "earliest": "July 27, 1917",
+      "latest": "August 5, 1921"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered but lacks details on Crudden's employment prior to his injuries and any family information.",
+    "data_quality_notes": [
+      "Variations in name spelling exist across documents (Geo Brude, George A. Crullin).",
+      "Some forms have incomplete or missing fields."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of George A. Crudden highlights the vulnerability of railroad workers to injury and the importance of medical support within the industry.",
+      "It also illustrates the bureaucratic process involved in managing employee injuries and return-to-work procedures."
+    ],
+    "comparative_questions": [
+      "How did the treatment and compensation for injuries vary across different railroads?",
+      "What were the common causes of work-related injuries among railroad employees?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

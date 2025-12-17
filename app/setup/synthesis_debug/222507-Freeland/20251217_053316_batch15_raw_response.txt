@@ -1,0 +1,207 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thomas B. Freehand",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland141.jpg.json"]
+      },
+      {
+        "name": "Thomas B. Ireland",
+        "confidence": "low",
+        "sources": ["RDApp-222507Freeland142.jpg.json"]
+      },
+      {
+        "name": "Frank Anderson",
+        "confidence": "low",
+        "sources": ["RDApp-222507Freeland143.jpg.json"]
+      },
+      {
+        "name": "Thomas B. Zealand",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland145.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "Confidence is medium due to name variations and lack of explicit birth year information."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland began his career with the Baltimore & Ohio Railroad in an unspecified capacity around 1917, as evidenced by a medical examination report from that year. His employment records indicate he held positions such as Trackman and Tender Repairman. In 1919, Freeland was reported to be able to return to duty after a period of disablement due to acute bronchitis. However, his career faced several interruptions due to health issues, including an incident in April 1942 where he was totally disabled by sickness for ten days. Throughout the early 20th century, Freeland's employment with B&O Railroad involved various administrative and medical examinations that documented his fitness for duty and periods of disablement.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Section 'A', Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence address used in correspondence",
+      "sources": ["RDApp-222507Freeland148.jpg.json"]
+    },
+    {
+      "address": "Station 'A', Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Correspondence address",
+      "sources": ["RDApp-222507Freeland147.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1917-05-10",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Medical Examiner's report of disablement due to acute bronchitis.",
+      "sources": ["RDApp-222507Freeland145.jpg.json"]
+    },
+    {
+      "date": "1919-05-07",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty after a period of disablement.",
+      "sources": ["RDApp-222507Freeland144.jpg.json"]
+    },
+    {
+      "date": "1920-03-3",
+      "event_type": "dismissal",
+      "position": "Tender Repairman",
+      "department": null,
+      "division": null,
+      "details": "Dismissed without refund.",
+      "sources": ["RDApp-222507Freeland150.jpg.json"]
+    },
+    {
+      "date": "1942-04-28",
+      "event_type": "injury",
+      "position": "Track R.P.",
+      "department": null,
+      "division": null,
+      "details": "Totally disabled by sickness from April 28 to May 8, 1942. Wages were not allowed during this period.",
+      "sources": ["RDApp-222507Freeland141.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1917-05-10",
+      "injury_type": "Acute Bronchitis",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland was reported disabled by acute bronchitis and examined on May 10, 1917.",
+      "medical_examinations": [
+        {
+          "date": "1917-05-10",
+          "examiner": "Dr. M.E.B. Owen",
+          "finding": "disabled",
+          "notes": "Probable duration was seven days.",
+          "sources": ["RDApp-222507Freeland145.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1942-04-28",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Freeland was totally disabled by sickness from April 28 to May 8, 1942.",
+      "medical_examinations": [
+        {
+          "date": "1942-05-14",
+          "examiner": "T.B. Redhearn Medical Examiner",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-222507Freeland141.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. M.E.B. Owen",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1917-05-10",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "T.B. Redhearn Medical Examiner",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1942-05-14",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1920-05-18",
+      "event": "Request to retain natural death benefits denied due to late application.",
+      "significance": "Indicates Freeland's attempt to maintain insurance coverage after leaving service.",
+      "sources": ["RDApp-222507Freeland146.jpg.json"]
+    },
+    {
+      "date": "1930-05-13",
+      "event": "Request to retain natural death benefits denied due to late application.",
+      "significance": "Similar attempt by Freeland to maintain insurance coverage after leaving service, but with a different name variation (Thomas A. Freeland).",
+      "sources": ["RDApp-222507Freeland147.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1917-05-10",
+      "latest": "1942-05-14"
+    },
+    "completeness_assessment": "The record is relatively complete for medical and administrative events but lacks details on personal life, such as family information.",
+    "data_quality_notes": [
+      "Name variations are present across documents, leading to some uncertainty in identity resolution.",
+      "Some documents contain partial illegibility or unclear text."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of medical examinations and disability claims within railroad employment during the early 20th century.",
+      "It also shows the procedural requirements for retaining benefits after leaving service, indicating a strict administrative process."
+    ],
+    "comparative_questions": [
+      "How did the B&O Railroad's policies on disability and insurance compare to other railroads of the same era?",
+      "What were the common causes of disablement among railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

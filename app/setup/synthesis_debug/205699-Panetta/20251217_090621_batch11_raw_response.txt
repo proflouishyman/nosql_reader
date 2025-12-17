@@ -1,0 +1,179 @@
+{
+  "person_identity": {
+    "canonical_name": "Mario Panetta",
+    "name_variations": [
+      {"name": "David Panella", "confidence": "low", "sources": ["RDApp-205699Panetta102.jpg.json"]},
+      {"name": "Olario Panetta", "confidence": "medium", "sources": ["RDApp-205699Panetta103.jpg.json"]},
+      {"name": "Llario Panetta", "confidence": "low", "sources": ["RDApp-205699Panetta104.jpg.json"]},
+      {"name": "Mario Panetta", "confidence": "high", "sources": ["RDApp-205699Panetta107.jpg.json", "RDApp-205699Panetta109.jpg.json"]}
+    ],
+    "employee_id": "205699",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on documents referring to Mario Panetta, though there are variations that may refer to the same person or different individuals."
+  },
+  
+  "biographical_narrative": "Mario Panetta was a laborer employed by the Baltimore & Ohio Railroad Company in the early 20th century. His employment records indicate he worked for the company from at least 1916, with multiple instances of disability due to illness recorded during that year. In March and April of 1916, Panetta was disabled by pneumonia, which led to a period where his wages were not allowed and benefits were paid out. Later in May of the same year, he returned to duty after being declared fit for work by medical examiners. His records also show that he had another instance of disability due to influenza in late 1916 and early 1917, which again resulted in a period without wages but with benefits provided. Throughout his employment, Panetta was subject to the company's relief department policies regarding sickness and injury.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "66 Vernon St",
+      "date_range": "unknown",
+      "context": "Residence address as stated in a notice of disablement document.",
+      "sources": ["RDApp-205699Panetta106.jpg.json"]
+    },
+    {
+      "address": "Harper Av McKeesport",
+      "date_range": "unknown",
+      "context": "Residence address for David Panella, who may or may not be Mario Panetta.",
+      "sources": ["RDApp-205699Panetta102.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "unknown",
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Mario Panetta was hired by the Baltimore & Ohio Railroad Company, though specific date of hire is not provided.",
+      "sources": []
+    },
+    {
+      "date": "1916-03-21",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": null,
+      "division": "Car Div. M.P. Dept.",
+      "details": "Panetta was declared totally disabled by sickness from March 21 to April 14, 1916.",
+      "sources": ["RDApp-205699Panetta104.jpg.json"]
+    },
+    {
+      "date": "1916-03-28",
+      "event_type": "benefits",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Benefits began for Panetta's disability period from March 28 to April 14, 1916.",
+      "sources": ["RDApp-205699Panetta102.jpg.json"]
+    },
+    {
+      "date": "1916-05-15",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified fit to return to duty after a period of disability.",
+      "sources": ["RDApp-205699Panetta108.jpg.json"]
+    },
+    {
+      "date": "1916-12-21",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Disabled by influenza from December 21, 1916 to January 10, 1917.",
+      "sources": ["RDApp-205699Panetta110.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1916-03-21",
+      "injury_type": "Pneumonia",
+      "body_part": null,
+      "narrative": "Mario Panetta was disabled by pneumonia from March 21 to April 14, 1916. No wages were allowed during this period and benefits were paid out.",
+      "medical_examinations": [
+        {
+          "date": "1916-03-31",
+          "examiner": "Dr. L. E. Norris",
+          "finding": "Disabled by pneumonia for 4 weeks",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta109.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1916-03-28", "end": "1916-04-14"},
+          "days": 17,
+          "amount": 17.00,
+          "check_number": null,
+          "sources": ["RDApp-205699Panetta102.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    },
+    {
+      "injury_date": "1916-12-21",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Mario Panetta was disabled by influenza from December 21, 1916 to January 10, 1917. Benefits were paid out for this period.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {"start": "1916-12-28", "end": "1917-01-10"},
+          "days": 14,
+          "amount": 14.00,
+          "check_number": "18154",
+          "sources": ["RDApp-205699Panetta110.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. L. D. Norris",
+      "district": "28",
+      "examinations": [
+        {"date": "1916-03-31", "finding": "Disabled by pneumonia for 4 weeks"},
+        {"date": "1916-05-15", "finding": "Fit to return to duty"}
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "unknown",
+      "event": "Relief Number Error Correction",
+      "significance": "Panetta was advised to contact the Freight Agent at Keyser regarding an error in his relief number.",
+      "sources": ["RDApp-205699Panetta101.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1916", "latest": "1918"},
+    "completeness_assessment": "The record is relatively complete for Mario Panetta's disability events and benefits, but lacks details on his hiring date or any promotions. There are some name variations that may refer to the same individual.",
+    "data_quality_notes": [
+      "Name variations exist in documents which could indicate different individuals or a single person with multiple spellings of their name.",
+      "OCR quality is generally good, though there are occasional errors."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal the extent to which railroad workers were subject to illness and how the company's relief department managed disability claims.",
+      "They also show the reliance on medical examiners for determining fitness to work and the payment of benefits."
+    ],
+    "comparative_questions": [
+      "How did the frequency and nature of injuries differ among various departments within the railroad?",
+      "What were the typical durations and amounts paid out in disability claims?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

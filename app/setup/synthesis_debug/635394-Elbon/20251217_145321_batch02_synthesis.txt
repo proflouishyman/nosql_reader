@@ -1,0 +1,207 @@
+{
+  "person_identity": {
+    "canonical_name": "Leo Verne Elbon",
+    "name_variations": [
+      {
+        "name": "Elbon-Leo Verne",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635394Elbon017.jpg.json"
+        ]
+      },
+      {
+        "name": "Leo Verne Callow",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-635394Elbon015.jpg.json"
+        ]
+      },
+      {
+        "name": "Lee Verne Gibson",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635394Elbon016.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635394",
+    "birth_year": 1896,
+    "confidence_notes": "The birth year is consistent across documents, but the name variations indicate possible confusion or errors in record-keeping."
+  },
+  "biographical_narrative": "Leo Verne Elbon began his career with the Baltimore & Ohio Railroad Company as a fireman around 1920. He was employed in various roles within the Conducting Transportation Department, primarily serving on the Cumberland Division. In 1961, he suffered an off-duty injury to his left knee and facial lacerations, which required medical attention but no immediate return to work due to a questionable avulsion fracture of the intercondylar eminence of the tibia. Despite his injuries, Elbon's employment record shows periods of furlough and incapacitation for train service, indicating ongoing health issues that affected his ability to perform his duties. His career with B&O Railroad spanned several decades, during which he also applied for membership in the Relief Feature, a benefit program designed to support employees and their families.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention of spouse",
+      "sources": []
+    },
+    "parents": [
+      {
+        "name": "Mother (unnamed)",
+        "relationship": "mother",
+        "evidence": "Named as beneficiary in the Relief Feature application",
+        "sources": [
+          "RDApp-635394Elbon020.jpg.json"
+        ]
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Keyser, West Virginia",
+      "date_range": "unknown",
+      "context": "Residence and location of injury",
+      "sources": [
+        "RDApp-635394Elbon012.jpg.json",
+        "RDApp-635394Elbon014.jpg.json"
+      ]
+    },
+    {
+      "address": "Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "Location of employment and injury treatment",
+      "sources": [
+        "RDApp-635394Elbon013.jpg.json",
+        "RDApp-635394Elbon015.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1920",
+      "event_type": "hire/application",
+      "position": "Fireman",
+      "department": "Conducting Transportation Department",
+      "division": "Cumberland Division",
+      "details": "Began employment as a fireman in the Conducting Transportation Department, Cumberland Division.",
+      "sources": [
+        "RDApp-635394Elbon015.jpg.json"
+      ]
+    },
+    {
+      "date": "February 19, 1940",
+      "event_type": "furlough",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Furloughed due to being 'Incapacitated for train service'.",
+      "sources": [
+        "RDApp-635394Elbon016.jpg.json"
+      ]
+    },
+    {
+      "date": "December 1, 1970",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Passed a vision and hearing medical examination.",
+      "sources": [
+        "RDApp-635394Elbon017.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "September 3, 1961",
+      "injury_type": "Avulsion fracture of the intercondylar eminence of the left tibia with lacerations to nose and chin",
+      "body_part": "Left knee, Nose, Chin",
+      "narrative": "Elbon sustained an off-duty injury on September 3, 1961. X-rays revealed a questionable avulsion fracture without displacement or deformity of the fragment. Despite his refusal for immobilization, medical advice was to not return to work until healing was confirmed.",
+      "medical_examinations": [
+        {
+          "date": "September 5, 1961",
+          "examiner": "Dr. Robert W. McCoy Jr.",
+          "finding": "Disabled",
+          "notes": "X-rays showed a questionable fracture of the left knee; patient refused immobilization.",
+          "sources": [
+            "RDApp-635394Elbon014.jpg.json"
+          ]
+        },
+        {
+          "date": "September 25, 1961",
+          "examiner": "Dr. T. R. Adams",
+          "finding": "Disabled",
+          "notes": "X-rays showed further extension of the fracture; patient denied symptoms and wanted to return to work.",
+          "sources": [
+            "RDApp-635394Elbon012.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": true,
+        "narrative": "There was a dispute between Elbon and medical professionals regarding his readiness to return to work. Despite being asymptomatic, doctors advised against returning due to the fracture.",
+        "resolution": "Unclear"
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Robert W. McCoy Jr.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "September 5, 1961",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. T. R. Adams",
+      "district": null,
+      "examinations": [
+        {
+          "date": "September 25, 1961",
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "December 11, 1928",
+      "event": "Application for Relief Feature membership",
+      "significance": "Elbon applied for the Relief Feature benefit program.",
+      "sources": [
+        "RDApp-635394Elbon020.jpg.json"
+      ]
+    },
+    {
+      "date": "April 26, 1940",
+      "event": "Incapacitated for train service",
+      "significance": "Indicates a significant health issue affecting his employment.",
+      "sources": [
+        "RDApp-635394Elbon016.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "December 1, 1928",
+      "latest": "October 9, 1961"
+    },
+    "completeness_assessment": "The record is fairly complete for the period from late 1920s to early 1960s. However, there are gaps in information about his family and personal life.",
+    "data_quality_notes": [
+      "Name variations exist across documents which may indicate confusion or errors in record-keeping."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Leo Verne Elbon provides insight into the medical practices and labor conditions within the Baltimore & Ohio Railroad Company during the early to mid-twentieth century. It highlights the importance of health and safety measures for railroad workers.",
+      "It also underscores the role of relief programs in supporting employees who are unable to work due to injury or illness."
+    ],
+    "comparative_questions": [
+      "How did medical practices and worker support systems vary across different railroads during this period?",
+      "What were the typical career trajectories for railroad workers like Elbon, and how did injuries impact their careers?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

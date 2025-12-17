@@ -1,0 +1,211 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O.D. Proudfoot",
+        "confidence": "high",
+        "sources": ["RDApp-204801Proudfood002.jpg.json"]
+      },
+      {
+        "name": "C.D. Proudfoot",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood003.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Birth year is inferred from the context of employment records and likely to be accurate."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company, working in the Cumberland Division within the C-T department. His career spanned several decades, with his earliest documented record dating back to September 3, 1941, where he underwent a comprehensive medical examination confirming his physical qualifications for employment as an engineer. Proudfoot faced significant health challenges starting from March 26, 1946, when he was diagnosed with neurasthenia, leading to a series of disability leaves and benefit payments. Despite these setbacks, he managed to return to duty on October 18, 1946. However, his career came to an abrupt end due to his untimely death in the same year.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour Street, Cumberland, Maryland",
+      "date_range": "Unknown",
+      "context": "Residence address as stated in multiple documents.",
+      "sources": ["RDApp-204801Proudfood002.jpg.json", "RDApp-204801Proudfood003.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1941-09-03",
+      "event_type": "medical examination",
+      "position": "Engineer",
+      "department": "C-T",
+      "division": "Cumberland",
+      "details": "Otto D. Proudfoot underwent a medical examination confirming his physical qualifications for employment.",
+      "sources": ["RDApp-204801Proudfood006.jpg.json"]
+    },
+    {
+      "date": "1946-03-26",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "C-T",
+      "division": "Cumberland",
+      "details": "Otto D. Proudfoot was diagnosed with neurasthenia and began receiving disability benefits.",
+      "sources": ["RDApp-204801Proudfood004.jpg.json"]
+    },
+    {
+      "date": "1946-10-18",
+      "event_type": "return to duty",
+      "position": "Engineer",
+      "department": "C-T",
+      "division": "Cumberland",
+      "details": "Otto D. Proudfoot returned to work after being declared fit for duty.",
+      "sources": ["RDApp-204801Proudfood007.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1946-03-26",
+      "injury_type": "Neurasthenia",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was diagnosed with neurasthenia, leading to a period of disability and benefit payments from March 28th until his return to duty on October 19th.",
+      "medical_examinations": [
+        {
+          "date": "1946-03-26",
+          "examiner": "Dr. Durrett",
+          "finding": "disabled",
+          "notes": "Indefinite prognosis, but able to resume duty on 10/19/1946.",
+          "sources": ["RDApp-204801Proudfood004.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1946-03-23", "end": "1946-04-19"},
+          "days": 8,
+          "amount": 18.695,
+          "check_number": "40058",
+          "sources": ["RDApp-204801Proudfood007.jpg.json"]
+        },
+        {
+          "period": {"start": "1946-04-20", "end": "1946-05-19"},
+          "days": 30,
+          "amount": 75.695,
+          "check_number": "40095",
+          "sources": ["RDApp-204801Proudfood007.jpg.json"]
+        },
+        {
+          "period": {"start": "1946-05-20", "end": "1946-06-19"},
+          "days": 31,
+          "amount": 78.185,
+          "check_number": "41038",
+          "sources": ["RDApp-204801Proudfood007.jpg.json"]
+        },
+        {
+          "period": {"start": "1946-06-20", "end": "1946-07-19"},
+          "days": 30,
+          "amount": 75.695,
+          "check_number": "41085",
+          "sources": ["RDApp-204801Proudfood007.jpg.json"]
+        },
+        {
+          "period": {"start": "1946-07-20", "end": "1946-08-19"},
+          "days": 31,
+          "amount": 78.185,
+          "check_number": "45617",
+          "sources": ["RDApp-204801Proudfood007.jpg.json"]
+        },
+        {
+          "period": {"start": "1946-08-20", "end": "1946-09-19"},
+          "days": 31,
+          "amount": 78.185,
+          "check_number": "47943",
+          "sources": ["RDApp-204801Proudfood007.jpg.json"]
+        },
+        {
+          "period": {"start": "1946-09-20", "end": "1946-10-18"},
+          "days": 29,
+          "amount": 73.665,
+          "check_number": "49158",
+          "sources": ["RDApp-204801Proudfood007.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Durrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1946-03-26",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. W.B. Baker",
+      "district": 6,
+      "examinations": [
+        {
+          "date": "1941-09-03",
+          "finding": "physically qualified"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1947-01-02",
+      "event": "Account summary letter sent to Otto D. Proudfoot regarding disability payments and deductions.",
+      "significance": "This document provides a detailed account of the financial transactions related to his disability benefits.",
+      "sources": ["RDApp-204801Proudfood002.jpg.json"]
+    },
+    {
+      "date": "1946-12-31",
+      "event": "Otto D. Proudfoot notifies Relief Department of a potential error in deductions from his relief check and paycheck.",
+      "significance": "This highlights the importance of accurate record-keeping and timely communication between employees and administrative departments.",
+      "sources": ["RDApp-204801Proudfood003.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1941-09-03",
+      "latest": "1947-01-02"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing medical examinations, disability payments, and administrative communications. However, there are no records of family members or personal life outside work.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text.",
+      "There's a discrepancy in the employee name between 'O.D.' and 'C.D.' Proudfoot."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Otto D. Proudfoot provides insight into railroad labor practices, particularly regarding disability benefits and medical examinations.",
+      "It highlights the importance of accurate record-keeping in administrative departments dealing with employee welfare."
+    ],
+    "comparative_questions": [
+      "How did other employees manage similar health challenges during this period?",
+      "What were the broader trends in disability claims and payments within the Baltimore & Ohio Railroad Company?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

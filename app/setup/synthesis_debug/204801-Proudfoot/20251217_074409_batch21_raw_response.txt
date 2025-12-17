@@ -1,0 +1,186 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {"name": "Otto S. Proudfoot", "confidence": "medium", "sources": ["RDApp-204801Proudfood202.jpg.json"]},
+      {"name": "Otis D. Proudfoot", "confidence": "low", "sources": ["RDApp-204801Proudfood203.jpg.json"]},
+      {"name": "O. S. Proudfoot", "confidence": "medium", "sources": ["RDApp-204801Proudfood205.jpg.json"]},
+      {"name": "Otto G. Proudfoot", "confidence": "low", "sources": ["RDApp-204801Proudfood206.jpg.json"]}
+    ],
+    "employee_id": "204801",
+    "birth_year": null,
+    "confidence_notes": "Name variations exist but 'Otto D. Proudfoot' appears most frequently."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was a fireman employed by the Baltimore & Ohio Railroad Company, working primarily in the Cumberland Division. His career with the railroad spanned several years during which he experienced multiple periods of sickness and disability. In February 1916, Proudfoot took sick leave for four days due to an unspecified illness. He also suffered from sciatica affecting his right leg, documented in May 1916, which required medical attention and a two-week period of disablement. Proudfoot's health issues were significant enough to necessitate multiple certificates of disablement and medical examinations by the company’s relief department. Despite these challenges, he was able to return to work on several occasions, indicating his commitment to his position as a fireman.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": null, "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "103 Arch St., Cumberland",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": ["RDApp-204801Proudfood205.jpg.json", "RDApp-204801Proudfood209.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "fireman",
+      "department": "Cumberland Div.",
+      "division": "unknown",
+      "details": "Started as a fireman in the Cumberland Division, though exact date of hire is not provided.",
+      "sources": []
+    },
+    {
+      "date": "1916-02-15",
+      "event_type": "injury",
+      "position": "fireman",
+      "department": "Cumberland Div.",
+      "division": null,
+      "details": "Sick leave due to unspecified illness from February 15, 1916, to February 18, 1916.",
+      "sources": ["RDApp-204801Proudfood201.jpg.json"]
+    },
+    {
+      "date": "1916-05-02",
+      "event_type": "injury",
+      "position": "fireman",
+      "department": "Cumberland Div.",
+      "division": null,
+      "details": "Sick leave due to unspecified illness from May 2, 1916, through May 1916.",
+      "sources": ["RDApp-204801Proudfood203.jpg.json"]
+    },
+    {
+      "date": "1916-05-15",
+      "event_type": "injury",
+      "position": "fireman",
+      "department": "Cumberland Div.",
+      "division": null,
+      "details": "Sick leave due to sciatica affecting right leg from May 15, 1916, through June 24, 1916.",
+      "sources": ["RDApp-204801Proudfood202.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1916-02-15",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was totally disabled by sickness from February 15, 1916, to February 18, 1916.",
+      "medical_examinations": [
+        {
+          "date": "1916-02-18",
+          "examiner": "H. E. Allenbach DOERNER, M.D.",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood201.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1916-05-02",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled by sickness from May 2, 1916, through May 1916.",
+      "medical_examinations": [
+        {
+          "date": "1916-05-15",
+          "examiner": "T.S.V. Kellerman Medical Examiner",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood203.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    },
+    {
+      "injury_date": "1916-05-15",
+      "injury_type": "Sciatica",
+      "body_part": "right leg",
+      "narrative": "Proudfoot was totally disabled by sciatica affecting his right leg from May 15, 1916, through June 24, 1916.",
+      "medical_examinations": [
+        {
+          "date": "1916-05-09",
+          "examiner": "J.A. Doemen Medical Examiner",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood207.jpg.json"]
+        },
+        {
+          "date": "1916-08-03",
+          "examiner": "J.A. Doerner, M.D.",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": ["RDApp-204801Proudfood206.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "H. E. Allenbach DOERNER, M.D.",
+      "district": "2",
+      "examinations": [{"date": "1916-02-18", "finding": "disabled"}]
+    },
+    {
+      "name": "T.S.V. Kellerman Medical Examiner",
+      "district": null,
+      "examinations": [{"date": "1916-05-15", "finding": "disabled"}]
+    },
+    {
+      "name": "J.A. Doemen Medical Examiner",
+      "district": "6",
+      "examinations": [{"date": "1916-05-09", "finding": "disabled"}]
+    },
+    {
+      "name": "J.A. Doerner, M.D.",
+      "district": "6",
+      "examinations": [{"date": "1916-08-03", "finding": "able to return to duty"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Notice of Disablement sent from Cumberland",
+      "significance": "Indicates the administrative process for reporting sickness.",
+      "sources": ["RDApp-204801Proudfood209.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1916-02-15", "latest": "1916-08-03"},
+    "completeness_assessment": "The records are relatively complete for the period of sickness and disability, but lack details on employment history prior to 1916.",
+    "data_quality_notes": [
+      "There is inconsistency in name spelling (Otto D., Otto S., Otis D.).",
+      "Some documents have incomplete information regarding payments or medical disputes."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["This case highlights the frequent health issues faced by railroad workers and the structured process for handling sick leave."],
+    "comparative_questions": ["How did sickness rates vary among different departments within the Baltimore & Ohio Railroad?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.75,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

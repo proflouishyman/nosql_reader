@@ -1,0 +1,210 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Crosbrough, Claude",
+        "confidence": "low",
+        "sources": ["RDApp-221988Roenbaugh133.jpg.json"]
+      },
+      {
+        "name": "Claude Roonbaugh",
+        "confidence": "medium",
+        "sources": ["RDApp-221988Roenbaugh137.jpg.json", "RDApp-221988Roenbaugh138.jpg.json"]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1882,
+    "confidence_notes": "High confidence in birth year due to consistent documentation. Name variations are noted but not fully resolved."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh, born in 1882, was an engineer for the Baltimore and Ohio Railroad Company with a career spanning over three decades by 1943. His employment records indicate that he worked under various divisions including Wheeling (Whg.) and was part of the C.T. department. In his later years, Roenbaugh experienced several health-related incidents, such as lumbago in early 1942 and a minor eye injury in July 1943. Despite these setbacks, he continued to work diligently for the railroad company until at least 1943.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "Married status mentioned but no spouse name provided",
+      "sources": ["RDApp-221988Roenbaugh132.jpg.json"]
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "531 W. 27th Street, Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address in disability records",
+      "sources": ["RDApp-221988Roenbaugh134.jpg.json"]
+    },
+    {
+      "address": "321 West 27th Street, Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address in injury report",
+      "sources": ["RDApp-221988Roenbaugh132.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Whg.",
+      "details": "Roenbaugh was hired as an engineer with extensive experience by the time of his first documented injury in 1943.",
+      "sources": ["RDApp-221988Roenbaugh132.jpg.json"]
+    },
+    {
+      "date": "1943-07-09",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Vhg.",
+      "details": "Roenbaugh sustained a minor injury when a cinder flew into his left eye while on duty at Warwick, Ohio. He did not lose any work time and was able to continue working.",
+      "sources": ["RDApp-221988Roenbaugh131.jpg.json", "RDApp-221988Roenbaugh132.jpg.json"]
+    },
+    {
+      "date": "1942-01-02",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Whg.",
+      "details": "Roenbaugh was diagnosed with lumbago and was unable to work for a period of time. He resumed duty after medical evaluation.",
+      "sources": ["RDApp-221988Roenbaugh134.jpg.json", "RDApp-221988Roenbaugh140.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1943-07-09",
+      "injury_type": "Minor eye injury",
+      "body_part": "Left Eye",
+      "narrative": "On July 9, 1943, a cinder flew into Roenbaugh's left eye while he was on duty at Warwick. He did not lose any work time and continued working.",
+      "medical_examinations": [
+        {
+          "date": "1943-07-09",
+          "examiner": "Dr. S. V. Burley",
+          "finding": "Not disabled, able to return to duty immediately",
+          "notes": "No hospitalization required; doctor's bill sent to division accountant.",
+          "sources": ["RDApp-221988Roenbaugh131.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1942-01-02",
+      "injury_type": "Lumbago",
+      "body_part": "Back",
+      "narrative": "Roenbaugh was diagnosed with lumbago and unable to work from January 3, 1942, to January 18, 1942. He resumed duty on January 19, 1942.",
+      "medical_examinations": [
+        {
+          "date": "1942-01-09",
+          "examiner": "Dr. Krupp",
+          "finding": "Disabled for 7 days",
+          "notes": "Inspected on January 9, 1942; able to return to duty on January 19, 1942.",
+          "sources": ["RDApp-221988Roenbaugh134.jpg.json", "RDApp-221988Roenbaugh140.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1942-01-03", "end": "1942-01-18"},
+          "days": 9,
+          "amount": null,
+          "check_number": "30575",
+          "sources": ["RDApp-221988Roenbaugh134.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. S. V. Burley",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "1943-07-09",
+          "finding": "Not disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Krupp",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1942-01-09",
+          "finding": "Disabled for 7 days, then able to return"
+        }
+      ]
+    },
+    {
+      "name": "J. H. Minor M.D.",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "1942-01-09",
+          "finding": "Inspected for disability due to lumbago"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1943-08-10",
+      "event": "Medical Examiner's Report of Disablement filed",
+      "significance": "Documented Roenbaugh's minor eye injury and medical response.",
+      "sources": ["RDApp-221988Roenbaugh131.jpg.json"]
+    },
+    {
+      "date": "1942-01-27",
+      "event": "Request for wage status confirmation during disability period",
+      "significance": "Clarification needed to process benefits.",
+      "sources": ["RDApp-221988Roenbaugh136.jpg.json", "RDApp-221988Roenbaugh137.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1941-04-18",
+      "latest": "1943-08-10"
+    },
+    "completeness_assessment": "The records are relatively complete for the period covered, documenting Roenbaugh's injuries and medical examinations. However, there is a lack of information regarding his initial hiring date or any promotions.",
+    "data_quality_notes": [
+      "Name variations exist but are not fully resolved.",
+      "Some documents have minor OCR errors."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "Roenbaugh's case provides insight into the medical practices and administrative processes of the Baltimore & Ohio Railroad Company in handling employee injuries during the early 20th century.",
+      "The records highlight the importance of regular health examinations for railroad workers and the company's efforts to ensure employees could return to work after minor injuries."
+    ],
+    "comparative_questions": [
+      "How did medical practices and benefits vary between different railroads or industries?",
+      "What was the typical duration of disability leave for similar injuries in this era?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

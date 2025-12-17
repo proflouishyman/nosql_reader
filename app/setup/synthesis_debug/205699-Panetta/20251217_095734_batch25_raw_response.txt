@@ -1,0 +1,208 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Illario Pannetta",
+        "confidence": "high",
+        "sources": ["RDApp-205699Panetta241.jpg.json"]
+      },
+      {
+        "name": "Mario Panetta",
+        "confidence": "medium",
+        "sources": ["RDApp-205699Panetta245.jpg.json"]
+      },
+      {
+        "name": "Dario Panetta",
+        "confidence": "low",
+        "sources": ["RDApp-205699Panetta248.jpg.json", "RDApp-205699Panetta249.jpg.json"]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": 1875,
+    "confidence_notes": "High confidence in birth year and canonical name based on multiple documents. Variations in first names are noted but less certain."
+  },
+  
+  "biographical_narrative": "Ilario Panetta, born August 1, 1875, worked for the Baltimore & Ohio Railroad as a laborer from at least February 1930 until his resignation due to disability. His career with the railroad was marked by several periods of sickness and injury, including an incident in September 1934 where he sprained his back on duty while lifting heavy objects. This led to further health complications, including myalgia lumbalis and cataracts in both eyes, which ultimately rendered him permanently disabled. Panetta's application for a disability annuity under the Railroad Retirement Act of 1935 was processed through multiple medical examinations and administrative reviews, culminating in his receipt of an annuity effective June 24th, 1937.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "66 Vernon Street",
+      "date_range": "unknown",
+      "context": "Residence address in documents",
+      "sources": ["RDApp-205699Panetta241.jpg.json", "RDApp-205699Panetta243.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1930-02",
+      "event_type": "application",
+      "position": "Laborer",
+      "department": "MP",
+      "division": "Cu",
+      "details": "Applied for employment as a laborer in the MP department.",
+      "sources": ["RDApp-205699Panetta245.jpg.json"]
+    },
+    {
+      "date": "1934-09-02",
+      "event_type": "injury",
+      "position": "Laborer",
+      "department": "MP",
+      "division": "Cu",
+      "details": "Injured on duty, spraining his back while lifting heavy objects.",
+      "sources": ["RDApp-205699Panetta243.jpg.json"]
+    },
+    {
+      "date": "1937-06-24",
+      "event_type": "resignation",
+      "position": "Laborer",
+      "department": null,
+      "division": null,
+      "details": "Resigned due to disability and applied for annuity under the Railroad Retirement Act.",
+      "sources": ["RDApp-205699Panetta241.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1934-09-02",
+      "injury_type": "sprain",
+      "body_part": "back",
+      "narrative": "Panetta sprained his back while lifting heavy objects on duty. This injury led to myalgia lumbalis and further health complications.",
+      "medical_examinations": [
+        {
+          "date": "1934-09-25",
+          "examiner": "Dr. E. H. Guistwhite",
+          "finding": "disabled",
+          "notes": "Diagnosed with myalgia lumbalis and cataracts in both eyes, leading to permanent disability.",
+          "sources": ["RDApp-205699Panetta243.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1935-06",
+      "injury_type": "accident/sickness",
+      "body_part": null,
+      "narrative": "Panetta was totally disabled by an accident or sickness from May 20 to June 19, 1935. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1935-06",
+          "examiner": "F.E. Conner",
+          "finding": "disabled",
+          "notes": "Certified as totally disabled without wage allowance from May 20 to June 19, 1935.",
+          "sources": ["RDApp-205699Panetta249.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1935-06",
+      "injury_type": "accident/sickness",
+      "body_part": null,
+      "narrative": "Panetta was totally disabled by an accident or sickness from June 20 to July 19, 1935. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1935-07",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Certified as totally disabled without wage allowance from June 20 to July 19, 1935.",
+          "sources": ["RDApp-205699Panetta248.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. E. H. Guistwhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1934-09-25",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "F.E. Conner",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1935-06",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1937-06-24",
+      "event": "granted annuity",
+      "significance": "Panetta was granted an annuity under the Railroad Retirement Act.",
+      "sources": ["RDApp-205699Panetta241.jpg.json"]
+    },
+    {
+      "date": "1937-07-13",
+      "event": "agreement signed with Relief Department",
+      "significance": "Signed agreement to continue receiving relief payments until annuity begins.",
+      "sources": ["RDApp-205699Panetta246.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1930",
+      "latest": "1937"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from February 1930 to June 24, 1937. It provides a detailed account of Panetta's disability and medical history but lacks information on his personal life or family.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text.",
+      "Name variations exist across different documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Ilario Panetta highlights the challenges faced by railroad workers in securing disability benefits and the role of medical examinations in determining eligibility under the Railroad Retirement Act of 1935.",
+      "It also demonstrates the bureaucratic process involved, including multiple rounds of medical reviews and administrative approvals."
+    ],
+    "comparative_questions": [
+      "How did the application process for annuities vary among different railroad companies?",
+      "What were the typical health issues faced by laborers in the early 20th century?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thos. B. Freeland",
+        "confidence": "high",
+        "sources": [
+          "RDApp-222507Freeland123.jpg.json",
+          "RDApp-222507Freeland124.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas G. Freeland",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland126.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1889,
+    "confidence_notes": "The birth year is consistent across documents, but the name variation 'Thomas G. Freeland' introduces some uncertainty."
+  },
+  "biographical_narrative": "Thomas B. Freeland was a carman employed by the Baltimore & Ohio Railroad Company in various capacities from at least the late 1920s through to May 16, 1937. He worked primarily out of Cumberland, MD, and his career with the railroad included periods of furlough and disability leave due to medical issues such as cholecystitis and an infected thumb. Freeland's employment was marked by several instances where he had to take time off for health reasons, which were documented in detail by the company\u2019s Relief Department. His last recorded date of employment with the railroad was May 16, 1937, after which his case was closed following a period of disability leave.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "W. Main St., Cumberland",
+      "date_range": "1937",
+      "context": "Residence for disability claim processing",
+      "sources": [
+        "RDApp-222507Freeland123.jpg.json"
+      ]
+    },
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "1931",
+      "context": "Home address for correspondence regarding membership in the Relief Feature of the Relief Department",
+      "sources": [
+        "RDApp-222507Freeland129.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "unknown",
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "MP (Motive Power)",
+      "division": "Cumbo/Cumberland",
+      "details": null,
+      "sources": [
+        "RDApp-222507Freeland121.jpg.json",
+        "RDApp-222507Freeland124.jpg.json"
+      ]
+    },
+    {
+      "date": "6/1/31",
+      "event_type": "furlough",
+      "position": "Carman",
+      "department": "MP (Motive Power)",
+      "division": "Cumberland",
+      "details": "Furloughed from service effective May 31, 1931.",
+      "sources": [
+        "RDApp-222507Freeland129.jpg.json"
+      ]
+    },
+    {
+      "date": "4/23/37",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "MP (Motive Power)",
+      "division": "Cumbo/Cumberland",
+      "details": "Began disability leave due to cholecystitis.",
+      "sources": [
+        "RDApp-222507Freeland121.jpg.json",
+        "RDApp-222507Freeland124.jpg.json"
+      ]
+    },
+    {
+      "date": "5/16/37",
+      "event_type": "termination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Case closed following disability leave.",
+      "sources": [
+        "RDApp-222507Freeland121.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "4/23/37",
+      "injury_type": "Cholecystitis",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland was disabled due to cholecystitis from April 23, 1937, and was given a period of disability leave that lasted until May 16, 1937.",
+      "medical_examinations": [
+        {
+          "date": "5/7/37",
+          "examiner": "Dr. C E Durrett",
+          "finding": "disabled",
+          "notes": "X-rays taken revealed the condition of cholecystitis.",
+          "sources": [
+            "RDApp-222507Freeland125.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "4/30",
+            "end": "5/16"
+          },
+          "days": 17,
+          "amount": 25.5,
+          "check_number": "16702",
+          "sources": [
+            "RDApp-222507Freeland121.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "11/17/28",
+      "injury_type": "Infected thumb",
+      "body_part": "Thumb",
+      "narrative": "Freeland was disabled due to an infected thumb from November 17, 1928. He received sickness payments for five days.",
+      "medical_examinations": [
+        {
+          "date": "11/20/28",
+          "examiner": "Selby",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-222507Freeland130.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "Nov 24",
+            "end": "Nov 28"
+          },
+          "days": 5,
+          "amount": 7.5,
+          "check_number": null,
+          "sources": [
+            "RDApp-222507Freeland130.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. R.H. Christwhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Selby",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "11/20/28",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. C E Durrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "5/7/37",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "6/9/31",
+      "event": "Request for continuation of membership in Relief Feature",
+      "significance": "Indicates Freeland's desire to maintain benefits despite being furloughed.",
+      "sources": [
+        "RDApp-222507Freeland129.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "8/13/1927",
+      "latest": "6/18/1931"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing Freeland's employment and disability history. However, there are some inconsistencies in his name spelling and the documents do not provide information on personal family details.",
+    "data_quality_notes": [
+      "Some OCR text was faint or unclear, leading to incomplete data for certain fields."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the importance of health insurance and disability benefits in railroad employment during this period.",
+      "They also show how medical conditions could impact workers' ability to perform their duties, leading to extended periods of leave."
+    ],
+    "comparative_questions": [
+      "How did other employees handle similar medical issues?",
+      "What were the broader trends in health and disability among railroad workers at this time?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

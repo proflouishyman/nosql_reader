@@ -1,0 +1,97 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {"name": "Claud Roenbough", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh021.jpg.json"]},
+      {"name": "Claud Rosenbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh022.jpg.json"]},
+      {"name": "Claude Roanbaugh", "confidence": "medium", "sources": ["RDApp-221988Roenbaugh023.jpg.json"]},
+      {"name": "Claud Roenbaugh", "confidence": "low", "sources": ["RDApp-221988Roenbaugh024.jpg.json"]}
+    ],
+    "employee_id": "221988",
+    "birth_year": 1884,
+    "confidence_notes": "Birth year is confirmed by family bible evidence but there are minor discrepancies in the records."
+  },
+  
+  "biographical_narrative": "Claude Roenbaugh was an engineer for the Baltimore & Ohio Railroad Company, working primarily out of Wheeling Division. His career spanned several decades and included a significant period of disability due to Meniere's Syndrome, which began affecting him in June 1950. Despite initial expectations that he would return to duty soon, Roenbaugh experienced ongoing health issues that required medical attention and financial support from the company’s Relief Department. He was also involved in administrative processes related to his contributions and benefits, including disputes over signature witnessing on forms.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence of a spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "531 W. 27th St., Lorain, Ohio", "date_range": "May 1950 - June 1951", "context": "Residence during medical treatment and disability period", "sources": ["RDApp-221988Roenbaugh023.jpg.json"]},
+    {"address": "331 W. 27th St., Lorain, Ohio", "date_range": "June 1951 - May 1951", "context": "Residence for payment and administrative purposes", "sources": ["RDApp-221988Roenbaugh024.jpg.json", "RDApp-221988Roenbaugh030.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": null, "event_type": "hire", "position": "Engineer", "department": "CT", "division": "Wheeling", "details": "Began working as an engineer for the Baltimore & Ohio Railroad Company.", "sources": []},
+    {"date": "1950-06-03", "event_type": "injury", "position": "Engineer", "department": null, "division": null, "details": "Became disabled due to Meniere's Syndrome.", "sources": ["RDApp-221988Roenbaugh021.jpg.json"]},
+    {"date": "1950-10-16", "event_type": "medical examination", "position": null, "department": null, "division": null, "details": "Expected to resume duty soon but did not wish to take pension at that time.", "sources": ["RDApp-221988Roenbaugh024.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1950-06-03",
+      "injury_type": "Meniere's Syndrome",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was diagnosed with Meniere's Syndrome, a condition affecting his balance and hearing. He was unable to perform his duties as an engineer from May 29th until at least June 16th.",
+      "medical_examinations": [
+        {"date": "1950-06-16", "examiner": "TMPryatel M.D.", "finding": "disabled", "notes": "Still under treatment, unable to work from May 29th onwards.", "sources": ["RDApp-221988Roenbaugh023.jpg.json"]},
+        {"date": "1950-06-29", "examiner": "D.A. Wiesner", "finding": "disabled", "notes": "Meniere's Syndrome expected to incapacitate for six weeks.", "sources": ["RDApp-221988Roenbaugh022.jpg.json"]}
+      ],
+      "payments": [
+        {"period": {"start": null, "end": null}, "days": 60, "amount": 5.80, "check_number": null, "sources": ["RDApp-221988Roenbaugh029.jpg.json"]}
+      ],
+      "medical_dispute": {"disputed": false, "narrative": "", "resolution": ""}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "D.A. Wiesner",
+      "district": null,
+      "examinations": [{"date": "1950-06-29", "finding": "disabled"}]
+    },
+    {"name": "TMPryatel M.D.", "district": null, "examinations": [{"date": "1950-06-16", "finding": "disabled"}]}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1951-05-14",
+      "event": "Supplemental application returned due to witnessing error",
+      "significance": "Indicates ongoing administrative issues with paperwork.",
+      "sources": ["RDApp-221988Roenbaugh025.jpg.json"]
+    },
+    {
+      "date": "1951-04-27",
+      "event": "Resolution of birth date discrepancy",
+      "significance": "Clarified Roenbaugh's official records.",
+      "sources": ["RDApp-221988Roenbaugh027.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1950-06-03", "latest": "1951-05-14"},
+    "completeness_assessment": "The record is fairly complete for the period of disability and administrative actions but lacks details on Roenbaugh's earlier career.",
+    "data_quality_notes": ["Variations in spelling of name across documents.", "Some OCR errors, particularly in dates."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad employees with chronic health conditions and the role of company relief departments in providing support.",
+      "It also shows how medical documentation was used to determine eligibility for benefits."
+    ],
+    "comparative_questions": ["How did other railroads handle similar cases?", "What were the typical durations and outcomes of disability claims?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

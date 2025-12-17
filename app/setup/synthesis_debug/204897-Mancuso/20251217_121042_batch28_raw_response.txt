@@ -1,0 +1,260 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Moncuso, Luigi",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco276.jpg.json"]
+      },
+      {
+        "name": "Julius Manacus",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco277.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations exist but 'Luigi Mancuso' is most consistent across documents."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso, a carman for the Baltimore & Ohio Railroad Company, had a career marked by several periods of disability due to illness. He began his employment in the Maintenance of Way (M.P.) department and was stationed in Pittsburgh (Pgh) division. His first notable period of disablement occurred from December 25, 1946, through January 19, 1947, due to influenza. Another significant event was a relapse of his illness from November 26, 1946, to February 24, 1948, which included periods of disability for influenza and cholecystitis. Despite these health challenges, Mancuso managed to return to duty multiple times, indicating resilience in the face of recurring medical issues.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "111 Pulaski St., Connellsville, Penna.",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": ["RDApp-204897Manusco271.jpg.json", "RDApp-204897Manusco273.jpg.json"]
+    },
+    {
+      "address": "111 Roland St., Coxton, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": ["RDApp-204897Manusco273.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Carman",
+      "department": "M.P.",
+      "division": "Pgh",
+      "details": "Began employment as a carman in the Maintenance of Way department, Pittsburgh division.",
+      "sources": ["RDApp-204897Manusco271.jpg.json", "RDApp-204897Manusco273.jpg.json"]
+    },
+    {
+      "date": "12/25/1946",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Disabled due to influenza from December 25, 1946, through January 19, 1947.",
+      "sources": ["RDApp-204897Manusco271.jpg.json", "RDApp-204897Manusco272.jpg.json"]
+    },
+    {
+      "date": "1/24/1945",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Disabled due to sickness from January 24, 1945.",
+      "sources": ["RDApp-204897Manusco273.jpg.json"]
+    },
+    {
+      "date": "1/28/1948",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Relapse of influenza and cholecystitis, unable to work from January 28 through February 24, 1948.",
+      "sources": ["RDApp-204897Manusco280.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "12/25/1946",
+      "injury_type": "Influenza and acute bronchitis",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to influenza and acute bronchitis from December 25, 1946, through January 19, 1947. He was found able for duty on the same day as his disablement report.",
+      "medical_examinations": [
+        {
+          "date": "1/3/1947",
+          "examiner": "Dr Basilo",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco275.jpg.json"]
+        },
+        {
+          "date": "1/20/1947",
+          "examiner": "Dr. Cam T. Troilo",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco276.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1/3/1947", "end": "1/19/1947"},
+          "days": 19,
+          "amount": 28.55,
+          "check_number": "54907",
+          "sources": ["RDApp-204897Manusco271.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1/24/1945",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to sickness from January 24, 1945. No further details on treatment or outcome are provided.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1/28/1948",
+      "injury_type": "Relapse of influenza and cholecystitis",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to a relapse of influenza and cholecystitis from January 28 through February 24, 1948. He resumed duty on February 25.",
+      "medical_examinations": [
+        {
+          "date": "2/27/1948",
+          "examiner": "W.J. Blumiller",
+          "finding": "disabled",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco279.jpg.json"]
+        },
+        {
+          "date": "2/25/1948",
+          "examiner": "W. M. McIntire",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": ["RDApp-204897Manusco280.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1/23/1948", "end": "2/24/1948"},
+          "days": 56,
+          "amount": 179.50,
+          "check_number": null,
+          "sources": ["RDApp-204897Manusco278.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr Basilo",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "1/3/1947",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Cam T. Troilo",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1/20/1947",
+          "finding": "able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "W.J. Blumiller",
+      "district": null,
+      "examinations": [
+        {
+          "date": "2/27/1948",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W. M. McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "2/25/1948",
+          "finding": "able to return to duty"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1/30/1946",
+      "event": "Notice of disablement sent from Luzerne Div.",
+      "significance": "Indicates administrative processing of Luigi Mancuso's disability claim.",
+      "sources": ["RDApp-204897Manusco273.jpg.json"]
+    },
+    {
+      "date": "1/28/1948",
+      "event": "Case closed due to return to duty",
+      "significance": "Marks the end of Luigi Mancuso's disability period and his ability to resume work.",
+      "sources": ["RDApp-204897Manusco278.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "5/8/1944",
+      "latest": "3/2/1948"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing multiple periods of disability and medical examinations. However, there are some inconsistencies in the spelling of Mancuso's name.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors or incomplete information.",
+      "There are discrepancies in address details."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the challenges faced by railroad workers due to illness and the company's response through disability benefits.",
+      "Medical practices of the time, including examination procedures and treatment for influenza and cholecystitis, are evident."
+    ],
+    "comparative_questions": [
+      "How did disability rates vary among different departments or divisions within the Baltimore & Ohio Railroad Company?",
+      "What were the typical durations of disability periods due to illness in this era?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

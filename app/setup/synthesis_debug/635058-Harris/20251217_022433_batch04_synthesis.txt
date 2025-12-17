@@ -1,0 +1,220 @@
+{
+  "person_identity": {
+    "canonical_name": "Charles Harris",
+    "name_variations": [
+      {
+        "name": "Charlie Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris032.jpg.json",
+          "RDApp-635058Harris035.jpg.json",
+          "RDApp-635058Harris037.jpg.json",
+          "RDApp-635058Harris039.jpg.json"
+        ]
+      },
+      {
+        "name": "Charley Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris032.jpg.json",
+          "RDApp-635058Harris036.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1893,
+    "confidence_notes": "High confidence in identity, based on consistent use of name variations and employee ID across documents."
+  },
+  "biographical_narrative": "Charles Harris began his career with the Baltimore & Ohio Railroad Company as a fireman. Over time, he was promoted to foreman, indicating a significant rise through the ranks. Throughout his tenure, Harris experienced several periods of disability due to sickness and injury, which required medical examinations and certificates of ability before returning to duty. His employment spanned from at least 1923 until 1935, with notable absences for health reasons. Despite these interruptions, he maintained a steady career in the railroad industry.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No information on spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "408-11th St.",
+      "date_range": "unknown",
+      "context": "Residence address during disablement in 1923",
+      "sources": [
+        "RDApp-635058Harris035.jpg.json"
+      ]
+    },
+    {
+      "address": "708 Lynn St",
+      "date_range": "unknown",
+      "context": "Residence address during another period of disablement in 1922",
+      "sources": [
+        "RDApp-635058Harris037.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1923",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "First recorded employment as a fireman.",
+      "sources": [
+        "RDApp-635058Harris035.jpg.json"
+      ]
+    },
+    {
+      "date": "1925",
+      "event_type": "promotion",
+      "position": "Engine Hostler",
+      "department": "Mechanical",
+      "division": null,
+      "details": "Promoted to Engine Hostler.",
+      "sources": [
+        "RDApp-635058Harris033.jpg.json"
+      ]
+    },
+    {
+      "date": "1929",
+      "event_type": "promotion",
+      "position": "Foreman",
+      "department": null,
+      "division": null,
+      "details": "Promoted to Foreman.",
+      "sources": [
+        "RDApp-635058Harris031.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1923-01-22",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Charlie Harris was reported disabled by sickness on January 22, 1923. He returned to duty on January 29, 1923.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": "Dr. J Hausen",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": [
+            "RDApp-635058Harris036.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1922-01-07",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Charlie Harris was reported disabled by sickness on January 7, 1922. He resumed duty at an unspecified date.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": "M.L. Johnson, M.D.",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-635058Harris037.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1929-09-19",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Charlie Harris was reported disabled by sickness on September 19, 1929. No further details are available.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. J Hausen",
+      "district": "10",
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "able to return to duty"
+        }
+      ]
+    },
+    {
+      "name": "M.L. Johnson, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1935-06-13",
+      "event": "Physical examination conducted",
+      "significance": "Ensured Harris was physically qualified for his position.",
+      "sources": [
+        "RDApp-635058Harris031.jpg.json"
+      ]
+    },
+    {
+      "date": "unknown",
+      "event": "Issuance of Form 726-L",
+      "significance": "Documented Harris's physical condition and qualifications.",
+      "sources": [
+        "RDApp-635058Harris031.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1922",
+      "latest": "1935"
+    },
+    "completeness_assessment": "The record is relatively complete for the years documented, with detailed information on medical examinations and disability reports. However, there are gaps in employment history and personal details.",
+    "data_quality_notes": [
+      "Some documents have missing or incomplete dates.",
+      "OCR quality varies but generally accurate."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal the frequent occurrence of sickness among railroad workers during this period, highlighting the health challenges faced in early 20th-century industrial settings."
+    ],
+    "comparative_questions": [
+      "How did injury and disability rates vary across different departments within the railroad company?",
+      "What were the typical durations of disablement periods for workers?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thomas B. Fackman",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland101.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas B. Freelaud",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland103.jpg.json"
+        ]
+      },
+      {
+        "name": "Thomas B. Tresdand",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland105.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on the most consistent name 'Thomas B. Freeland'. Variations are noted but less reliable."
+  },
+  "biographical_narrative": "Thomas B. Freeland was employed by the Baltimore and Ohio Railroad Company as a Carman in Cumberland, Maryland. His career spanned several years, marked by periods of furlough and disability due to health issues. In November 1936, he reported severe gastric ulcer symptoms that led to hospitalization and a period of disability until December 1936. Freeland returned to duty on January 4, 1937, but was subsequently placed on furlough in June 1937 due to his ongoing health concerns. Throughout this time, he maintained membership with the railroad's relief department for natural death benefits.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Wiley Ford, W Va",
+      "date_range": "1936-06-07 to unknown",
+      "context": "Home address for natural death benefits membership",
+      "sources": [
+        "RDApp-222507Freeland102.jpg.json"
+      ]
+    },
+    {
+      "address": "Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Work location or medical examination context",
+      "sources": [
+        "RDApp-222507Freeland103.jpg.json",
+        "RDApp-222507Freeland104.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1936-11-27",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": "Motive Power",
+      "division": "Cumberland",
+      "details": "Reported disability due to gastric ulcer. No wages allowed from 11/27/36.",
+      "sources": [
+        "RDApp-222507Freeland107.jpg.json",
+        "RDApp-222507Freeland108.jpg.json"
+      ]
+    },
+    {
+      "date": "1936-12-31",
+      "event_type": "return_to_duty",
+      "position": "Carman",
+      "department": "Motive Power",
+      "division": "Cumberland",
+      "details": "Returned to duty after a period of disability.",
+      "sources": [
+        "RDApp-222507Freeland103.jpg.json"
+      ]
+    },
+    {
+      "date": "1937-06-05",
+      "event_type": "furlough",
+      "position": "Carman",
+      "department": "Motive Power",
+      "division": "Cumberland",
+      "details": "Furloughed from service.",
+      "sources": [
+        "RDApp-222507Freeland102.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1936-11-27",
+      "injury_type": "Gastric Ulcer with severe gastric hemorrhage",
+      "body_part": null,
+      "narrative": "Freeland was disabled due to a severe gastric ulcer and hemorrhage from November 27, 1936. He received sickness benefits until December 31, 1936.",
+      "medical_examinations": [
+        {
+          "date": "1936-12-03",
+          "examiner": "Dr. B.H. Guisewhite",
+          "finding": "disabled",
+          "notes": "Probable duration indefinite, severe gastric hemorrhage noted.",
+          "sources": [
+            "RDApp-222507Freeland110.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1936-11-27",
+            "end": "1936-12-31"
+          },
+          "days": 45,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-222507Freeland103.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. B.H. Guisewhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1936-12-03",
+          "finding": "disabled due to gastric ulcer"
+        }
+      ]
+    },
+    {
+      "name": "Dr. E.E. Broadrup",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1937-06-05",
+      "event": "Furloughed from service.",
+      "significance": "Indicates a significant change in employment status due to health concerns.",
+      "sources": [
+        "RDApp-222507Freeland102.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1936-11-27",
+      "latest": "1937-06-05"
+    },
+    "completeness_assessment": "The record is fairly complete for the period of disability and furlough, but lacks details on earlier employment history or family information.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors leading to name variations (e.g., 'Fackman', 'Freelaud').",
+      "Dates are sometimes inconsistent between documents."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges of railroad workers dealing with chronic health issues and the support structures in place, such as disability benefits.",
+      "It also illustrates how medical conditions could lead to temporary or permanent changes in employment status."
+    ],
+    "comparative_questions": [
+      "How did the treatment and administrative responses to Freeland's condition compare to other employees?",
+      "What were the broader trends in railroad worker health and disability during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

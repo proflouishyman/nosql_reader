@@ -1,0 +1,247 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "O. D. Proudfoot",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204801Proudfood073.jpg.json",
+          "RDApp-204801Proudfood074.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto A. Rouckfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood075.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto D. Rundfot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood077.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto S. Brandfort",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood079.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto L. Proudfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood080.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1881,
+    "confidence_notes": "The birth year is consistent across documents, but name variations suggest possible identity confusion with other individuals."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore and Ohio Railroad Company in the early 20th century. His career spanned several decades, during which he held various positions within the engineering department. The records indicate that he worked primarily out of Cumberland, Maryland, but also had assignments at Bond, Maryland. In November 1940, Proudfoot slipped on ice while oiling an engine and suffered a sprain to his left knee. He was able to return to duty shortly after receiving medical attention, which included X-ray examinations that ruled out bone or joint injuries. His employment record also includes a sick leave due to influenza in 1918. Despite these incidents, Proudfoot's career appears to have been relatively stable, with no significant disruptions noted.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct mention of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "130 Seymour Street",
+      "date_range": "unknown",
+      "context": "Residence address mentioned in injury report",
+      "sources": [
+        "RDApp-204801Proudfood074.jpg.json"
+      ]
+    },
+    {
+      "address": "Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Address listed for medical examination and benefits records",
+      "sources": [
+        "RDApp-204801Proudfood075.jpg.json",
+        "RDApp-204801Proudfood076.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "May 13, 1916",
+      "event_type": "application",
+      "position": null,
+      "department": "C.",
+      "division": "Engnr.",
+      "details": "Application for employment with contributions paid from this date forward",
+      "sources": [
+        "RDApp-204801Proudfood075.jpg.json"
+      ]
+    },
+    {
+      "date": "November 28, 1940",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Slipped on ice while oiling an engine and sprained left knee. Returned to duty December 6, 1940.",
+      "sources": [
+        "RDApp-204801Proudfood072.jpg.json",
+        "RDApp-204801Proudfood073.jpg.json"
+      ]
+    },
+    {
+      "date": "September 21, 1918",
+      "event_type": "sick leave",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported sick with influenza. No monetary claim was made.",
+      "sources": [
+        "RDApp-204801Proudfood080.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "November 28, 1940",
+      "injury_type": "Sprain",
+      "body_part": "Left knee",
+      "narrative": "Proudfoot slipped on ice while oiling an engine and sprained his left knee. He was examined by Dr. C.E. Durrett and returned to duty after a week.",
+      "medical_examinations": [
+        {
+          "date": "November 28, 1940",
+          "examiner": "Drs. Cowherd & Rathbone",
+          "finding": "No evidence of bone or joint injury",
+          "notes": "X-ray examination ruled out fractures.",
+          "sources": [
+            "RDApp-204801Proudfood073.jpg.json"
+          ]
+        },
+        {
+          "date": "November 30, 1940",
+          "examiner": "B.H. Guistwhite",
+          "finding": "Disabled for 7 days",
+          "notes": "Medical examiner's report of disablement.",
+          "sources": [
+            "RDApp-204801Proudfood072.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "September 21, 1918",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Proudfoot was diagnosed with influenza and reported sick. No monetary claim for benefits was made.",
+      "medical_examinations": [
+        {
+          "date": "September 28, 1918",
+          "examiner": "Doerner",
+          "finding": "Disabled due to illness",
+          "notes": null,
+          "sources": [
+            "RDApp-204801Proudfood080.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. C.E. Durrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "November 28, 1940",
+          "finding": "Sprain of left knee"
+        }
+      ]
+    },
+    {
+      "name": "Drs. Cowherd & Rathbone",
+      "district": null,
+      "examinations": [
+        {
+          "date": "November 28, 1940",
+          "finding": "No evidence of bone or joint injury"
+        }
+      ]
+    },
+    {
+      "name": "B.H. Guistwhite",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "November 30, 1940",
+          "finding": "Disabled for 7 days"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "May 13, 1916",
+      "event": "Application for employment and contributions began.",
+      "significance": "Marks the start of Proudfoot's documented career with B&O Railroad.",
+      "sources": [
+        "RDApp-204801Proudfood075.jpg.json"
+      ]
+    },
+    {
+      "date": "September 29, 1918",
+      "event": "Influenza sick leave began without monetary claim.",
+      "significance": "Reflects the impact of the influenza pandemic on railroad workers and company policies.",
+      "sources": [
+        "RDApp-204801Proudfood080.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1906",
+      "latest": "December 2, 1940"
+    },
+    "completeness_assessment": "The record is fairly complete for the period from 1916 to 1940. It lacks detailed information about family and early career before 1916.",
+    "data_quality_notes": [
+      "Name variations suggest possible identity confusion with other individuals.",
+      "Some documents have OCR errors, such as 'Rundfot' instead of 'Proudfoot'."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical treatment and disability policies for railroad workers in the early 20th century.",
+      "They highlight the impact of seasonal conditions (ice) on workplace safety."
+    ],
+    "comparative_questions": [
+      "How did injury and illness management practices vary across different railroads?",
+      "What was the typical duration of sick leave or disability for similar injuries?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

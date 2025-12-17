@@ -1,0 +1,220 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Ctta D. Proudfoot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood085.jpg.json"
+        ]
+      },
+      {
+        "name": "H. D. Proudfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood086.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is certain based on multiple documents, but name variations exist."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company in the early to mid-20th century. His career spanned several decades and included various periods of sickness that required medical examination and certification from the company's Relief Department. Notably, he experienced a period of disability due to influenza in 1918 and again for gastro-enteritis in 1947. These incidents highlight both his dedication to service despite health challenges and the railroad\u2019s structured approach to managing employee disabilities. Proudfoot worked primarily as an engineer, suggesting a significant role within the operations of the B&O Railroad.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence at time of disability in 1947",
+      "sources": [
+        "RDApp-204801Proudfood089.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Engineer",
+      "department": "C.T.",
+      "division": "Cumb",
+      "details": "Began working as an engineer for the Baltimore & Ohio Railroad Company in an unspecified year.",
+      "sources": []
+    },
+    {
+      "date": "1918-09-22",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": "C.T. Div.",
+      "details": "Totally disabled by sickness from September 22 to September 29, 1918.",
+      "sources": [
+        "RDApp-204801Proudfood082.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-09-30",
+      "event_type": "return_to_duty",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty on September 30, 1918.",
+      "sources": [
+        "RDApp-204801Proudfood085.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-04-30",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": "Cumb Div'n",
+      "details": "Totally disabled by gastro-enteritis from April 30 to May 8, 1947.",
+      "sources": [
+        "RDApp-204801Proudfood089.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1918-09-22",
+      "injury_type": "Sickness (Influenza)",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled by influenza from September 22 to September 29, 1918. He was certified able to return to duty on September 30.",
+      "medical_examinations": [
+        {
+          "date": "1918-09-25",
+          "examiner": "Dr. C.L. Owens",
+          "finding": "disabled",
+          "notes": "Proudfoot visited Dr. C.L. Owens due to influenza.",
+          "sources": [
+            "RDApp-204801Proudfood086.jpg.json"
+          ]
+        },
+        {
+          "date": "1918-10-08",
+          "examiner": "Dr. J.H. Doemer",
+          "finding": "able_to_return",
+          "notes": "Certified able to return to duty on September 30, 1918.",
+          "sources": [
+            "RDApp-204801Proudfood085.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1947-04-30",
+      "injury_type": "Sickness (Gastro-enteritis)",
+      "body_part": null,
+      "narrative": "Proudfoot was totally disabled by gastro-enteritis from April 30 to May 8, 1947. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1947-05-21",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Certified totally disabled by sickness from April 30 to May 8, 1947.",
+          "sources": [
+            "RDApp-204801Proudfood090.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1947-05-01",
+            "end": "1947-05-04"
+          },
+          "days": 2,
+          "amount": null,
+          "check_number": "62498",
+          "sources": [
+            "RDApp-204801Proudfood089.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. C.L. Owens",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1918-09-25",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. J.H. Doemer",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1918-10-08",
+          "finding": "able_to_return"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Disability claim process",
+      "significance": "Reflects the structured approach to managing employee disabilities.",
+      "sources": [
+        "RDApp-204801Proudfood082.jpg.json",
+        "RDApp-204801Proudfood085.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1916-11-09",
+      "latest": "1947-05-21"
+    },
+    "completeness_assessment": "The record is fairly complete for the periods of disability but lacks details on employment start date and other career events.",
+    "data_quality_notes": [
+      "OCR quality varies, with some documents having incomplete or unclear text.",
+      "Name variations exist in the records."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case illustrates the structured disability management practices of early-20th-century railroads and highlights the impact of influenza on railroad operations.",
+      "It also shows how medical certification played a crucial role in determining employee eligibility for benefits."
+    ],
+    "comparative_questions": [
+      "How did other railroads manage similar situations?",
+      "What were the broader health impacts on railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

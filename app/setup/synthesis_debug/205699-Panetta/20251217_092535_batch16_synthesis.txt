@@ -1,0 +1,154 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Elario Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta153.jpg.json"
+        ]
+      },
+      {
+        "name": "H. Alexis Pannetta",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta155.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205699",
+    "birth_year": null,
+    "confidence_notes": "The name variations suggest some inconsistency in records, but Ilario Panetta appears to be the most common usage."
+  },
+  "biographical_narrative": "Ilario Panetta was a railroad worker employed by the Baltimore and Ohio Railroad Company during the early part of the twentieth century. He worked as a carman at Keyser, West Virginia, where he experienced an injury on January 8th, 1921, leading to total disability until February 20th, after which he was given a 'Return to Duty' card for February 21st. Panetta\u2019s employment history includes several administrative and medical records that detail his interactions with the company's Relief Department regarding injury benefits and membership in their relief feature. His career also involved disputes over deductions from his wages related to death benefit contributions, indicating financial concerns during his tenure.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No clear evidence of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "66 Vernon Street, Keyser, W. Va.",
+      "date_range": "March 1924",
+      "context": "Residence address for communication",
+      "sources": [
+        "RDApp-205699Panetta154.jpg.json"
+      ]
+    },
+    {
+      "address": "11 Virginia St., Keyser, W. Va.",
+      "date_range": "March 7th, 1924",
+      "context": "Address in employment correspondence",
+      "sources": [
+        "RDApp-205699Panetta155.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "June 29, 1918",
+      "event_type": "application",
+      "position": null,
+      "department": "M. P.",
+      "division": "Cumb.",
+      "details": "Application for full membership in the Relief Feature of the Baltimore & Ohio Railroad Company's Relief Department.",
+      "sources": [
+        "RDApp-205699Panetta158.jpg.json"
+      ]
+    },
+    {
+      "date": "January 8, 1921",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Injured on the job and paid benefits for total disability until February 20th.",
+      "sources": [
+        "RDApp-205699Panetta152.jpg.json"
+      ]
+    },
+    {
+      "date": "March 7, 1924",
+      "event_type": "dispute",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Disputed a $3.00 deduction from his wages for death benefit contributions.",
+      "sources": [
+        "RDApp-205699Panetta155.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "January 8, 1921",
+      "injury_type": "Not specified in documents",
+      "body_part": null,
+      "narrative": "Ilario Panetta was injured on January 8th, 1921. He received benefits for total disability until February 20th and was given a 'Return to Duty' card for February 21st.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "January 8, 1921",
+            "end": "February 20, 1921"
+          },
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-205699Panetta152.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [],
+  "administrative_events": [
+    {
+      "date": "March 7, 1924",
+      "event": "Dispute over wage deductions for death benefit contributions.",
+      "significance": "Indicates financial concerns and administrative issues during his employment.",
+      "sources": [
+        "RDApp-205699Panetta155.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "June 29, 1918",
+      "latest": "March 25, 1924"
+    },
+    "completeness_assessment": "The records are fairly complete for administrative and injury-related events but lack personal details such as birth year or family information.",
+    "data_quality_notes": [
+      "Some documents have illegible portions affecting full comprehension.",
+      "Name variations exist in the records."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Ilario Panetta provides insight into the medical and administrative practices of railroad companies during the early twentieth century, particularly regarding injury benefits and employee disputes over wage deductions."
+    ],
+    "comparative_questions": [
+      "How typical were such injuries among railroad workers?",
+      "What was the average duration of disability payments for injured employees?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

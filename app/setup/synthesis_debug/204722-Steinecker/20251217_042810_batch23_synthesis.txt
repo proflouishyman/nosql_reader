@@ -1,0 +1,126 @@
+{
+  "person_identity": {
+    "canonical_name": "William Stolinecker",
+    "name_variations": [
+      {
+        "name": "W. Steinecker",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker221.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": null,
+    "confidence_notes": "The name appears as 'William Stolinecker' in the document, but there is a variation to 'W. Steinecker'. The birth year could not be determined from the provided documents."
+  },
+  "biographical_narrative": "William Stolinecker was employed by the Baltimore & Ohio Railroad Company (B&O) as a helper in the C.T. department, working under the Division B. To. His employment record includes a notable event on December 22, 1945, when he reported sick and was subsequently issued a Notice of Disablement. Stolinecker's last day receiving wages was December 21, 1945, at 7:20 am. The cause of his disablement is listed as sickness rather than an injury sustained on duty. There are no additional records indicating the duration or resolution of this disability, nor any details about his career progression or family situation.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "101 n. 3rd Ave., Blkym. Pk.",
+      "date_range": "unknown",
+      "context": "Residence address at time of disablement report",
+      "sources": [
+        "RDApp-204722Steinecker221.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Helper",
+      "department": "C.T.",
+      "division": "B. To.",
+      "details": "Stolinecker was employed as a helper in the C.T. department under Division B. To., but specific dates of employment are not provided.",
+      "sources": [
+        "RDApp-204722Steinecker221.jpg.json"
+      ]
+    },
+    {
+      "date": "1945-12-22",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported sick and issued a Notice of Disablement.",
+      "sources": [
+        "RDApp-204722Steinecker221.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1945-12-22",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Stolinecker reported sick on December 22, 1945. He was not injured on duty and was issued a Notice of Disablement.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. Bossyna",
+          "finding": null,
+          "notes": null,
+          "sources": [
+            "RDApp-204722Steinecker221.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Bossyna",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1945-12-24",
+      "event": "Notice of Disablement issued",
+      "significance": "This document marks the official recognition of Stolinecker's sickness and his subsequent disablement.",
+      "sources": [
+        "RDApp-204722Steinecker221.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 1,
+    "date_range": {
+      "earliest": "1945-12-22",
+      "latest": "1945-12-24"
+    },
+    "completeness_assessment": "The record is limited to a single document that provides information about Stolinecker's disablement but lacks details on his career history, family situation, and the resolution of his disability.",
+    "data_quality_notes": [
+      "The OCR text has some illegible parts, such as the class designation for Stolinecker."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case highlights the process by which railroad employees were managed during periods of sickness and disability in the early to mid-20th century. It also underscores the importance of medical examination and administrative procedures in handling employee health issues."
+    ],
+    "comparative_questions": [
+      "How did the B&O's policies on sick leave compare with those of other railroads?",
+      "What were the typical durations of disability for railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

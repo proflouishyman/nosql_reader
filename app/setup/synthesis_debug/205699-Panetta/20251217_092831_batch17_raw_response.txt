@@ -1,0 +1,129 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {"name": "L. Pannett", "confidence": "medium", "sources": ["RDApp-205699Panetta162.jpg.json"]},
+      {"name": "Elvario Passanette", "confidence": "low", "sources": ["RDApp-205699Panetta164.jpg.json"]},
+      {"name": "Mario Palmetta", "confidence": "medium", "sources": ["RDApp-205699Panetta170.jpg.json"]}
+    ],
+    "employee_id": 205699,
+    "birth_year": 1875,
+    "confidence_notes": "Name variations exist, but Ilario Panetta is the most consistent name across documents."
+  },
+  
+  "biographical_narrative": "Ilario Panetta was an engine helper for the Baltimore & Ohio Railroad Company in Keyser, West Virginia. He began his career with the company as early as 1924 and faced a significant injury on May 9, 1924, when he sustained a continuous shoulder disability while at work. The injury led to a period of disability from May 10-16, during which Panetta received compensation for lost wages and medical expenses. He was examined by several doctors and radiographers who confirmed the nature of his injury and monitored his recovery process. By May 17, he had been declared fit to return to duty, marking a successful resolution to his health crisis.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No information provided", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Keyser",
+      "date_range": "Unknown",
+      "context": "Residence as stated in documents",
+      "sources": ["RDApp-205699Panetta161.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Engine helper",
+      "department": "M. P.",
+      "division": "Env.",
+      "details": "Began work as an engine helper, but exact start date is unknown.",
+      "sources": ["RDApp-205699Panetta161.jpg.json"]
+    },
+    {
+      "date": "1924-05-17",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Declared fit for work after a shoulder injury.",
+      "sources": ["RDApp-205699Panetta170.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1924-05-09",
+      "injury_type": "Continuous shoulder disability",
+      "body_part": "Left Shoulder",
+      "narrative": "Ilario Panetta sustained a continuous shoulder injury on May 9, 1924. He was examined and treated for the condition, which led to his temporary inability to work from May 10-16.",
+      "medical_examinations": [
+        {
+          "date": "1924-05-20",
+          "examiner": "J. Garnet Cowherd",
+          "finding": "Disabled due to separation between acromio-clavicular articulation",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta163.jpg.json"]
+        },
+        {
+          "date": "1924-05-17",
+          "examiner": "Dr. A. M. Chustwhite",
+          "finding": "Able to return to duty",
+          "notes": null,
+          "sources": ["RDApp-205699Panetta170.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1924-05-10", "end": "1924-05-16"},
+          "days": 6.5,
+          "amount": 12.00,
+          "check_number": "86299",
+          "sources": ["RDApp-205699Panetta161.jpg.json"]
+        }
+      ],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. A. M. Chustwhite",
+      "district": "28",
+      "examinations": [{"date": "1924-05-17", "finding": "Able to return to duty"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1924-06-11",
+      "event": "Certificate of Ability issued",
+      "significance": "Certified Panetta's ability to return to work after injury.",
+      "sources": ["RDApp-205699Panetta170.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1924-05-09", "latest": "1924-06-14"},
+    "completeness_assessment": "The record is relatively complete, with detailed documentation of the injury and recovery process. However, there are inconsistencies in name spelling.",
+    "data_quality_notes": [
+      "Name variations exist across documents (Ilario Panetta, L. Pannett, Elvario Passanette).",
+      "Some dates and names are handwritten, leading to potential OCR errors."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": ["This case provides insight into the medical practices of railroad companies in handling employee injuries during the early 20th century."],
+    "comparative_questions": [
+      "How did injury compensation and recovery processes vary across different railroads?",
+      "What were the common types of injuries among engine helpers?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

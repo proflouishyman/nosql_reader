@@ -1,0 +1,186 @@
+{
+  "person_identity": {
+    "canonical_name": "Edward L. Collins",
+    "name_variations": [
+      {
+        "name": "E.L. Collins",
+        "confidence": "high",
+        "sources": [
+          "RDApp-205479Collins151.jpg.json",
+          "RDApp-205479Collins160.jpg.json"
+        ]
+      },
+      {
+        "name": "Edward L. Colins",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205479Collins168.jpg.json"
+        ]
+      },
+      {
+        "name": "E. Cannell R Div",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205479Collins165.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "205479",
+    "birth_year": 1879,
+    "confidence_notes": "The birth year is consistent across most documents, but there are discrepancies in the exact date."
+  },
+  "biographical_narrative": "Edward L. Collins began his career with The Baltimore & Ohio Railroad Company as an engineer around the turn of the century, working primarily in the Conducting Transportation Department and various divisions including Cadilla, Pittsburgh, and Connellsville. He was a dedicated employee who applied for membership in the Relief Feature multiple times to secure benefits for himself and his family. Collins experienced a significant injury on July 19, 1897, when he collided with another object while on duty, which led to his disablement and subsequent medical examination. Despite this setback, he continued to serve the railroad until at least October 4, 1946, when he applied for an annuity under the Railroad Retirement Act. Throughout his career, Collins maintained a strong commitment to the company's Relief Department, regularly updating his membership status and making contributions.",
+  "family": {
+    "spouse": {
+      "name": "Ada Collins",
+      "evidence": "Document confirming spouse name.",
+      "sources": [
+        "RDApp-205479Collins163.jpg.json"
+      ]
+    },
+    "parents": [
+      {
+        "name": "Father",
+        "relationship": "father",
+        "evidence": "Age provided in medical examination form.",
+        "sources": [
+          "RDApp-205479Collins166.jpg.json"
+        ]
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "129 Humbert Street, Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence address provided in correspondence.",
+      "sources": [
+        "RDApp-205479Collins156.jpg.json",
+        "RDApp-205479Collins158.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "unknown",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "Conducting Transportation Department",
+      "division": "Cadilla Division",
+      "details": "Started employment as an engineer.",
+      "sources": [
+        "RDApp-205479Collins168.jpg.json"
+      ]
+    },
+    {
+      "date": "July 19, 1897",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Injured on duty due to collision.",
+      "sources": [
+        "RDApp-205479Collins173.jpg.json"
+      ]
+    },
+    {
+      "date": "May 13, 1916",
+      "event_type": "application/promotion/transfer/furlough/resignation/injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Applied for membership in the Relief Feature.",
+      "sources": [
+        "RDApp-205479Collins168.jpg.json"
+      ]
+    },
+    {
+      "date": "October 4, 1946",
+      "event_type": "application/promotion/transfer/furlough/resignation/injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Applied for an annuity under the Railroad Retirement Act.",
+      "sources": [
+        "RDApp-205479Collins163.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "July 19, 1897",
+      "injury_type": "Collision",
+      "body_part": null,
+      "narrative": "Edward L. Collins was injured on duty due to a collision on July 19, 1897.",
+      "medical_examinations": [
+        {
+          "date": "July 19, 1897",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Collided while on duty.",
+          "sources": [
+            "RDApp-205479Collins173.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": null,
+      "district": null,
+      "examinations": [
+        {
+          "date": "July 19, 1897",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "October 4, 1946",
+      "event": "Application for annuity under the Railroad Retirement Act.",
+      "significance": "Marks a significant transition in Collins' career as he prepares to retire.",
+      "sources": [
+        "RDApp-205479Collins163.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 23,
+    "date_range": {
+      "earliest": "May 6, 1907",
+      "latest": "October 28, 1946"
+    },
+    "completeness_assessment": "The record is fairly complete for Collins' career with the Baltimore & Ohio Railroad Company. However, there are some discrepancies and missing details regarding his exact date of birth.",
+    "data_quality_notes": [
+      "Some documents have conflicting information about Edward L. Collins' name spelling.",
+      "Dates in medical examination forms are sometimes ambiguous."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of relief and benefit programs for railroad workers, especially in cases of injury or retirement.",
+      "It also underscores the rigorous process involved in securing benefits and the role of medical examinations."
+    ],
+    "comparative_questions": [
+      "How did other railroads compare with the Baltimore & Ohio Railroad Company's Relief Department?",
+      "What were common causes of injuries among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

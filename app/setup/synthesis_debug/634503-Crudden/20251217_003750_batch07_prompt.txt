@@ -1,0 +1,269 @@
+You are a historian analyzing Baltimore & Ohio Railroad employment records from the early 20th century.
+
+EMPLOYEE FOLDER: 634503-Crudden
+EMPLOYEE ID: 634503
+FOLDER NAME: Crudden
+NUMBER OF DOCUMENTS: 5 - Batch 7/7
+
+Below are ALL documents from this employee's personnel file. Read carefully and generate a comprehensive biographical synthesis.
+
+
+======================================================================
+DOCUMENT 1 of 5: RDAPP-634503Crudden061.jpg.json
+======================================================================
+
+OCR TEXT:
+B. & O. R. R. CO., RELIEF DEPARTMENT.
+PART 3. NOTICE OF DISABLEMENT. No. 49653
+NOTICE Sent from: Loc Bridge on July 27, 1917
+Name: Geo Brude Certificate No. 654503
+Residence: 1947 No. Fremont St. Occupation: Tollman
+Department: Engin. Division: null
+Disability {Accident or Sickness}: Accident
+began: July 27, 1917, at 6 o'clock A.M.
+Date Member Reported: July 27, 1917, at 6 o'clock A.M.
+Was he Injured on Duty? Answer 'Yes' or 'No': Yes
+Cause of Injury on Duty: null
+Signature and Title of Official Issuing: G. S. Baltimore Yd
+SEND THIS PART TO MEDICAL EXAMINER.
+1000 bks. 50 sets each. 10-11-17. R. D. Form 5-Revision L.
+
+SUMMARY:
+This document is a Notice of Disablement from the B. & O. Railroad Company Relief Department, dated July 27, 1917. It reports that Geo Brude, a tollman residing at 1947 No. Fremont St., suffered an accident on duty and was reported disabled on the same day. The document includes basic personal and occupational information as well as the reporting official's signature.
+
+
+======================================================================
+DOCUMENT 2 of 5: RDAPP-634503Crudden062.jpg.json
+======================================================================
+
+OCR TEXT:
+20m. 4-12-20. 2234-32 R. F. Form 10.
+Baltimore & Ohio Railroad Company.
+CERTIFICATES OF ABILITY.
+10
+Phila Pa 8/19 — 192 / .
+I CERTIFY that George A. Crullin reported on R. F. 5 No. H9653 was able to return to duty 8-18—192 /. The last claim for benefits was sent to Edbrash (title) D.A. on 8/19—192 /. Member notified by Form 7 A on 8/19— 192 / .
+G.O. Prance Medical Examiner, District No. ____.
+This certificate must be sent to Sup't Relief Dep't, with R. F. 7 or 7 A and part 2 of Form 5 attached.
+
+SUMMARY:
+This document is a 'Certificate of Ability' from the Baltimore & Ohio Railroad Company, confirming that George A. Crullin was certified able to return to duty on August 18, 192_. The document notes claim and notification details, the involvement of medical examiner G.O. Prance, and directs filing instructions.
+
+
+======================================================================
+DOCUMENT 3 of 5: RDAPP-634503Crudden063.jpg.json
+======================================================================
+
+OCR TEXT:
+15m. 2-10-20. PART 1. R. F. Form 7A.
+THE BALTIMORE & OHIO RAILROAD CO. RELIEF DEPARTMENT.
+OFFICE OF MEDICAL EXAMINER, DISTRICT No. 7A
+I HEREBY CERTIFY that Geo. C. Hinton will be able to return to duty on Aug 18 1921.
+Form 5 No. 49653
+Medical Examiner.
+The above named member resumed work on August 18th 1921, at 8 o'clock A.M.
+Signature of Time-keeper & Employing Official. E.B. Matthews Title. Terminals Agent
+The Medical Examiner will forward this Part direct to the Time-keeper or Employing Officer, who will complete same and return it to the Medical Examiner. If the member does not report within two days from the time set, this Part must be returned to the Examiner with the notation "Has not reported."
+Final claim will not be certified by Examiner until this Part is returned to him.
+
+
+SUMMARY:
+This document is a medical examiner's certification and return-to-duty clearance for Geo. C. Hinton, an employee of the Baltimore & Ohio Railroad Company Relief Department. The certification states that Hinton is able to resume work on August 18, 1921. The Time-keeper and Employing Official, E.B. Matthews (Terminals Agent), confirms that Hinton resumed work on the stated date and time. The form includes instructions for further processing if the member does not report as scheduled.
+
+
+======================================================================
+DOCUMENT 4 of 5: RDAPP-634503Crudden064.jpg.json
+======================================================================
+
+OCR TEXT:
+10m.  11-19-20.
+NAME George A. Crudden ADDRESS 1917 No. Newkirk St.
+R.F. Form 211.
+FORM 5 NO. 49653 DISABLEMENT BEGAN 7/27/21 CLASS C CERT. NO. 634503
+DIAGNOSIS AND REMARKS Pains left leg suspected osteomyelitis
+Dr. A. H. Clagett
+
+SUMMARY:
+This document is a bureaucratic medical form for George A. Crudden, recording a disablement related to pains in the left leg and suspected osteomyelitis. The disablement began on July 27, 1921, and was documented by Dr. A. H. Clagett.
+
+
+======================================================================
+DOCUMENT 5 of 5: RDAPP-634503Crudden065.jpg.json
+======================================================================
+
+OCR TEXT:
+BALTIMORE AND OHIO RAILROAD CO., Relief Department, MEDICAL EXAMINER'S REPORT OF DISABLEMENT.
+Name George A. Crudden Occupation Tallyman Form 5 No. 49653
+Address 1917 No. Newkirk St. Philadelphia, Pa. Certificate of Membership No. 634503
+1. Nature of Disablement. Pains left upper leg, suspected osteomyelitis. Probable Duration
+2. If accident, state if on or off duty [Place] [Date] 19
+3. Describe how accident occurred.
+
+4. In Hospital. Form 22-A issued? Attending Physician Dr. A. H. Clagett
+5. Remarks:
+
+Date 8/5/21 19 Medical Examiner, District No.
+
+
+SUMMARY:
+This is a medical examiner's report of disablement from the Baltimore and Ohio Railroad Co. Relief Department for an employee named George A. Crudden. Crudden, employed as a Tallyman in Philadelphia, is reporting pains in his left upper leg with suspected osteomyelitis. No specific accident is described. The attending physician is Dr. A. H. Clagett. The form was completed on 8/5/1921.
+
+
+{'='*70}
+YOUR TASK: GENERATE COMPREHENSIVE BIOGRAPHICAL SYNTHESIS
+{'='*70}
+
+Create a structured JSON synthesis with the following schema. Be thorough and evidence-based.
+
+{
+  "person_identity": {
+    "canonical_name": "Full official name based on most common/official usage",
+    "name_variations": [
+      {
+        "name": "Variation as it appears",
+        "confidence": "high/medium/low",
+        "sources": ["list document filenames where this variation appears"]
+      }
+    ],
+    "employee_id": "Employee ID number",
+    "birth_year": 1895,
+    "confidence_notes": "Brief assessment of identity certainty"
+  },
+  
+  "biographical_narrative": "Write 2-4 paragraphs summarizing this person's railroad career. Include: when they started, positions held, major events (injuries, promotions, disputes), family situation, and any notable circumstances. Write in past tense as a professional historian would. Make it readable and informative.",
+  
+  "family": {
+    "spouse": {
+      "name": "Spouse name or null",
+      "evidence": "How we know this",
+      "sources": ["document filenames"]
+    },
+    "parents": [
+      {
+        "name": "Parent name",
+        "relationship": "father/mother",
+        "evidence": "How mentioned",
+        "sources": ["document filenames"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Full address as stated",
+      "date_range": "When associated with this address or 'unknown'",
+      "context": "Why this address appears (residence, beneficiary address, etc.)",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Job title",
+      "department": "Department name or null",
+      "division": "Division name or null",
+      "details": "Brief description of what happened",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "YYYY-MM-DD or best available",
+      "injury_type": "Description of injury",
+      "body_part": "Affected body part(s)",
+      "narrative": "2-3 sentence description of injury, treatment, and outcome",
+      "medical_examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "examiner": "Dr. Name",
+          "finding": "disabled/not disabled/able to return/etc",
+          "notes": "Key details from examination",
+          "sources": ["document filenames"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"},
+          "days": 10,
+          "amount": 50.00,
+          "check_number": "Check number if available",
+          "sources": ["document filenames"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": true or false,
+        "narrative": "If disputed, explain the conflict between doctors or administrators",
+        "resolution": "How was it resolved or 'unclear'"
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Name",
+      "district": "District number if available",
+      "examinations": [
+        {
+          "date": "YYYY-MM-DD",
+          "finding": "Brief finding"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "YYYY-MM-DD or best available",
+      "event": "What happened",
+      "significance": "Why this matters",
+      "sources": ["document filenames"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "YYYY-MM-DD or best guess",
+      "latest": "YYYY-MM-DD or best guess"
+    },
+    "completeness_assessment": "1-2 sentences: How complete is this record? What's well-documented? What's missing?",
+    "data_quality_notes": [
+      "List observations about OCR quality, contradictions, clarity, etc."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "What does this case reveal about railroad labor, medical practices, administration, etc.?"
+    ],
+    "comparative_questions": [
+      "What questions could be explored by comparing this case to others?"
+    ],
+    "research_value": "High/Medium/Low"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON - no preamble, no markdown fences, no explanation
+2. Use exact schema above - include all fields even if some are empty/null
+3. Always include "sources" arrays with actual document filenames for evidence
+4. Be thorough but concise
+5. Note contradictions or uncertainties explicitly
+6. Assign realistic confidence scores (0.0-1.0) based on evidence quality
+7. Write biographical_narrative in clear, professional prose
+8. If information is missing, use null or empty arrays - don't invent data
+9. For dates, use best available format (prefer YYYY-MM-DD, but accept what documents provide)
+10. Document filenames should match the filename shown in DOCUMENT headers above
+
+Begin your response with { and end with }. Return ONLY the JSON object.

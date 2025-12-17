@@ -1,0 +1,188 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Louis Mancuso",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco311.jpg.json"
+        ]
+      },
+      {
+        "name": "Luigi Maucera",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco316.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "Identity is primarily based on the name 'Luigi Mancuso', but variations exist, and birth year information is missing."
+  },
+  "biographical_narrative": "Luigi Mancuso was employed as a carman for the Baltimore & Ohio Railroad Company in the Pittsburgh Division. His career spanned several years during which he faced multiple health challenges that affected his employment status. In February of 1953, Mancuso suffered from lumbago, leading to a period of disability and medical leave. He was able to return to duty after receiving treatment for this condition. Later in the year, on June 26, 1953, he sustained an injury while on duty at Glenwood, Pennsylvania, resulting in a lacerated wound to his left forehead that required four sutures. These incidents highlight the physical demands of Mancuso's job and the medical support provided by the railroad company during this period.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "111 Pulaski Street, Connellsville, Pa",
+      "date_range": "unknown",
+      "context": "Residence address for Luigi Mancuso",
+      "sources": [
+        "RDApp-204897Manusco312.jpg.json"
+      ]
+    },
+    {
+      "address": "11 Tulasii Street, Connellsville, Pa",
+      "date_range": "unknown",
+      "context": "Residence address for Luigi Mancuso",
+      "sources": [
+        "RDApp-204897Manusco320.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Carman",
+      "department": "M.O. Dept.",
+      "division": "Pgh Div'n",
+      "details": "Luigi Mancuso was employed as a carman in the M.O. Department, Pittsburgh Division.",
+      "sources": [
+        "RDApp-204897Manusco311.jpg.json",
+        "RDApp-204897Manusco312.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1953-02-14",
+      "injury_type": "Lumbago",
+      "body_part": null,
+      "narrative": "Luigi Mancuso was disabled due to lumbago from February 14, 1953. He was not paid wages during this period and was able to resume duty on April 14, 1953.",
+      "medical_examinations": [
+        {
+          "date": "1953-02-27",
+          "examiner": "Dr. Cam T. Troilo",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco317.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1953-06-26",
+      "injury_type": "Lacerated wound left forehead, 4 sutures",
+      "body_part": "left forehead",
+      "narrative": "On June 26, 1953, Luigi Mancuso sustained a lacerated wound to his left forehead while on duty at Glenwood, Pennsylvania. The injury required four sutures.",
+      "medical_examinations": [
+        {
+          "date": "1953-08-04",
+          "examiner": "N.W. McIntire A.V.",
+          "finding": "able to return",
+          "notes": null,
+          "sources": [
+            "RDApp-204897Manusco320.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": null,
+            "end": null
+          },
+          "days": 10,
+          "amount": 5.0,
+          "check_number": null,
+          "sources": [
+            "RDApp-204897Manusco319.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Cam T. Troilo",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1953-02-27",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "N.W. McIntire A.V.",
+      "district": "District No. 15",
+      "examinations": [
+        {
+          "date": "1953-08-04",
+          "finding": "able to return"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Paul R. Sieber",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1953-08-14",
+      "event": "Submission of hospital bill to Auditor Disbursements for Luigi Mancuso's treatment.",
+      "significance": "Indicates the administrative process for medical expenses incurred by employees.",
+      "sources": [
+        "RDApp-204897Manusco319.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1953-02-14",
+      "latest": "1953-08-14"
+    },
+    "completeness_assessment": "The record is relatively complete for the period of February to August 1953, detailing Mancuso's injuries and medical treatments. However, there are inconsistencies in his name spelling across documents.",
+    "data_quality_notes": [
+      "OCR quality varies; some dates and names have minor discrepancies."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the health challenges faced by railroad workers during this period, as well as the medical support provided to them.",
+      "They also highlight the administrative processes involved in handling employee injuries and medical leave."
+    ],
+    "comparative_questions": [
+      "How did the medical treatment and disability policies of other railroads compare to those of B&O?",
+      "What were the broader health trends among railroad workers during this era?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

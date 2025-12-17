@@ -1,0 +1,246 @@
+{
+  "person_identity": {
+    "canonical_name": "Harry Degarmo",
+    "name_variations": [
+      {
+        "name": "Harry Legasmo",
+        "confidence": "low",
+        "sources": [
+          "RDApp-634879Degarmo001.jpg.json"
+        ]
+      },
+      {
+        "name": "H. D. Garamo",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-634879Degarmo010.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "634879",
+    "birth_year": 1888,
+    "confidence_notes": "The birth year is consistent across most documents, but the name variations are noted with lower confidence due to possible OCR errors or typographical issues."
+  },
+  "biographical_narrative": "Harry Degarmo began his career with the Baltimore & Ohio Railroad Company in the early 1920s. His roles included switchman and brakeman, primarily serving in the Ohio division. He experienced several periods of disability due to injuries, notably a contused eye that kept him off duty for over a month in late 1923. Degarmo's employment was marked by consistent contributions to his benefits plan, indicating steady service despite occasional health setbacks. His records show he lived in Chillicothe and later at 111 Monrose Ave.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Chillicothe",
+      "date_range": "unknown",
+      "context": "Residence listed in sickness payment records",
+      "sources": [
+        "RDApp-634879Degarmo007.jpg.json"
+      ]
+    },
+    {
+      "address": "111 Monrose Ave",
+      "date_range": "unknown",
+      "context": "Residence noted in a notice of disablement form",
+      "sources": [
+        "RDApp-634879Degarmo010.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "2/11/1910",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application date for employment with the Baltimore & Ohio Railroad Company.",
+      "sources": [
+        "RDApp-634879Degarmo002.jpg.json"
+      ]
+    },
+    {
+      "date": "1/16/1920",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Passed a medical exam for occupational purposes.",
+      "sources": [
+        "RDApp-634879Degarmo006.jpg.json"
+      ]
+    },
+    {
+      "date": "11/16/20",
+      "event_type": "application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Application for benefits or social security.",
+      "sources": [
+        "RDApp-634879Degarmo001.jpg.json"
+      ]
+    },
+    {
+      "date": "9/12/1923",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": null,
+      "division": "Ohio",
+      "details": "Reported totally disabled due to accident or sickness.",
+      "sources": [
+        "RDApp-634879Degarmo008.jpg.json"
+      ]
+    },
+    {
+      "date": "12/22/1922",
+      "event_type": "medical examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Examined for S.H. & C.",
+      "sources": [
+        "RDApp-634879Degarmo001.jpg.json"
+      ]
+    },
+    {
+      "date": "2/14/1927",
+      "event_type": "furlough",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Furloughed for 17 days.",
+      "sources": [
+        "RDApp-634879Degarmo002.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "9/12/1923",
+      "injury_type": "Contused Eye",
+      "body_part": "Eye",
+      "narrative": "Degarmo was reported as totally disabled due to a contused eye, resulting in his absence from duty for over a month. He received sickness payments and benefits.",
+      "medical_examinations": [
+        {
+          "date": "9/12/1923",
+          "examiner": "C.C. Trichler M.D.",
+          "finding": "Disabled",
+          "notes": "Reported totally disabled due to accident or sickness from 9-12-1923 to 10-26-1923.",
+          "sources": [
+            "RDApp-634879Degarmo008.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "September 7",
+            "end": null
+          },
+          "days": 7,
+          "amount": 10.5,
+          "check_number": "62834",
+          "sources": [
+            "RDApp-634879Degarmo007.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1/16/1920",
+      "injury_type": "Medical Examination",
+      "body_part": null,
+      "narrative": "Degarmo underwent a medical examination for occupational purposes, showing good vision and hearing.",
+      "medical_examinations": [
+        {
+          "date": "1/16/1920",
+          "examiner": "N. Cotter Medical Examiner",
+          "finding": "Able to work",
+          "notes": "Vision without glasses was 20-20 in both eyes, and hearing was good.",
+          "sources": [
+            "RDApp-634879Degarmo006.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "N. Cotter",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1/16/1920",
+          "finding": "Able to work"
+        }
+      ]
+    },
+    {
+      "name": "C.C. Trichler M.D.",
+      "district": 22,
+      "examinations": [
+        {
+          "date": "9/12/1923",
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "8/8/1955",
+      "event": "Account arrears reported",
+      "significance": "Degarmo's account was noted to be in arrears by $2.45.",
+      "sources": [
+        "RDApp-634879Degarmo003.jpg.json"
+      ]
+    },
+    {
+      "date": "1/16/1920",
+      "event": "Medical examination for occupational purposes",
+      "significance": "Ensured Degarmo was fit for duty.",
+      "sources": [
+        "RDApp-634879Degarmo006.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "2/11/1910",
+      "latest": "8/8/1955"
+    },
+    "completeness_assessment": "The record is relatively complete, with detailed information on employment and medical history. However, personal details such as family members are missing.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text or unclear entries.",
+      "Name variations exist (Harry Legasmo vs Harry Degarmo), which may be due to OCR errors."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of medical examinations and disability benefits in railroad employment during the early 20th century.",
+      "It also shows the administrative processes involved in managing employee health records and benefit payments."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different divisions or departments within the Baltimore & Ohio Railroad Company?",
+      "What were the typical durations of disability leave for workers with similar injuries?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

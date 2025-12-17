@@ -1,0 +1,260 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Rosenbaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh051.jpg.json"
+        ]
+      },
+      {
+        "name": "Claud Roenbaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh055.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Koenbaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh054.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1884,
+    "confidence_notes": "Name variations exist but 'Claude Roenbaugh' appears most consistently. Birth year estimated based on age at examination."
+  },
+  "biographical_narrative": "Claude Roenbaugh, a locomotive engineer for the Baltimore & Ohio Railroad Company (B&O), began his career in 1904 after working as a fireman on the Pennsylvania R.R. for about twelve years. Throughout his tenure at B&O, he held various positions within the company's engineering department and was stationed primarily in Lorain, Ohio. Roenbaugh experienced several periods of disability due to sickness, including an episode in May 1947 when he suffered from vertigo and vomiting after working in his garden. Despite these health issues, he continued to work until at least July 1947, with medical examinations indicating that he was fit for duty under observation. Roenbaugh's career spanned several decades and included periods of illness and recovery, reflecting the challenges faced by railroad workers during this era.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "Only mentions wife is well; no name provided",
+      "sources": [
+        "RDApp-221988Roenbaugh060.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "531 W. 21st Street, Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address as stated in medical documents",
+      "sources": [
+        "RDApp-221988Roenbaugh051.jpg.json",
+        "RDApp-221988Roenbaugh060.jpg.json"
+      ]
+    },
+    {
+      "address": "331 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address as stated in medical history form",
+      "sources": [
+        "RDApp-221988Roenbaugh060.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1904",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Locomotive Engineer",
+      "department": "CT Dept.",
+      "division": "Wheeling Div'n",
+      "details": "Began working for B&O as a locomotive engineer after previous employment on the Pennsylvania R.R.",
+      "sources": [
+        "RDApp-221988Roenbaugh060.jpg.json"
+      ]
+    },
+    {
+      "date": "5/31/1947",
+      "event_type": "injury",
+      "position": "Locomotive Engineer",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled due to sickness, specifically vertigo and vomiting.",
+      "sources": [
+        "RDApp-221988Roenbaugh054.jpg.json",
+        "RDApp-221988Roenbaugh060.jpg.json"
+      ]
+    },
+    {
+      "date": "7/19/1947",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed work after a period of disability due to sickness.",
+      "sources": [
+        "RDApp-221988Roenbaugh053.jpg.json"
+      ]
+    },
+    {
+      "date": "7/26/1947",
+      "event_type": "medical_examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Granted permission to resume duty under observation.",
+      "sources": [
+        "RDApp-221988Roenbaugh057.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "5/31/1947",
+      "injury_type": "Sickness (vertigo, vomiting)",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was reported disabled due to sickness starting on May 31, 1947. He experienced vertigo and vomiting after working in his garden.",
+      "medical_examinations": [
+        {
+          "date": "5/31/1947",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Reported disabled due to sickness, specifically vertigo and vomiting.",
+          "sources": [
+            "RDApp-221988Roenbaugh054.jpg.json"
+          ]
+        },
+        {
+          "date": "7/15/1947",
+          "examiner": "Dr. Carroll Lockard",
+          "finding": "able to return under observation",
+          "notes": "Physical examination found no significant chronic disease or ongoing issues.",
+          "sources": [
+            "RDApp-221988Roenbaugh058.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "7/6/1947",
+      "injury_type": "Sickness (relapse)",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh experienced a relapse of his previous sickness, resulting in another period of disability from July 6 to July 19, 1947.",
+      "medical_examinations": [
+        {
+          "date": "7/23/1947",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Certified as disabled due to sickness from July 6 to July 19, 1947.",
+          "sources": [
+            "RDApp-221988Roenbaugh053.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "7/20/1947",
+      "injury_type": "Sickness (relapse)",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh experienced another relapse of his previous sickness, resulting in a period of disability from July 20 to August 1, 1947.",
+      "medical_examinations": [
+        {
+          "date": "8/11/1947",
+          "examiner": "Jno. H. Sayler",
+          "finding": "disabled",
+          "notes": "Certified as disabled due to sickness from July 20 to August 1, 1947.",
+          "sources": [
+            "RDApp-221988Roenbaugh051.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Carroll Lockard",
+      "district": null,
+      "examinations": [
+        {
+          "date": "7/15/1947",
+          "finding": "able to return under observation"
+        }
+      ]
+    },
+    {
+      "name": "Jno. H. Sayler",
+      "district": "District No. 18",
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "5/31/1947",
+      "event": "Reported disabled due to sickness",
+      "significance": "Indicates Roenbaugh was unable to work for a period of time.",
+      "sources": [
+        "RDApp-221988Roenbaugh054.jpg.json"
+      ]
+    },
+    {
+      "date": "7/6/1947",
+      "event": "Relapse reported",
+      "significance": "Indicates Roenbaugh experienced a relapse of his previous sickness.",
+      "sources": [
+        "RDApp-221988Roenbaugh053.jpg.json"
+      ]
+    },
+    {
+      "date": "7/26/1947",
+      "event": "Permission to resume duty under observation granted",
+      "significance": "Indicates Roenbaugh was allowed back to work with conditions.",
+      "sources": [
+        "RDApp-221988Roenbaugh057.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "5/31/1947",
+      "latest": "8/11/1947"
+    },
+    "completeness_assessment": "The record is fairly complete regarding Roenbaugh's disability periods and medical examinations. However, details about his employment history prior to 1904 are missing.",
+    "data_quality_notes": [
+      "Name variations exist across documents (Roenbaugh, Rosenbaugh, Koenbaugh).",
+      "Some documents have truncated text, which may affect the completeness of information."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad workers in maintaining health and employment stability during the early to mid-20th century."
+    ],
+    "comparative_questions": [
+      "How did Roenbaugh's experience compare with other engineers of his era?",
+      "What was the typical duration of disability leave for B&O employees?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

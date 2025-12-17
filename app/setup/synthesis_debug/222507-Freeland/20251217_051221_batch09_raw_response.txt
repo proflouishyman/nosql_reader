@@ -1,0 +1,162 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "Thomas E. Freeland",
+        "confidence": "high",
+        "sources": ["RDApp-222507Freeland083.jpg.json", "RDApp-222507Freeland090.jpg.json"]
+      },
+      {
+        "name": "Thomas Burton Freeland",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland087.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the earliest documents and may not be accurate for all name variations."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland, a carman with the Baltimore & Ohio Railroad Company, had an extensive career marked by various employment roles and medical challenges. He began his tenure in the late 19th or early 20th century, working initially as a Tonder Repairer before transitioning to other positions such as Yard Helper and Carman. Freeland's career was interrupted by several injuries and illnesses, including an incident where he was disabled due to cholecystitis in June of 1942. His employment history also includes periods of furloughs and suspensions, reflecting the challenges faced by railroad workers during that era.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "601 Broadway, Upa",
+      "date_range": "unknown",
+      "context": "Residence address as stated in the Notice of Disablement form.",
+      "sources": ["RDApp-222507Freeland081.jpg.json"]
+    },
+    {
+      "address": "Wiley Ford, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence address as stated in the Medical Examiner's Report of Disablement.",
+      "sources": ["RDApp-222507Freeland083.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1909",
+      "event_type": "termination",
+      "position": "L.P. Cum. Eng. Clr.",
+      "department": "Cum.",
+      "division": null,
+      "details": "Terminated on May 14, 1909.",
+      "sources": ["RDApp-222507Freeland086.jpg.json"]
+    },
+    {
+      "date": "1923",
+      "event_type": "re-registration",
+      "position": "Helper Carman",
+      "department": null,
+      "division": "Stool Car Plant, Cumberland",
+      "details": "Re-registered on April 30, 1923.",
+      "sources": ["RDApp-222507Freeland086.jpg.json", "RDApp-222507Freeland090.jpg.json"]
+    },
+    {
+      "date": "1942",
+      "event_type": "injury",
+      "position": "Carman",
+      "department": null,
+      "division": null,
+      "details": "Disabled due to cholecystitis on June 1, 1942.",
+      "sources": ["RDApp-222507Freeland083.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1942",
+      "injury_type": "Medical Condition",
+      "body_part": null,
+      "narrative": "Thomas B. Freeland was disabled due to cholecystitis, a medical condition affecting the gallbladder, starting in June of 1942.",
+      "medical_examinations": [
+        {
+          "date": "June 1942",
+          "examiner": "Dr. E. E. Broadrup",
+          "finding": "disabled",
+          "notes": "Cholecystitis reported, probable duration of disability noted as July 6th, 1942.",
+          "sources": ["RDApp-222507Freeland083.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. E. E. Broadrup",
+      "district": null,
+      "examinations": [
+        {
+          "date": "June 1942",
+          "finding": "disabled due to cholecystitis"
+        }
+      ]
+    },
+    {
+      "name": "Dr. J. G. Selby",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1923-05-14",
+      "event": "Instructed to report to Medical Examiner",
+      "significance": "Ensured compliance with medical examination requirements for employment.",
+      "sources": ["RDApp-222507Freeland089.jpg.json"]
+    },
+    {
+      "date": "1925-04-27",
+      "event": "Suggested to be sent before Medical Examiner due to re-registration gap",
+      "significance": "Highlighted the importance of continuous membership and medical clearance.",
+      "sources": ["RDApp-222507Freeland090.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1923",
+      "latest": "1942"
+    },
+    "completeness_assessment": "The record is fairly complete for the period from 1923 to 1942, with detailed information on employment status and medical conditions. However, earlier records are sparse.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors or unclear handwriting.",
+      "There are discrepancies in birth year and name variations."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Thomas B. Freeland highlights the challenges faced by railroad workers, including frequent injuries and medical conditions that required regular medical examinations for continued employment.",
+      "It also shows the administrative processes involved in managing employee health and work status."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary among different departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability and how did they affect workers' livelihoods?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

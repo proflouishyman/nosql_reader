@@ -1,0 +1,155 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Louis Mancuso",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco321.jpg.json"]
+      },
+      {
+        "name": "Luigi Manesio",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco322.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1889,
+    "confidence_notes": "Identity is reasonably certain based on employment records and injury reports, but there are minor name variations."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso was a long-serving employee of the Baltimore & Ohio Railroad Company, with an extensive career spanning over five decades. He began his service as early as 1905 in various capacities, including machinist and carman helper, working primarily out of Glenwood, Pennsylvania. On June 26, 1953, Mancuso suffered a lacerated wound to his left forehead when struck by a piece of iron at work; he was treated and returned to work shortly thereafter. His career culminated in retirement on January 5, 1955, due to pension benefits. Throughout his tenure, Mancuso maintained membership in the Relief Department for natural death benefits, which continued even after his retirement.",
+  
+  "family": {
+    "spouse": {
+      "name": "Maria",
+      "evidence": "Inquired about in a document as still living and residing at #1114 Pulaski Street, Connellsville, Pennsylvania.",
+      "sources": ["RDApp-204897Manusco327.jpg.json"]
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "111 Pulaski St., Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence address for post-retirement paperwork and benefits.",
+      "sources": ["RDApp-204897Manusco326.jpg.json"]
+    },
+    {
+      "address": "#1114 Pulaski Street, Connellsville, Pennsylvania",
+      "date_range": "unknown",
+      "context": "Address provided for the spouse/beneficiary.",
+      "sources": ["RDApp-204897Manusco327.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1905",
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Began employment with the Baltimore & Ohio Railroad Company.",
+      "sources": []
+    },
+    {
+      "date": "June 26, 1953",
+      "event_type": "injury",
+      "position": "Machinist",
+      "department": null,
+      "division": null,
+      "details": "Sustained a lacerated wound to his left forehead.",
+      "sources": ["RDApp-204897Manusco321.jpg.json", "RDApp-204897Manusco322.jpg.json"]
+    },
+    {
+      "date": "January 5, 1955",
+      "event_type": "retirement",
+      "position": "Carman Helper",
+      "department": "Motive Power Department",
+      "division": "Pittsburgh Division",
+      "details": "Retired on pension.",
+      "sources": ["RDApp-204897Manusco326.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "June 26, 1953",
+      "injury_type": "Lacerated wound",
+      "body_part": "Left forehead",
+      "narrative": "On June 26, 1953, while working as a machinist at Glenwood, Pennsylvania, Luigi Mancuso was struck on the left forehead by a piece of iron. He received four sutures and was treated at Mercy Hospital.",
+      "medical_examinations": [
+        {
+          "date": "June 26, 1953",
+          "examiner": "Dr. Paul R. Lieber",
+          "finding": "Able to return to work",
+          "notes": "Lacerated wound left forehead with four sutures.",
+          "sources": ["RDApp-204897Manusco321.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. Paul R. Lieber",
+      "district": null,
+      "examinations": [
+        {
+          "date": "June 26, 1953",
+          "finding": "Able to return to work"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "January 27, 1955",
+      "event": "Sent a letter requesting Luigi Mancuso to complete a supplemental application for natural death benefits after retirement.",
+      "significance": "Ensured continuity of benefits post-retirement.",
+      "sources": ["RDApp-204897Manusco323.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "June 26, 1953",
+      "latest": "January 27, 1955"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from June 1953 to January 1955. However, there are no documents detailing Mancuso's earlier career or initial hiring.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have truncated text.",
+      "There are minor discrepancies in name spelling."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Luigi Mancuso provides insight into the working conditions and safety practices within railroad operations during the early to mid-20th century, as well as the benefits and support systems available for employees.",
+      "It also highlights the importance of membership in relief departments for securing post-retirement benefits."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different railroad companies during this period?",
+      "What were the typical durations of disability leave, if any, following workplace injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

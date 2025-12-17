@@ -1,0 +1,236 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Antonio Mancuso",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco001.jpg.json", "RDApp-204897Manusco008.jpg.json"]
+      },
+      {
+        "name": "Luigi Moricues",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco003.jpg.json"]
+      },
+      {
+        "name": "Luigi Amamendes",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco004.jpg.json"]
+      },
+      {
+        "name": "Louis Mancuso",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco007.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "Identity is moderately certain, with multiple name variations appearing across documents."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso was an employee of the Baltimore & Ohio Railroad Company in various capacities throughout his career. His employment records indicate a complex history involving periods of disablement and return to duty. In early 1908, he claimed benefits due to sickness but returned to work by January 27th of that year. Mancuso's career saw him working as both a laborer and in the Motive Power Department, with his last known position being a car repairer. His employment was interrupted by periods of leave for health reasons, including an instance where he left service in 1917 but returned in March 1919, necessitating a new physical examination to regain Relief Department membership.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Canal & E. Fayette Sts, Masprville",
+      "date_range": "1908-07 to 1908-08",
+      "context": "Residence during sickness period",
+      "sources": ["RDApp-204897Manusco007.jpg.json"]
+    },
+    {
+      "address": "Sinnellenville, Pa",
+      "date_range": "unknown",
+      "context": "Residential address in 1926",
+      "sources": ["RDApp-204897Manusco010.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1908-01-14",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported sick and began receiving benefits.",
+      "sources": ["RDApp-204897Manusco005.jpg.json"]
+    },
+    {
+      "date": "1908-01-27",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty.",
+      "sources": ["RDApp-204897Manusco003.jpg.json"]
+    },
+    {
+      "date": "1908-11-27",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work after being reported sick.",
+      "sources": ["RDApp-204897Manusco004.jpg.json"]
+    },
+    {
+      "date": "1917",
+      "event_type": "leave_of_absence",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Left service but continued loan payments.",
+      "sources": ["RDApp-204897Manusco008.jpg.json"]
+    },
+    {
+      "date": "1919-03-14",
+      "event_type": "return_to_service",
+      "position": "Car Repairer",
+      "department": "Motive Power Department",
+      "division": null,
+      "details": "Returned to service and required a new physical examination.",
+      "sources": ["RDApp-204897Manusco008.jpg.json"]
+    },
+    {
+      "date": "1926-05-24",
+      "event_type": "transfer",
+      "position": null,
+      "department": "M.P. Department",
+      "division": "CVille Division",
+      "details": "Transferred to the M.P. Department.",
+      "sources": ["RDApp-204897Manusco010.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1908-01-14",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Luigi Mancuso reported sick on January 14, 1908. He was entitled to benefits and returned to duty by January 27th.",
+      "medical_examinations": [
+        {
+          "date": "1908-01-27",
+          "examiner": "M.H. Koebler",
+          "finding": "able_to_return",
+          "notes": "Reported sick, prognosis noted as 'Rec 1/27'. Difficulty in locating the individual and a request for further evidence.",
+          "sources": ["RDApp-204897Manusco006.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1908-01-14", "end": "1908-01-27"},
+          "days": 13,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-204897Manusco005.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1908-07",
+      "injury_type": "Sickness (virus)",
+      "body_part": null,
+      "narrative": "Luigi Mancuso reported sick due to a virus in July 1908. He was allowed wages until August.",
+      "medical_examinations": [
+        {
+          "date": "1908-11-17",
+          "examiner": null,
+          "finding": "not_disabled",
+          "notes": "",
+          "sources": ["RDApp-204897Manusco007.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1908-07", "end": "1908-08"},
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": ["RDApp-204897Manusco007.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "M.H. Koebler",
+      "district": "10",
+      "examinations": [
+        {
+          "date": "1908-01-27",
+          "finding": "able_to_return"
+        }
+      ]
+    },
+    {
+      "name": "Dr. M. H. McIntire",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1907-05-17",
+      "event": "Refund of unearned contributions",
+      "significance": "Indicates a period when Mancuso was furloughed or not earning.",
+      "sources": ["RDApp-204897Manusco009.jpg.json"]
+    },
+    {
+      "date": "1919-03-14",
+      "event": "Required physical examination for rejoining Relief Department",
+      "significance": "Highlights the conditional nature of membership in the Relief Department.",
+      "sources": ["RDApp-204897Manusco008.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1907-05-17",
+      "latest": "1926-10-11"
+    },
+    "completeness_assessment": "The record is fairly complete but lacks personal details such as birth year or family information. There are multiple name variations, which may indicate a lack of standardization in documentation.",
+    "data_quality_notes": [
+      "Multiple name variations for the same individual",
+      "Some documents have partially illegible signatures"
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of health and disability management within railroad labor practices, including the use of medical examinations to determine eligibility.",
+      "It also shows the conditional nature of Relief Department membership and its impact on employee benefits."
+    ],
+    "comparative_questions": [
+      "How did other railroads manage similar issues with employee health and benefit programs?",
+      "What was the typical duration of disability claims among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

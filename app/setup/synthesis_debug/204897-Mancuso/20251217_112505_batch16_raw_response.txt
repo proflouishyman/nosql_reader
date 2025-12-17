@@ -1,0 +1,270 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "Antonis Mancuso",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco152.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1897,
+    "confidence_notes": "The birth year is inferred from the document dated December 16, 1935, which suggests Antonio Mancuso was likely around that age given his employment history."
+  },
+  
+  "biographical_narrative": "Antonio Mancuso began his career with the Baltimore & Ohio Railroad Company as a car repairman. His work spanned several decades and involved various positions within different departments and divisions of the company, including Car Repair in the Maintenance of Way (M of W) department and Oiler in the Maintenance of Power (MB) division. Mancuso's employment was marked by multiple instances of disability due to both accidents and sickness, which required him to undergo medical examinations and receive compensation from the Relief Department. Despite these setbacks, he demonstrated resilience and returned to duty on several occasions after his periods of disablement.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "111 Alaska St",
+      "date_range": "unknown",
+      "context": "Residence at time of disablement in 1947",
+      "sources": ["RDApp-204897Manusco151.jpg.json"]
+    },
+    {
+      "address": "McKeesport, PA",
+      "date_range": "unknown",
+      "context": "Residence at time of disablement in 1925",
+      "sources": ["RDApp-204897Manusco156.jpg.json"]
+    },
+    {
+      "address": "Campbellsville, PA",
+      "date_range": "unknown",
+      "context": "Residence at time of disablement in 1925",
+      "sources": ["RDApp-204897Manusco160.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Car Repairman",
+      "department": "M of W",
+      "division": "Cinti",
+      "details": "Began employment as a car repairman in the Maintenance of Way department.",
+      "sources": ["RDApp-204897Manusco151.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": "M of W",
+      "division": "Cinti",
+      "details": "Disabled by accident or sickness beginning January 2, 1947.",
+      "sources": ["RDApp-204897Manusco151.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": "M of W",
+      "division": "Cinti",
+      "details": "Disabled by La Grippe beginning July 9, 1919.",
+      "sources": ["RDApp-204897Manusco153.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": "M of W",
+      "division": "Cinti",
+      "details": "Disabled by sprained wrist beginning December 16, 1935.",
+      "sources": ["RDApp-204897Manusco154.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": "M of W",
+      "division": "Cinti",
+      "details": "Disabled by sickness or accident from December 16, 1925 to January 10, 1926.",
+      "sources": ["RDApp-204897Manusco155.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": "M of W",
+      "division": "Cinti",
+      "details": "Disabled by accident beginning December 16, 1925.",
+      "sources": ["RDApp-204897Manusco156.jpg.json"]
+    },
+    {
+      "date": null,
+      "event_type": "injury",
+      "position": "Oiler Rplr. Dept.",
+      "department": "MB Div.",
+      "division": "Pittsburgh",
+      "details": "Disabled by sprain of left wrist on December 15, 1925.",
+      "sources": ["RDApp-204897Manusco160.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "La Grippe",
+      "body_part": null,
+      "narrative": "Antonio Mancuso was disabled by La Grippe beginning July 9, 1919. He was treated and returned to duty.",
+      "medical_examinations": [
+        {
+          "date": "7/9/19",
+          "examiner": "Dr. H. H. McIntire",
+          "finding": "disabled",
+          "notes": "La Grippe, probable duration about 7-10 or 11 days.",
+          "sources": ["RDApp-204897Manusco153.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": null,
+      "injury_type": "Sprained wrist",
+      "body_part": "wrist",
+      "narrative": "Antonio Mancuso was disabled by a sprained wrist beginning December 16, 1935. He received compensation for the period from December 16, 1935 to January 9, 1936.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. H. H. McIntire",
+          "finding": "disabled",
+          "notes": "Sprained wrist, probable duration about 7-10 or 11 days.",
+          "sources": ["RDApp-204897Manusco154.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "Dec 16/35", "end": "Jan 9/36"},
+          "days": 22,
+          "amount": 30.75,
+          "check_number": "37812",
+          "sources": ["RDApp-204897Manusco154.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": null,
+      "injury_type": "Sickness or accident",
+      "body_part": null,
+      "narrative": "Antonio Mancuso was disabled by sickness or accident from December 16, 1925 to January 10, 1926. He did not receive wages during this period.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. Atkin",
+          "finding": "disabled",
+          "notes": "Sickness or accident from December 16, 1925 to January 10, 1926.",
+          "sources": ["RDApp-204897Manusco155.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": null,
+      "injury_type": "Sprain of left wrist",
+      "body_part": "left wrist",
+      "narrative": "Antonio Mancuso was disabled by a sprained left wrist with bruising and swelling on December 15, 1925. He was treated and returned to duty.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. D. Molando",
+          "finding": "disabled",
+          "notes": "Sprain of left wrist (bruise & swelling), probable duration 7-14/11–25.",
+          "sources": ["RDApp-204897Manusco160.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. H. H. McIntire",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "7/9/19",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Atkin",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. D. Molando",
+      "district": "5",
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "7/9/19",
+      "latest": "1-2-47"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing several instances of disability and medical examinations. However, there are no documents that provide a clear start date for Mancuso's employment or any details about his family.",
+    "data_quality_notes": [
+      "Some OCR text was difficult to read, leading to potential inaccuracies in the transcription."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal that railroad workers faced significant health risks and were subject to frequent medical examinations. The compensation system for injuries and sicknesses appears well-documented but also indicates a reliance on individual medical examiners' judgments."
+    ],
+    "comparative_questions": [
+      "How did the treatment of injured employees vary across different divisions or departments within the B&O Railroad?",
+      "What was the typical duration of disability periods, and how did this affect workers' financial stability?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

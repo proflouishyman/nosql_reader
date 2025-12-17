@@ -1,0 +1,78 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Manesco",
+    "name_variations": [
+      {"name": "Antonio Morenzo", "confidence": "low", "sources": ["RDApp-204897Manusco041.jpg.json"]},
+      {"name": "A. Colliano", "confidence": "low", "sources": ["RDApp-204897Manusco042.jpg.json"]}
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "Identity is primarily based on the 'Notice of Disablement' form, but there are name variations that may refer to different individuals."
+  },
+  
+  "biographical_narrative": "Antonio Manesco was a laborer and later an engineer for the Baltimore & Ohio Railroad. He worked in various capacities, including as an engine operator in the yard. His career with the railroad included at least one injury on April 28, 1915, when he suffered a concussive injury to his right hand while working on a car frame. Despite this incident, Manesco continued his employment and was noted for resuming work after medical clearance. The records do not provide details about any promotions or disputes during his career.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No direct evidence of spouse", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {"address": "1337 E. Fayette St.", "date_range": "unknown", "context": "Residence address at time of disablement", "sources": ["RDApp-204897Manusco044.jpg.json"]}
+  ],
+  
+  "employment_timeline": [
+    {"date": null, "event_type": "hire/application", "position": "Laborer", "department": null, "division": null, "details": "Started as a laborer but later became an engineer of yard engine.", "sources": ["RDApp-204897Manusco041.jpg.json"]},
+    {"date": "1914-04-08", "event_type": "disablement", "position": "Eng. of Yard Engine", "department": null, "division": "Camden", "details": "Disabled due to an unspecified cause.", "sources": ["RDApp-204897Manusco044.jpg.json"]},
+    {"date": "1915-04-28", "event_type": "injury", "position": "Laborer", "department": null, "division": null, "details": "Injured right hand while working on a car frame.", "sources": ["RDApp-204897Manusco041.jpg.json"]}
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1915-04-28",
+      "injury_type": "Concussion of terminal phalanx",
+      "body_part": "Right hand, third finger",
+      "narrative": "Antonio Manesco was injured on April 28, 1915, while working as a laborer. He suffered a concussive injury to the terminal phalanx of his right hand when an iron slipped and caught his finger between a bar and rail.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {"disputed": false, "narrative": null, "resolution": null}
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "E.B. Edee",
+      "district": null,
+      "examinations": [{"date": "1915-04-29", "finding": "Good prognosis for recovery from finger injury"}]
+    }
+  ],
+  
+  "administrative_events": [
+    {"date": "1914-04-08", "event": "Sent disablement notice", "significance": "Indicates Manesco was unable to work due to an unspecified cause.", "sources": ["RDApp-204897Manusco044.jpg.json"]},
+    {"date": null, "event": "Telegraphic report form prepared for injury reporting", "significance": "Shows the railroad's process for urgent communication about injuries.", "sources": ["RDApp-204897Manusco043.jpg.json"]}
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1914-04-08", "latest": "1915-04-29"},
+    "completeness_assessment": "The record is incomplete, with some documents pertaining to other employees. The information about Antonio Manesco's career and injuries is limited but provides insight into the types of injuries sustained by railroad workers.",
+    "data_quality_notes": ["Name variations suggest potential identity confusion.", "Some documents are blank forms or unrelated records."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the hazardous nature of work on railroads, particularly for laborers and engineers. It also shows how injuries were documented and managed by the company.",
+      "It reveals the medical care provided to injured workers and the process of returning them to duty."
+    ],
+    "comparative_questions": ["How did injury rates vary across different departments or divisions within the railroad?", "What was the typical duration and outcome of disablements for other employees?"],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.75,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.82
+  }
+}

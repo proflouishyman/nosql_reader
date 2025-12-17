@@ -1,0 +1,246 @@
+{
+  "person_identity": {
+    "canonical_name": "George Aloysius Crudden",
+    "name_variations": [
+      {
+        "name": "George A. Crudden",
+        "confidence": "high",
+        "sources": ["RDAPP-634503Crudden051.jpg.json", "RDAPP-634503Crudden054.jpg.json"]
+      },
+      {
+        "name": "George Aloysious Cruddon",
+        "confidence": "medium",
+        "sources": ["RDAPP-634503Crudden053.jpg.json"]
+      },
+      {
+        "name": "G. H. Courlas",
+        "confidence": "low",
+        "sources": ["RDAPP-634503Crudden056.jpg.json"]
+      }
+    ],
+    "employee_id": "634503",
+    "birth_year": 1891,
+    "confidence_notes": "The birth year is derived from document RDAPP-634503Crudden053.jpg.json, which lists the date of birth as February 25, 1891. However, there are inconsistencies in other documents regarding the name and date of birth."
+  },
+  
+  "biographical_narrative": "George Aloysius Crudden was employed by the Baltimore & Ohio Railroad Company from at least April 6, 1922, as a checker in the Transportation Sub department. His employment spanned various divisions including Philadelphia and Palmer Divisions. He experienced several health issues during his career, notably an injury to his femur in August 1921 that was initially suspected of developing into osteomyelitis but later showed improvement. Crudden also had periods where he was totally disabled due to sickness or accident, such as from July 27th to August 8th, 1921, and again on a short period in August 10-13, 1921. He eventually left the service but retained his membership for natural death benefits. Crudden was married to Hazel, who lived at 206 Witherspoon Ave., North Merchantsville, NJ.",
+  
+  "family": {
+    "spouse": {
+      "name": "Hazel",
+      "evidence": "Designated as beneficiary in the supplementary application for membership in the Relief Department.",
+      "sources": ["RDAPP-634503Crudden054.jpg.json"]
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "1917 N Newkirk Street",
+      "date_range": "unknown",
+      "context": "Residence where he was treated for femur condition.",
+      "sources": ["RDAPP-634503Crudden057.jpg.json"]
+    },
+    {
+      "address": "206 Witherspoon Ave., North Merchantsville, NJ",
+      "date_range": "unknown",
+      "context": "Address of his wife Hazel as designated beneficiary.",
+      "sources": ["RDAPP-634503Crudden054.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1922-04-06",
+      "event_type": "hire/application",
+      "position": "Checker",
+      "department": "Trans Sub",
+      "division": "Philadelphia Division",
+      "details": "Applied for employment as a checker in the Transportation Sub department.",
+      "sources": ["RDAPP-634503Crudden053.jpg.json"]
+    },
+    {
+      "date": "1922-07-25",
+      "event_type": "injury",
+      "position": "Tallyman",
+      "department": null,
+      "division": "Phila Div'n",
+      "details": "Reported as disabled due to an unspecified condition.",
+      "sources": ["RDAPP-634503Crudden060.jpg.json"]
+    },
+    {
+      "date": "1921-08-10",
+      "event_type": "injury",
+      "position": "Tallyman",
+      "department": null,
+      "division": "Palmer Div’n",
+      "details": "Totally disabled due to sickness from August 10th to August 13th, 1921.",
+      "sources": ["RDAPP-634503Crudden058.jpg.json"]
+    },
+    {
+      "date": "1921-07-27",
+      "event_type": "injury",
+      "position": "Engine watch",
+      "department": null,
+      "division": "Phila Div'n",
+      "details": "Totally disabled due to sickness from July 27th to August 8th, 1921.",
+      "sources": ["RDAPP-634503Crudden059.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event_type": "resignation",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Terminated due to being out of service.",
+      "sources": ["RDAPP-634503Crudden053.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1921-08-01",
+      "injury_type": "Femur condition suggestive of osteomyelitis",
+      "body_part": "femur",
+      "narrative": "Mr. Crudden was treated for a femoral condition that initially suggested the development of osteomyelitis, but showed improvement over time.",
+      "medical_examinations": [
+        {
+          "date": "1921-08-01",
+          "examiner": "A.H. Clagett, M.D.",
+          "finding": "Pain subsided greatly; not able to stand on leg all the time.",
+          "notes": "Treated by Dr. A.H. Clagett and referred for orthopedic evaluation.",
+          "sources": ["RDAPP-634503Crudden057.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1921-08-10",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Mr. Crudden was totally disabled due to sickness from August 10th to August 13th, 1921.",
+      "medical_examinations": [
+        {
+          "date": "1921-08-10",
+          "examiner": "C.B. Rittenhouse",
+          "finding": "Totally disabled by sickness from Aug 10 to Aug 13, 1921.",
+          "notes": null,
+          "sources": ["RDAPP-634503Crudden058.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1921-07-27",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Mr. Crudden was totally disabled due to sickness from July 27th to August 8th, 1921.",
+      "medical_examinations": [
+        {
+          "date": "1921-07-27",
+          "examiner": "S.F. Rittenhouse",
+          "finding": "Totally disabled by sickness from July 27 to August 8, 1921.",
+          "notes": null,
+          "sources": ["RDAPP-634503Crudden059.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "A.H. Clagett, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-08-01",
+          "finding": "Pain subsided greatly; not able to stand on leg all the time."
+        }
+      ]
+    },
+    {
+      "name": "C.B. Rittenhouse",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-08-10",
+          "finding": "Totally disabled by sickness from Aug 10 to Aug 13, 1921."
+        }
+      ]
+    },
+    {
+      "name": "S.F. Rittenhouse",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1921-07-27",
+          "finding": "Totally disabled by sickness from July 27 to August 8, 1921."
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1925-04-22",
+      "event": "Updated beneficiary designation for natural death benefit.",
+      "significance": "Ensured his wife Hazel would receive the benefit in case of his death.",
+      "sources": ["RDAPP-634503Crudden054.jpg.json"]
+    },
+    {
+      "date": "unknown",
+      "event": "Applied to retain membership for natural death benefits after leaving service.",
+      "significance": "Indicates he was concerned about his own mortality and wanted to ensure financial support for his family in the event of his death.",
+      "sources": ["RDAPP-634503Crudden055.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1921-07-27",
+      "latest": "1925-04-22"
+    },
+    "completeness_assessment": "The record is relatively complete for the period from July 1921 to April 1925, with detailed information on employment and medical history. However, there are inconsistencies in names and dates of birth across documents.",
+    "data_quality_notes": [
+      "There are discrepancies between different documents regarding the employee's name and date of birth.",
+      "Some documents contain truncated text or illegible remarks."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records reveal that railroad workers in the early 20th century faced significant health risks, including injuries and illnesses that could lead to periods of disability.",
+      "The Baltimore & Ohio Railroad Company had a structured system for managing employee benefits and medical leave, indicating an evolving approach to worker welfare."
+    ],
+    "comparative_questions": [
+      "How did the medical practices and administrative procedures differ between various railroad companies?",
+      "What were the typical durations and causes of disability among railroad workers?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

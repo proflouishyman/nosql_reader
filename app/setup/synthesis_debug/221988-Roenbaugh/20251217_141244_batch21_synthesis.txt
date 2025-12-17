@@ -1,0 +1,200 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Rombaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh204.jpg.json"
+        ]
+      },
+      {
+        "name": "Raubaugh Claud",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh205.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1884,
+    "confidence_notes": "The birth year is consistent across multiple documents, but there are discrepancies in the spelling of his name."
+  },
+  "biographical_narrative": "Claude Roenbaugh began his career with the Baltimore & Ohio Railroad Company as a fireman and later worked as an engineer. His employment spanned several divisions including Wheeling, Akron-Chicago, and Lorain stations. He was subject to regular medical examinations that confirmed he met the physical requirements for his roles. In late 1931, Roenbaugh suffered from bronchitis which led to a period of disability during which he did not receive wages. Despite this setback, he continued in service until at least February 1939 when he was transferred between divisions. His career with the railroad company reflects the typical challenges and transitions faced by workers during that era.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "331-W-27 St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence during the period of disability in late 1931",
+      "sources": [
+        "RDApp-221988Roenbaugh210.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1907-05-09",
+      "event_type": "application/examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Clare",
+      "details": "Vision and hearing examination results were favorable.",
+      "sources": [
+        "RDApp-221988Roenbaugh205.jpg.json"
+      ]
+    },
+    {
+      "date": "1934-05-22",
+      "event_type": "medical_examination",
+      "position": "Engineer",
+      "department": null,
+      "division": "Whg",
+      "details": "Passed physical examination with good results.",
+      "sources": [
+        "RDApp-221988Roenbaugh201.jpg.json"
+      ]
+    },
+    {
+      "date": "1936-07-10",
+      "event_type": "medical_examination",
+      "position": "Engineer",
+      "department": null,
+      "division": "Wing",
+      "details": "Passed physical examination with good results.",
+      "sources": [
+        "RDApp-221988Roenbaugh203.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-02-01",
+      "event_type": "transfer",
+      "position": "Engineer",
+      "department": null,
+      "division": "Akron-Chicago Division Transportation Department",
+      "details": "Transferred from Wheeling Division to Akron-Chicago Division.",
+      "sources": [
+        "RDApp-221988Roenbaugh206.jpg.json"
+      ]
+    },
+    {
+      "date": "1939-04-17",
+      "event_type": "transfer",
+      "position": "Fireman",
+      "department": null,
+      "division": "Wheeling Division, Transportation Department",
+      "details": "Transferred from Akron-Chicago Division to Wheeling Division.",
+      "sources": [
+        "RDApp-221988Roenbaugh207.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1931-11-21",
+      "injury_type": "Sickness (Bronchitis)",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was disabled by bronchitis from November 21 to December 7, 1931. He did not receive wages during this period.",
+      "medical_examinations": [
+        {
+          "date": "1931-11-27",
+          "examiner": "J.H. Minor",
+          "finding": "Disabled due to sickness",
+          "notes": "Certified as totally disabled from November 21st, 1931.",
+          "sources": [
+            "RDApp-221988Roenbaugh208.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1931-11-21",
+            "end": "1931-12-07"
+          },
+          "days": 16,
+          "amount": 20.0,
+          "check_number": "68010",
+          "sources": [
+            "RDApp-221988Roenbaugh208.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J.W. Minor",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1934-05-22",
+          "finding": "Physically Qualified"
+        }
+      ]
+    },
+    {
+      "name": "J.H. Minor",
+      "district": 18,
+      "examinations": [
+        {
+          "date": "1931-11-27",
+          "finding": "Disabled due to sickness"
+        },
+        {
+          "date": "1932-01-26",
+          "finding": "Physically Qualified"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1939-04-26",
+      "event": "Notice of transfer to Wheeling Division",
+      "significance": "Reflects the administrative processes and mobility within the railroad company.",
+      "sources": [
+        "RDApp-221988Roenbaugh207.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1907-05-09",
+      "latest": "1939-04-26"
+    },
+    "completeness_assessment": "The record is relatively complete, covering medical examinations and employment transfers. However, there are some discrepancies in the spelling of Roenbaugh's name.",
+    "data_quality_notes": [
+      "There are inconsistencies in birth year across documents.",
+      "OCR quality varies; some document details were truncated."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case illustrates the importance of regular medical examinations for railroad employees and the impact of sickness on their employment status.",
+      "It also highlights the mobility of workers within divisions, reflecting broader labor practices in early 20th-century railroads."
+    ],
+    "comparative_questions": [
+      "How did medical standards and examination procedures vary across different regions or time periods?",
+      "What were the typical career paths for railroad employees during this era?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

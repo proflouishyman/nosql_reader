@@ -1,0 +1,228 @@
+{
+  "person_identity": {
+    "canonical_name": "Antonio Mancuso",
+    "name_variations": [
+      {
+        "name": "Tony Minenso",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco121.jpg.json"
+        ]
+      },
+      {
+        "name": "L. Iaconuso",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco122.jpg.json"
+        ]
+      },
+      {
+        "name": "A. Mancuso",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204897Manusco123.jpg.json"
+        ]
+      },
+      {
+        "name": "Antonio Manenes",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco126.jpg.json"
+        ]
+      },
+      {
+        "name": "A. Animoco",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco129.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on the name Antonio Mancuso, with variations appearing in different documents. The birth year is estimated from age information."
+  },
+  "biographical_narrative": "Antonio Mancuso was a car repairman for the Baltimore & Ohio Railroad Company during the early 20th century. He began his career as a car repairer and continued to work at this position, facing several injuries that required medical attention and relief benefits from the company. His first recorded injury occurred on July 25, 1913, when he sustained a laceration above his right eye while tightening bolts with a wrench. Mancuso was married and resided in Connellsville, Pennsylvania. He also suffered another injury to his finger in 1916, which led to a period of disability from July 19th to July 25th, during which he did not receive wages.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "Married status mentioned",
+      "sources": [
+        "RDApp-204897Manusco122.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "118 E. Fayette St",
+      "date_range": "unknown",
+      "context": "Residence at time of injury in 1913",
+      "sources": [
+        "RDApp-204897Manusco121.jpg.json"
+      ]
+    },
+    {
+      "address": "314 Richard Street, Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Later residence address mentioned in a later injury report",
+      "sources": [
+        "RDApp-204897Manusco129.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Started working as a car repairer for the Baltimore & Ohio Railroad Company.",
+      "sources": []
+    },
+    {
+      "date": "1913-07-25",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Sustained a laceration above the right eye while tightening bolts with a wrench.",
+      "sources": [
+        "RDApp-204897Manusco121.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-07-19",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": "Coville Division",
+      "details": "Sustained a laceration of the finger while working.",
+      "sources": [
+        "RDApp-204897Manusco124.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1913-07-25",
+      "injury_type": "Laceration of the right eyebrow",
+      "body_part": "Right eyebrow",
+      "narrative": "Antonio Mancuso was injured while tightening bolts with a wrench, which slipped and caused a laceration above his right eye. He was treated by Dr. White.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "L.N. Neil MD",
+          "finding": "disabled",
+          "notes": "Treated for a laceration of the eyebrow.",
+          "sources": [
+            "RDApp-204897Manusco121.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-07-19",
+      "injury_type": "Laceration of the finger",
+      "body_part": "Finger",
+      "narrative": "Antonio Mancuso was injured while removing a coupler from a car, resulting in a laceration to his finger. He received disability benefits for 5.5 days.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "J. McCoughen",
+          "finding": "disabled",
+          "notes": "Disabled due to an accident from July 19th to July 25th.",
+          "sources": [
+            "RDApp-204897Manusco130.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1916-07-19",
+            "end": "1916-07-25"
+          },
+          "days": 5.5,
+          "amount": 5.5,
+          "check_number": "600",
+          "sources": [
+            "RDApp-204897Manusco124.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "L.N. Neil MD",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "J. McCoughen",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1916-07-30",
+      "event": "Case closed",
+      "significance": "The case involving Antonio Mancuso's injury was officially closed.",
+      "sources": [
+        "RDApp-204897Manusco127.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1913-07-25",
+      "latest": "1916-07-30"
+    },
+    "completeness_assessment": "The record is relatively complete for the injuries and medical treatments, but lacks details on his employment history beyond injury events. There are some contradictions in names.",
+    "data_quality_notes": [
+      "Name variations exist across documents.",
+      "Some dates are missing or truncated."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the risks associated with railroad work and the importance of medical relief programs for injured workers during this period."
+    ],
+    "comparative_questions": [
+      "How did injury treatment and compensation vary among different railroads or industries in the early 20th century?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

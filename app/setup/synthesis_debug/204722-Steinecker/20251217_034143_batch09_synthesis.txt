@@ -1,0 +1,220 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "Wm. Steinackers",
+        "confidence": "high",
+        "sources": [
+          "RDApp-204722Steinecker081.jpg.json"
+        ]
+      },
+      {
+        "name": "William Stanecker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker082.jpg.json"
+        ]
+      },
+      {
+        "name": "W. J. Steinacker",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker083.jpg.json"
+        ]
+      },
+      {
+        "name": "Wm Stemaeher",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker084.jpg.json"
+        ]
+      },
+      {
+        "name": "William Schnecker",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker087.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 204722,
+    "birth_year": null,
+    "confidence_notes": "Name variations are present but most documents converge on 'William Steinecker.'"
+  },
+  "biographical_narrative": "William Steinecker was a foreman for the Baltimore & Ohio Railroad Company, working in Division 6 of the Track Department. His career with the railroad is marked by several instances of disability due to sickness and heat exhaustion. In June 1911, he took leave due to illness and did not receive wages during this period. Steinecker also experienced a significant episode of heat exhaustion in June 1914 that required medical attention from Dr. R.V. Glann. He was unable to work for several days before returning to duty on July 27, 1914. His career with the railroad appears to have been characterized by periods of illness and recovery.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "923 Greene St., Buffalo",
+      "date_range": "1914-06-09 to unknown",
+      "context": "Residence for disability reporting purposes",
+      "sources": [
+        "RDApp-204722Steinecker082.jpg.json"
+      ]
+    },
+    {
+      "address": "Avondale W.Va.",
+      "date_range": "1914-06-07 to unknown",
+      "context": "Residence for disability reporting purposes",
+      "sources": [
+        "RDApp-204722Steinecker083.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Foreman Div. 6 T. Dept.",
+      "department": "Track Department",
+      "division": "Division 6",
+      "details": "Position held as of June 1911 when he was certified disabled due to sickness.",
+      "sources": [
+        "RDApp-204722Steinecker081.jpg.json"
+      ]
+    },
+    {
+      "date": "1914-06-09",
+      "event_type": "injury",
+      "position": "Foreman Div. 6 T. Dept.",
+      "department": null,
+      "division": null,
+      "details": "Disabled due to heat exhaustion, unable to work until June 24, 1914.",
+      "sources": [
+        "RDApp-204722Steinecker082.jpg.json",
+        "RDApp-204722Steinecker087.jpg.json"
+      ]
+    },
+    {
+      "date": "1914-07-27",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to work by Dr. E.K. Mathews.",
+      "sources": [
+        "RDApp-204722Steinecker084.jpg.json",
+        "RDApp-204722Steinecker086.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1911-06-09",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Steinecker was certified as totally disabled due to sickness from June 9, 1911, until June 21, 1911.",
+      "medical_examinations": [
+        {
+          "date": "1911-06-09",
+          "examiner": "E. H. Mathews",
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-204722Steinecker081.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1914-06-07",
+      "injury_type": "Heat Exhaustion",
+      "body_part": null,
+      "narrative": "Steinecker was disabled due to heat exhaustion from June 7, 1914. He resumed work on July 27, 1914.",
+      "medical_examinations": [
+        {
+          "date": "1914-06-07",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": null,
+          "sources": [
+            "RDApp-204722Steinecker083.jpg.json"
+          ]
+        },
+        {
+          "date": "1914-07-27",
+          "examiner": "E.K. Mathews",
+          "finding": "able to return to duty",
+          "notes": null,
+          "sources": [
+            "RDApp-204722Steinecker086.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "E. H. Mathews",
+      "district": "2",
+      "examinations": [
+        {
+          "date": "1911-06-09",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "R.V. Glann",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "E.K. Mathews",
+      "district": "26",
+      "examinations": [
+        {
+          "date": "1914-07-27",
+          "finding": "able to return to duty"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1911-06-09",
+      "latest": "1914-07-27"
+    },
+    "completeness_assessment": "The records are relatively complete for the period of disability and recovery, but lack information about Steinecker's initial hiring date or any other employment details beyond his position as a foreman.",
+    "data_quality_notes": [
+      "Name variations exist across documents, which may indicate typographical errors or different spellings used by various officials.",
+      "Some dates are not fully specified (e.g., month and day but no year)."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of William Steinecker highlights the challenges faced by railroad employees in terms of health and safety, particularly with respect to heat-related illnesses.",
+      "It also demonstrates the role of medical examiners and relief departments in managing employee disabilities."
+    ],
+    "comparative_questions": [
+      "How common were heat exhaustion cases among other railroad workers during this period?",
+      "What measures did the B&O Railroad Company take to prevent such injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Dr. Oram foot",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood181.jpg.json"]
+      },
+      {
+        "name": "Otto D Proudfont",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood182.jpg.json"]
+      },
+      {
+        "name": "O.D. Proudfoot",
+        "confidence": "high",
+        "sources": ["RDApp-204801Proudfood186.jpg.json", "RDApp-204801Proudfood188.jpg.json"]
+      },
+      {
+        "name": "Otto S. Proedfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood190.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is an estimate based on the age provided in one document (38 years old as of June 13, 1930)."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was a long-serving engineer for the Baltimore & Ohio Railroad Company, working primarily out of Cumberland, Maryland. His career spanned several decades, with records indicating significant periods of disablement due to various injuries and illnesses. In June 1920, he suffered an eye injury while on duty in Cumberland, which required medical attention from Dr. Warder in Grafton, W.Va., and resulted in a period of disability until mid-June. Proudfoot was also reported as disabled by sickness in November 1914 for about one month due to a leg ulcer. In June 1926, he sustained an injury involving his body, right arm, and shoulder when the engine slipped and jerked, requiring treatment from Dr. Evans. His family situation is not detailed in the records, but it appears that he was married at least once during his career.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of a spouse's name",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "28 Pennsylvania Ave, Cumberland, MD",
+      "date_range": "1914-1930",
+      "context": "Residence address for medical and disability claims",
+      "sources": ["RDApp-204801Proudfood186.jpg.json", "RDApp-204801Proudfood188.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "QN",
+      "division": "Fourth Div. C.V.",
+      "details": "Began employment as an engineer, though the exact start date is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1920-06-13",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": "Keyser",
+      "details": "Sustained an injury to his right eye from a hot cinder while on duty.",
+      "sources": ["RDApp-204801Proudfood185.jpg.json"]
+    },
+    {
+      "date": "1914-11-01",
+      "event_type": "disablement",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Reported as totally disabled by sickness for about one month.",
+      "sources": ["RDApp-204801Proudfood190.jpg.json"]
+    },
+    {
+      "date": "1926-06-13",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Sustained a wrenched body, right arm & shoulder injury when the engine slipped and jerked.",
+      "sources": ["RDApp-204801Proudfood186.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1920-06-13",
+      "injury_type": "Foreign body in right cornea",
+      "body_part": "Right eye",
+      "narrative": "Proudfoot was injured by a hot cinder getting into his right eye, causing significant irritation. He was treated and estimated to recover by June 24, 1920.",
+      "medical_examinations": [
+        {
+          "date": "1920-07-27",
+          "examiner": "J. Gilbert Selby",
+          "finding": "disabled",
+          "notes": "Foreign body in right cornea due to hot cinder injury on duty.",
+          "sources": ["RDApp-204801Proudfood185.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1926-06-13",
+      "injury_type": "Wrenched body, right arm & shoulder",
+      "body_part": "Body, Right Arm, Shoulder",
+      "narrative": "Proudfoot was injured when the engine slipped and jerked. He received treatment from Dr. Evans.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "G.D. Garrett, M.D.",
+          "finding": "treated",
+          "notes": "Wrenched body, right arm & shoulder injury treated by Dr. Evans.",
+          "sources": ["RDApp-204801Proudfood186.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1914-11-01",
+      "injury_type": "Sickness (thaw ulcer leg)",
+      "body_part": "Leg",
+      "narrative": "Proudfoot was totally disabled by sickness from November 1, 1914, due to a thaw ulcer on his leg.",
+      "medical_examinations": [
+        {
+          "date": "1914-11-03",
+          "examiner": "M. A. Doerner, M.D.",
+          "finding": "disabled",
+          "notes": "Totally disabled by sickness from November 1, 1914, to an unspecified date in December 1914.",
+          "sources": ["RDApp-204801Proudfood190.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J. Gilbert Selby",
+      "district": "7",
+      "examinations": [
+        {
+          "date": "1920-07-27",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "G.D. Garrett, M.D.",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "M. A. Doerner, M.D.",
+      "district": "6",
+      "examinations": [
+        {
+          "date": "1914-11-03",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1914-11-01",
+      "latest": "1930-06-13"
+    },
+    "completeness_assessment": "The records are relatively complete for injury and disability claims but lack detailed information on employment history, promotions, or family details. The OCR quality varies; some documents have legibility issues.",
+    "data_quality_notes": [
+      "Some names and dates are unclear due to poor OCR quality.",
+      "There is a discrepancy in the name variations found across different documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the frequent injuries sustained by railroad workers, particularly engineers, and the company's response through medical care and disability benefits.",
+      "They also illustrate how sickness could lead to significant periods of disablement, affecting both the worker and the company’s operations."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different divisions or departments within the B&O Railroad?",
+      "What were the typical durations and treatments for injuries similar to those suffered by Proudfoot?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

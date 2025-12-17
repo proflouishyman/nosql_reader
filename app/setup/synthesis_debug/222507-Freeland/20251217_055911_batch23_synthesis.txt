@@ -1,0 +1,209 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "J.B. Freelard",
+        "confidence": "low",
+        "sources": [
+          "RDApp-222507Freeland221.jpg.json"
+        ]
+      },
+      {
+        "name": "Thos. B. Forland",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-222507Freeland223.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 222507,
+    "birth_year": null,
+    "confidence_notes": "The identity is primarily based on the name 'Thomas B. Freeland' but there are variations that introduce uncertainty."
+  },
+  "biographical_narrative": "Thomas B. Freeland was an employee of the Baltimore & Ohio Railroad Company, working as an Engine Cleaner and later a Brakeman. His career with the railroad spans at least from 1902 to 1906, during which he experienced multiple injuries that required medical attention and disability benefits. In February 1904, Freeland suffered an ankle sprain while on duty, leading to a period of disability for ten days. He was later transferred within the company in August 1905 from one division to another. Another incident occurred in July 1906 when he reported stomach trouble, which led to his temporary disablement and subsequent medical examination.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Cumberland",
+      "date_range": "unknown",
+      "context": "Residence location as stated in documents",
+      "sources": [
+        "RDApp-222507Freeland224.jpg.json",
+        "RDApp-222507Freeland227.jpg.json"
+      ]
+    },
+    {
+      "address": "39 Mary St.",
+      "date_range": "unknown",
+      "context": "Residence location as stated in documents",
+      "sources": [
+        "RDApp-222507Freeland227.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1904-02-07",
+      "event_type": "injury",
+      "position": "Engine Cleaner",
+      "department": "Car Department",
+      "division": null,
+      "details": "Sprained ankle while on duty, leading to a ten-day disability period.",
+      "sources": [
+        "RDApp-222507Freeland224.jpg.json"
+      ]
+    },
+    {
+      "date": "1905-08-23",
+      "event_type": "transfer",
+      "position": "Laborer",
+      "department": null,
+      "division": null,
+      "details": "Transferred from one division to another within the company.",
+      "sources": [
+        "RDApp-222507Freeland223.jpg.json"
+      ]
+    },
+    {
+      "date": "1906-07-07",
+      "event_type": "injury",
+      "position": "Brakeman",
+      "department": null,
+      "division": null,
+      "details": "Reported stomach trouble, leading to temporary disablement.",
+      "sources": [
+        "RDApp-222507Freeland227.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1904-02-07",
+      "injury_type": "Sprain",
+      "body_part": "Ankle",
+      "narrative": "Freeland sprained his ankle while on duty, leading to a ten-day disability period. He was able to return to work after this period.",
+      "medical_examinations": [
+        {
+          "date": "1904-02-07",
+          "examiner": "Dr. Doerr",
+          "finding": "disabled",
+          "notes": "Injury began on February 7, 1904.",
+          "sources": [
+            "RDApp-222507Freeland224.jpg.json"
+          ]
+        },
+        {
+          "date": "1904-02-18",
+          "examiner": null,
+          "finding": "able to return to duty",
+          "notes": "Freeland returned to work on February 19, 1904.",
+          "sources": [
+            "RDApp-222507Freeland224.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1904-02-08",
+            "end": "1904-02-18"
+          },
+          "days": 10,
+          "amount": 5.0,
+          "check_number": "46690",
+          "sources": [
+            "RDApp-222507Freeland224.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1906-07-07",
+      "injury_type": "Sickness",
+      "body_part": "Stomach",
+      "narrative": "Freeland reported stomach trouble, leading to his temporary disablement. He was examined and the cause of disability noted as 'stomach trouble'.",
+      "medical_examinations": [
+        {
+          "date": "1906-07-08",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Freeland reported his condition on July 8, 1906.",
+          "sources": [
+            "RDApp-222507Freeland227.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Doerr",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1904-02-07",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "J.A. Poerner, M.D.",
+      "district": 102,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1905-08-23",
+      "event": "Transfer of Employee",
+      "significance": "Indicates Freeland's movement within the company from one division to another.",
+      "sources": [
+        "RDApp-222507Freeland223.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1902",
+      "latest": "1906"
+    },
+    "completeness_assessment": "The records are relatively complete for the period from 1902 to 1906, detailing injuries and transfers. However, there is some inconsistency in names which affects identity resolution.",
+    "data_quality_notes": [
+      "OCR quality varies; some documents have incomplete or unclear text."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical practices and administrative procedures of the Baltimore & Ohio Railroad Company in handling employee injuries and disability claims.",
+      "They also highlight the mobility within the company, as evidenced by Freeland's transfer."
+    ],
+    "comparative_questions": [
+      "How did injury reporting and benefits differ across various departments or divisions?",
+      "What was the typical duration of disablement periods for different types of injuries?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.85,
+    "employment_timeline": 0.9,
+    "injury_details": 0.95,
+    "overall": 0.88
+  }
+}

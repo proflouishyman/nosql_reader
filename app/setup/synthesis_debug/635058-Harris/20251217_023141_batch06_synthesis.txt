@@ -1,0 +1,210 @@
+{
+  "person_identity": {
+    "canonical_name": "Charley Harris",
+    "name_variations": [
+      {
+        "name": "Charles Harris",
+        "confidence": "high",
+        "sources": [
+          "RDApp-635058Harris054.jpg.json",
+          "RDApp-635058Harris055.jpg.json"
+        ]
+      },
+      {
+        "name": "Charly Janis",
+        "confidence": "low",
+        "sources": [
+          "RDApp-635058Harris057.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the earliest disability record, but no direct evidence of birth date exists."
+  },
+  "biographical_narrative": "Charley Harris was a fireman for the Baltimore & Ohio Railroad Company. His career spanned several decades and included notable periods of illness and injury that required medical attention and compensation through the company's relief department. Harris experienced at least two significant disabilities: one due to influenza in early 1919, which lasted from February 27th to March 6th, and another period of disability reported in late 1926 or early 1927, where he was unable to work for several days. Throughout his career, Harris's employment records reflect a need for clarification regarding the correct spelling of his first name, which alternated between 'Charley' and 'Charles.' Despite these administrative issues, Harris maintained his position as a fireman in various departments and divisions across West Virginia.",
+  "family": {
+    "spouse": null,
+    "parents": [
+      {
+        "name": "Melissa Jane",
+        "relationship": "mother",
+        "evidence": "Clarification provided by Charley Harris regarding his mother's name.",
+        "sources": [
+          "RDApp-635058Harris054.jpg.json"
+        ]
+      }
+    ],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Kenova, W.Va.",
+      "date_range": "unknown",
+      "context": "Residence at the time of his influenza disability in 1919.",
+      "sources": [
+        "RDApp-635058Harris056.jpg.json"
+      ]
+    },
+    {
+      "address": "St. Simons, W.Va.",
+      "date_range": "unknown",
+      "context": "Residence at the time of his 1927 disability report.",
+      "sources": [
+        "RDApp-635058Harris058.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Began employment as a fireman with the Baltimore & Ohio Railroad Company.",
+      "sources": []
+    },
+    {
+      "date": "1935-07-05",
+      "event_type": "application",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Submitted an application for membership with the Relief Department.",
+      "sources": [
+        "RDApp-635058Harris054.jpg.json",
+        "RDApp-635058Harris055.jpg.json"
+      ]
+    },
+    {
+      "date": "1927-03-11",
+      "event_type": "injury",
+      "position": "Fireman",
+      "department": null,
+      "division": null,
+      "details": "Reported disabled by accident or sickness.",
+      "sources": [
+        "RDApp-635058Harris058.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1919-02-27",
+      "injury_type": "Influenza",
+      "body_part": null,
+      "narrative": "Charley Harris was disabled due to influenza from February 27th to March 6th, 1919. He received sickness payments totaling $15.00.",
+      "medical_examinations": [
+        {
+          "date": "1919-03-14",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Influenza disability period from February 27th to March 6th, 1919.",
+          "sources": [
+            "RDApp-635058Harris056.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1919-02-27",
+            "end": "1919-03-06"
+          },
+          "days": 6,
+          "amount": 15.0,
+          "check_number": "89260",
+          "sources": [
+            "RDApp-635058Harris056.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1927-02-28",
+      "injury_type": "Accident/Sickness",
+      "body_part": null,
+      "narrative": "Charley Harris was disabled due to an accident or sickness from February 28th to March 12th, 1927. Wages were not allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1927-03-31",
+          "examiner": "Dr. W. Funk",
+          "finding": "disabled",
+          "notes": "Reported disabled by accident or sickness from February 28th to March 12th, 1927.",
+          "sources": [
+            "RDApp-635058Harris057.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. W. Funk",
+      "district": "88",
+      "examinations": [
+        {
+          "date": "1927-03-31",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Detwiler",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1936-04-11",
+      "event": "Clarification of name spelling",
+      "significance": "Resolved the discrepancy between 'Charley' and 'Charles'.",
+      "sources": [
+        "RDApp-635058Harris051.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1919-02-27",
+      "latest": "1936-04-11"
+    },
+    "completeness_assessment": "The records are fairly complete for identifying key events such as injuries and name clarifications. However, there is limited information on the exact start date of employment or any promotions.",
+    "data_quality_notes": [
+      "Some documents contain OCR errors that affect readability.",
+      "There are discrepancies in spelling of 'Charley' vs 'Charles'.",
+      "The document regarding Charly Janis may be an error as it does not align with other records."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case illustrates the importance of accurate record-keeping in railroad employment, especially concerning employee health and compensation.",
+      "The repeated need for clarification on Harris's name suggests issues with early 20th-century administrative practices."
+    ],
+    "comparative_questions": [
+      "How did other employees' experiences with injury and disability compare to Charley Harris?",
+      "What were the common causes of disability among railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

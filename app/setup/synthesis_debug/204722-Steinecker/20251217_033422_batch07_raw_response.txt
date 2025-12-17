@@ -1,0 +1,211 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "Heinecker William",
+        "confidence": "low",
+        "sources": ["RDApp-204722Steinecker062.jpg.json"]
+      },
+      {
+        "name": "Steinocker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker063.jpg.json"]
+      },
+      {
+        "name": "Steinacker",
+        "confidence": "low",
+        "sources": ["RDApp-204722Steinecker065.jpg.json"]
+      },
+      {
+        "name": "Stenecker",
+        "confidence": "medium",
+        "sources": ["RDApp-204722Steinecker064.jpg.json"]
+      },
+      {
+        "name": "William Stuneaker",
+        "confidence": "high",
+        "sources": ["RDApp-204722Steinecker070.jpg.json"]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations are present across documents, but 'William Steinecker' is the most consistent name used in official records."
+  },
+  
+  "biographical_narrative": "William Steinecker was a railroad employee with the Baltimore & Ohio Railroad Company. His career spanned various positions including tinsmith and fireman. He experienced multiple periods of disability, which were documented by the company's medical department. The earliest recorded event in his employment history is from 1912 when he reported sick on July 1st. Steinecker faced challenges with locating him for medical examinations and benefits processing due to inconsistent addresses provided or not updated in records. His career was marked by periods of injury, sickness, and return to duty, reflecting the physical demands and health risks associated with railroad work during this era.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "West Park Md.",
+      "date_range": "1912",
+      "context": "Residence for tinsmith William Heinecker",
+      "sources": ["RDApp-204722Steinecker062.jpg.json"]
+    },
+    {
+      "address": "251 West Market St.",
+      "date_range": "unknown",
+      "context": "Residence of William Steinacker, trackman",
+      "sources": ["RDApp-204722Steinecker065.jpg.json"]
+    },
+    {
+      "address": "911 E. Clement St",
+      "date_range": "1913",
+      "context": "Residence of William Stuneaker, fireman",
+      "sources": ["RDApp-204722Steinecker070.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1912-07-01",
+      "event_type": "injury/sickness",
+      "position": "tinsmith",
+      "department": null,
+      "division": "Balto.",
+      "details": "Reported sick on July 1st, 1912. Challenges in locating him for medical examination due to lack of address information.",
+      "sources": ["RDApp-204722Steinecker062.jpg.json"]
+    },
+    {
+      "date": "1913-02-05",
+      "event_type": "injury/sickness",
+      "position": "trackman",
+      "department": null,
+      "division": null,
+      "details": "Reported sick on February 5th, 1913. Last day wages allowed were also February 5th.",
+      "sources": ["RDApp-204722Steinecker067.jpg.json"]
+    },
+    {
+      "date": "1913-03-08",
+      "event_type": "injury/sickness",
+      "position": "fireman",
+      "department": null,
+      "division": null,
+      "details": "Reported sick on March 8th, 1913. Last day wages allowed were also March 8th.",
+      "sources": ["RDApp-204722Steinecker064.jpg.json"]
+    },
+    {
+      "date": "1913-03-10",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Reported back for work on March 10th, 1913.",
+      "sources": ["RDApp-204722Steinecker066.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1912-07-01",
+      "injury_type": "sickness",
+      "body_part": null,
+      "narrative": "William Steinecker reported sick on July 1st, 1912. He was unable to be located for medical examination due to lack of address information.",
+      "medical_examinations": [
+        {
+          "date": "unknown",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Unable to locate the individual for further examination.",
+          "sources": ["RDApp-204722Steinecker062.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1913-02-05",
+      "injury_type": "sickness",
+      "body_part": null,
+      "narrative": "William Steinecker reported sick on February 5th, 1913. The last day wages were allowed was also February 5th.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1913-03-08",
+      "injury_type": "sickness",
+      "body_part": null,
+      "narrative": "William Steinecker reported sick on March 8th, 1913. The last day wages were allowed was also March 8th.",
+      "medical_examinations": [],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "J.D. Reinhardt",
+      "district": "2",
+      "examinations": [
+        {
+          "date": "1912-07-12",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": null,
+      "district": null,
+      "examinations": []
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "unknown",
+      "event": "request for address information",
+      "significance": "The company had difficulty locating William Steinecker due to missing or outdated address details.",
+      "sources": ["RDApp-204722Steinecker063.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1912-07-01",
+      "latest": "1913-03-10"
+    },
+    "completeness_assessment": "The record is relatively complete for documenting injury and sick leave, but lacks detailed information on employment history before 1912. There are inconsistencies in the spelling of Steinecker's name across documents.",
+    "data_quality_notes": [
+      "OCR quality varies; some dates and names are partially obscured or incorrectly transcribed."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the challenges faced by railroad employees in early 20th century America, including health issues and administrative hurdles.",
+      "It also underscores the importance of accurate record-keeping for employee benefits and medical care."
+    ],
+    "comparative_questions": [
+      "How did injury rates and return-to-work processes vary among different divisions or departments within the Baltimore & Ohio Railroad?",
+      "What were the typical durations of disability periods, and how did they affect employees' careers?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

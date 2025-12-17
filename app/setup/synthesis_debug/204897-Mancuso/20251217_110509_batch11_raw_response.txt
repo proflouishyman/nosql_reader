@@ -1,0 +1,202 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Marcellus Antoniis",
+        "confidence": "low",
+        "sources": ["RDApp-204897Manusco101.jpg.json"]
+      },
+      {
+        "name": "Antonio Manenzo",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco102.jpg.json"]
+      },
+      {
+        "name": "Antonio Banuso",
+        "confidence": "high",
+        "sources": ["RDApp-204897Manusco103.jpg.json"]
+      },
+      {
+        "name": "Luigi Mancini",
+        "confidence": "medium",
+        "sources": ["RDApp-204897Manusco105.jpg.json"]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is primarily based on the name 'Luigi Mancuso' and associated employee ID, with some variations in names that may refer to different individuals or spelling errors."
+  },
+  
+  "biographical_narrative": "Luigi Mancuso was a car repairman for the Baltimore & Ohio Railroad Company. He began his career as early as 1907, working primarily out of Connellsville, Pennsylvania. Throughout his tenure with the railroad company, he experienced several injuries and periods of sickness that required medical attention and compensation from the Relief Department. Injuries included a contused left hand in February 1913 and another injury to his left hand in March 1916. These incidents were reported as unavoidable accidents occurring during work duties at the repair track. Mancuso also experienced a period of sickness in October 1907, for which he received benefits for nine days. His career with the railroad company was marked by these medical events and his consistent return to duty after receiving treatment.",
+  
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No specific mention of spouse in documents",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "118-1 Fayette St., Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence of Antonio Banuso at the time of injury in March 1916",
+      "sources": ["RDApp-204897Manusco103.jpg.json"]
+    },
+    {
+      "address": "119 2nd street, Connellsville, Pa.",
+      "date_range": "unknown",
+      "context": "Residence of Antonio Romano at the time of injury in March 1913",
+      "sources": ["RDApp-204897Manusco104.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1907",
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Car Repairman",
+      "department": "M.O.",
+      "division": "Connellsville",
+      "details": "Luigi Mancuso was employed as a Car Repairman in the Connellsville division of the Baltimore & Ohio Railroad Company, working under the M.O. department.",
+      "sources": ["RDApp-204897Manusco106.jpg.json"]
+    },
+    {
+      "date": "1913",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Suffered a contused left hand while on duty at Little Pennsylvania Yards.",
+      "sources": ["RDApp-204897Manusco101.jpg.json"]
+    },
+    {
+      "date": "1916",
+      "event_type": "injury",
+      "position": "Car Repairman",
+      "department": null,
+      "division": null,
+      "details": "Suffered a left hand injury (mashed) while working at Connellsville repair track.",
+      "sources": ["RDApp-204897Manusco103.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1913-02",
+      "injury_type": "Contused left hand",
+      "body_part": "left hand",
+      "narrative": "Luigi Mancuso suffered a contusion to his left hand in February 1913 when he was accidentally struck by a hammer while holding a chisel on duty at Little Pennsylvania Yards. The injury was considered unavoidable and resulted in swelling and discoloration of the hand.",
+      "medical_examinations": [
+        {
+          "date": "1913-02",
+          "examiner": "Dr. T.H. White",
+          "finding": "disabled",
+          "notes": "Hand swollen & discolored, injury was unavoidable.",
+          "sources": ["RDApp-204897Manusco101.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": 9,
+          "amount": 9.00,
+          "check_number": "45191",
+          "sources": ["RDApp-204897Manusco106.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-03",
+      "injury_type": "Left hand mashed",
+      "body_part": "left hand",
+      "narrative": "In March 1916, Luigi Mancuso suffered a left-hand injury (mashed) while working as a car repairman at the Connellsville repair track. The accident occurred when he was holding a chisel bar and his helper missed striking it.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": "Dr. White",
+          "finding": "disabled",
+          "notes": "Sent to Dr. White for treatment after the injury.",
+          "sources": ["RDApp-204897Manusco103.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. T.H. White",
+      "district": "15",
+      "examinations": [
+        {
+          "date": "1913-02",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "S. W. White M.D.",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "Dr. Orl",
+      "district": null,
+      "examinations": [
+        {
+          "date": null,
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1902",
+      "latest": "1916"
+    },
+    "completeness_assessment": "The records provide a detailed account of Luigi Mancuso's injuries and medical treatments, but there is limited information on his employment history beyond these events. The documents also show some inconsistencies in the spelling of his name.",
+    "data_quality_notes": [
+      "Some OCR errors are present, particularly with names and dates.",
+      "There are contradictions in the names used for Luigi Mancuso across different documents."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Luigi Mancuso reveals the high risk of injury associated with railroad repair work during the early 20th century and the importance of a company's relief department in providing medical care and compensation to injured workers.",
+      "It also highlights the role of medical examiners in assessing injuries and determining eligibility for benefits."
+    ],
+    "comparative_questions": [
+      "How did injury rates and types vary across different departments within the Baltimore & Ohio Railroad Company?",
+      "What was the overall impact of workplace injuries on railroad labor force stability during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

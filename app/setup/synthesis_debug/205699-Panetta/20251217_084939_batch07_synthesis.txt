@@ -1,0 +1,232 @@
+{
+  "person_identity": {
+    "canonical_name": "Ilario Panetta",
+    "name_variations": [
+      {
+        "name": "Ilanic Panetta",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta061.jpg.json"
+        ]
+      },
+      {
+        "name": "Parnitta Liano",
+        "confidence": "low",
+        "sources": [
+          "RDApp-205699Panetta063.jpg.json"
+        ]
+      },
+      {
+        "name": "Ilario Panepinto",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-205699Panetta067.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": 205699,
+    "birth_year": null,
+    "confidence_notes": "Identity is mostly certain, but name variations exist and need further verification."
+  },
+  "biographical_narrative": "Ilario Panetta was a laborer for the Baltimore & Ohio Railroad Company in Keyser, West Virginia. His career with the railroad spanned several decades, during which he faced multiple health challenges that impacted his employment. In October 1931, Panetta suffered an injury at work, leading to a hernia operation and subsequent disability leave. He was later able to return to duty after recovery. In February 1933, another incident led to a double herniotomy, which required hospitalization and further absence from work until May of the same year. Throughout his tenure with B&O Railroad, Panetta's health issues were closely monitored by medical examiners, who documented his condition and progress in detail.",
+  "family": {
+    "spouse": {
+      "name": "Teresa Panetta",
+      "evidence": "Designated as beneficiary",
+      "sources": [
+        "RDApp-205699Panetta068.jpg.json"
+      ]
+    },
+    "parents": [],
+    "children": [
+      {
+        "name": "Nellie Alemari (n\u00e9e Panetta)",
+        "relationship": null,
+        "evidence": "Designated secondary beneficiary if primary is deceased",
+        "sources": [
+          "RDApp-205699Panetta068.jpg.json"
+        ]
+      }
+    ]
+  },
+  "addresses": [
+    {
+      "address": "Keyser, W. Va.",
+      "date_range": "unknown",
+      "context": "Residence and contact address for employment records",
+      "sources": [
+        "RDApp-205699Panetta061.jpg.json",
+        "RDApp-205699Panetta063.jpg.json"
+      ]
+    },
+    {
+      "address": "56 Vernon St.",
+      "date_range": "unknown",
+      "context": "Residence for personal injury report",
+      "sources": [
+        "RDApp-205699Panetta067.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": "Laborer",
+      "department": "MP",
+      "division": "Cumberland",
+      "details": "Started as a laborer in the MP department under Cumberland division.",
+      "sources": [
+        "RDApp-205699Panetta061.jpg.json"
+      ]
+    },
+    {
+      "date": "1931-10-07",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a hernia injury while working.",
+      "sources": [
+        "RDApp-205699Panetta067.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-02-27",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a double herniotomy injury.",
+      "sources": [
+        "RDApp-205699Panetta061.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1931-10-07",
+      "injury_type": "Hernia",
+      "body_part": null,
+      "narrative": "Suffered a hernia injury while turning a block of wood at work. Continued working and reported the incident to his supervisor.",
+      "medical_examinations": [
+        {
+          "date": "1931-10-28",
+          "examiner": null,
+          "finding": null,
+          "notes": "Report filed on this date.",
+          "sources": [
+            "RDApp-205699Panetta067.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1933-02-27",
+      "injury_type": "Double Herniotomy",
+      "body_part": null,
+      "narrative": "Suffered a double herniotomy injury, leading to hospitalization and absence from work until May 1, 1933.",
+      "medical_examinations": [
+        {
+          "date": "1933-02-27",
+          "examiner": "Dr. BH Beurkwhite",
+          "finding": "Disabled",
+          "notes": "",
+          "sources": [
+            "RDApp-205699Panetta061.jpg.json"
+          ]
+        },
+        {
+          "date": "1933-02-27",
+          "examiner": "B H Quistwhite",
+          "finding": "Disabled",
+          "notes": "Double herniotomy performed on March 1.",
+          "sources": [
+            "RDApp-205699Panetta062.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. BH Beurkwhite",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1933-02-27",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "B H Quistwhite",
+      "district": 6,
+      "examinations": [
+        {
+          "date": "1933-02-27",
+          "finding": "Disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": null,
+      "event": "Application for permission to change beneficiary",
+      "significance": "Indicates personal life changes or planning.",
+      "sources": [
+        "RDApp-205699Panetta070.jpg.json"
+      ]
+    },
+    {
+      "date": "1933-09-12",
+      "event": "Communication about job status and pending issue",
+      "significance": "Reflects ongoing administrative concerns regarding employment status.",
+      "sources": [
+        "RDApp-205699Panetta064.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": null,
+      "latest": null
+    },
+    "completeness_assessment": "The record is relatively complete for injury and medical history but lacks details on employment start date and full career timeline.",
+    "data_quality_notes": [
+      "Some documents have OCR issues leading to name variations (e.g., Ilario Panetta vs. Parnitta Liano).",
+      "Dates are sometimes incomplete or unclear, requiring best-guess estimates."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the medical challenges faced by railroad workers and the company's response through its Relief Department.",
+      "It also underscores the importance of family in determining beneficiaries for relief payments."
+    ],
+    "comparative_questions": [
+      "How did injury rates and responses vary across different departments or divisions within B&O Railroad?",
+      "What were the typical durations of disability leave compared to other industries at that time?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,266 @@
+{
+  "person_identity": {
+    "canonical_name": "William Steinecker",
+    "name_variations": [
+      {
+        "name": "William Stimech",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker071.jpg.json"
+        ]
+      },
+      {
+        "name": "William Steinacker",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker073.jpg.json"
+        ]
+      },
+      {
+        "name": "William J Tennacher",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker074.jpg.json"
+        ]
+      },
+      {
+        "name": "William N. Stonechey",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204722Steinecker076.jpg.json"
+        ]
+      },
+      {
+        "name": "W. Staucker",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204722Steinecker079.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204722",
+    "birth_year": 1883,
+    "confidence_notes": "Name variations suggest possible OCR errors or aliases. Birth year is derived from document 7."
+  },
+  "biographical_narrative": "William Steinecker, born on January 17, 1883, began his career with the Baltimore & Ohio Railroad Company in an unspecified role around 1910-1911. His employment records indicate he worked as a fireman and brakeman at various times during his tenure. Over the years, Steinecker experienced several periods of disability due to sickness or injury, including instances where he was reported sick on January 3, 1918, and December 24, 1913. He also suffered from heat exhaustion in June 1914. Despite these setbacks, he continued his employment with the railroad company until at least 1922, when he returned to duty after a short disability period.",
+  "family": {
+    "spouse": {
+      "name": null,
+      "evidence": "No direct evidence of spouse",
+      "sources": []
+    },
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "9 Maryland Ave Westport Md",
+      "date_range": "unknown",
+      "context": "Residence for W. Staucker in document 9.",
+      "sources": [
+        "RDApp-204722Steinecker079.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1911-05-09",
+      "event_type": "medical examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Balto",
+      "details": "Passed vision and hearing tests without corrective lenses.",
+      "sources": [
+        "RDApp-204722Steinecker076.jpg.json"
+      ]
+    },
+    {
+      "date": "1913-05-10",
+      "event_type": "re-examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Re-examined and declared safe by the Relief Department.",
+      "sources": [
+        "RDApp-204722Steinecker077.jpg.json"
+      ]
+    },
+    {
+      "date": "1913-12-26",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work after a period of disability.",
+      "sources": [
+        "RDApp-204722Steinecker075.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-01-03",
+      "event_type": "disablement",
+      "position": "Brakeman",
+      "department": null,
+      "division": null,
+      "details": "Reported sick.",
+      "sources": [
+        "RDApp-204722Steinecker071.jpg.json"
+      ]
+    },
+    {
+      "date": "1922-12-28",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Returned to work after a period of disability.",
+      "sources": [
+        "RDApp-204722Steinecker079.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1913-12-24",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Steinecker was reported sick on December 24, 1913. He returned to work two days later.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "1913-12-24",
+            "end": null
+          },
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204722Steinecker075.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1918-01-03",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "William Steinecker was reported sick on January 3, 1918. The cause of sickness is not recorded.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "1918-01-03",
+            "end": null
+          },
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-204722Steinecker071.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1914-06-09",
+      "injury_type": "Heat exhaustion",
+      "body_part": null,
+      "narrative": "William Steinecker suffered from heat exhaustion on June 9, 1914. He was paid for lost wages and returned to duty on June 21.",
+      "medical_examinations": [],
+      "payments": [
+        {
+          "period": {
+            "start": "1914-06-16",
+            "end": "1914-06-21"
+          },
+          "days": 4.5,
+          "amount": 6.75,
+          "check_number": null,
+          "sources": [
+            "RDApp-204722Steinecker080.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "L. S. Norris",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1911-05-09",
+          "finding": "Passed vision and hearing tests without corrective lenses."
+        }
+      ]
+    },
+    {
+      "name": "J.A. Prickloe",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1913-12-26",
+      "event": "Return to duty notice issued.",
+      "significance": "Indicates Steinecker's return from a period of disability.",
+      "sources": [
+        "RDApp-204722Steinecker075.jpg.json"
+      ]
+    },
+    {
+      "date": "1918-01-03",
+      "event": "Notice of disablement issued for sickness.",
+      "significance": "Indicates Steinecker's reported absence due to illness.",
+      "sources": [
+        "RDApp-204722Steinecker071.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1911-05-09",
+      "latest": "1922-12-28"
+    },
+    "completeness_assessment": "The record is relatively complete for major events like returns to duty and disability notices. However, there are gaps in the documentation of Steinecker's employment history and medical details.",
+    "data_quality_notes": [
+      "OCR errors lead to name variations.",
+      "Some documents have unreadable fields."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records highlight the frequent health issues faced by railroad workers, particularly in extreme weather conditions like heat exhaustion.",
+      "They also reveal the bureaucratic processes involved in managing employee disabilities and benefits."
+    ],
+    "comparative_questions": [
+      "How did the frequency of sickness and injury compare to other employees during this period?",
+      "What were the typical durations for disability periods among railroad workers?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

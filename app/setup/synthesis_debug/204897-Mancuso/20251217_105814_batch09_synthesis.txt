@@ -1,0 +1,193 @@
+{
+  "person_identity": {
+    "canonical_name": "Luigi Mancuso",
+    "name_variations": [
+      {
+        "name": "Luigi Mancurci (or Manuzzi)",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204897Manusco082.jpg.json"
+        ]
+      },
+      {
+        "name": "Rugy Muscus",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204897Manusco086.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204897",
+    "birth_year": null,
+    "confidence_notes": "The identity of Luigi Mancuso is certain based on most documents. Variations in name are noted but with lower confidence due to handwriting and OCR issues."
+  },
+  "biographical_narrative": "Luigi Mancuso, a laborer for the Baltimore & Ohio Railroad Company, had an eventful career marked by injuries sustained while working. His employment began sometime before June 1905 when he was injured on duty in Coville, Pennsylvania. He suffered a contused shin and later a lacerated right hand from being struck by a rock while on duty. These incidents led to periods of disability during which Mancuso received benefits from the company's Relief Department. Despite these setbacks, he managed to return to work after medical clearance was given in September 1905.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "Eville Pa",
+      "date_range": "unknown",
+      "context": "Residence at the time of injury report in September 1905.",
+      "sources": [
+        "RDApp-204897Manusco090.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Laborer",
+      "department": "Maintenance of Way (M. of W.)",
+      "division": "Coville",
+      "details": "Began employment as a laborer in the Maintenance of Way department.",
+      "sources": [
+        "RDApp-204897Manusco083.jpg.json"
+      ]
+    },
+    {
+      "date": "1905-06-10",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Sustained a contused shin while on duty in Coville, Pennsylvania.",
+      "sources": [
+        "RDApp-204897Manusco085.jpg.json",
+        "RDApp-204897Manusco090.jpg.json"
+      ]
+    },
+    {
+      "date": "1905-06-23",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified as able to return to duty after a period of disability.",
+      "sources": [
+        "RDApp-204897Manusco088.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1905-06-10",
+      "injury_type": "Contused shin",
+      "body_part": "Right shin",
+      "narrative": "Luigi Mancuso was injured on duty in Coville, Pennsylvania, when an iron bar struck his right shin. He received benefits for 7 days at a rate of $0.50 per day.",
+      "medical_examinations": [
+        {
+          "date": "1905-06-23",
+          "examiner": null,
+          "finding": "able_to_return_to_duty",
+          "notes": "Certified as able to return to duty after 7 days of benefits.",
+          "sources": [
+            "RDApp-204897Manusco088.jpg.json"
+          ]
+        },
+        {
+          "date": "1905-09-18",
+          "examiner": "M.H. Keller",
+          "finding": "disabled",
+          "notes": "Diagnosed with a contused right shin, prognosis of 2 weeks.",
+          "sources": [
+            "RDApp-204897Manusco090.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1905-06-10",
+            "end": "1905-06-17"
+          },
+          "days": 7,
+          "amount": 3.5,
+          "check_number": null,
+          "sources": [
+            "RDApp-204897Manusco082.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": null,
+      "injury_type": "Contused and lacerated hand",
+      "body_part": "Right hand",
+      "narrative": "Luigi Mancuso was struck by a rock while on duty, resulting in a contused and lacerated right hand. The injury occurred in Connellsville, Pennsylvania.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Reported as disabled due to the injury but no specific examination date provided.",
+          "sources": [
+            "RDApp-204897Manusco086.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "M.H. Keller",
+      "district": "18",
+      "examinations": [
+        {
+          "date": "1905-09-18",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": null,
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1904-08-12",
+      "latest": "1905-09-18"
+    },
+    "completeness_assessment": "The record is relatively complete for injury and disability claims but lacks comprehensive employment history details such as start date, promotions, or transfers.",
+    "data_quality_notes": [
+      "Some documents have handwriting that makes name variations unclear (e.g., Luigi Mancurci vs. Manuzzi).",
+      "OCR quality varies; some forms are truncated."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case of Luigi Mancuso highlights the risks laborers faced on the railroad and the company's response through its Relief Department, providing a glimpse into early 20th century workplace safety and compensation practices.",
+      "It also shows the importance of medical examinations in determining eligibility for disability benefits."
+    ],
+    "comparative_questions": [
+      "How did injury rates and responses vary across different divisions or departments within the B&O Railroad?",
+      "What were the typical durations and amounts of disability payments?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

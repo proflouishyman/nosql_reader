@@ -1,0 +1,198 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto S. Proudfoot",
+        "confidence": "medium",
+        "sources": ["RDApp-204801Proudfood030.jpg.json"]
+      },
+      {
+        "name": "Otto D. Prenderoot",
+        "confidence": "low",
+        "sources": ["RDApp-204801Proudfood028.jpg.json"]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "The birth year is inferred from the earliest document date (1943) and typical age of employment in railroad industry."
+  },
+  
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company, working primarily out of Cumberland, Maryland. His career spanned several years during which he faced multiple health challenges that affected his work. In June 1943, he reported sick due to bronchitis and was unable to return to duty until mid-July of the same year. Proudfoot suffered another injury on December 2, 1945, when he sustained a contusion to his left great toe while working in Grafton, West Virginia. This incident led to a brief period of disability during which medical services were provided and claims processed through the company's Relief Department.",
+  
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence address for medical and disability claims.",
+      "sources": ["RDApp-204801Proudfood021.jpg.json", "RDApp-204801Proudfood024.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumb",
+      "details": "Exact hire date is not provided in the documents.",
+      "sources": []
+    },
+    {
+      "date": "1943-06-02",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumb",
+      "details": "Reported sick due to bronchitis, unable to return to duty until 1943-07-17.",
+      "sources": ["RDApp-204801Proudfood024.jpg.json"]
+    },
+    {
+      "date": "1945-12-02",
+      "event_type": "injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cumb",
+      "details": "Sustained a contusion to the left great toe while on duty in Grafton, West Virginia.",
+      "sources": ["RDApp-204801Proudfood027.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": "1943-06-02",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was reported sick due to bronchitis and was unable to return to duty until July 17, 1943.",
+      "medical_examinations": [
+        {
+          "date": "1943-06-02",
+          "examiner": "Dr. C. E. Durrett",
+          "finding": "disabled",
+          "notes": "Bronchitis; probable duration of 3 to 4 weeks.",
+          "sources": ["RDApp-204801Proudfood026.jpg.json"]
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": null, "end": null},
+          "days": null,
+          "amount": null,
+          "check_number": null,
+          "sources": []
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1945-12-02",
+      "injury_type": "Contusion",
+      "body_part": "Left great toe",
+      "narrative": "On December 2, 1945, Otto D. Proudfoot sustained a contusion to his left great toe while on duty in Grafton, West Virginia.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": null,
+          "notes": "",
+          "sources": []
+        }
+      ],
+      "payments": [
+        {
+          "period": {"start": "1945-12-02", "end": "1945-12-03"},
+          "days": 2,
+          "amount": null,
+          "check_number": "28940",
+          "sources": ["RDApp-204801Proudfood027.jpg.json"]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {
+      "name": "Dr. C. E. Durrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1943-06-02",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "W. B. Baker",
+      "district": 6,
+      "examinations": [
+        {
+          "date": null,
+          "finding": null
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1943-07-09",
+      "event": "Submission of sickness report",
+      "significance": "Documented Proudfoot's absence due to bronchitis.",
+      "sources": ["RDApp-204801Proudfood024.jpg.json"]
+    },
+    {
+      "date": "1946-01-14",
+      "event": "Approval of medical bill for services rendered to Proudfoot",
+      "significance": "Indicates ongoing medical care post-injury.",
+      "sources": ["RDApp-204801Proudfood028.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1943-06-02",
+      "latest": "1946-01-14"
+    },
+    "completeness_assessment": "The record is relatively complete for the period covered, detailing multiple health-related absences and medical examinations. However, there are no documents that provide information about his employment prior to 1943 or any family details.",
+    "data_quality_notes": [
+      "Some OCR text is partially illegible, particularly in DOCUMENT 3.",
+      "There are minor discrepancies in name spelling (Otto D. Proudfoot vs Otto S. Proudfoot)."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The documents reveal the extent of medical support provided to railroad employees during their periods of disability, including sickness and injury.",
+      "They also highlight the bureaucratic process involved in documenting and processing these claims."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's policies compare with other railroads regarding employee health and safety?",
+      "What were the typical durations and causes of disability among railroad workers during this period?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

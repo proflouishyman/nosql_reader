@@ -1,0 +1,304 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Roadbough",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh261.jpg.json"
+        ]
+      },
+      {
+        "name": "Roanbaugh",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh263.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rothbaugh",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh264.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude P. Vaughn",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh265.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Strawnaugh",
+        "confidence": "low",
+        "sources": [
+          "RDApp-221988Roenbaugh267.jpg.json"
+        ]
+      },
+      {
+        "name": "C. Roebourough",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh270.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1895,
+    "confidence_notes": "The identity is reasonably certain, but there are variations in name spelling and potential confusion with other employees."
+  },
+  "biographical_narrative": "Claude Roenbaugh was a railroad worker for the Baltimore & Ohio Railroad Company during the early 20th century. His career spanned various roles including foreman and brakeman, as well as trackman and possibly engineer, though there is some confusion with other employees named similarly in the records. Roenbaugh experienced several periods of disability due to illness, notably rheumatism affecting his left hip and an unspecified sickness that required extended leave from work. Despite these health challenges, he was able to return to duty multiple times after medical clearance by various examiners. The records suggest a career marked by periodic health issues but also resilience in maintaining employment with the railroad.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "321 W 29th St",
+      "date_range": "unknown",
+      "context": "Residence address as per disability notice",
+      "sources": [
+        "RDApp-221988Roenbaugh262.jpg.json"
+      ]
+    },
+    {
+      "address": "531 W 29th St",
+      "date_range": "unknown",
+      "context": "Residence address as per another disability notice",
+      "sources": [
+        "RDApp-221988Roenbaugh270.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "The exact date of hire is not provided in the records.",
+      "sources": []
+    },
+    {
+      "date": "1916-03-04",
+      "event_type": "injury",
+      "position": "foreman",
+      "department": null,
+      "division": "Chan Div. Dept.",
+      "details": "Totally disabled by sickness from 3/4/16 to 3/11/16, no wages allowed during this period.",
+      "sources": [
+        "RDApp-221988Roenbaugh261.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-03-17",
+      "event_type": "injury",
+      "position": "trackman",
+      "department": null,
+      "division": "Cleveland Division",
+      "details": "Disabled by sickness from 3/17 to 3/23, wages not allowed.",
+      "sources": [
+        "RDApp-221988Roenbaugh263.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-04-03",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Certified able to return to duty.",
+      "sources": [
+        "RDApp-221988Roenbaugh264.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-04-13",
+      "event_type": "return_to_duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Resumed work at 5:00 PM.",
+      "sources": [
+        "RDApp-221988Roenbaugh265.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-03-20",
+      "event_type": "medical_examination",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Medical examination reported rheumatism of the left hip, probable duration 3 to 4 weeks.",
+      "sources": [
+        "RDApp-221988Roenbaugh266.jpg.json"
+      ]
+    },
+    {
+      "date": "1916-01-27",
+      "event_type": "injury",
+      "position": "brakeman",
+      "department": null,
+      "division": "Clarksburg Div. Ch Dept.",
+      "details": "Totally disabled by sickness from 1/27 to 2/19, no wages allowed during this period.",
+      "sources": [
+        "RDApp-221988Roenbaugh268.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1916-03-04",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was totally disabled by sickness from March 4 to March 11, 2016. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1916-03-04",
+          "examiner": "Dr. J.J. McGarrell",
+          "finding": "disabled",
+          "notes": "Totally disabled by sickness from 3/4 to 3/11.",
+          "sources": [
+            "RDApp-221988Roenbaugh261.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-03-17",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was disabled by sickness from March 17 to March 23, 2016. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1916-03-17",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Disabled by sickness from 3/17 to 3/23, wages not allowed.",
+          "sources": [
+            "RDApp-221988Roenbaugh263.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-03-20",
+      "injury_type": "Rheumatism of the left hip",
+      "body_part": "left hip",
+      "narrative": "Claude Roenbaugh was disabled by rheumatism affecting his left hip. The probable duration of disability was estimated to be 3 to 4 weeks.",
+      "medical_examinations": [
+        {
+          "date": "1916-03-20",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Rheumatism left hip, probable duration 3 to 4 weeks.",
+          "sources": [
+            "RDApp-221988Roenbaugh266.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    },
+    {
+      "injury_date": "1916-01-27",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was totally disabled by sickness from January 27 to February 19, 2016. No wages were allowed during this period.",
+      "medical_examinations": [
+        {
+          "date": "1916-01-27",
+          "examiner": null,
+          "finding": "disabled",
+          "notes": "Totally disabled by sickness from 1/27 to 2/19, no wages allowed.",
+          "sources": [
+            "RDApp-221988Roenbaugh268.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. J.J. McGarrell",
+      "district": "1",
+      "examinations": [
+        {
+          "date": "1916-03-04",
+          "finding": "disabled"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Farrell",
+      "district": null,
+      "examinations": []
+    },
+    {
+      "name": "Dr. Wetherell",
+      "district": "99",
+      "examinations": [
+        {
+          "date": "1916-01-31",
+          "finding": "disabled"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1916-01-27",
+      "latest": "1916-04-13"
+    },
+    "completeness_assessment": "The records are fairly complete for the period covered, with detailed documentation of disability periods and medical examinations. However, there is some inconsistency in name spelling which may indicate potential confusion with other employees.",
+    "data_quality_notes": [
+      "There are variations in name spelling across documents, leading to possible identity confusion.",
+      "Some forms have illegible entries, particularly occupation and department details."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The records provide insight into the medical practices of early 20th-century railroads, including disability reporting and management.",
+      "They also highlight the challenges faced by railroad workers in maintaining employment due to health issues."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad's approach to employee disability compare with other contemporary railroads?",
+      "What were the broader trends in railroad worker health and safety during this period?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

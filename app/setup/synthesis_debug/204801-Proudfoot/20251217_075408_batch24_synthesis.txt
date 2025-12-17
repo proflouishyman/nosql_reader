@@ -1,0 +1,156 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Otto D. Pradford",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood237.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations exist but are likely typographical errors. Birth year is estimated based on the date of disability in 1942."
+  },
+  "biographical_narrative": "Otto D. Proudfoot was an engineer employed by the Baltimore & Ohio Railroad Company, working primarily out of Cumberland, Maryland. His career with the railroad spanned several decades, and he held positions within the company's engineering department. In April 1942, Proudfoot suffered a significant injury to his left hand while on duty, which led to a period of disability and subsequent compensation from the Relief Department. The injury involved a fracture to the fifth metacarpal bone in his left hand, necessitating medical attention and time off work. Despite this setback, there is no evidence suggesting that Proudfoot's career was permanently derailed by this incident.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md.",
+      "date_range": "unknown",
+      "context": "Residence address as stated in the disability record",
+      "sources": [
+        "RDApp-204801Proudfood231.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": null,
+      "event_type": "hire/application/promotion/transfer/furlough/resignation/injury",
+      "position": "Engineer",
+      "department": "CT",
+      "division": "Cum.",
+      "details": "Employed as an engineer in the CT department, Cumberland division. The exact date of hire is not provided in the documents.",
+      "sources": [
+        "RDApp-204801Proudfood231.jpg.json"
+      ]
+    },
+    {
+      "date": "1942-04-09",
+      "event_type": "injury",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Suffered a fracture to the fifth metacarpal bone of his left hand while on duty.",
+      "sources": [
+        "RDApp-204801Proudfood239.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1942-04-09",
+      "injury_type": "Fracture of the fifth metacarpal bone",
+      "body_part": "Left hand",
+      "narrative": "Otto D. Proudfoot suffered a fracture to his left hand's fifth metacarpal bone while on duty, leading to a period of disability and compensation from the Relief Department.",
+      "medical_examinations": [
+        {
+          "date": "1942-04-17",
+          "examiner": "Dr. Gracie",
+          "finding": "Disabled",
+          "notes": "Treated by Dr. Gracie following injury, with a follow-up on April 17, 1942.",
+          "sources": [
+            "RDApp-204801Proudfood239.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1942-04-10",
+            "end": "1942-05-30"
+          },
+          "days": 21,
+          "amount": 52.59,
+          "check_number": null,
+          "sources": [
+            "RDApp-204801Proudfood231.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Dr. Gracie",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1942-04-17",
+          "finding": "Disabled"
+        }
+      ]
+    },
+    {
+      "name": "J M Salyards",
+      "district": 6,
+      "examinations": [
+        {
+          "date": "1942-05-01",
+          "finding": "Totally disabled by accident or sickness from April 20, 1942 to April 30, 1942."
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1942-05-12",
+      "event": "Deduction of $5.50 from May contributions",
+      "significance": "Indicates a financial adjustment related to Proudfoot's disability.",
+      "sources": [
+        "RDApp-204801Proudfood233.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1941",
+      "latest": "1942"
+    },
+    "completeness_assessment": "The record is fairly complete regarding Proudfoot's injury and disability, but lacks detailed information about his career progression or family life.",
+    "data_quality_notes": [
+      "Some OCR errors are present in the documents.",
+      "There are minor inconsistencies in name spelling."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case provides insight into the medical and administrative practices of railroad companies during the early 20th century, particularly regarding employee disability and compensation.",
+      "The documentation highlights the importance of detailed records in managing worker injuries and ensuring fair treatment under company policies."
+    ],
+    "comparative_questions": [
+      "How did injury management and compensation differ across various railroads?",
+      "What were the common causes of workplace injuries among railroad employees?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

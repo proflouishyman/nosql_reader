@@ -1,0 +1,129 @@
+{
+  "person_identity": {
+    "canonical_name": "Charles Harris",
+    "name_variations": [
+      {"name": "Charley Harris", "confidence": "high", "sources": ["RDApp-635058Harris101.jpg.json", "RDApp-635058Harris102.jpg.json", "RDApp-635058Harris104.jpg.json"]},
+      {"name": "Charles Harris", "confidence": "high", "sources": ["RDApp-635058Harris103.jpg.json"]}
+    ],
+    "employee_id": "635058",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations are consistent across documents, suggesting high certainty in identity."
+  },
+  
+  "biographical_narrative": "Charles Harris, known as Charley Harris, was a fireman for the Baltimore & Ohio Railroad. He began his career and worked until he was furloughed on March 22, 1937. Harris resumed duty on October 10, 1939, after being recalled to service, but due to health issues, including an aortic systolic murmur and age-related concerns, he was medically rejected for continued employment in engine service by Dr. Tinsley on October 7, 1939. He worked until November 9, 1939, when he was officially taken out of service due to his medical condition. Harris sought financial assistance or an annuity from the railroad company and the Railroad Retirement Board but faced challenges due to insufficient service for eligibility.",
+  
+  "family": {
+    "spouse": {"name": null, "evidence": "No explicit mention", "sources": []},
+    "parents": [],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "811 Hill Street, Ceredo, West Virginia",
+      "date_range": "Unknown",
+      "context": "Residence address provided by Harris in his claim for financial assistance.",
+      "sources": ["RDApp-635058Harris105.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1937-03-22",
+      "event_type": "furlough",
+      "position": "fireman",
+      "department": null,
+      "division": null,
+      "details": "Harris was furloughed from his position as a fireman.",
+      "sources": ["RDApp-635058Harris108.jpg.json"]
+    },
+    {
+      "date": "1939-10-10",
+      "event_type": "resume duty",
+      "position": "fireman",
+      "department": null,
+      "division": null,
+      "details": "Harris resumed his duties as a fireman after being recalled to service.",
+      "sources": ["RDApp-635058Harris104.jpg.json", "RDApp-635058Harris108.jpg.json"]
+    },
+    {
+      "date": "1939-11-09",
+      "event_type": "taken out of service",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Due to medical rejection, Harris was taken out of service.",
+      "sources": ["RDApp-635058Harris104.jpg.json", "RDApp-635058Harris108.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [
+    {
+      "injury_date": null,
+      "injury_type": "Medical condition",
+      "body_part": null,
+      "narrative": "Harris was found to have an aortic systolic murmur and was over the age limit for reemployment, leading to his rejection from engine service.",
+      "medical_examinations": [
+        {
+          "date": "1939-10-07",
+          "examiner": "Dr. Tinsley",
+          "finding": "disabled",
+          "notes": "Harris was over age and had an aortic systolic murmur, making him unfit for engine service.",
+          "sources": ["RDApp-635058Harris104.jpg.json"]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  
+  "medical_examiners": [
+    {"name": "Dr. Tinsley", "district": null, "examinations": [{"date": "1939-10-07", "finding": "disabled"}]},
+    {"name": "E.V. Milholland, M.D.", "district": null, "examinations": []}
+  ],
+  
+  "administrative_events": [
+    {
+      "date": "1940-03-25",
+      "event": "Medical examination review",
+      "significance": "Clarification on Harris's eligibility for reemployment and membership restoration.",
+      "sources": ["RDApp-635058Harris106.jpg.json"]
+    },
+    {
+      "date": "1940-04-17",
+      "event": "Request for comments on financial assistance or annuity request",
+      "significance": "A.R. seeks Mr. W.M. Kennedy's input regarding Harris's condition and requests.",
+      "sources": ["RDApp-635058Harris101.jpg.json"]
+    }
+  ],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {"earliest": "1940-03-14", "latest": "1940-04-17"},
+    "completeness_assessment": "The record is fairly complete for the period of interest, detailing Harris's medical condition and employment status. However, it lacks details about his life outside work or family situation.",
+    "data_quality_notes": ["OCR quality is generally good but some documents are truncated.", "Documents provide a consistent narrative with no major contradictions."]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case of Charles Harris highlights the challenges faced by railroad workers in maintaining employment due to age and health conditions, as well as the complexities of eligibility for benefits under the Relief Department contract.",
+      "It also underscores the role of medical examinations in determining a worker's fitness for duty and their subsequent entitlements."
+    ],
+    "comparative_questions": [
+      "How did other railroad workers fare in similar circumstances regarding medical disqualification?",
+      "What were the typical outcomes for employees seeking financial assistance or annuities after being medically disqualified?"
+    ],
+    "research_value": "High"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.90,
+    "overall": 0.88
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "person_identity": {
+    "canonical_name": "Thomas B. Freeland",
+    "name_variations": [
+      {
+        "name": "T. B. Freeland",
+        "confidence": "high",
+        "sources": ["RDApp-222507Freeland251.jpg.json", "RDApp-222507Freeland254.jpg.json"]
+      },
+      {
+        "name": "Thomas B. Friedland",
+        "confidence": "medium",
+        "sources": ["RDApp-222507Freeland258.jpg.json"]
+      }
+    ],
+    "employee_id": "222507",
+    "birth_year": 1887,
+    "confidence_notes": "Name variations exist, but 'Thomas B. Freeland' appears most frequently and is likely the canonical name."
+  },
+  
+  "biographical_narrative": "Thomas B. Freeland began his career with the Baltimore & Ohio Railroad Company in April 1906 as a laborer in the Motive Power Department at Cumberland, Maryland. Over time, he held various positions within the company and was a member of the Relief Feature, which provided financial support to employees during periods of illness or injury. Freeland's employment record includes multiple applications for full membership in the Relief Feature, indicating his commitment to securing benefits for himself and his family. His medical examinations suggest that he maintained good health throughout his career, with no significant injuries documented. He was married and had a child, though specific details about his spouse and children are limited.",
+  
+  "family": {
+    "spouse": {
+      "name": "Mary E. Freeland",
+      "evidence": "Designated as beneficiary in application for Relief Feature membership.",
+      "sources": ["RDApp-222507Freeland255.jpg.json"]
+    },
+    "parents": [
+      {
+        "name": "Philip G. Freeland",
+        "relationship": "father",
+        "evidence": "Signed the contract on behalf of his minor son, J.B. Freeland.",
+        "sources": ["RDApp-222507Freeland251.jpg.json"]
+      }
+    ],
+    "children": []
+  },
+  
+  "addresses": [
+    {
+      "address": "Cumberland, Allegany County, Maryland",
+      "date_range": "unknown",
+      "context": "Residence for employment application.",
+      "sources": ["RDApp-222507Freeland258.jpg.json"]
+    }
+  ],
+  
+  "employment_timeline": [
+    {
+      "date": "1906-04",
+      "event_type": "hire/application",
+      "position": "Laborer",
+      "department": "Motive Power Department",
+      "division": "Cumberland Division",
+      "details": "Freeland applied for full membership in the Relief Feature as a condition of employment.",
+      "sources": ["RDApp-222507Freeland252.jpg.json"]
+    },
+    {
+      "date": "1912",
+      "event_type": "application",
+      "position": "O. and C.",
+      "department": null,
+      "division": null,
+      "details": "Freeland applied for full membership in the Relief Feature again, designating his wife as beneficiary.",
+      "sources": ["RDApp-222507Freeland258.jpg.json"]
+    }
+  ],
+  
+  "injury_history": [],
+  
+  "medical_examiners": [
+    {
+      "name": "H. Ellerman",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1906-04-21",
+          "finding": "Certified as in good health and physically qualified for the job."
+        }
+      ]
+    },
+    {
+      "name": "J. Downes",
+      "district": null,
+      "examinations": [
+        {
+          "date": "unknown",
+          "finding": "Witnessed the contract execution on behalf of J.B. Freeland, ratified by Philip G. Freeland."
+        }
+      ]
+    }
+  ],
+  
+  "administrative_events": [],
+  
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1906-04",
+      "latest": "1917"
+    },
+    "completeness_assessment": "The record is relatively complete, with multiple applications for Relief Feature membership and medical examination forms. However, details about Freeland's specific job roles beyond his initial employment are limited.",
+    "data_quality_notes": [
+      "There are minor inconsistencies in the spelling of 'Freeland' versus 'Friedland'.",
+      "Some documents are truncated, leading to incomplete information."
+    ]
+  },
+  
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the importance of the Relief Feature for railroad employees and their families during the early 20th century.",
+      "It also underscores the role of medical examinations in securing employment within the industry."
+    ],
+    "comparative_questions": [
+      "How did membership rates in the Relief Feature vary among different departments or divisions?",
+      "What was the typical duration of employment for railroad workers during this period?"
+    ],
+    "research_value": "Medium"
+  },
+  
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 1.0,
+    "overall": 0.88
+  }
+}

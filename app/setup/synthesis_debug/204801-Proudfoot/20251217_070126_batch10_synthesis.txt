@@ -1,0 +1,184 @@
+{
+  "person_identity": {
+    "canonical_name": "Otto D. Proudfoot",
+    "name_variations": [
+      {
+        "name": "Ott Proudfoot",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-204801Proudfood098.jpg.json"
+        ]
+      },
+      {
+        "name": "Otto S. Proudfoot",
+        "confidence": "low",
+        "sources": [
+          "RDApp-204801Proudfood091.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "204801",
+    "birth_year": 1895,
+    "confidence_notes": "Name variations exist but 'Otto D. Proudfoot' appears most consistently."
+  },
+  "biographical_narrative": "Otto D. Proudfoot began his career with the Baltimore & Ohio Railroad in early 1907 as a Fireman, progressing to an Engineer position by at least 1912. His tenure was marked by several health-related incidents and administrative actions. In March 1912, he faced dismissal due to an accident involving a helper engine but was subsequently reinstated after management review. Proudfoot experienced multiple episodes of disablement, including gastroenteritis in April 1947 that required hospitalization under Dr. C.E. Durrett's care. His career spanned several decades with the railroad, and he maintained his position until at least April 30, 1944, when a final notice of disablement was issued, likely preceding his death in May 1947.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "130 Seymour St., Cumberland, Md",
+      "date_range": "unknown",
+      "context": "Residence address on medical examiner's report of disablement",
+      "sources": [
+        "RDApp-204801Proudfood093.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1907-02-08",
+      "event_type": "application/examination",
+      "position": "Fireman",
+      "department": null,
+      "division": "Arcade",
+      "details": "Vision and hearing examination as Fireman.",
+      "sources": [
+        "RDApp-204801Proudfood100.jpg.json"
+      ]
+    },
+    {
+      "date": "1911-02-25",
+      "event_type": "application/examination",
+      "position": "Engineer",
+      "department": null,
+      "division": "Comm",
+      "details": "Vision and hearing examination as Engineer.",
+      "sources": [
+        "RDApp-204801Proudfood097.jpg.json"
+      ]
+    },
+    {
+      "date": "1912-03-04",
+      "event_type": "reinstatement",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Reinstated after dismissal due to an accident involving a helper engine.",
+      "sources": [
+        "RDApp-204801Proudfood094.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-05-09",
+      "event_type": "disablement",
+      "position": "Engineer",
+      "department": null,
+      "division": null,
+      "details": "Disabled due to gastroenteritis.",
+      "sources": [
+        "RDApp-204801Proudfood093.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1947-05-09",
+      "injury_type": "Gastroenteritis",
+      "body_part": null,
+      "narrative": "Otto D. Proudfoot was disabled due to gastroenteritis, which required hospitalization and treatment under Dr. C.E. Durrett.",
+      "medical_examinations": [
+        {
+          "date": "1947-05-09",
+          "examiner": "Dr. C.E. Durrett",
+          "finding": "disabled",
+          "notes": "Gastroenteritis, probable duration 7 days.",
+          "sources": [
+            "RDApp-204801Proudfood093.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": null,
+        "resolution": null
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "J. A. Doerner, M.D.",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1907-02-08",
+          "finding": "Vision and hearing acuity good"
+        },
+        {
+          "date": "1911-02-25",
+          "finding": "Vision and hearing acuity good"
+        }
+      ]
+    },
+    {
+      "name": "Dr. C.E. Durrett",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1947-05-09",
+          "finding": "Disabled due to gastroenteritis"
+        }
+      ]
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1912-03-04",
+      "event": "Reinstatement after dismissal",
+      "significance": "Shows management's decision to reinstate an employee following a serious incident.",
+      "sources": [
+        "RDApp-204801Proudfood094.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-05-09",
+      "event": "Medical examination for disablement due to gastroenteritis",
+      "significance": "Reflects the process of medical evaluation and disability determination.",
+      "sources": [
+        "RDApp-204801Proudfood093.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1907-02-08",
+      "latest": "1947-05-09"
+    },
+    "completeness_assessment": "The record is relatively complete, covering employment history and medical examinations. However, there are gaps in the documentation of family details and full career progression.",
+    "data_quality_notes": [
+      "Some documents have OCR errors or missing information.",
+      "Name variations exist but do not significantly impact identity resolution."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "The case highlights the medical support systems in place for railroad employees and the process of reinstatement following an accident.",
+      "It also reveals the health challenges faced by engineers, such as gastroenteritis, which could lead to significant periods of disablement."
+    ],
+    "comparative_questions": [
+      "How did other railroads handle similar medical cases?",
+      "What were the typical durations and types of injuries that led to disability among railroad workers?"
+    ],
+    "research_value": "High"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}

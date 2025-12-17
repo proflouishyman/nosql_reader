@@ -1,0 +1,193 @@
+{
+  "person_identity": {
+    "canonical_name": "Claude Roenbaugh",
+    "name_variations": [
+      {
+        "name": "Claude Hoenbaug",
+        "confidence": "medium",
+        "sources": [
+          "RDApp-221988Roenbaugh061.jpg.json"
+        ]
+      },
+      {
+        "name": "Claude Rosenbaugh",
+        "confidence": "high",
+        "sources": [
+          "RDApp-221988Roenbaugh063.jpg.json",
+          "RDApp-221988Roenbaugh064.jpg.json",
+          "RDApp-221988Roenbaugh065.jpg.json"
+        ]
+      }
+    ],
+    "employee_id": "221988",
+    "birth_year": 1895,
+    "confidence_notes": "Identity is consistent across most documents, with only minor variations in spelling."
+  },
+  "biographical_narrative": "Claude Roenbaugh was an engineer for the Baltimore & Ohio Railroad Company. His career spanned several decades and included multiple instances of disability due to sickness or injury. Roenbaugh's medical history includes mild anxiety neurosis, which led to his temporary disablement in late May 1947. He also experienced a hernia injury on duty that began affecting him from May 19, 1947. Despite these health issues, he was able to return to work after periods of recovery and medical clearance. Roenbaugh's residence is recorded as 531 W. 27th Street in Lorain, Ohio.",
+  "family": {
+    "spouse": null,
+    "parents": [],
+    "children": []
+  },
+  "addresses": [
+    {
+      "address": "531 W. 27th St., Lorain, Ohio",
+      "date_range": "unknown",
+      "context": "Residence address",
+      "sources": [
+        "RDApp-221988Roenbaugh064.jpg.json",
+        "RDApp-221988Roenbaugh065.jpg.json"
+      ]
+    }
+  ],
+  "employment_timeline": [
+    {
+      "date": "1947-05-31",
+      "event_type": "disablement",
+      "position": "Engineer",
+      "department": "CT",
+      "division": null,
+      "details": "Claude Roenbaugh was reported disabled due to sickness, beginning on May 31, 1947.",
+      "sources": [
+        "RDApp-221988Roenbaugh065.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-06-30",
+      "event_type": "return to duty",
+      "position": null,
+      "department": null,
+      "division": null,
+      "details": "Claude Roenbaugh resumed his duties after a period of disablement.",
+      "sources": [
+        "RDApp-221988Roenbaugh066.jpg.json"
+      ]
+    }
+  ],
+  "injury_history": [
+    {
+      "injury_date": "1947-05-31",
+      "injury_type": "Sickness",
+      "body_part": null,
+      "narrative": "Claude Roenbaugh was disabled due to sickness from May 31, 1947, until June 28, 1947. He experienced mild anxiety neurosis and resumed his duties on June 30, 1947.",
+      "medical_examinations": [
+        {
+          "date": "1947-06-20",
+          "examiner": "Jno. M. Sayler",
+          "finding": "disabled",
+          "notes": "Mild anxiety neurosis of indefinite duration",
+          "sources": [
+            "RDApp-221988Roenbaugh065.jpg.json",
+            "RDApp-221988Roenbaugh066.jpg.json"
+          ]
+        }
+      ],
+      "payments": [
+        {
+          "period": {
+            "start": "1947-05-31",
+            "end": "1947-06-19"
+          },
+          "days": 20,
+          "amount": null,
+          "check_number": null,
+          "sources": [
+            "RDApp-221988Roenbaugh065.jpg.json"
+          ]
+        }
+      ],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    },
+    {
+      "injury_date": "1947-05-19",
+      "injury_type": "Hernia",
+      "body_part": "Abdomen",
+      "narrative": "Claude Roenbaugh was injured on duty due to a hernia that began affecting him from May 19, 1947. The injury led to his disablement and subsequent medical examination.",
+      "medical_examinations": [
+        {
+          "date": null,
+          "examiner": null,
+          "finding": null,
+          "notes": "",
+          "sources": [
+            "RDApp-221988Roenbaugh068.jpg.json"
+          ]
+        }
+      ],
+      "payments": [],
+      "medical_dispute": {
+        "disputed": false,
+        "narrative": "",
+        "resolution": ""
+      }
+    }
+  ],
+  "medical_examiners": [
+    {
+      "name": "Jno. M. Sayler",
+      "district": null,
+      "examinations": [
+        {
+          "date": "1947-06-20",
+          "finding": "disabled due to mild anxiety neurosis"
+        }
+      ]
+    },
+    {
+      "name": "Dr. P.L. Smith",
+      "district": null,
+      "examinations": []
+    }
+  ],
+  "administrative_events": [
+    {
+      "date": "1947-06-26",
+      "event": "Certification of disablement due to sickness from May 31, 1947, to June 19, 1947.",
+      "significance": "This event marked a significant period during which Roenbaugh was unable to work and required medical attention.",
+      "sources": [
+        "RDApp-221988Roenbaugh065.jpg.json"
+      ]
+    },
+    {
+      "date": "1947-07-02",
+      "event": "Last claim sent to Division Headquarters regarding Roenbaugh's disablement.",
+      "significance": "This event indicates the conclusion of administrative processes related to his disability period.",
+      "sources": [
+        "RDApp-221988Roenbaugh066.jpg.json"
+      ]
+    }
+  ],
+  "document_analysis": {
+    "total_documents": 10,
+    "date_range": {
+      "earliest": "1939",
+      "latest": "1947"
+    },
+    "completeness_assessment": "The record is fairly complete, detailing Roenbaugh's disablement periods and medical examinations. However, there are some inconsistencies in name spelling and lack of information on family or full employment history.",
+    "data_quality_notes": [
+      "Name variations exist across documents (e.g., Hoenbaug vs. Rosenbaugh).",
+      "Some documents contain truncated text due to OCR limitations."
+    ]
+  },
+  "historical_significance": {
+    "key_insights": [
+      "This case reveals the challenges faced by railroad employees in terms of health and safety, as well as the administrative processes for handling disability claims.",
+      "The medical practices at the time are evident through the documentation of examinations and treatments."
+    ],
+    "comparative_questions": [
+      "How did the Baltimore & Ohio Railroad Company's policies on employee disablement compare to other railroads during this period?",
+      "What were the common health issues faced by railroad engineers in the early 20th century?"
+    ],
+    "research_value": "Medium"
+  },
+  "confidence_scores": {
+    "identity_resolution": 0.95,
+    "employment_timeline": 0.85,
+    "injury_details": 0.9,
+    "overall": 0.88
+  }
+}
