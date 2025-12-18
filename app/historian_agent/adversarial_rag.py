@@ -1,74 +1,101 @@
 #!/usr/bin/env python3
-import sys
-import os
-import time
+import sys, os, time
 from rag_query_handler import RAGQueryHandler
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# --- Debug Configuration ---
 DEBUG = os.environ.get("DEBUG_MODE", "0") == "1"
+TOKEN_WARNING_THRESHOLD = 50000  # Alert if context exceeds this
 
-def debug_step(step: str, detail: str = ""):
-    if DEBUG:
-        sys.stderr.write(f"🚀 [PIPELINE] STEP {step}: {detail}\n")
-        sys.stderr.flush()
+def debug_step(step_name: str, detail: str = "", icon: str = "⚡", level: str = "INFO"):
+    """Formatted pipeline tracer."""
+    if not DEBUG:
+        return
+    timestamp = time.strftime("%H:%M:%S")
+    color_icon = "⚠️" if level == "WARN" else "❌" if level == "ERROR" else icon
+    
+    sys.stderr.write(f"{color_icon} [{timestamp}] [PIPELINE] {step_name.upper()}\n")
+    if detail:
+        sys.stderr.write(f"   └─ {detail}\n")
+    sys.stderr.flush()
 
 class AdversarialRAGHandler:
     def __init__(self):
-        debug_step("1/3", "Initializing Core Handler...")
-        self.rag_handler = RAGQueryHandler()
-        # We import here to keep the main scope clean
-        from reranking import DocumentReranker
-        self.reranker = DocumentReranker()
+        debug_step("Initialization", "Spinning up Centralized RAG Handler...", icon="🏗️")
+        start_time = time.time()
+        
+        try:
+            self.rag_handler = RAGQueryHandler()
+            debug_step("Init Complete", f"Sub-handler ready in {time.time() - start_time:.2f}s", icon="✅")
+        except Exception as e:
+            debug_step("Init Failed", str(e), level="ERROR")
+            raise
 
     def process_query(self, question: str):
         pipeline_start = time.time()
         
-        debug_step("2/3", "Starting Reranking Pass...")
-        t_start = time.time()
+        debug_step("Query Received", f"Input: {question[:100]}...", icon="📥")
         
-        # Initial retrieval
-        raw_docs = self.rag_handler.hybrid_retriever.get_relevant_documents(question)
-        # Apply reranker
-        top_docs = self.reranker.rerank(question, raw_docs, top_k=10)
+        # We wrap the call to the underlying handler to capture its metrics for our pipeline log
+        debug_step("Dispatching", "Routing to RAGQueryHandler.process_query...", icon="🛰️")
         
-        debug_step("2/3", f"Reranking complete in {time.time() - t_start:.2f}s")
+        ans, metrics = self.rag_handler.process_query(
+            question, 
+            context="", 
+            label="ONE_SHOT_ADVERSARIAL"
+        )
+        
+        # Check for the token bloat issue we discussed
+        total_tokens = metrics.get('tokens', 0)
+        if total_tokens > TOKEN_WARNING_THRESHOLD:
+            debug_step("Token Alert", 
+                       f"Payload is {total_tokens} tokens! This will likely cause latency or context overflow.", 
+                       level="WARN")
 
-        debug_step("3/3", "Executing Final Answer Generation...")
-        ans, sources, base_lat = self.rag_handler.process_query(question)
-        
         total_lat = time.time() - pipeline_start
-        return ans, sources, total_lat
+        
+        debug_step("Pipeline Finished", 
+                   f"Latency: {total_lat:.2f}s | Retrieval: {metrics.get('retrieval_time', 0):.2f}s | LLM: {metrics.get('llm_time', 0):.2f}s", 
+                   icon="🏁")
+        
+        return ans, total_lat, metrics.get('sources', {})
 
     def close(self):
-        """Cleanly close database connections."""
-        if hasattr(self, 'rag_handler') and self.rag_handler:
+        if hasattr(self, 'rag_handler'):
+            debug_step("Shutdown", "Closing MongoDB connections via sub-handler...", icon="🔌")
             self.rag_handler.close()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit("Usage: python adversarial_rag.py 'question'")
     
+    # Enable debug by default for this execution if you want to see the verbose output
+    DEBUG = True
+    
     handler = AdversarialRAGHandler()
     try:
-        ans, src, lat = handler.process_query(sys.argv[1])
+        query = sys.argv[1]
+        ans, lat, src = handler.process_query(query)
         
-        # Print the Answer
-        print(f"\nADVERSARIAL ANSWER ({lat:.2f}s):\n{ans}\n")
+        # Clean Output for the User
+        print("\n" + "═"*60)
+        print(f"🤖 ADVERSARIAL RESPONSE ({lat:.2f}s)")
+        print("─"*60)
+        print(ans)
+        print("═"*60)
         
-        # Print the Sources
-        print("SOURCES:")
-        unique_sources = {}
-        for s in src:
-            unique_sources[s['filename']] = s['id']
-        
-        # FIXED: Iterate through keys only to avoid the Tuple KeyError
-        for fname in sorted(unique_sources.keys()):
-            doc_id = unique_sources[fname]
-            print(f"{fname}\t{doc_id}")
-            
+        if src:
+            print("\n📂 DATA SOURCES:")
+            for fname, d_id in sorted(src.items()):
+                print(f" • {fname.ljust(35)} [{d_id}]")
+        print("\n")
+
     except Exception as e:
-        sys.stderr.write(f"❌ ERROR: {str(e)}\n")
+        debug_step("Pipeline Crash", f"Fatal error during execution: {str(e)}", level="ERROR")
+        if DEBUG:
+            import traceback
+            traceback.print_exc()
     finally:
         handler.close()

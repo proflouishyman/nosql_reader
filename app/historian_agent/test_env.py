@@ -22,7 +22,7 @@ ENV_VARS = {
     "HISTORIAN_AGENT_TEMPERATURE": "0.2",
 
     # 3. RAG & Retrieval Parameters
-    "HISTORIAN_AGENT_TOP_K": "100",
+    "HISTORIAN_AGENT_TOP_K": "50",
     "VECTOR_WEIGHT": "0.7",
     "KEYWORD_WEIGHT": "0.3",
     "HISTORIAN_AGENT_HYBRID_ALPHA": "0.5",
@@ -45,6 +45,13 @@ ENV_VARS = {
     "ARCHIVES_PATH": "/data/archives/",
     "RUN_BOOTSTRAP": "0",
     "OPENAI_API_KEY": "", # Add your key here if needed
+
+    # How many initial chunks to pull from the DB
+    "HISTORIAN_AGENT_TOP_K": "100",
+
+    # How many FULL documents to retrieve in Tier 2 expansion (Small-to-Big)
+    "PARENT_RETRIEVAL_CAP": "15",
+
 
     #6. Additional settings can be added here as needed
     "DEBUG_MODE": "1"  # Set to "0" for clean research reports
