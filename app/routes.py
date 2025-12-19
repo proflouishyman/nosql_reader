@@ -97,6 +97,495 @@ ARCHIVE_ALLOWED_EXTENSIONS = {'.json', '.jsonl'}
 ARCHIVE_LIST_LIMIT = 200
 
 
+"""
+Flask Routes for Three RAG Approaches
+======================================
+
+Add these routes to routes.py to support three different RAG query methods:
+1. Basic Query Handler - Direct RAG with hybrid retrieval
+2. Adversarial RAG - One-shot with monitoring
+3. Tiered Agent - Confidence-based escalation with Tier 1/Tier 2
+
+All routes maintain the same session/history pattern as existing historian_agent_query
+"""
+
+# ============================================================================
+# Add these imports at the top of routes.py
+# ============================================================================
+
+# Add to existing imports section:
+from historian_agent.adversarial_rag import AdversarialRAGHandler
+from historian_agent.iterative_adversarial_agent import TieredHistorianAgent
+from historian_agent.rag_query_handler import RAGQueryHandler
+
+# Global instances (initialized lazily)
+_rag_handler = None
+_adversarial_handler = None
+_tiered_agent = None
+
+def get_rag_handler():
+    """Lazy initialization of RAGQueryHandler"""
+    global _rag_handler
+    if _rag_handler is None:
+        _rag_handler = RAGQueryHandler()
+    return _rag_handler
+
+def get_adversarial_handler():
+    """Lazy initialization of AdversarialRAGHandler"""
+    global _adversarial_handler
+    if _adversarial_handler is None:
+        _adversarial_handler = AdversarialRAGHandler()
+    return _adversarial_handler
+
+def get_tiered_agent():
+    """Lazy initialization of TieredHistorianAgent"""
+    global _tiered_agent
+    if _tiered_agent is None:
+        _tiered_agent = TieredHistorianAgent()
+    return _tiered_agent
+
+
+# ============================================================================
+# ROUTE 1: Basic RAG Query Handler
+# ============================================================================
+
+@app.route('/historian-agent/query-basic', methods=['POST'])
+def historian_agent_query_basic():
+    """
+    Basic RAG query using direct hybrid retrieval.
+    
+    Features:
+    - Hybrid retrieval (vector + keyword)
+    - Direct LLM generation
+    - No confidence checking
+    - Fastest response time (~15-30s)
+    
+    Request Body:
+    {
+        "question": "What were typical wages?",
+        "conversation_id": "optional-uuid",
+        "refresh": false
+    }
+    
+    Response:
+    {
+        "conversation_id": "uuid",
+        "answer": "...",
+        "sources": {"filename": "doc_id", ...},
+        "metrics": {
+            "retrieval_time": 2.5,
+            "llm_time": 12.3,
+            "total_time": 14.8,
+            "tokens": 8500,
+            "doc_count": 5
+        },
+        "history": [...]
+    }
+    """
+    payload = request.get_json(silent=True) or {}
+    question = (payload.get('question') or '').strip()
+    conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
+    refresh_requested = _is_truthy(payload.get('refresh'))
+    
+    history_key = _historian_history_cache_key(conversation_id)
+    
+    if refresh_requested:
+        cache.delete(history_key)
+        if not question:
+            return jsonify({
+                'conversation_id': str(uuid.uuid4()),
+                'answer': '',
+                'sources': {},
+                'metrics': {},
+                'history': [],
+            })
+    
+    if not question:
+        return jsonify({'error': 'A question is required.'}), 400
+    
+    history = cache.get(history_key) or []
+    
+    try:
+        handler = get_rag_handler()
+        
+        # Process query - returns (answer, metrics_dict)
+        answer, metrics = handler.process_query(
+            question=question,
+            context="",
+            label="BASIC_RAG"
+        )
+        
+        # Update history
+        history.append({'role': 'user', 'content': question})
+        history.append({'role': 'assistant', 'content': answer})
+        if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
+            history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
+        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
+        
+        response_payload = {
+            'conversation_id': conversation_id,
+            'answer': answer,
+            'sources': metrics.get('sources', {}),
+            'metrics': {
+                'retrieval_time': metrics.get('retrieval_time', 0),
+                'llm_time': metrics.get('llm_time', 0),
+                'total_time': metrics.get('total_time', 0),
+                'tokens': metrics.get('tokens', 0),
+                'doc_count': metrics.get('doc_count', 0),
+            },
+            'history': history,
+            'method': 'basic'
+        }
+        return jsonify(response_payload)
+        
+    except Exception as exc:
+        app.logger.exception('Basic RAG query failed')
+        return jsonify({
+            'error': f'Basic RAG query failed: {str(exc)}'
+        }), 500
+
+
+# ============================================================================
+# ROUTE 2: Adversarial RAG (One-Shot with Monitoring)
+# ============================================================================
+
+@app.route('/historian-agent/query-adversarial', methods=['POST'])
+def historian_agent_query_adversarial():
+    """
+    Adversarial RAG query with enhanced monitoring.
+    
+    Features:
+    - Same as basic but with detailed pipeline monitoring
+    - Token warning alerts
+    - Debug event logging
+    - Response time ~15-30s
+    
+    Request Body:
+    {
+        "question": "What were typical wages?",
+        "conversation_id": "optional-uuid",
+        "refresh": false
+    }
+    
+    Response:
+    {
+        "conversation_id": "uuid",
+        "answer": "...",
+        "sources": {"filename": "doc_id", ...},
+        "latency": 14.8,
+        "history": [...]
+    }
+    """
+    payload = request.get_json(silent=True) or {}
+    question = (payload.get('question') or '').strip()
+    conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
+    refresh_requested = _is_truthy(payload.get('refresh'))
+    
+    history_key = _historian_history_cache_key(conversation_id)
+    
+    if refresh_requested:
+        cache.delete(history_key)
+        if not question:
+            return jsonify({
+                'conversation_id': str(uuid.uuid4()),
+                'answer': '',
+                'sources': {},
+                'latency': 0,
+                'history': [],
+            })
+    
+    if not question:
+        return jsonify({'error': 'A question is required.'}), 400
+    
+    history = cache.get(history_key) or []
+    
+    try:
+        handler = get_adversarial_handler()
+        
+        # Process query - returns (answer, latency, sources)
+        answer, latency, sources = handler.process_query(question)
+        
+        # Update history
+        history.append({'role': 'user', 'content': question})
+        history.append({'role': 'assistant', 'content': answer})
+        if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
+            history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
+        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
+        
+        response_payload = {
+            'conversation_id': conversation_id,
+            'answer': answer,
+            'sources': sources,
+            'latency': latency,
+            'history': history,
+            'method': 'adversarial'
+        }
+        return jsonify(response_payload)
+        
+    except Exception as exc:
+        app.logger.exception('Adversarial RAG query failed')
+        return jsonify({
+            'error': f'Adversarial RAG query failed: {str(exc)}'
+        }), 500
+
+
+# ============================================================================
+# ROUTE 3: Tiered Agent (Confidence-Based Escalation)
+# ============================================================================
+
+@app.route('/historian-agent/query-tiered', methods=['POST'])
+def historian_agent_query_tiered():
+    """
+    Advanced tiered RAG with confidence-based escalation.
+    
+    Features:
+    - Tier 1: Draft answer with hybrid retrieval
+    - Self-critique with confidence scoring
+    - Tier 2: Multi-query expansion + full document retrieval (if confidence < 0.85)
+    - Highest quality but slower (~40-60s for Tier 2)
+    
+    Request Body:
+    {
+        "question": "What were typical wages?",
+        "conversation_id": "optional-uuid",
+        "refresh": false
+    }
+    
+    Response:
+    {
+        "conversation_id": "uuid",
+        "answer": "...",
+        "sources": {"filename": "doc_id", ...},
+        "metrics": [
+            {
+                "stage": "Tier 1: Broad Pass",
+                "total_time": 12.5,
+                "tokens": 8500,
+                "doc_count": 5,
+                "retrieval_time": 2.1,
+                "llm_time": 10.4
+            },
+            {
+                "stage": "Critique Phase",
+                "total_time": 8.2,
+                ...
+            },
+            {
+                "stage": "Tier 2: Deep Dive",  // Only if escalated
+                "total_time": 35.7,
+                ...
+            }
+        ],
+        "total_duration": 56.4,
+        "escalated": true,  // Whether Tier 2 was triggered
+        "history": [...]
+    }
+    """
+    payload = request.get_json(silent=True) or {}
+    question = (payload.get('question') or '').strip()
+    conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
+    refresh_requested = _is_truthy(payload.get('refresh'))
+    
+    history_key = _historian_history_cache_key(conversation_id)
+    
+    if refresh_requested:
+        cache.delete(history_key)
+        if not question:
+            return jsonify({
+                'conversation_id': str(uuid.uuid4()),
+                'answer': '',
+                'sources': {},
+                'metrics': [],
+                'total_duration': 0,
+                'escalated': False,
+                'history': [],
+            })
+    
+    if not question:
+        return jsonify({'error': 'A question is required.'}), 400
+    
+    history = cache.get(history_key) or []
+    
+    try:
+        agent = get_tiered_agent()
+        
+        # Process query - returns (answer, sources, metrics, duration)
+        answer, sources, metrics, duration = agent.investigate(question)
+        
+        # Determine if Tier 2 was triggered
+        escalated = len(metrics) > 2  # More than just Tier 1 + Critique
+        
+        # Update history
+        history.append({'role': 'user', 'content': question})
+        history.append({'role': 'assistant', 'content': answer})
+        if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
+            history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
+        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
+        
+        response_payload = {
+            'conversation_id': conversation_id,
+            'answer': answer,
+            'sources': sources,
+            'metrics': metrics,
+            'total_duration': duration,
+            'escalated': escalated,
+            'history': history,
+            'method': 'tiered'
+        }
+        return jsonify(response_payload)
+        
+    except Exception as exc:
+        app.logger.exception('Tiered agent query failed')
+        return jsonify({
+            'error': f'Tiered agent query failed: {str(exc)}'
+        }), 500
+
+
+# ============================================================================
+# ROUTE 4: Method Comparison (Optional - for testing/debugging)
+# ============================================================================
+
+@app.route('/historian-agent/query-compare', methods=['POST'])
+def historian_agent_query_compare():
+    """
+    Run the same question through all three methods for comparison.
+    
+    WARNING: This is SLOW (runs 3 queries sequentially) - only for testing!
+    
+    Request Body:
+    {
+        "question": "What were typical wages?"
+    }
+    
+    Response:
+    {
+        "question": "...",
+        "results": {
+            "basic": { "answer": "...", "metrics": {...} },
+            "adversarial": { "answer": "...", "latency": 14.8 },
+            "tiered": { "answer": "...", "metrics": [...], "escalated": true }
+        },
+        "comparison": {
+            "fastest": "basic",
+            "slowest": "tiered",
+            "times": {
+                "basic": 14.8,
+                "adversarial": 15.2,
+                "tiered": 56.4
+            }
+        }
+    }
+    """
+    payload = request.get_json(silent=True) or {}
+    question = (payload.get('question') or '').strip()
+    
+    if not question:
+        return jsonify({'error': 'A question is required.'}), 400
+    
+    results = {}
+    times = {}
+    
+    # Method 1: Basic
+    try:
+        handler = get_rag_handler()
+        answer, metrics = handler.process_query(question, context="", label="COMPARE_BASIC")
+        results['basic'] = {
+            'answer': answer,
+            'metrics': metrics,
+            'sources': metrics.get('sources', {})
+        }
+        times['basic'] = metrics.get('total_time', 0)
+    except Exception as exc:
+        results['basic'] = {'error': str(exc)}
+        times['basic'] = 0
+    
+    # Method 2: Adversarial
+    try:
+        handler = get_adversarial_handler()
+        answer, latency, sources = handler.process_query(question)
+        results['adversarial'] = {
+            'answer': answer,
+            'latency': latency,
+            'sources': sources
+        }
+        times['adversarial'] = latency
+    except Exception as exc:
+        results['adversarial'] = {'error': str(exc)}
+        times['adversarial'] = 0
+    
+    # Method 3: Tiered
+    try:
+        agent = get_tiered_agent()
+        answer, sources, metrics, duration = agent.investigate(question)
+        results['tiered'] = {
+            'answer': answer,
+            'metrics': metrics,
+            'sources': sources,
+            'total_duration': duration,
+            'escalated': len(metrics) > 2
+        }
+        times['tiered'] = duration
+    except Exception as exc:
+        results['tiered'] = {'error': str(exc)}
+        times['tiered'] = 0
+    
+    # Comparison analysis
+    fastest = min(times, key=times.get) if times else None
+    slowest = max(times, key=times.get) if times else None
+    
+    response = {
+        'question': question,
+        'results': results,
+        'comparison': {
+            'fastest': fastest,
+            'slowest': slowest,
+            'times': times
+        }
+    }
+    
+    return jsonify(response)
+
+
+# ============================================================================
+# ROUTE 5: Reset All RAG Handlers (for cleanup)
+# ============================================================================
+
+@app.route('/historian-agent/reset-rag', methods=['POST'])
+def reset_rag_handlers():
+    """
+    Reset and reinitialize all RAG handlers.
+    Useful for applying configuration changes or recovering from errors.
+    """
+    global _rag_handler, _adversarial_handler, _tiered_agent
+    
+    try:
+        # Close existing connections
+        if _rag_handler:
+            _rag_handler.close()
+        if _adversarial_handler:
+            _adversarial_handler.close()
+        if _tiered_agent and hasattr(_tiered_agent, 'handler'):
+            _tiered_agent.handler.close()
+        
+        # Reset globals
+        _rag_handler = None
+        _adversarial_handler = None
+        _tiered_agent = None
+        
+        return jsonify({
+            'message': 'All RAG handlers reset successfully',
+            'status': 'success'
+        })
+    
+    except Exception as exc:
+        app.logger.exception('Failed to reset RAG handlers')
+        return jsonify({
+            'error': f'Reset failed: {str(exc)}',
+            'status': 'error'
+        }), 500
+
+
+
 def _archives_root() -> Path:
     """Return the archive root directory, creating it if necessary."""
 

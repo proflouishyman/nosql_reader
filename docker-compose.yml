@@ -1,6 +1,5 @@
 version: "3.9"
 
-
 services:
   mongodb:
     image: mongo:6.0
@@ -48,46 +47,56 @@ services:
     container_name: nosql_reader_app
     env_file: .env
     environment:
-      FLASK_APP: main.py  # Point Flask CLI to renamed main module
-      # Provide the canonical URI so the entrypoint can expose MONGO_URI to the app.
+      FLASK_APP: main.py
+      # --- Critical LLM Mappings ---
+      # This ensures your Python scripts see the model defined in your .env
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:32b}
+      HISTORIAN_AGENT_MODEL: ${HISTORIAN_AGENT_MODEL:-qwen2.5:32b}
+      
+      # --- Database & Storage ---
       APP_MONGO_URI: ${APP_MONGO_URI}
+      DB_NAME: ${DB_NAME:-railroad_documents}
       ARCHIVES_PATH: ${ARCHIVES_PATH:-/data/archives}
       SESSION_FILE_DIR: ${SESSION_PATH:-/app/flask_session}
+      
+      # --- Retrieval & RAG Logic ---
+      DEBUG_MODE: ${DEBUG_MODE:-1}
       HISTORIAN_AGENT_ENABLED: ${HISTORIAN_AGENT_ENABLED:-1}
       HISTORIAN_AGENT_MODEL_PROVIDER: ${HISTORIAN_AGENT_MODEL_PROVIDER:-ollama}
-      HISTORIAN_AGENT_MODEL: ${HISTORIAN_AGENT_MODEL:-llama3}
+      HISTORIAN_AGENT_TOP_K: ${HISTORIAN_AGENT_TOP_K:-25}
       HISTORIAN_AGENT_TEMPERATURE: ${HISTORIAN_AGENT_TEMPERATURE:-0.2}
       HISTORIAN_AGENT_CONTEXT_K: ${HISTORIAN_AGENT_CONTEXT_K:-4}
       HISTORIAN_AGENT_CONTEXT_FIELDS: ${HISTORIAN_AGENT_CONTEXT_FIELDS:-title,content}
       HISTORIAN_AGENT_SUMMARY_FIELD: ${HISTORIAN_AGENT_SUMMARY_FIELD:-content}
       HISTORIAN_AGENT_FALLBACK: ${HISTORIAN_AGENT_FALLBACK:-1}
-      # Added vector retrieval feature flags to keep container config in sync.  # change rationale comment
-      HISTORIAN_AGENT_USE_VECTOR_RETRIEVAL: ${HISTORIAN_AGENT_USE_VECTOR_RETRIEVAL:-false}
-      HISTORIAN_AGENT_EMBEDDING_PROVIDER: ${HISTORIAN_AGENT_EMBEDDING_PROVIDER:-local}
-      HISTORIAN_AGENT_EMBEDDING_MODEL: ${HISTORIAN_AGENT_EMBEDDING_MODEL:-all-MiniLM-L6-v2}
+      HISTORIAN_AGENT_USE_VECTOR_RETRIEVAL: ${HISTORIAN_AGENT_USE_VECTOR_RETRIEVAL:-true}
+      HISTORIAN_AGENT_EMBEDDING_PROVIDER: ${HISTORIAN_AGENT_EMBEDDING_PROVIDER:-ollama}
+      HISTORIAN_AGENT_EMBEDDING_MODEL: ${HISTORIAN_AGENT_EMBEDDING_MODEL:-qwen3-embedding:0.6b}
       HISTORIAN_AGENT_CHUNK_SIZE: ${HISTORIAN_AGENT_CHUNK_SIZE:-1000}
       HISTORIAN_AGENT_CHUNK_OVERLAP: ${HISTORIAN_AGENT_CHUNK_OVERLAP:-200}
       HISTORIAN_AGENT_VECTOR_STORE: ${HISTORIAN_AGENT_VECTOR_STORE:-chroma}
-      CHROMA_PERSIST_DIRECTORY: ${CHROMA_PERSIST_DIRECTORY:-/home/claude/chroma_db}
       HISTORIAN_AGENT_HYBRID_ALPHA: ${HISTORIAN_AGENT_HYBRID_ALPHA:-0.5}
+      
+      # --- External Services ---
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      
+      # --- Agentic Logic ---
+      PARENT_RETRIEVAL_CAP: ${PARENT_RETRIEVAL_CAP:-15}
+      CHROMA_PERSIST_DIRECTORY: ${CHROMA_PERSIST_DIRECTORY:-/data/chroma_db}
+      
     ports:
       - "5001:5000"
-      # Expose Flask app on port 5001 to avoid conflicts with other services.
     volumes:
       - type: bind
         source: ./app
         target: /app
-        # For development, we want read-write access to the app code.
-        # In production, consider making this read-only for security.
       - type: bind
         source: ${ARCHIVES_HOST_PATH:-../archives/}
         target: ${ARCHIVES_PATH:-/data/archives/}
       - type: bind
         source: ${SESSION_HOST_PATH:-../flask_session}
         target: ${SESSION_PATH:-/app/flask_session}
-      # Added Chroma persistence volume for vector database durability.  # change rationale comment
       - type: bind
         source: ${CHROMA_HOST_PATH:-../chroma_db}
         target: ${CHROMA_PERSIST_DIRECTORY:-/data/chroma_db}
