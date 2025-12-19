@@ -40,36 +40,29 @@
         let conversationId = null;
         let isSubmitting = false;
 
-        // Method descriptions
         const METHOD_HINTS = {
             'basic': 'Fast hybrid retrieval with direct LLM generation (~15-30s)',
             'adversarial': 'Same as Good but with detailed pipeline monitoring (~15-30s)',
             'tiered': 'Best quality with confidence-based escalation (~20-60s)'
         };
 
-        // Update hint when method changes
         if (methodSelect && methodHint) {
             methodSelect.addEventListener('change', function() {
                 methodHint.textContent = METHOD_HINTS[methodSelect.value] || '';
             });
         }
 
-        // Debug console functions
         function debugLog(message, type = 'info') {
             if (!debugOutput) return;
-            
             const timestamp = new Date().toLocaleTimeString();
             const entry = document.createElement('div');
             entry.className = `agent-debug-entry agent-debug-entry--${type}`;
-            
             const timeEl = document.createElement('span');
             timeEl.className = 'agent-debug-time';
             timeEl.textContent = `[${timestamp}]`;
-            
             const msgEl = document.createElement('span');
             msgEl.className = 'agent-debug-message';
             msgEl.textContent = message;
-            
             entry.appendChild(timeEl);
             entry.appendChild(msgEl);
             debugOutput.appendChild(entry);
@@ -77,62 +70,63 @@
         }
 
         function clearDebugLog() {
-            if (debugOutput) {
-                debugOutput.innerHTML = '';
-            }
+            if (debugOutput) debugOutput.innerHTML = '';
         }
 
         if (debugClear) {
             debugClear.addEventListener('click', clearDebugLog);
         }
 
-        // historian_agent.js - Updated displayMetrics function
-        function displayMetrics(data, method) {
-            if (!metricsContainer || !metricsGrid) return;
+        /**
+         * Unified Display Metrics Function (Crash Fix)
+         * Standardized to use data.metrics.total_time and ignore undefined latency.
+         */
+        function displayMetrics(data) {
+            if (!metricsContainer || !metricsGrid || !data.metrics) return;
             
             metricsGrid.innerHTML = '';
             metricsContainer.hidden = false;
 
-            // 1. Handle Tiered (data.metrics is an Array)
-            if (method === 'tiered' && Array.isArray(data.metrics)) {
-                const escalated = data.escalated ? 'Yes (Tier 2 triggered)' : 'No (Tier 1 sufficient)';
-                addMetric('Escalated', escalated, data.escalated ? 'warning' : 'success');
-                addMetric('Total Duration', `${(data.total_duration || 0).toFixed(1)}s`, 'primary');
+            // 1. Standard "High-Level" Metrics (Safe Fallbacks)
+            const totalTime = data.metrics.total_time || 0;
+            const totalTokens = data.metrics.tokens || 0;
+            const docCount = data.metrics.doc_count || 0;
+
+            addMetric('Total Duration', `${totalTime.toFixed(1)}s`, 'primary');
+            
+            if (totalTokens > 0) {
+                addMetric('Context Tokens', totalTokens.toLocaleString(), 'info');
+            }
+            
+            addMetric('Sources Cited', docCount, 'info');
+
+            // 2. Method-Specific Detail Logic
+            if (data.method === 'tiered' && data.metrics.stages) {
+                const escalated = data.metrics.escalated ? 'Yes (Tier 2 Triggered)' : 'No (Tier 1 Sufficient)';
+                addMetric('Escalation', escalated, data.metrics.escalated ? 'warning' : 'success');
                 
-                data.metrics.forEach(stage => {
-                    addMetric(
-                        stage.stage,
-                        `${(stage.total_time || 0).toFixed(1)}s (${(stage.tokens || 0).toLocaleString()} tokens)`,
-                        'info'
-                    );
+                data.metrics.stages.forEach(stage => {
+                    addMetric(`├─ ${stage.stage}`, `${(stage.total_time || 0).toFixed(1)}s`, 'info');
                 });
-                
-            // 2. Handle Adversarial (data.latency is a float)
-            } else if (method === 'adversarial') {
-                addMetric('Total Latency', `${(data.latency || 0).toFixed(1)}s`, 'primary');
-                addMetric('Sources Used', Object.keys(data.sources || {}).length, 'info');
-                
-            // 3. Handle Basic (data.metrics is an Object)
-            } else if (method === 'basic' && data.metrics) {
-                addMetric('Total Time', `${(data.metrics.total_time || 0).toFixed(1)}s`, 'primary');
-                addMetric('Retrieval', `${(data.metrics.retrieval_time || 0).toFixed(1)}s`, 'info');
-                addMetric('LLM Generation', `${(data.metrics.llm_time || 0).toFixed(1)}s`, 'info');
-                addMetric('Context Tokens', (data.metrics.tokens || 0).toLocaleString(), 'info');
+            } else if (data.method === 'basic' || data.method === 'adversarial') {
+                if (data.metrics.retrieval_time) {
+                    addMetric('Retrieval Time', `${data.metrics.retrieval_time.toFixed(2)}s`, 'info');
+                }
+                if (data.metrics.llm_time) {
+                    addMetric('LLM Time', `${data.metrics.llm_time.toFixed(2)}s`, 'info');
+                }
             }
         }
 
         function addMetric(label, value, type = 'info') {
             const metric = document.createElement('div');
             metric.className = `agent-metric agent-metric--${type}`;
-            
             const labelEl = document.createElement('span');
             labelEl.className = 'agent-metric__label';
             labelEl.textContent = label;
-            
             const valueEl = document.createElement('span');
             valueEl.className = 'agent-metric__value';
             valueEl.textContent = value;
-            
             metric.appendChild(labelEl);
             metric.appendChild(valueEl);
             metricsGrid.appendChild(metric);
@@ -156,7 +150,6 @@
             const bubble = document.createElement('div');
             bubble.className = 'agent-message__bubble';
             
-            // Render markdown for assistant messages
             if (role === 'assistant' && typeof marked !== 'undefined') {
                 bubble.innerHTML = marked.parse(content);
             } else {
@@ -165,17 +158,14 @@
             
             wrapper.appendChild(bubble);
 
-            // Display sources as clickable document links
             if (role === 'assistant' && sources && typeof sources === 'object' && Object.keys(sources).length > 0) {
                 sourcesContainer.hidden = false;
                 sourcesList.innerHTML = '';
                 
-                // sources is {"filename": "doc_id", ...}
                 Object.entries(sources).forEach(([filename, docId]) => {
                     const item = document.createElement('li');
                     const link = document.createElement('a');
                     
-                    // Create link with search_id for prev/next navigation
                     if (searchId) {
                         link.href = `/document/${docId}?search_id=${searchId}`;
                     } else {
@@ -184,7 +174,6 @@
                     link.target = '_blank';
                     link.rel = 'noopener noreferrer';
                     
-                    // Display filename without .json extension
                     const displayName = filename.replace(/\.json$/i, '');
                     link.textContent = displayName;
                     
@@ -199,9 +188,7 @@
 
         function resetConversation() {
             if (historyContainer) historyContainer.innerHTML = '';
-            if (sourcesContainer) {
-                sourcesContainer.hidden = true;
-            }
+            if (sourcesContainer) sourcesContainer.hidden = true;
             if (sourcesList) sourcesList.innerHTML = '';
             if (metricsContainer) metricsContainer.hidden = true;
             clearDebugLog();
@@ -211,12 +198,11 @@
             if (!historyContainer) return;
             historyContainer.innerHTML = '';
             history.forEach(item => {
-                // History items don't have search_id, so sources won't have prev/next
+                // Pass sources stored in history so links persist on reload
                 appendMessage(item.role, item.content, item.sources || {}, null);
             });
         }
 
-        // Submit question with method selection
         async function submitQuestion(payload) {
             if (!form || !agentPanel) return;
 
@@ -231,13 +217,11 @@
             
             try {
                 const startTime = performance.now();
-                
                 debugLog('Sending request to backend...', 'info');
+                
                 const response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
                 });
                 
@@ -251,21 +235,11 @@
                 debugLog(`✓ Response received in ${elapsedTime}s`, 'success');
                 debugLog(`Method used: ${data.method || method}`, 'info');
                 
-                // Log method-specific details
+                // Logging logic (kept for console clarity)
                 if (method === 'tiered') {
-                    debugLog(`Escalated to Tier 2: ${data.escalated ? 'YES' : 'NO'}`, data.escalated ? 'warning' : 'success');
-                    debugLog(`Total stages: ${data.metrics ? data.metrics.length : 0}`, 'info');
-                    if (data.metrics) {
-                        data.metrics.forEach((stage, idx) => {
-                            debugLog(`  Stage ${idx + 1}: ${stage.stage} (${stage.total_time.toFixed(1)}s, ${stage.tokens} tokens)`, 'info');
-                        });
-                    }
-                } else if (method === 'adversarial') {
-                    debugLog(`Latency: ${data.latency.toFixed(1)}s`, 'info');
-                } else if (method === 'basic') {
-                    debugLog(`Retrieval: ${data.metrics.retrieval_time.toFixed(1)}s`, 'info');
-                    debugLog(`LLM: ${data.metrics.llm_time.toFixed(1)}s`, 'info');
-                    debugLog(`Tokens: ${data.metrics.tokens}`, 'info');
+                    debugLog(`Escalated to Tier 2: ${data.metrics.escalated ? 'YES' : 'NO'}`, data.metrics.escalated ? 'warning' : 'success');
+                } else if (method === 'basic' || method === 'adversarial') {
+                    debugLog(`Total Time: ${data.metrics.total_time.toFixed(1)}s`, 'info');
                 }
                 
                 debugLog(`Sources found: ${Object.keys(data.sources || {}).length}`, 'info');
@@ -277,14 +251,13 @@
                     appendMessage('assistant', data.answer, data.sources || {}, data.search_id);
                 }
                 
-                // Display metrics
-                displayMetrics(data, method);
+                // Call displayMetrics without the second arg now that logic is unified
+                displayMetrics(data);
                 
                 if (questionInput) {
                     questionInput.value = '';
                     questionInput.focus();
                 }
-                
                 debugLog('=== Query complete ===', 'success');
                 
             } catch (error) {

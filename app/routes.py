@@ -108,12 +108,10 @@ Add these routes to routes.py to support three different RAG query methods:
 
 All routes maintain the same session/history pattern as existing historian_agent_query
 """
-
 # ============================================================================
-# Add these imports at the top of routes.py
+# AGENT HANDLER IMPORTS
 # ============================================================================
 
-# Add to existing imports section:
 from historian_agent.adversarial_rag import AdversarialRAGHandler
 from historian_agent.iterative_adversarial_agent import TieredHistorianAgent
 from historian_agent.rag_query_handler import RAGQueryHandler
@@ -145,7 +143,7 @@ def get_tiered_agent():
     return _tiered_agent
 
 # ============================================================================
-# UPDATED: Basic RAG Query Handler (with search_id for source navigation)
+# UPDATED: Basic RAG Query Handler (Standardized)
 # ============================================================================
 
 @app.route('/historian-agent/query-basic', methods=['POST'])
@@ -177,51 +175,48 @@ def historian_agent_query_basic():
     
     try:
         handler = get_rag_handler()
-        answer, metrics = handler.process_query(
+        answer, metrics_raw = handler.process_query(
             question=question,
             context="",
             label="BASIC_RAG"
         )
         
-        # Update history
+        # Consistent Sources and Search ID
+        sources = metrics_raw.get('sources', {})
+        search_id = str(uuid.uuid4())
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())]
+        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
+        
+        # Update history with sources for persistence
         history.append({'role': 'user', 'content': question})
-        history.append({'role': 'assistant', 'content': answer})
+        history.append({'role': 'assistant', 'content': answer, 'sources': sources})
         if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
             history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
         
-        # Create search_id for source navigation
-        sources_dict = metrics.get('sources', {})
-        search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources_dict.items())]
-        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
-        
-        response_payload = {
+        return jsonify({
             'conversation_id': conversation_id,
             'answer': answer,
-            'sources': sources_dict,
-            'search_id': search_id,  # NEW: For prev/next navigation
+            'sources': sources,
+            'search_id': search_id,
             'metrics': {
-                'retrieval_time': metrics.get('retrieval_time', 0),
-                'llm_time': metrics.get('llm_time', 0),
-                'total_time': metrics.get('total_time', 0),
-                'tokens': metrics.get('tokens', 0),
-                'doc_count': metrics.get('doc_count', 0),
+                'total_time': metrics_raw.get('total_time', 0),
+                'tokens': metrics_raw.get('tokens', 0),
+                'doc_count': metrics_raw.get('doc_count', 0),
+                'retrieval_time': metrics_raw.get('retrieval_time', 0),
+                'llm_time': metrics_raw.get('llm_time', 0)
             },
             'history': history,
             'method': 'basic'
-        }
-        return jsonify(response_payload)
+        })
         
     except Exception as exc:
         app.logger.exception('Basic RAG query failed')
-        return jsonify({
-            'error': f'Basic RAG query failed: {str(exc)}'
-        }), 500
+        return jsonify({'error': f'Basic RAG query failed: {str(exc)}'}), 500
 
 
 # ============================================================================
-# UPDATED: Adversarial RAG (with search_id)
+# UPDATED: Adversarial RAG (Standardized)
 # ============================================================================
 
 @app.route('/historian-agent/query-adversarial', methods=['POST'])
@@ -242,7 +237,7 @@ def historian_agent_query_adversarial():
                 'answer': '',
                 'sources': {},
                 'search_id': '',
-                'latency': 0,
+                'metrics': {},
                 'history': [],
             })
     
@@ -253,41 +248,40 @@ def historian_agent_query_adversarial():
     
     try:
         handler = get_adversarial_handler()
+        # Returns: ans, total_lat, sources
         answer, latency, sources = handler.process_query(question)
         
-        # Update history
-        history.append({'role': 'user', 'content': question})
-        history.append({'role': 'assistant', 'content': answer})
-        if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
-            history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
-        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
-        
-        # Create search_id for source navigation
-        
+        # Consistent Search ID
         search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())] # Use 'sources'
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())]
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
         
-        response_payload = {
+        # Update history with sources for persistence
+        history.append({'role': 'user', 'content': question})
+        history.append({'role': 'assistant', 'content': answer, 'sources': sources})
+        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
+        
+        return jsonify({
             'conversation_id': conversation_id,
             'answer': answer,
             'sources': sources,
-            'search_id': search_id,  # NEW
-            'latency': latency,
+            'search_id': search_id,
+            'metrics': {
+                'total_time': latency,
+                'tokens': 0, 
+                'doc_count': len(sources)
+            },
             'history': history,
             'method': 'adversarial'
-        }
-        return jsonify(response_payload)
+        })
         
     except Exception as exc:
         app.logger.exception('Adversarial RAG query failed')
-        return jsonify({
-            'error': f'Adversarial RAG query failed: {str(exc)}'
-        }), 500
+        return jsonify({'error': f'Adversarial RAG query failed: {str(exc)}'}), 500
 
 
 # ============================================================================
-# UPDATED: Tiered Agent (with search_id)
+# UPDATED: Tiered Agent (Standardized)
 # ============================================================================
 
 @app.route('/historian-agent/query-tiered', methods=['POST'])
@@ -308,9 +302,7 @@ def historian_agent_query_tiered():
                 'answer': '',
                 'sources': {},
                 'search_id': '',
-                'metrics': [],
-                'total_duration': 0,
-                'escalated': False,
+                'metrics': {},
                 'history': [],
             })
     
@@ -321,188 +313,61 @@ def historian_agent_query_tiered():
     
     try:
         agent = get_tiered_agent()
-        answer, sources, metrics, duration = agent.investigate(question)
+        # Returns: ans, sources, metrics_list, duration
+        answer, sources, metrics_list, duration = agent.investigate(question)
         
-        # Determine if Tier 2 was triggered
-        escalated = len(metrics) > 2
-        
-        # Update history
-        history.append({'role': 'user', 'content': question})
-        history.append({'role': 'assistant', 'content': answer})
-        if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
-            history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
-        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
-        
-        # Create search_id for source navigation
-       
+        # Consistent Search ID
         search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())] # Use 'sources'
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())]
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
         
-        response_payload = {
+        # Aggregate stats
+        total_tokens = sum(m.get('tokens', 0) for m in metrics_list)
+        
+        # Update history with sources for persistence
+        history.append({'role': 'user', 'content': question})
+        history.append({'role': 'assistant', 'content': answer, 'sources': sources})
+        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
+        
+        return jsonify({
             'conversation_id': conversation_id,
             'answer': answer,
             'sources': sources,
-            'search_id': search_id,  # NEW
-            'metrics': metrics,
-            'total_duration': duration,
-            'escalated': escalated,
+            'search_id': search_id,
+            'metrics': {
+                'total_time': duration,
+                'tokens': total_tokens,
+                'doc_count': len(sources),
+                'stages': metrics_list, 
+                'escalated': len(metrics_list) > 2
+            },
             'history': history,
             'method': 'tiered'
-        }
-        return jsonify(response_payload)
+        })
         
     except Exception as exc:
         app.logger.exception('Tiered agent query failed')
-        return jsonify({
-            'error': f'Tiered agent query failed: {str(exc)}'
-        }), 500
+        return jsonify({'error': f'Tiered agent query failed: {str(exc)}'}), 500
 
-
-# ============================================================================
-# ROUTE 4: Method Comparison (Optional - for testing/debugging)
-# ============================================================================
-
-@app.route('/historian-agent/query-compare', methods=['POST'])
-def historian_agent_query_compare():
-    """
-    Run the same question through all three methods for comparison.
-    
-    WARNING: This is SLOW (runs 3 queries sequentially) - only for testing!
-    
-    Request Body:
-    {
-        "question": "What were typical wages?"
-    }
-    
-    Response:
-    {
-        "question": "...",
-        "results": {
-            "basic": { "answer": "...", "metrics": {...} },
-            "adversarial": { "answer": "...", "latency": 14.8 },
-            "tiered": { "answer": "...", "metrics": [...], "escalated": true }
-        },
-        "comparison": {
-            "fastest": "basic",
-            "slowest": "tiered",
-            "times": {
-                "basic": 14.8,
-                "adversarial": 15.2,
-                "tiered": 56.4
-            }
-        }
-    }
-    """
-    payload = request.get_json(silent=True) or {}
-    question = (payload.get('question') or '').strip()
-    
-    if not question:
-        return jsonify({'error': 'A question is required.'}), 400
-    
-    results = {}
-    times = {}
-    
-    # Method 1: Basic
-    try:
-        handler = get_rag_handler()
-        answer, metrics = handler.process_query(question, context="", label="COMPARE_BASIC")
-        results['basic'] = {
-            'answer': answer,
-            'metrics': metrics,
-            'sources': metrics.get('sources', {})
-        }
-        times['basic'] = metrics.get('total_time', 0)
-    except Exception as exc:
-        results['basic'] = {'error': str(exc)}
-        times['basic'] = 0
-    
-    # Method 2: Adversarial
-    try:
-        handler = get_adversarial_handler()
-        answer, latency, sources = handler.process_query(question)
-        results['adversarial'] = {
-            'answer': answer,
-            'latency': latency,
-            'sources': sources
-        }
-        times['adversarial'] = latency
-    except Exception as exc:
-        results['adversarial'] = {'error': str(exc)}
-        times['adversarial'] = 0
-    
-    # Method 3: Tiered
-    try:
-        agent = get_tiered_agent()
-        answer, sources, metrics, duration = agent.investigate(question)
-        results['tiered'] = {
-            'answer': answer,
-            'metrics': metrics,
-            'sources': sources,
-            'total_duration': duration,
-            'escalated': len(metrics) > 2
-        }
-        times['tiered'] = duration
-    except Exception as exc:
-        results['tiered'] = {'error': str(exc)}
-        times['tiered'] = 0
-    
-    # Comparison analysis
-    fastest = min(times, key=times.get) if times else None
-    slowest = max(times, key=times.get) if times else None
-    
-    response = {
-        'question': question,
-        'results': results,
-        'comparison': {
-            'fastest': fastest,
-            'slowest': slowest,
-            'times': times
-        }
-    }
-    
-    return jsonify(response)
-
-
-# ============================================================================
-# ROUTE 5: Reset All RAG Handlers (for cleanup)
-# ============================================================================
 
 @app.route('/historian-agent/reset-rag', methods=['POST'])
 def reset_rag_handlers():
-    """
-    Reset and reinitialize all RAG handlers.
-    Useful for applying configuration changes or recovering from errors.
-    """
+    """Reset and reinitialize all RAG handlers."""
     global _rag_handler, _adversarial_handler, _tiered_agent
     
     try:
-        # Close existing connections
-        if _rag_handler:
-            _rag_handler.close()
-        if _adversarial_handler:
-            _adversarial_handler.close()
-        if _tiered_agent and hasattr(_tiered_agent, 'handler'):
-            _tiered_agent.handler.close()
+        if _rag_handler: _rag_handler.close()
+        if _adversarial_handler: _adversarial_handler.close()
+        if _tiered_agent and hasattr(_tiered_agent, 'handler'): _tiered_agent.handler.close()
         
-        # Reset globals
         _rag_handler = None
         _adversarial_handler = None
         _tiered_agent = None
         
-        return jsonify({
-            'message': 'All RAG handlers reset successfully',
-            'status': 'success'
-        })
-    
+        return jsonify({'message': 'All RAG handlers reset successfully', 'status': 'success'})
     except Exception as exc:
         app.logger.exception('Failed to reset RAG handlers')
-        return jsonify({
-            'error': f'Reset failed: {str(exc)}',
-            'status': 'error'
-        }), 500
-
-
+        return jsonify({'error': f'Reset failed: {str(exc)}', 'status': 'error'}), 500
 
 def _archives_root() -> Path:
     """Return the archive root directory, creating it if necessary."""
