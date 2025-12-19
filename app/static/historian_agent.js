@@ -23,42 +23,38 @@
         const statusText = document.getElementById('agentStatusText');
         const suggestionButtons = Array.from(document.querySelectorAll('.agent-suggestion'));
         const submitButton = form ? form.querySelector('button[type="submit"]') : null;
-        const disabledBanner = document.getElementById('agentDisabledBanner');
-        const errorBanner = document.getElementById('agentErrorBanner');
 
-        // NEW: Method selector elements
+        // Method selector elements
         const methodSelect = document.getElementById('agentMethod');
         const methodHint = document.getElementById('agentMethodHint');
         
-        // NEW: Debug console elements
+        // Debug console elements
         const debugConsole = document.getElementById('agentDebugConsole');
         const debugOutput = document.getElementById('agentDebugOutput');
         const debugClear = document.getElementById('agentDebugClear');
         
-        // NEW: Metrics display
+        // Metrics display
         const metricsContainer = document.getElementById('agentMetrics');
         const metricsGrid = document.getElementById('agentMetricsGrid');
 
         let conversationId = null;
         let isSubmitting = false;
-        let agentEnabled = agentConfig ? Boolean(agentConfig.enabled) : true;
-        let hasAgentError = agentPanel ? agentPanel.dataset.agentError === 'true' : false;
 
-        // NEW: Method descriptions
+        // Method descriptions
         const METHOD_HINTS = {
             'basic': 'Fast hybrid retrieval with direct LLM generation (~15-30s)',
             'adversarial': 'Same as Good but with detailed pipeline monitoring (~15-30s)',
             'tiered': 'Best quality with confidence-based escalation (~20-60s)'
         };
 
-        // NEW: Update hint when method changes
+        // Update hint when method changes
         if (methodSelect && methodHint) {
             methodSelect.addEventListener('change', function() {
                 methodHint.textContent = METHOD_HINTS[methodSelect.value] || '';
             });
         }
 
-        // NEW: Debug console functions
+        // Debug console functions
         function debugLog(message, type = 'info') {
             if (!debugOutput) return;
             
@@ -90,7 +86,7 @@
             debugClear.addEventListener('click', clearDebugLog);
         }
 
-        // NEW: Display performance metrics
+        // Display performance metrics
         function displayMetrics(data, method) {
             if (!metricsContainer || !metricsGrid) return;
             
@@ -155,14 +151,14 @@
             }
         }
 
-        function appendMessage(role, content, sources) {
+        function appendMessage(role, content, sources, searchId) {
             if (!historyContainer) return;
             const wrapper = document.createElement('div');
             wrapper.className = `agent-message agent-message--${role}`;
             const bubble = document.createElement('div');
             bubble.className = 'agent-message__bubble';
             
-            // NEW: Render markdown for assistant messages
+            // Render markdown for assistant messages
             if (role === 'assistant' && typeof marked !== 'undefined') {
                 bubble.innerHTML = marked.parse(content);
             } else {
@@ -171,16 +167,29 @@
             
             wrapper.appendChild(bubble);
 
-            if (role === 'assistant' && sources && sources.length && sourcesContainer && sourcesList) {
+            // Display sources as clickable document links
+            if (role === 'assistant' && sources && typeof sources === 'object' && Object.keys(sources).length > 0) {
                 sourcesContainer.hidden = false;
                 sourcesList.innerHTML = '';
-                sources.forEach(source => {
+                
+                // sources is {"filename": "doc_id", ...}
+                Object.entries(sources).forEach(([filename, docId]) => {
                     const item = document.createElement('li');
                     const link = document.createElement('a');
-                    link.href = source.url || '#';
-                    link.textContent = source.title || source.id || 'Source document';
+                    
+                    // Create link with search_id for prev/next navigation
+                    if (searchId) {
+                        link.href = `/document/${docId}?search_id=${searchId}`;
+                    } else {
+                        link.href = `/document/${docId}`;
+                    }
                     link.target = '_blank';
                     link.rel = 'noopener noreferrer';
+                    
+                    // Display filename without .json extension
+                    const displayName = filename.replace(/\.json$/i, '');
+                    link.textContent = displayName;
+                    
                     item.appendChild(link);
                     sourcesList.appendChild(item);
                 });
@@ -204,30 +213,14 @@
             if (!historyContainer) return;
             historyContainer.innerHTML = '';
             history.forEach(item => {
-                appendMessage(item.role, item.content, item.sources || []);
+                // History items don't have search_id, so sources won't have prev/next
+                appendMessage(item.role, item.content, item.sources || {}, null);
             });
         }
 
-        function applyAgentEnabledState(enabled) {
-            agentEnabled = enabled;
-            if (disabledBanner) {
-                disabledBanner.hidden = enabled && !hasAgentError;
-            }
-            if (form) {
-                Array.from(form.elements).forEach(el => {
-                    if (el === resetButton) return;
-                    el.disabled = !enabled;
-                });
-            }
-        }
-
-        // NEW: Submit question with method selection
+        // Submit question with method selection
         async function submitQuestion(payload) {
             if (!form || !agentPanel) return;
-            if (!agentEnabled) {
-                if (disabledBanner) disabledBanner.hidden = false;
-                return;
-            }
 
             const method = methodSelect ? methodSelect.value : 'tiered';
             const endpoint = `/historian-agent/query-${method}`;
@@ -283,7 +276,7 @@
                 renderHistory(data.history || []);
                 
                 if (data.answer) {
-                    appendMessage('assistant', data.answer, data.sources || []);
+                    appendMessage('assistant', data.answer, data.sources || {}, data.search_id);
                 }
                 
                 // Display metrics
@@ -303,11 +296,6 @@
             } finally {
                 setChatSubmitting(false);
             }
-        }
-
-        function hydrateFromConfig() {
-            if (!agentConfig) return;
-            applyAgentEnabledState(Boolean(agentConfig.enabled));
         }
 
         if (form) {
@@ -349,7 +337,6 @@
             });
         }
 
-        hydrateFromConfig();
         debugLog('Historian Agent initialized', 'success');
         debugLog(`Current method: ${methodSelect ? methodSelect.value : 'tiered'}`, 'info');
     });

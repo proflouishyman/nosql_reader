@@ -144,44 +144,13 @@ def get_tiered_agent():
         _tiered_agent = TieredHistorianAgent()
     return _tiered_agent
 
-
 # ============================================================================
-# ROUTE 1: Basic RAG Query Handler
+# UPDATED: Basic RAG Query Handler (with search_id for source navigation)
 # ============================================================================
 
 @app.route('/historian-agent/query-basic', methods=['POST'])
 def historian_agent_query_basic():
-    """
-    Basic RAG query using direct hybrid retrieval.
-    
-    Features:
-    - Hybrid retrieval (vector + keyword)
-    - Direct LLM generation
-    - No confidence checking
-    - Fastest response time (~15-30s)
-    
-    Request Body:
-    {
-        "question": "What were typical wages?",
-        "conversation_id": "optional-uuid",
-        "refresh": false
-    }
-    
-    Response:
-    {
-        "conversation_id": "uuid",
-        "answer": "...",
-        "sources": {"filename": "doc_id", ...},
-        "metrics": {
-            "retrieval_time": 2.5,
-            "llm_time": 12.3,
-            "total_time": 14.8,
-            "tokens": 8500,
-            "doc_count": 5
-        },
-        "history": [...]
-    }
-    """
+    """Basic RAG query using direct hybrid retrieval."""
     payload = request.get_json(silent=True) or {}
     question = (payload.get('question') or '').strip()
     conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
@@ -196,6 +165,7 @@ def historian_agent_query_basic():
                 'conversation_id': str(uuid.uuid4()),
                 'answer': '',
                 'sources': {},
+                'search_id': '',
                 'metrics': {},
                 'history': [],
             })
@@ -207,8 +177,6 @@ def historian_agent_query_basic():
     
     try:
         handler = get_rag_handler()
-        
-        # Process query - returns (answer, metrics_dict)
         answer, metrics = handler.process_query(
             question=question,
             context="",
@@ -222,10 +190,17 @@ def historian_agent_query_basic():
             history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
         
+        # Create search_id for source navigation
+        sources_dict = metrics.get('sources', {})
+        search_id = str(uuid.uuid4())
+        ordered_ids = list(sources_dict.values())  # Extract doc_ids in order
+        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
+        
         response_payload = {
             'conversation_id': conversation_id,
             'answer': answer,
-            'sources': metrics.get('sources', {}),
+            'sources': sources_dict,
+            'search_id': search_id,  # NEW: For prev/next navigation
             'metrics': {
                 'retrieval_time': metrics.get('retrieval_time', 0),
                 'llm_time': metrics.get('llm_time', 0),
@@ -246,36 +221,12 @@ def historian_agent_query_basic():
 
 
 # ============================================================================
-# ROUTE 2: Adversarial RAG (One-Shot with Monitoring)
+# UPDATED: Adversarial RAG (with search_id)
 # ============================================================================
 
 @app.route('/historian-agent/query-adversarial', methods=['POST'])
 def historian_agent_query_adversarial():
-    """
-    Adversarial RAG query with enhanced monitoring.
-    
-    Features:
-    - Same as basic but with detailed pipeline monitoring
-    - Token warning alerts
-    - Debug event logging
-    - Response time ~15-30s
-    
-    Request Body:
-    {
-        "question": "What were typical wages?",
-        "conversation_id": "optional-uuid",
-        "refresh": false
-    }
-    
-    Response:
-    {
-        "conversation_id": "uuid",
-        "answer": "...",
-        "sources": {"filename": "doc_id", ...},
-        "latency": 14.8,
-        "history": [...]
-    }
-    """
+    """Adversarial RAG query with enhanced monitoring."""
     payload = request.get_json(silent=True) or {}
     question = (payload.get('question') or '').strip()
     conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
@@ -290,6 +241,7 @@ def historian_agent_query_adversarial():
                 'conversation_id': str(uuid.uuid4()),
                 'answer': '',
                 'sources': {},
+                'search_id': '',
                 'latency': 0,
                 'history': [],
             })
@@ -301,8 +253,6 @@ def historian_agent_query_adversarial():
     
     try:
         handler = get_adversarial_handler()
-        
-        # Process query - returns (answer, latency, sources)
         answer, latency, sources = handler.process_query(question)
         
         # Update history
@@ -312,10 +262,16 @@ def historian_agent_query_adversarial():
             history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
         
+        # Create search_id for source navigation
+        search_id = str(uuid.uuid4())
+        ordered_ids = list(sources.values())
+        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
+        
         response_payload = {
             'conversation_id': conversation_id,
             'answer': answer,
             'sources': sources,
+            'search_id': search_id,  # NEW
             'latency': latency,
             'history': history,
             'method': 'adversarial'
@@ -330,57 +286,12 @@ def historian_agent_query_adversarial():
 
 
 # ============================================================================
-# ROUTE 3: Tiered Agent (Confidence-Based Escalation)
+# UPDATED: Tiered Agent (with search_id)
 # ============================================================================
 
 @app.route('/historian-agent/query-tiered', methods=['POST'])
 def historian_agent_query_tiered():
-    """
-    Advanced tiered RAG with confidence-based escalation.
-    
-    Features:
-    - Tier 1: Draft answer with hybrid retrieval
-    - Self-critique with confidence scoring
-    - Tier 2: Multi-query expansion + full document retrieval (if confidence < 0.85)
-    - Highest quality but slower (~40-60s for Tier 2)
-    
-    Request Body:
-    {
-        "question": "What were typical wages?",
-        "conversation_id": "optional-uuid",
-        "refresh": false
-    }
-    
-    Response:
-    {
-        "conversation_id": "uuid",
-        "answer": "...",
-        "sources": {"filename": "doc_id", ...},
-        "metrics": [
-            {
-                "stage": "Tier 1: Broad Pass",
-                "total_time": 12.5,
-                "tokens": 8500,
-                "doc_count": 5,
-                "retrieval_time": 2.1,
-                "llm_time": 10.4
-            },
-            {
-                "stage": "Critique Phase",
-                "total_time": 8.2,
-                ...
-            },
-            {
-                "stage": "Tier 2: Deep Dive",  // Only if escalated
-                "total_time": 35.7,
-                ...
-            }
-        ],
-        "total_duration": 56.4,
-        "escalated": true,  // Whether Tier 2 was triggered
-        "history": [...]
-    }
-    """
+    """Advanced tiered RAG with confidence-based escalation."""
     payload = request.get_json(silent=True) or {}
     question = (payload.get('question') or '').strip()
     conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
@@ -395,6 +306,7 @@ def historian_agent_query_tiered():
                 'conversation_id': str(uuid.uuid4()),
                 'answer': '',
                 'sources': {},
+                'search_id': '',
                 'metrics': [],
                 'total_duration': 0,
                 'escalated': False,
@@ -408,12 +320,10 @@ def historian_agent_query_tiered():
     
     try:
         agent = get_tiered_agent()
-        
-        # Process query - returns (answer, sources, metrics, duration)
         answer, sources, metrics, duration = agent.investigate(question)
         
         # Determine if Tier 2 was triggered
-        escalated = len(metrics) > 2  # More than just Tier 1 + Critique
+        escalated = len(metrics) > 2
         
         # Update history
         history.append({'role': 'user', 'content': question})
@@ -422,10 +332,16 @@ def historian_agent_query_tiered():
             history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
         
+        # Create search_id for source navigation
+        search_id = str(uuid.uuid4())
+        ordered_ids = list(sources.values())
+        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
+        
         response_payload = {
             'conversation_id': conversation_id,
             'answer': answer,
             'sources': sources,
+            'search_id': search_id,  # NEW
             'metrics': metrics,
             'total_duration': duration,
             'escalated': escalated,

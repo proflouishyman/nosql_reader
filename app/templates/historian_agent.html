@@ -64,11 +64,7 @@
             <ul id="agentSourcesList"></ul>
         </div>
     </section>
-    <aside class="agent-settings-callout">
-        <h2>Configure the Historian Agent</h2>
-        <p>Model provider credentials, retrieval depth, and ingestion options now live on the <a href="{{ url_for('settings') }}#chatbot-settings">Settings</a> page.</p>
-        <a class="button" href="{{ url_for('settings') }}#chatbot-settings">Open Historian Agent settings</a>
-    </aside>
+    
 </div>
 <script id="historianAgentConfigData" type="application/json">{{ agent_config_payload | tojson }}</script>
 {% endblock %}

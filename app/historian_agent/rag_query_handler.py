@@ -120,7 +120,9 @@ class RAGQueryHandler:
             context_list = []
             for i, c in enumerate(chunks):
                 p_id = c.metadata.get("document_id")
-                fname = self.get_best_field(meta.get(p_id, {}), ["filename", "title"], f"Doc-{p_id[:8]}")
+                if not p_id:  # Skip chunks with no parent document ID
+                    continue
+                fname = self.get_best_field(meta.get(p_id) or {}, ["filename", "title"], f"Doc-{p_id[:8]}")
                 mapping[fname] = p_id
                 context_list.append(f"--- SOURCE: {fname} ---\n{c.page_content}")
                 
