@@ -31,36 +31,68 @@ class AdversarialRAGHandler:
         """
         debug_step("Verification", "Cross-checking claims against source text...", icon="⚖️")
         
-        prompt = f"""
-        TASK: You are a strict Fact-Checking Judge. Verify the ANSWER using ONLY the SOURCE TEXT.
-        
-        QUESTION: {question}
-        
-        ANSWER TO VERIFY:
-        {answer}
-        
-        SOURCE TEXT: 
-        {sources_text[:60000]}
-        
-        INSTRUCTIONS:
-        1. Check if every specific claim (names, dates, stats) in the ANSWER appears in the SOURCE TEXT.
-        2. If the answer contains facts NOT in the source, it is a Hallucination.
-        3. Output a valid JSON object. Do not output markdown code blocks.
-        
-        FORMAT:
-        {{
+        SYSTEM_PROMPT = """
+            You are a strict fact-checking judge.
+
+            Your task:
+            1. Break the ANSWER into discrete factual claims.
+            2. Verify each claim using ONLY the SOURCE TEXT.
+            3. A claim is supported ONLY if it is explicitly stated in the SOURCE TEXT.
+            - Do NOT use background knowledge.
+            - Do NOT infer or assume.
+            4. If ANY factual claim is unsupported, mark the answer as inaccurate.
+
+            Scoring:
+            - citation_score = percentage of claims fully supported by the source.
+            - 100 = all claims supported
+            - 0 = no claims supported
+
+            Output rules:
+            - Respond with ONLY a valid JSON object. first char must be { and last char must be }
+            - Use EXACTLY the schema provided.
+            - Do NOT include markdown, commentary, or extra keys.
+            """
+
+
+        USER_PROMPT = f"""
+            QUESTION:
+            {question}
+
+            ANSWER TO VERIFY:
+            {answer}
+
+            SOURCE TEXT:
+            {sources_text[:60000]}
+
+            Required JSON output format:
+            {{
             "is_accurate": boolean,
-            "citation_score": number (0-100),
-            "reasoning": "Explain exactly which claims are unsupported or why the score is low."
-        }}
-        """
+            "citation_score": number,
+            "reasoning": "List each unsupported or partially supported claim, or state that all claims are supported."
+            }}
+            """
+        JSON_SCHEMA = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "is_accurate": {"type": "boolean"},
+                "citation_score": {"type": "number"},
+                "reasoning": {"type": "string"}
+            },
+            "required": ["is_accurate", "citation_score", "reasoning"]
+        }
+
+        SYSTEM_PROMPT = SYSTEM_PROMPT.strip()
+        USER_PROMPT = USER_PROMPT.strip()
         
+
         try:
             resp = requests.post(f"{OLLAMA_BASE_URL}/api/generate", json={
                 "model": VERIFIER_MODEL,
-                "prompt": prompt,
+                "system": SYSTEM_PROMPT,
+                "prompt": USER_PROMPT,
                 "stream": False,
-                "format": "json", 
+                "format": JSON_SCHEMA,
                 "options": {"temperature": 0.0}
             })
             

@@ -26,7 +26,7 @@ def debug_print(msg: str, detail: str = None, tokens: int = 0, level: str = "INF
     icon = "🔍" if level == "INFO" else "⚠️" if level == "WARN" else "🚀"
     sys.stderr.write(f"{icon} [{timestamp}] {msg}{token_str}\n")
     if detail:
-        sys.stderr.write(f"   | {detail[:200]}...\n")
+        sys.stderr.write(f"   | {detail}\n")
     sys.stderr.flush()
 
 class RAGQueryHandler:
@@ -114,8 +114,15 @@ class RAGQueryHandler:
                 "model": LLM_MODEL, 
                 "prompt": prompt, 
                 "stream": False,
-                "options": {"temperature": 0.1, "num_predict": 4000, "num_ctx": 131072, "repeat_penalty": 1.15, "stop":["TASK:", "CONTEXT:"]}
-            }, timeout=500)
+                "options": {
+                    "temperature": 0.1,
+                    "num_predict": 4000,
+                    "num_ctx": 131072,
+                    "repeat_penalty": 1.15
+                },
+            },
+            timeout=500)
+
             resp.raise_for_status()
             answer = resp.json().get("response", "")
             metrics["llm_time"] = time.time() - l_start
