@@ -47,9 +47,9 @@ class RAGQueryHandler:
         
         # Delayed imports for performance trace
         debug_print("Loading AI Services & Vector Store components...")
-        from embeddings import EmbeddingService
-        from vector_store import get_vector_store
-        from retrievers import HybridRetriever, VectorRetriever, KeywordRetriever
+        from .embeddings import EmbeddingService
+        from .vector_store import get_vector_store
+        from .retrievers import HybridRetriever, VectorRetriever, KeywordRetriever
         
         self.embedding_service = EmbeddingService(provider="ollama", model="qwen3-embedding:0.6b")
         self.vector_store = get_vector_store(store_type="chroma")

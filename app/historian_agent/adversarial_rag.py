@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys, os, time
-from rag_query_handler import RAGQueryHandler
+from .rag_query_handler import RAGQueryHandler
 from dotenv import load_dotenv
 
 load_dotenv()

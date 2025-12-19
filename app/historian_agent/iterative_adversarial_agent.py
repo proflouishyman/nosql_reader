@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys, os, time, re
-from rag_query_handler import RAGQueryHandler, count_tokens
+from .rag_query_handler import RAGQueryHandler, count_tokens
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -22,7 +22,7 @@ class TieredHistorianAgent:
     def __init__(self):
         debug_event("Init", "Initializing Tiered Agent components...", icon="🏛️")
         self.handler = RAGQueryHandler()
-        from reranking import DocumentReranker
+        from .reranking import DocumentReranker
         self.reranker = DocumentReranker()
         debug_event("Init", "Reranker and Handler loaded.")
 
