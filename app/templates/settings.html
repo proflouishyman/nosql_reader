@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container settings-page">
-    <h1>User interface &amp; ingestion settings</h1>
+    <h1>User interface</h1>
 
     <section id="ui-preferences" class="settings-section">
         <div class="settings-section__header">
@@ -58,15 +58,9 @@
 
     <!-- Removed ingestion controls to simplify the settings page per request. -->
 
-    <section id="chatbot-settings" class="settings-section">
-        <div class="settings-section__header">
-            <h2>ChatBot configuration</h2>
-            <p>Adjust model providers, prompts, and retrieval limits for the Historian Agent. Changes apply immediately for your session.</p>
-        </div>
-        {% include 'partials/historian_agent_settings.html' with context %}
-    </section>
+    
 </div>
-<script id="historianAgentConfigData" type="application/json">{{ agent_config_payload | tojson }}</script>
+
 {% endblock %}
 
 {% block scripts %}
@@ -95,7 +89,5 @@
         });
     });
 })();
-</script>
-<!-- Trimmed ingestion scripts after removing the ingestion section for a cleaner settings view. -->
-<script src="{{ url_for('static', filename='historian_agent.js') }}"></script>
+
 {% endblock %}

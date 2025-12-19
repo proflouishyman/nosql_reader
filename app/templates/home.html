@@ -3,80 +3,7 @@
 
 {% block content %}
 <div class="container home">
-    <section class="home-tabs" aria-label="Primary workflows">
-        <div class="home-tabs__list" role="tablist" aria-label="Navigate between key workflows">
-            <button
-                id="home-tab-search-trigger"
-                class="home-tabs__trigger is-active"
-                role="tab"
-                aria-selected="true"
-                aria-controls="home-tab-search"
-                data-target="home-tab-search"
-                tabindex="0"
-            >
-                <span class="home-tabs__title">Search</span>
-                <span class="home-tabs__hint">Build multi-field queries</span>
-            </button>
-            <button
-                id="home-tab-agent-trigger"
-                class="home-tabs__trigger"
-                role="tab"
-                aria-selected="false"
-                aria-controls="home-tab-agent"
-                data-target="home-tab-agent"
-                tabindex="-1"
-            >
-                <span class="home-tabs__title">Historian Agent</span>
-                <span class="home-tabs__hint">Chat with the archive expert</span>
-            </button>
-            <button
-                id="home-tab-settings-trigger"
-                class="home-tabs__trigger"
-                role="tab"
-                aria-selected="false"
-                aria-controls="home-tab-settings"
-                data-target="home-tab-settings"
-                tabindex="-1"
-            >
-                <span class="home-tabs__title">Settings</span>
-                <span class="home-tabs__hint">Tune UI, RAG, and ingestion</span>
-            </button>
-            <button
-                id="home-tab-help-trigger"
-                class="home-tabs__trigger"
-                role="tab"
-                aria-selected="false"
-                aria-controls="home-tab-help"
-                data-target="home-tab-help"
-                tabindex="-1"
-            >
-                <span class="home-tabs__title">Help</span>
-                <span class="home-tabs__hint">Read onboarding guidance</span>
-            </button>
-        </div>
-        <div class="home-tabs__panels">
-            <article id="home-tab-search" class="home-tab-panel is-active" role="tabpanel" aria-labelledby="home-tab-search-trigger" tabindex="0">
-                <h2>Search the database</h2>
-                <p>Compose multi-field queries, combine AND/OR operators, and export curated result sets for offline review.</p>
-                <a class="button" href="{{ url_for('search_database') }}">Open search</a>
-            </article>
-            <article id="home-tab-agent" class="home-tab-panel" role="tabpanel" aria-labelledby="home-tab-agent-trigger" tabindex="0" hidden>
-                <h2>Historian Agent chat</h2>
-                <p>Ask natural-language questions and receive sourced answers from the Retrieval-Augmented Historian Agent.</p>
-                <a class="button" href="{{ url_for('historian_agent_page') }}">Start a conversation</a>
-            </article>
-            <article id="home-tab-settings" class="home-tab-panel" role="tabpanel" aria-labelledby="home-tab-settings-trigger" tabindex="0" hidden>
-                <h2>Manage settings</h2>
-                <p>Configure UI preferences, upload new archives for ingestion, and adjust the Historian Agent provider and prompts.</p>
-                <a class="button" href="{{ url_for('settings') }}">Open settings</a>
-            </article>
-            <article id="home-tab-help" class="home-tab-panel" role="tabpanel" aria-labelledby="home-tab-help-trigger" tabindex="0" hidden>
-                <h2>Explore the help centre</h2>
-                <p>Follow the in-app documentation mirrored from the README to deploy, operate, and troubleshoot the stack.</p>
-                <a class="button" href="{{ url_for('help_page') }}">View help</a>
-            </article>
-        </div>
-    </section>
+    
     <section class="home-hero">
         <h1>Welcome to the Historical Document Reader</h1>
         <p class="home-hero__lead">Explore digitised archives, surface relevant records with full-text search, and interrogate the collection using the Historian Agent.</p>
@@ -86,33 +13,7 @@
         </div>
     </section>
 
-    <section class="home-sections">
-        <article class="home-card">
-            <h2><i class="fa-solid fa-magnifying-glass"></i> Search Database</h2>
-            <p>Compose multi-field queries, filter by metadata, and export curated document sets as CSV.</p>
-            <a href="{{ url_for('search_database') }}" class="home-card__link">Launch search</a>
-        </article>
-        <article class="home-card">
-            <h2><i class="fa-solid fa-comments"></i> Historian Agent</h2>
-            <p>Ask free-form questions about the archives and receive contextual answers with source citations.</p>
-            <a href="{{ url_for('historian_agent_page') }}" class="home-card__link">Chat with the Historian Agent</a>
-        </article>
-        <article class="home-card">
-            <h2><i class="fa-solid fa-database"></i> Database Information</h2>
-            <p>Review collection field coverage to understand how metadata is distributed across documents.</p>
-            <a href="{{ url_for('database_info') }}" class="home-card__link">View database insights</a>
-        </article>
-        <article class="home-card">
-            <h2><i class="fa-solid fa-sliders"></i> Settings &amp; Ingestion</h2>
-            <p>Manage interface preferences, upload new archives for processing, and configure the Historian Agent.</p>
-            <a href="{{ url_for('settings') }}" class="home-card__link">Open settings</a>
-        </article>
-        <article class="home-card">
-            <h2><i class="fa-solid fa-circle-question"></i> Help Centre</h2>
-            <p>Follow setup guides, learn the data flow, and troubleshoot with best practices taken from the README.</p>
-            <a href="{{ url_for('help_page') }}" class="home-card__link">Read the help guide</a>
-        </article>
-    </section>
+    
 </div>
 {% endblock %}
 
