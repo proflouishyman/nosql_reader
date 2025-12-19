@@ -161,7 +161,14 @@
             wrapper.className = `agent-message agent-message--${role}`;
             const bubble = document.createElement('div');
             bubble.className = 'agent-message__bubble';
-            bubble.textContent = content;
+            
+            // NEW: Render markdown for assistant messages
+            if (role === 'assistant' && typeof marked !== 'undefined') {
+                bubble.innerHTML = marked.parse(content);
+            } else {
+                bubble.textContent = content;
+            }
+            
             wrapper.appendChild(bubble);
 
             if (role === 'assistant' && sources && sources.length && sourcesContainer && sourcesList) {

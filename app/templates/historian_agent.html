@@ -9,10 +9,7 @@
         <p class="agent-hero__subtitle">Ask natural language questions about the archives and receive sourced answers from the Historian Agent.</p>
     </div>
     <section class="agent-panel" data-agent-enabled="{{ 'true' if agent_config_payload.enabled else 'false' }}" data-agent-error="{{ 'true' if agent_error else 'false' }}">
-        <div id="agentErrorBanner" class="agent-alert agent-alert--error" {% if not agent_error %}hidden{% endif %}>{{ agent_error }}</div>
-        <div id="agentDisabledBanner" class="agent-alert" {% if agent_config_payload.enabled and not agent_error %}hidden{% endif %}>
-            The Historian agent is disabled. Adjust the configuration from the settings page to continue.
-        </div>
+        
         
         <!-- NEW: Method selector -->
         <div class="agent-method-selector">
@@ -78,5 +75,6 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="{{ url_for('static', filename='historian_agent.js') }}"></script>
 {% endblock %}
