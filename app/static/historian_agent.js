@@ -86,40 +86,38 @@
             debugClear.addEventListener('click', clearDebugLog);
         }
 
-        // Display performance metrics
+        // historian_agent.js - Updated displayMetrics function
         function displayMetrics(data, method) {
             if (!metricsContainer || !metricsGrid) return;
             
             metricsGrid.innerHTML = '';
             metricsContainer.hidden = false;
 
-            if (method === 'tiered' && data.metrics && Array.isArray(data.metrics)) {
-                // Tiered metrics - show stage breakdown
+            // 1. Handle Tiered (data.metrics is an Array)
+            if (method === 'tiered' && Array.isArray(data.metrics)) {
                 const escalated = data.escalated ? 'Yes (Tier 2 triggered)' : 'No (Tier 1 sufficient)';
                 addMetric('Escalated', escalated, data.escalated ? 'warning' : 'success');
-                addMetric('Total Duration', `${data.total_duration.toFixed(1)}s`, 'primary');
+                addMetric('Total Duration', `${(data.total_duration || 0).toFixed(1)}s`, 'primary');
                 
-                // Stage breakdown
                 data.metrics.forEach(stage => {
                     addMetric(
                         stage.stage,
-                        `${stage.total_time.toFixed(1)}s (${stage.tokens.toLocaleString()} tokens, ${stage.doc_count} docs)`,
+                        `${(stage.total_time || 0).toFixed(1)}s (${(stage.tokens || 0).toLocaleString()} tokens)`,
                         'info'
                     );
                 });
                 
-            } else if (method === 'adversarial' && data.latency) {
-                // Adversarial metrics
-                addMetric('Total Latency', `${data.latency.toFixed(1)}s`, 'primary');
+            // 2. Handle Adversarial (data.latency is a float)
+            } else if (method === 'adversarial') {
+                addMetric('Total Latency', `${(data.latency || 0).toFixed(1)}s`, 'primary');
                 addMetric('Sources Used', Object.keys(data.sources || {}).length, 'info');
                 
+            // 3. Handle Basic (data.metrics is an Object)
             } else if (method === 'basic' && data.metrics) {
-                // Basic metrics
-                addMetric('Total Time', `${data.metrics.total_time.toFixed(1)}s`, 'primary');
-                addMetric('Retrieval', `${data.metrics.retrieval_time.toFixed(1)}s`, 'info');
-                addMetric('LLM Generation', `${data.metrics.llm_time.toFixed(1)}s`, 'info');
-                addMetric('Context Tokens', data.metrics.tokens.toLocaleString(), 'info');
-                addMetric('Documents', data.metrics.doc_count, 'info');
+                addMetric('Total Time', `${(data.metrics.total_time || 0).toFixed(1)}s`, 'primary');
+                addMetric('Retrieval', `${(data.metrics.retrieval_time || 0).toFixed(1)}s`, 'info');
+                addMetric('LLM Generation', `${(data.metrics.llm_time || 0).toFixed(1)}s`, 'info');
+                addMetric('Context Tokens', (data.metrics.tokens || 0).toLocaleString(), 'info');
             }
         }
 

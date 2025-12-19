@@ -263,8 +263,9 @@ def historian_agent_query_adversarial():
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
         
         # Create search_id for source navigation
+        
         search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources_dict.items())]
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())] # Use 'sources'
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
         
         response_payload = {
@@ -333,8 +334,9 @@ def historian_agent_query_tiered():
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
         
         # Create search_id for source navigation
+       
         search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources_dict.items())]
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())] # Use 'sources'
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
         
         response_payload = {
