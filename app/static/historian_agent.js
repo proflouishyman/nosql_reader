@@ -20,76 +20,138 @@
         const sourcesList = document.getElementById('agentSourcesList');
         const resetButton = document.getElementById('agentReset');
         const status = document.getElementById('agentStatus');
+        const statusText = document.getElementById('agentStatusText');
         const suggestionButtons = Array.from(document.querySelectorAll('.agent-suggestion'));
         const submitButton = form ? form.querySelector('button[type="submit"]') : null;
         const disabledBanner = document.getElementById('agentDisabledBanner');
         const errorBanner = document.getElementById('agentErrorBanner');
 
-        const agentSettingsRoot = document.getElementById('agentSettings');
-        const settingsForm = document.getElementById('agentSettingsForm');
-        const configStatus = document.getElementById('agentConfigStatus');
-        const providerSelect = document.getElementById('agentModelProvider');
-        const enabledToggle = document.getElementById('agentEnabled');
-        const ollamaSection = agentSettingsRoot ? agentSettingsRoot.querySelector('.agent-provider--ollama') : null;
-        const openaiSection = agentSettingsRoot ? agentSettingsRoot.querySelector('.agent-provider--openai') : null;
-        const ollamaBaseUrlInput = document.getElementById('agentOllamaBaseUrl');
-        const openAiKeyInput = document.getElementById('agentOpenAiKey');
-        const modelNameInput = document.getElementById('agentModelName');
-        const temperatureInput = document.getElementById('agentTemperature');
-        const contextDocsInput = document.getElementById('agentContextDocuments');
-        const systemPromptInput = document.getElementById('agentSystemPrompt');
-        const contextFieldsInput = document.getElementById('agentContextFields');
-        const summaryFieldInput = document.getElementById('agentSummaryField');
-        const fallbackToggle = document.getElementById('agentAllowFallback');
-        const useVectorToggle = document.getElementById('agentUseVector');
-        const embeddingProviderSelect = document.getElementById('agentEmbeddingProvider');
-        const embeddingModelInput = document.getElementById('agentEmbeddingModel');
-        const chunkSizeInput = document.getElementById('agentChunkSize');
-        const chunkOverlapInput = document.getElementById('agentChunkOverlap');
-        const hybridAlphaInput = document.getElementById('agentHybridAlpha');
-        const vectorStoreSelect = document.getElementById('agentVectorStore');
-        const chromaPathInput = document.getElementById('agentChromaPath');
-        const resetConfigButton = document.getElementById('agentSettingsReset');
-
-        const configEndpoint = agentSettingsRoot ? agentSettingsRoot.dataset.configEndpoint : null;
+        // NEW: Method selector elements
+        const methodSelect = document.getElementById('agentMethod');
+        const methodHint = document.getElementById('agentMethodHint');
+        
+        // NEW: Debug console elements
+        const debugConsole = document.getElementById('agentDebugConsole');
+        const debugOutput = document.getElementById('agentDebugOutput');
+        const debugClear = document.getElementById('agentDebugClear');
+        
+        // NEW: Metrics display
+        const metricsContainer = document.getElementById('agentMetrics');
+        const metricsGrid = document.getElementById('agentMetricsGrid');
 
         let conversationId = null;
         let isSubmitting = false;
         let agentEnabled = agentConfig ? Boolean(agentConfig.enabled) : true;
         let hasAgentError = agentPanel ? agentPanel.dataset.agentError === 'true' : false;
 
-        function updateProviderSections(provider) {
-            if (ollamaSection) {
-                ollamaSection.hidden = provider !== 'ollama';
-            }
-            if (openaiSection) {
-                openaiSection.hidden = provider !== 'openai';
+        // NEW: Method descriptions
+        const METHOD_HINTS = {
+            'basic': 'Fast hybrid retrieval with direct LLM generation (~15-30s)',
+            'adversarial': 'Same as Good but with detailed pipeline monitoring (~15-30s)',
+            'tiered': 'Best quality with confidence-based escalation (~20-60s)'
+        };
+
+        // NEW: Update hint when method changes
+        if (methodSelect && methodHint) {
+            methodSelect.addEventListener('change', function() {
+                methodHint.textContent = METHOD_HINTS[methodSelect.value] || '';
+            });
+        }
+
+        // NEW: Debug console functions
+        function debugLog(message, type = 'info') {
+            if (!debugOutput) return;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `agent-debug-entry agent-debug-entry--${type}`;
+            
+            const timeEl = document.createElement('span');
+            timeEl.className = 'agent-debug-time';
+            timeEl.textContent = `[${timestamp}]`;
+            
+            const msgEl = document.createElement('span');
+            msgEl.className = 'agent-debug-message';
+            msgEl.textContent = message;
+            
+            entry.appendChild(timeEl);
+            entry.appendChild(msgEl);
+            debugOutput.appendChild(entry);
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+
+        function clearDebugLog() {
+            if (debugOutput) {
+                debugOutput.innerHTML = '';
             }
         }
 
-        function markConfigStatus(message, type) {
-            if (!configStatus) return;
-            configStatus.textContent = message || '';
-            configStatus.hidden = !message;
-            if (!message) {
-                delete configStatus.dataset.status;
-                return;
+        if (debugClear) {
+            debugClear.addEventListener('click', clearDebugLog);
+        }
+
+        // NEW: Display performance metrics
+        function displayMetrics(data, method) {
+            if (!metricsContainer || !metricsGrid) return;
+            
+            metricsGrid.innerHTML = '';
+            metricsContainer.hidden = false;
+
+            if (method === 'tiered' && data.metrics && Array.isArray(data.metrics)) {
+                // Tiered metrics - show stage breakdown
+                const escalated = data.escalated ? 'Yes (Tier 2 triggered)' : 'No (Tier 1 sufficient)';
+                addMetric('Escalated', escalated, data.escalated ? 'warning' : 'success');
+                addMetric('Total Duration', `${data.total_duration.toFixed(1)}s`, 'primary');
+                
+                // Stage breakdown
+                data.metrics.forEach(stage => {
+                    addMetric(
+                        stage.stage,
+                        `${stage.total_time.toFixed(1)}s (${stage.tokens.toLocaleString()} tokens, ${stage.doc_count} docs)`,
+                        'info'
+                    );
+                });
+                
+            } else if (method === 'adversarial' && data.latency) {
+                // Adversarial metrics
+                addMetric('Total Latency', `${data.latency.toFixed(1)}s`, 'primary');
+                addMetric('Sources Used', Object.keys(data.sources || {}).length, 'info');
+                
+            } else if (method === 'basic' && data.metrics) {
+                // Basic metrics
+                addMetric('Total Time', `${data.metrics.total_time.toFixed(1)}s`, 'primary');
+                addMetric('Retrieval', `${data.metrics.retrieval_time.toFixed(1)}s`, 'info');
+                addMetric('LLM Generation', `${data.metrics.llm_time.toFixed(1)}s`, 'info');
+                addMetric('Context Tokens', data.metrics.tokens.toLocaleString(), 'info');
+                addMetric('Documents', data.metrics.doc_count, 'info');
             }
-            configStatus.dataset.status = type || 'info';
         }
 
-        function setConfigSubmitting(active) {
-            if (!settingsForm) return;
-            const saveButton = settingsForm.querySelector('button[type="submit"]');
-            if (saveButton) saveButton.disabled = active;
-            if (resetConfigButton) resetConfigButton.disabled = active;
+        function addMetric(label, value, type = 'info') {
+            const metric = document.createElement('div');
+            metric.className = `agent-metric agent-metric--${type}`;
+            
+            const labelEl = document.createElement('span');
+            labelEl.className = 'agent-metric__label';
+            labelEl.textContent = label;
+            
+            const valueEl = document.createElement('span');
+            valueEl.className = 'agent-metric__value';
+            valueEl.textContent = value;
+            
+            metric.appendChild(labelEl);
+            metric.appendChild(valueEl);
+            metricsGrid.appendChild(metric);
         }
 
-        function setChatSubmitting(active) {
+        function setChatSubmitting(active, statusMsg) {
             isSubmitting = active;
             if (submitButton) submitButton.disabled = active;
             if (status) {
                 status.hidden = !active;
+                if (statusText && statusMsg) {
+                    statusText.textContent = statusMsg;
+                }
             }
         }
 
@@ -127,6 +189,8 @@
                 sourcesContainer.hidden = true;
             }
             if (sourcesList) sourcesList.innerHTML = '';
+            if (metricsContainer) metricsContainer.hidden = true;
+            clearDebugLog();
         }
 
         function renderHistory(history) {
@@ -150,216 +214,93 @@
             }
         }
 
-        function updateConfigInputs(payload) {
-            if (!settingsForm || !payload) return;
-            if (typeof payload.enabled !== 'undefined' && enabledToggle) {
-                enabledToggle.checked = Boolean(payload.enabled);
-            }
-            if (payload.model_provider && providerSelect) {
-                providerSelect.value = payload.model_provider;
-                updateProviderSections(payload.model_provider);
-            }
-            if (typeof payload.ollama_base_url !== 'undefined' && ollamaBaseUrlInput) {
-                ollamaBaseUrlInput.value = payload.ollama_base_url || '';
-            }
-            if (payload.openai_api_key_present && openAiKeyInput) {
-                openAiKeyInput.placeholder = 'API key configured';
-            }
-            if (typeof payload.model_name !== 'undefined' && modelNameInput) {
-                modelNameInput.value = payload.model_name || '';
-            }
-            if (typeof payload.temperature !== 'undefined' && temperatureInput) {
-                temperatureInput.value = Number(payload.temperature).toFixed(2);
-            }
-            if (typeof payload.max_context_documents !== 'undefined' && contextDocsInput) {
-                contextDocsInput.value = payload.max_context_documents;
-            }
-            if (typeof payload.system_prompt !== 'undefined' && systemPromptInput) {
-                systemPromptInput.value = payload.system_prompt || '';
-            }
-            if (payload.context_fields && contextFieldsInput) {
-                contextFieldsInput.value = Array.isArray(payload.context_fields) ? payload.context_fields.join('\n') : payload.context_fields;
-            }
-            if (typeof payload.summary_field !== 'undefined' && summaryFieldInput) {
-                summaryFieldInput.value = payload.summary_field || '';
-            }
-            if (typeof payload.allow_general_fallback !== 'undefined' && fallbackToggle) {
-                fallbackToggle.checked = Boolean(payload.allow_general_fallback);
-            }
-            if (typeof payload.use_vector_retrieval !== 'undefined' && useVectorToggle) {
-                useVectorToggle.checked = Boolean(payload.use_vector_retrieval); // Added to hydrate the RAG toggle from backend state.
-            }
-            if (payload.embedding_provider && embeddingProviderSelect) {
-                embeddingProviderSelect.value = payload.embedding_provider; // Added to align embedding provider dropdown with config.
-            }
-            if (typeof payload.embedding_model !== 'undefined' && embeddingModelInput) {
-                embeddingModelInput.value = payload.embedding_model || ''; // Added to reflect embedding model selection in the form.
-            }
-            if (typeof payload.chunk_size !== 'undefined' && chunkSizeInput) {
-                chunkSizeInput.value = payload.chunk_size; // Added to prefill chunk size control for RAG chunking.
-            }
-            if (typeof payload.chunk_overlap !== 'undefined' && chunkOverlapInput) {
-                chunkOverlapInput.value = payload.chunk_overlap; // Added to keep overlap input synced with session overrides.
-            }
-            if (typeof payload.hybrid_alpha !== 'undefined' && hybridAlphaInput) {
-                hybridAlphaInput.value = Number(payload.hybrid_alpha).toFixed(2); // Added to display hybrid weighting consistently.
-            }
-            if (payload.vector_store_type && vectorStoreSelect) {
-                vectorStoreSelect.value = payload.vector_store_type; // Added to persist vector store selection in UI.
-            }
-            if (typeof payload.chroma_persist_directory !== 'undefined' && chromaPathInput) {
-                chromaPathInput.value = payload.chroma_persist_directory || ''; // Added to show custom Chroma path when provided.
-            }
-        }
-
-        function hydrateFromConfig() {
-            if (!agentConfig) return;
-            applyAgentEnabledState(Boolean(agentConfig.enabled));
-            updateConfigInputs(agentConfig);
-        }
-
+        // NEW: Submit question with method selection
         async function submitQuestion(payload) {
             if (!form || !agentPanel) return;
             if (!agentEnabled) {
                 if (disabledBanner) disabledBanner.hidden = false;
                 return;
             }
-            setChatSubmitting(true);
+
+            const method = methodSelect ? methodSelect.value : 'tiered';
+            const endpoint = `/historian-agent/query-${method}`;
+            
+            debugLog(`=== Starting ${method.toUpperCase()} query ===`, 'primary');
+            debugLog(`Endpoint: ${endpoint}`, 'info');
+            debugLog(`Question: ${payload.question.substring(0, 100)}...`, 'info');
+            
+            setChatSubmitting(true, `Processing with ${method} method...`);
+            
             try {
-                const response = await fetch('/historian-agent/query', {
+                const startTime = performance.now();
+                
+                debugLog('Sending request to backend...', 'info');
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
                 });
+                
                 const data = await response.json();
+                const elapsedTime = ((performance.now() - startTime) / 1000).toFixed(1);
+                
                 if (!response.ok) {
-                    throw new Error(data.error || 'Historian Agent request failed.');
+                    throw new Error(data.error || 'Query failed');
                 }
+                
+                debugLog(`✓ Response received in ${elapsedTime}s`, 'success');
+                debugLog(`Method used: ${data.method || method}`, 'info');
+                
+                // Log method-specific details
+                if (method === 'tiered') {
+                    debugLog(`Escalated to Tier 2: ${data.escalated ? 'YES' : 'NO'}`, data.escalated ? 'warning' : 'success');
+                    debugLog(`Total stages: ${data.metrics ? data.metrics.length : 0}`, 'info');
+                    if (data.metrics) {
+                        data.metrics.forEach((stage, idx) => {
+                            debugLog(`  Stage ${idx + 1}: ${stage.stage} (${stage.total_time.toFixed(1)}s, ${stage.tokens} tokens)`, 'info');
+                        });
+                    }
+                } else if (method === 'adversarial') {
+                    debugLog(`Latency: ${data.latency.toFixed(1)}s`, 'info');
+                } else if (method === 'basic') {
+                    debugLog(`Retrieval: ${data.metrics.retrieval_time.toFixed(1)}s`, 'info');
+                    debugLog(`LLM: ${data.metrics.llm_time.toFixed(1)}s`, 'info');
+                    debugLog(`Tokens: ${data.metrics.tokens}`, 'info');
+                }
+                
+                debugLog(`Sources found: ${Object.keys(data.sources || {}).length}`, 'info');
+                
                 conversationId = data.conversation_id || payload.conversation_id;
                 renderHistory(data.history || []);
+                
                 if (data.answer) {
                     appendMessage('assistant', data.answer, data.sources || []);
                 }
+                
+                // Display metrics
+                displayMetrics(data, method);
+                
                 if (questionInput) {
                     questionInput.value = '';
                     questionInput.focus();
                 }
+                
+                debugLog('=== Query complete ===', 'success');
+                
             } catch (error) {
                 console.error(error);
+                debugLog(`✗ Error: ${error.message}`, 'error');
                 appendMessage('assistant', error.message || 'Unable to process your question right now.', []);
             } finally {
                 setChatSubmitting(false);
             }
         }
 
-        function serializeSettingsForm() {
-            if (!settingsForm) return {};
-            const formData = new FormData(settingsForm);
-            const payload = {};
-            formData.forEach((value, key) => {
-                if (payload[key]) {
-                    if (!Array.isArray(payload[key])) {
-                        payload[key] = [payload[key]];
-                    }
-                    payload[key].push(value);
-                } else {
-                    payload[key] = value;
-                }
-            });
-            payload.enabled = settingsForm.querySelector('#agentEnabled')?.checked;
-            payload.allow_general_fallback = settingsForm.querySelector('#agentAllowFallback')?.checked;
-            payload.use_vector_retrieval = settingsForm.querySelector('#agentUseVector')?.checked; // Added to send explicit RAG toggle state.
-            return payload;
-        }
-
-        async function submitSettings(payload) {
-            if (!configEndpoint) return;
-            setConfigSubmitting(true);
-            markConfigStatus('Saving configuration…');
-            try {
-                const response = await fetch(configEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || 'Unable to update configuration.');
-                }
-                agentConfig = data.config;
-                applyAgentEnabledState(Boolean(agentConfig.enabled));
-                updateConfigInputs(agentConfig);
-                markConfigStatus(data.message || 'Configuration saved.', 'success');
-                hasAgentError = Boolean(data.agent_error);
-                if (disabledBanner) disabledBanner.hidden = agentEnabled && !hasAgentError;
-                if (errorBanner) {
-                    errorBanner.textContent = data.agent_error || '';
-                    errorBanner.hidden = !data.agent_error;
-                }
-            } catch (error) {
-                console.error(error);
-                markConfigStatus(error.message || 'Failed to save configuration.', 'error');
-            } finally {
-                setConfigSubmitting(false);
-            }
-        }
-
-        async function resetSettings() {
-            if (!configEndpoint) return;
-            setConfigSubmitting(true);
-            markConfigStatus('Restoring defaults…');
-            try {
-                const response = await fetch(configEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reset: true })
-                });
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || 'Unable to reset configuration.');
-                }
-                agentConfig = data.config;
-                updateConfigInputs(agentConfig);
-                applyAgentEnabledState(Boolean(agentConfig.enabled));
-                markConfigStatus(data.message || 'Configuration reset.', 'success');
-                hasAgentError = Boolean(data.agent_error);
-                if (disabledBanner) disabledBanner.hidden = agentEnabled && !hasAgentError;
-                if (errorBanner) {
-                    errorBanner.textContent = data.agent_error || '';
-                    errorBanner.hidden = !data.agent_error;
-                }
-            } catch (error) {
-                console.error(error);
-                markConfigStatus(error.message || 'Failed to reset configuration.', 'error');
-            } finally {
-                setConfigSubmitting(false);
-            }
-        }
-
-        if (providerSelect) {
-            providerSelect.addEventListener('change', function(event) {
-                updateProviderSections(event.target.value);
-            });
-        }
-
-        if (settingsForm) {
-            settingsForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const payload = serializeSettingsForm();
-                submitSettings(payload);
-            });
-        }
-
-        if (resetConfigButton) {
-            resetConfigButton.addEventListener('click', function() {
-                resetSettings();
-            });
+        function hydrateFromConfig() {
+            if (!agentConfig) return;
+            applyAgentEnabledState(Boolean(agentConfig.enabled));
         }
 
         if (form) {
@@ -402,5 +343,7 @@
         }
 
         hydrateFromConfig();
+        debugLog('Historian Agent initialized', 'success');
+        debugLog(`Current method: ${methodSelect ? methodSelect.value : 'tiered'}`, 'info');
     });
 })();

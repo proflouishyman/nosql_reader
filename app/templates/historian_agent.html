@@ -13,7 +13,31 @@
         <div id="agentDisabledBanner" class="agent-alert" {% if agent_config_payload.enabled and not agent_error %}hidden{% endif %}>
             The Historian agent is disabled. Adjust the configuration from the settings page to continue.
         </div>
+        
+        <!-- NEW: Method selector -->
+        <div class="agent-method-selector">
+            <label for="agentMethod">Query Method:</label>
+            <select id="agentMethod" name="method">
+                <option value="basic">Good (Fast)</option>
+                <option value="adversarial">Better (Monitored)</option>
+                <option value="tiered" selected>Best (Tiered)</option>
+            </select>
+            <span class="agent-method-hint" id="agentMethodHint">
+                Best quality with confidence-based escalation (~20-60s)
+            </span>
+        </div>
+
+        <!-- NEW: Terminal-style debug console -->
+        <div class="agent-debug-console" id="agentDebugConsole">
+            <div class="agent-debug-header">
+                <span class="agent-debug-title">Pipeline Debug Log</span>
+                <button type="button" class="agent-debug-clear" id="agentDebugClear">Clear</button>
+            </div>
+            <div class="agent-debug-output" id="agentDebugOutput"></div>
+        </div>
+
         <div class="agent-history" id="agentHistory" aria-live="polite" aria-label="Historian Agent conversation"></div>
+        
         <form id="agentForm" class="agent-form" novalidate>
             <label for="agentQuestion" class="sr-only">Ask a question</label>
             <textarea id="agentQuestion" name="question" rows="4" placeholder="Ask the Historian Agent about the archives..."></textarea>
@@ -25,12 +49,19 @@
             <div class="agent-actions">
                 <div class="agent-status" id="agentStatus" role="status" aria-live="polite" hidden>
                     <span class="agent-status__dot" aria-hidden="true"></span>
-                    <span>Working...</span>
+                    <span id="agentStatusText">Working...</span>
                 </div>
                 <button type="submit">Send</button>
                 <button type="button" id="agentReset" class="secondary">Reset conversation</button>
             </div>
         </form>
+        
+        <!-- NEW: Performance metrics display -->
+        <div class="agent-metrics" id="agentMetrics" hidden>
+            <h3>Performance Metrics</h3>
+            <div class="agent-metrics-grid" id="agentMetricsGrid"></div>
+        </div>
+
         <div class="agent-sources" id="agentSources" hidden>
             <h2>Sources</h2>
             <ul id="agentSourcesList"></ul>

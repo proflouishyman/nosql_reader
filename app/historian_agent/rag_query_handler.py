@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+#to run from command line, use: python -m historian_agent.rag_query_handler "what do firemen do?" from the app directory
+
 import sys, os, requests, time
 from typing import Dict, List, Any, Tuple
 from pymongo import MongoClient

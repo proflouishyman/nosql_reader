@@ -1644,3 +1644,296 @@ input[type="range"] {
 .settings-ingestion__automation .button--secondary {
     margin-top: 0.5rem;
 }
+
+
+/* ============================================
+   NEW: Historian Agent Method Selector
+   ============================================ */
+
+.agent-method-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+}
+
+.agent-method-selector label {
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+}
+
+.agent-method-selector select {
+    flex: 0 1 auto;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.agent-method-selector select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.agent-method-hint {
+    flex: 1 1 auto;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* ============================================
+   NEW: Debug Console (Terminal Style)
+   ============================================ */
+
+.agent-debug-console {
+    background: #0f172a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
+    font-family: 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+.agent-debug-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+}
+
+.agent-debug-title {
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.agent-debug-clear {
+    padding: 4px 10px;
+    background: #475569;
+    color: #f1f5f9;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.agent-debug-clear:hover {
+    background: #64748b;
+}
+
+.agent-debug-output {
+    padding: 12px 14px;
+    max-height: 300px;
+    overflow-y: auto;
+    color: #e2e8f0;
+    line-height: 1.6;
+}
+
+.agent-debug-output:empty::before {
+    content: "Debug log is empty. Submit a query to see pipeline events.";
+    color: #64748b;
+    font-style: italic;
+}
+
+.agent-debug-entry {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 4px;
+    padding: 2px 0;
+}
+
+.agent-debug-time {
+    color: #64748b;
+    flex-shrink: 0;
+    font-weight: 600;
+}
+
+.agent-debug-message {
+    color: #e2e8f0;
+    word-break: break-word;
+}
+
+/* Debug entry types */
+.agent-debug-entry--primary .agent-debug-message {
+    color: #60a5fa;
+    font-weight: 700;
+}
+
+.agent-debug-entry--success .agent-debug-message {
+    color: #34d399;
+}
+
+.agent-debug-entry--warning .agent-debug-message {
+    color: #fbbf24;
+}
+
+.agent-debug-entry--error .agent-debug-message {
+    color: #f87171;
+    font-weight: 600;
+}
+
+.agent-debug-entry--info .agent-debug-message {
+    color: #cbd5e1;
+}
+
+/* ============================================
+   NEW: Performance Metrics Display
+   ============================================ */
+
+.agent-metrics {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-top: 16px;
+    box-shadow: 0 8px 16px rgba(56, 189, 248, 0.1);
+}
+
+.agent-metrics h3 {
+    margin: 0 0 14px;
+    font-size: 1rem;
+    color: #0c4a6e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.agent-metrics h3::before {
+    content: "📊";
+}
+
+.agent-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.agent-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 2px 6px rgba(56, 189, 248, 0.08);
+}
+
+.agent-metric__label {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.agent-metric__value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Metric type colors */
+.agent-metric--primary {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: #93c5fd;
+}
+
+.agent-metric--primary .agent-metric__value {
+    color: #1e40af;
+}
+
+.agent-metric--success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border-color: #6ee7b7;
+}
+
+.agent-metric--success .agent-metric__value {
+    color: #065f46;
+}
+
+.agent-metric--warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #fcd34d;
+}
+
+.agent-metric--warning .agent-metric__value {
+    color: #92400e;
+}
+
+.agent-metric--info {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.agent-metric--info .agent-metric__value {
+    color: #334155;
+}
+
+/* ============================================
+   Mobile Responsiveness
+   ============================================ */
+
+@media (max-width: 768px) {
+    .agent-method-selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .agent-method-selector select {
+        width: 100%;
+    }
+    
+    .agent-method-hint {
+        text-align: center;
+    }
+    
+    .agent-debug-output {
+        font-size: 0.75rem;
+        max-height: 200px;
+    }
+    
+    .agent-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   Scrollbar Styling for Debug Console
+   ============================================ */
+
+.agent-debug-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+.agent-debug-output::-webkit-scrollbar-track {
+    background: #1e293b;
+    border-radius: 4px;
+}
+
+.agent-debug-output::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+}
+
+.agent-debug-output::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
