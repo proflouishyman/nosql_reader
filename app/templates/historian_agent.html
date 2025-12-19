@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container historian-agent">
     <div class="agent-hero">
-        <span class="agent-hero__badge">RAG powered</span>
+        <span class="agent-hero__badge">Powered By Primary Sources</span>
         <h1>Historian Agent</h1>
         <p class="agent-hero__subtitle">Ask natural language questions about the archives and receive sourced answers from the Historian Agent.</p>
     </div>
@@ -15,9 +15,9 @@
         <div class="agent-method-selector">
             <label for="agentMethod">Query Method:</label>
             <select id="agentMethod" name="method">
-                <option value="basic">Good (Fast)</option>
+                <option value="basic" selected>Good (Fast)</option>
                 <option value="adversarial">Better (Monitored)</option>
-                <option value="tiered" selected>Best (Tiered)</option>
+                <option value="tiered">Best (Tiered)</option>
             </select>
             <span class="agent-method-hint" id="agentMethodHint">
                 Best quality with confidence-based escalation (~20-60s)

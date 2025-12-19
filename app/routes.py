@@ -193,7 +193,7 @@ def historian_agent_query_basic():
         # Create search_id for source navigation
         sources_dict = metrics.get('sources', {})
         search_id = str(uuid.uuid4())
-        ordered_ids = list(sources_dict.values())  # Extract doc_ids in order
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources_dict.items())]
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
         
         response_payload = {
@@ -264,7 +264,7 @@ def historian_agent_query_adversarial():
         
         # Create search_id for source navigation
         search_id = str(uuid.uuid4())
-        ordered_ids = list(sources.values())
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources_dict.items())]
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
         
         response_payload = {
@@ -334,7 +334,7 @@ def historian_agent_query_tiered():
         
         # Create search_id for source navigation
         search_id = str(uuid.uuid4())
-        ordered_ids = list(sources.values())
+        ordered_ids = [doc_id for filename, doc_id in sorted(sources_dict.items())]
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
         
         response_payload = {
