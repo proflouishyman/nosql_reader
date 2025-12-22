@@ -247,9 +247,9 @@
                 conversationId = data.conversation_id || payload.conversation_id;
                 renderHistory(data.history || []);
                 
-                if (data.answer) {
-                    appendMessage('assistant', data.answer, data.sources || {}, data.search_id);
-                }
+                //if (data.answer) {
+                //    appendMessage('assistant', data.answer, data.sources || {}, data.search_id);
+                //}
                 
                 // Call displayMetrics without the second arg now that logic is unified
                 displayMetrics(data);
