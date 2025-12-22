@@ -15,6 +15,11 @@ LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-oss:20b")
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://admin:secret@mongodb:27017/admin")
 DB_NAME = os.environ.get("DB_NAME", "railroad_documents")
+SYSTEM_PROMPT = "Avoid repetition: do not restate the same point, do not reuse the same opening phrases, do not repeat yourself. If you have nothing new to add, stop.  You are an expert historian commited to accuracy. False positives are much worse than false negatives."
+
+
+
+
 
 def count_tokens(text: str) -> int:
     return len(text) // 4
@@ -112,7 +117,8 @@ class RAGQueryHandler:
             l_start = time.time()
             resp = requests.post(f"{OLLAMA_BASE_URL}/api/generate", json={
                 "model": LLM_MODEL, 
-                "prompt": prompt, 
+                "prompt": prompt,
+                "system": SYSTEM_PROMPT, 
                 "stream": False,
                 "options": {
                     "temperature": 0.1,
