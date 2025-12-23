@@ -113,7 +113,7 @@ All routes maintain the same session/history pattern as existing historian_agent
 # ============================================================================
 
 from historian_agent.adversarial_rag import AdversarialRAGHandler
-from historian_agent.iterative_adversarial_agent import TieredHistorianAgent
+from historian_agent.iterative_adversarial_agent import build_agent_from_env
 from historian_agent.rag_query_handler import RAGQueryHandler
 
 # Global instances (initialized lazily)
@@ -136,10 +136,10 @@ def get_adversarial_handler():
     return _adversarial_handler
 
 def get_tiered_agent():
-    """Lazy initialization of TieredHistorianAgent"""
+    """Lazy initialization of TieredHistorianAgent (via factory)."""
     global _tiered_agent
     if _tiered_agent is None:
-        _tiered_agent = TieredHistorianAgent()
+        _tiered_agent = build_agent_from_env()
     return _tiered_agent
 
 # ============================================================================
@@ -287,9 +287,9 @@ def historian_agent_query_adversarial():
 _tiered_agent = None
 
 def get_tiered_agent():
+    """Lazy initialization of TieredHistorianAgent (via factory)."""
     global _tiered_agent
     if _tiered_agent is None:
-        from historian_agent.iterative_adversarial_agent import build_agent_from_env
         _tiered_agent = build_agent_from_env()
     return _tiered_agent
 

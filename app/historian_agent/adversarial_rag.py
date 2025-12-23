@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Adversarial RAG Handler with Robust Verification
@@ -65,7 +66,7 @@ Example Verification:
   Claim: "Brakemen were disciplined for failing to set brakes (Lorain, 6-19-19)"
   Check: Does "Lorain, 6-19-19" appear in source text? YES
   Check: Does it mention brake failure? YES
-  Result: SUPPORTED ✓
+  Result: SUPPORTED 
 
 STEP 4: Retry Logic + Graceful Fallback (Robustness)
 ----------------------------------------------
@@ -89,7 +90,7 @@ STEP 5: User Presentation
 If score < 90, append verification report to answer:
 
 ────────────────────────────────────────
-🛡️ VERIFICATION REPORT (Score: 85/100)
+ VERIFICATION REPORT (Score: 85/100)
 Judge's Reasoning: Most claims supported. The wage amount "$2.50/hour" 
 could not be verified in the provided sources. May be from a different 
 document not included in retrieval.
@@ -156,6 +157,8 @@ from pathlib import Path
 from .rag_query_handler import RAGQueryHandler
 from dotenv import load_dotenv
 
+from typing import Any, Dict, List, Optional
+
 load_dotenv()
 
 # --- Configuration ---
@@ -193,15 +196,15 @@ def _init_log_file():
         _log_file.write("="*60 + "\n\n")
         _log_file.flush()
         
-        sys.stderr.write(f"📝 [ADVERSARIAL] Logging to: {log_path}\n")
+        sys.stderr.write(f" [ADVERSARIAL] Logging to: {log_path}\n")
         sys.stderr.flush()
     except Exception as e:
-        sys.stderr.write(f"⚠️ [ADVERSARIAL] Failed to create log file: {e}\n")
+        sys.stderr.write(f" [ADVERSARIAL] Failed to create log file: {e}\n")
         sys.stderr.flush()
         _log_file = None
 
 
-def debug_step(step_name: str, detail: str = "", icon: str = "⚡", level: str = "INFO"):
+def debug_step(step_name: str, detail: str = "", icon: str = "", level: str = "INFO"):
     """
     Print debug information to stderr and write to log file.
     
@@ -219,12 +222,12 @@ def debug_step(step_name: str, detail: str = "", icon: str = "⚡", level: str =
         _init_log_file()
     
     timestamp = time.strftime("%H:%M:%S")
-    color = "⚠️" if level == "WARN" else "❌" if level == "ERROR" else icon
+    color = "" if level == "INFO" else "" if level == "WARN" else ""
     
     # Console output (stderr)
     stderr_msg = f"{color} [{timestamp}] [ADVERSARIAL] {step_name.upper()}\n"
     if detail:
-        stderr_msg += f"   └─ {detail}\n"
+        stderr_msg += f"   {detail}\n"
     sys.stderr.write(stderr_msg)
     sys.stderr.flush()
     
@@ -237,11 +240,11 @@ def debug_step(step_name: str, detail: str = "", icon: str = "⚡", level: str =
             _log_file.write(log_msg)
             _log_file.flush()
         except Exception as e:
-            sys.stderr.write(f"⚠️ [ADVERSARIAL] Failed to write to log: {e}\n")
+            sys.stderr.write(f" [ADVERSARIAL] Failed to write to log: {e}\n")
             sys.stderr.flush()
 
 
-def calculate_adaptive_timeout(self, token_count):
+def calculate_adaptive_timeout(token_count):
     """Calculate timeout based on token count.
     
     Args:
@@ -267,8 +270,6 @@ def calculate_adaptive_timeout(self, token_count):
     return timeout
 
 
-
-
 class AdversarialRAGHandler:
     """
     Handles RAG queries with adversarial verification.
@@ -288,10 +289,56 @@ class AdversarialRAGHandler:
     
     def __init__(self):
         """Initialize the adversarial handler with RAG query handler."""
-        debug_step("Init", "Initializing Adversarial Handler...", icon="🛡️")
+        debug_step("Init", "Initializing Adversarial Handler...", icon="")
         self.rag_handler = RAGQueryHandler()
-        debug_step("Init", f"Verifier Model: {VERIFIER_MODEL}", icon="🤖")
-        debug_step("Init", f"Timeout: {VERIFIER_TIMEOUT}s, Max Retries: {VERIFIER_MAX_RETRIES}", icon="⚙️")
+        debug_step("Init", f"Verifier Model: {VERIFIER_MODEL}", icon="")
+        debug_step("Init", f"Timeout: {VERIFIER_TIMEOUT}s, Max Retries: {VERIFIER_MAX_RETRIES}", icon="")
+
+
+    def verify(self, question: str, answer: str, sources: List[Dict[str, Any]], metrics: Optional[Dict[str, Any]] = None, *, context: Optional[str] = None, timeout: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Backwards-compatible verification entrypoint.
+
+        - If `context` is provided, verify against that exact text.
+        - Otherwise, expand context by fetching full documents referenced in `sources`.
+        """
+        sources_text = (context or "").strip()
+
+        if not sources_text:
+            doc_ids: List[str] = []
+            for s in sources or []:
+                if not isinstance(s, dict):
+                    continue
+                md = s.get("metadata", {}) if isinstance(s.get("metadata", {}), dict) else {}
+                doc_id = md.get("document_id") or s.get("document_id") or s.get("id")
+                if doc_id:
+                    doc_ids.append(str(doc_id))
+
+            if doc_ids:
+                try:
+                    sources_text, _, _ = self.rag_handler.get_full_document_text(doc_ids)
+                except Exception as e:
+                    return {
+                        "is_accurate": False,
+                        "citation_score": 0,
+                        "reasoning": f"Failed to fetch source text for verification: {str(e)}",
+                        "fallback_used": True,
+                    }
+
+        if not sources_text:
+            return {
+                "is_accurate": False,
+                "citation_score": 0,
+                "reasoning": "No source text available for verification.",
+                "fallback_used": True,
+            }
+
+        # Rough token estimate to drive adaptive timeout
+        token_estimate = max(1, len(sources_text) // 4)
+        adaptive_timeout = timeout if timeout is not None else self.calculate_adaptive_timeout(token_estimate)
+
+        return self.verify_citations(question=question, answer=answer, sources_text=sources_text, timeout=adaptive_timeout)
+
 
     def calculate_adaptive_timeout(self, token_count: int) -> int:
         """
@@ -299,10 +346,10 @@ class AdversarialRAGHandler:
         
         Args:
             token_count: Number of tokens in the verification prompt
-            
+        
         Returns:
             int: Timeout in seconds
-            
+        
         Based on observed performance:
             - qwen2.5:32b processes ~40-50 tokens/second
             - Add 20% buffer for safety
@@ -319,6 +366,7 @@ class AdversarialRAGHandler:
         
         return timeout
 
+
     def _call_verifier_with_retry(self, system_prompt: str, user_prompt: str) -> str:
         """
         Call the verifier LLM with retry logic and timeout protection.
@@ -326,13 +374,13 @@ class AdversarialRAGHandler:
         Args:
             system_prompt: System instructions for the verifier
             user_prompt: User query containing question, answer, and sources
-            
+        
         Returns:
             Raw response text from the verifier LLM
-            
+        
         Raises:
             ValueError: If all retry attempts fail or timeout
-            
+        
         Implementation:
             - Attempts up to VERIFIER_MAX_RETRIES calls
             - Uses exponential backoff (2^attempt seconds)
@@ -374,14 +422,14 @@ class AdversarialRAGHandler:
                 _log_file.write(f"{json.dumps(json_schema, indent=2)}\n\n")
                 _log_file.flush()
             except Exception as e:
-                sys.stderr.write(f"⚠️ Failed to log request: {e}\n")
+                sys.stderr.write(f" [ADVERSARIAL] Failed to log request: {e}\n")
         
         for attempt in range(VERIFIER_MAX_RETRIES):
             try:
                 debug_step(
                     "Verifier Call",
                     f"Attempt {attempt + 1}/{VERIFIER_MAX_RETRIES}",
-                    icon="🔄"
+                    icon=""
                 )
                 
                 # Log attempt start
@@ -455,13 +503,13 @@ class AdversarialRAGHandler:
                     debug_step(
                         "Raw Verdict",
                         f"LLM Output: {raw_response[:200]}...",
-                        icon="📝"
+                        icon=""
                     )
                     
                     # Log successful response
                     if DEBUG and _log_file:
                         try:
-                            _log_file.write(f"✅ SUCCESS - Got valid response\n")
+                            _log_file.write(f"\n SUCCESS - Got valid response\n")
                             _log_file.write(f"Completed: {datetime.now().isoformat()}\n\n")
                             _log_file.flush()
                         except:
@@ -472,7 +520,7 @@ class AdversarialRAGHandler:
                 # Empty response - retry if attempts remain
                 if DEBUG and _log_file:
                     try:
-                        _log_file.write(f"❌ EMPTY RESPONSE\n")
+                        _log_file.write(f"\n EMPTY RESPONSE\n")
                         _log_file.write(f"Response was empty or whitespace-only\n")
                         _log_file.flush()
                     except:
@@ -483,7 +531,7 @@ class AdversarialRAGHandler:
                     debug_step(
                         "Retry",
                         f"Empty response, waiting {wait_time}s before retry",
-                        icon="⏳",
+                        icon="",
                         level="WARN"
                     )
                     
@@ -505,7 +553,7 @@ class AdversarialRAGHandler:
                 
                 if DEBUG and _log_file:
                     try:
-                        _log_file.write(f"❌ TIMEOUT ERROR\n")
+                        _log_file.write(f"\n TIMEOUT ERROR\n")
                         _log_file.write(f"Request exceeded {VERIFIER_TIMEOUT}s\n")
                         _log_file.write(f"Error: {str(e)}\n")
                         _log_file.flush()
@@ -517,7 +565,7 @@ class AdversarialRAGHandler:
                     debug_step(
                         "Retry",
                         f"Retrying after {wait_time}s backoff",
-                        icon="🔄"
+                        icon=""
                     )
                     
                     if DEBUG and _log_file:
@@ -539,7 +587,7 @@ class AdversarialRAGHandler:
                 
                 if DEBUG and _log_file:
                     try:
-                        _log_file.write(f"❌ NETWORK ERROR\n")
+                        _log_file.write(f"\n NETWORK ERROR\n")
                         _log_file.write(f"Error type: {type(e).__name__}\n")
                         _log_file.write(f"Error message: {str(e)}\n")
                         
@@ -564,7 +612,7 @@ class AdversarialRAGHandler:
                     
                     time.sleep(wait_time)
                 continue
-            
+                
             except Exception as e:
                 # Catch any other unexpected errors
                 debug_step(
@@ -575,7 +623,7 @@ class AdversarialRAGHandler:
                 
                 if DEBUG and _log_file:
                     try:
-                        _log_file.write(f"❌ UNEXPECTED ERROR\n")
+                        _log_file.write(f"\n UNEXPECTED ERROR\n")
                         _log_file.write(f"Error type: {type(e).__name__}\n")
                         _log_file.write(f"Error message: {str(e)}\n")
                         
@@ -607,6 +655,7 @@ class AdversarialRAGHandler:
             f"Verifier returned empty/failed response after {VERIFIER_MAX_RETRIES} attempts"
         )
 
+
     def verify_citations(self, question: str, answer: str, sources_text: str, timeout: int = None) -> dict:
         """
         Verify that answer claims are supported by source documents.
@@ -624,13 +673,13 @@ class AdversarialRAGHandler:
                 - is_accurate (bool): Overall accuracy assessment
                 - citation_score (int): 0-100 score for citation quality
                 - reasoning (str): Explanation of verification results
-                
+            
         Fallback Behavior:
             If verification fails after all retries, returns conservative
             optimistic score (75/100) with clear explanation rather than
             blocking the user completely.
         """
-        debug_step("Verification", "Cross-checking claims against source text...", icon="⚖️")
+        debug_step("Verification", "Cross-checking claims against source text...", icon="")
         
         # Log to file with full details
         if DEBUG and _log_file:
@@ -655,8 +704,8 @@ Your task:
 1. Break the ANSWER into discrete factual claims.
 2. Verify each claim using ONLY the SOURCE TEXT.
 3. A claim is supported ONLY if it is explicitly stated in the SOURCE TEXT.
-   - Do NOT use background knowledge.
-   - Do NOT infer or assume.
+- Do NOT use background knowledge.
+- Do NOT infer or assume.
 4. If ANY factual claim is unsupported, mark the answer as inaccurate.
 
 Scoring:
@@ -668,7 +717,7 @@ Output rules:
 - Respond with ONLY a valid JSON object. first char must be { and last char must be }
 - Use EXACTLY the schema provided.
 - Do NOT include markdown, commentary, or extra keys.
-        """.strip()
+    """.strip()
 
         USER_PROMPT = f"""
 QUESTION:
@@ -682,11 +731,11 @@ SOURCE TEXT:
 
 Required JSON output format:
 {{
-    "is_accurate": boolean,
-    "citation_score": number,
-    "reasoning": "List each unsupported or partially supported claim, or state that all claims are supported."
+"is_accurate": boolean,
+"citation_score": number,
+"reasoning": "List each unsupported or partially supported claim, or state that all claims are supported."
 }}
-        """.strip()
+    """.strip()
         
         try:
             # Try verification with retry logic
@@ -724,7 +773,7 @@ Required JSON output format:
             debug_step(
                 "Verdict",
                 f"Score: {score}/100",
-                icon="👩‍⚖️"
+                icon=""
             )
             
             # Log verdict to file
@@ -766,7 +815,7 @@ Required JSON output format:
                 "is_accurate": True,  # Assume valid until proven otherwise
                 "citation_score": 75,  # Conservative but passing
                 "reasoning": (
-                    f"⚠️ Verification system unavailable ({type(e).__name__}). "
+                    f" Verification system unavailable ({type(e).__name__}). "
                     f"Answer generated from retrieved sources but not independently verified. "
                     f"Manual review recommended for critical use cases."
                 )
@@ -775,10 +824,11 @@ Required JSON output format:
             debug_step(
                 "Fallback Score",
                 "Using conservative score: 75/100",
-                icon="🛟"
+                icon=""
             )
             
             return fallback_verdict
+
 
     def process_query(self, question: str) -> tuple:
         """
@@ -799,7 +849,7 @@ Required JSON output format:
         start = time.time()
         
         # 1. Generate Answer (Standard RAG)
-        debug_step("Generation", "Starting RAG query...", icon="🔍")
+        debug_step("Generation", "Starting RAG query...", icon="")
         ans, metrics = self.rag_handler.process_query(question, label="ADVERSARIAL_GEN")
         
         # 2. Extract Context (What did the Generator see?)
@@ -811,7 +861,7 @@ Required JSON output format:
             debug_step(
                 "Context Extraction",
                 "Context not in metrics, fetching ALL source documents",
-                icon="📚",
+                icon="",
                 level="WARN"
             )
             source_ids = list(metrics.get('sources', {}).values())
@@ -821,7 +871,7 @@ Required JSON output format:
                 debug_step(
                     "Context Expansion",
                     f"Fetching {len(source_ids)} full documents for verification",
-                    icon="📖"
+                    icon=""
                 )
                 verify_text, _, _ = self.rag_handler.get_full_document_text(source_ids)
             else:
@@ -837,7 +887,7 @@ Required JSON output format:
         debug_step(
             "Verification Context",
             f"Using {verify_token_count:,} tokens of source text",
-            icon="📊"
+            icon=""
         )
         
         # Calculate adaptive timeout based on content size
@@ -845,7 +895,7 @@ Required JSON output format:
         debug_step(
             "Adaptive Timeout",
             f"Calculated {adaptive_timeout}s timeout for {verify_token_count:,} tokens",
-            icon="⏱️"
+            icon=""
         )
         
         # 3. Verify (The Trial) - with adaptive timeout
@@ -853,12 +903,12 @@ Required JSON output format:
         score = verdict.get('citation_score', 0)
         reasoning = verdict.get('reasoning', 'No reasoning provided.')
         
-        debug_step("Verdict", f"Score: {score}/100 | {reasoning[:100]}...", icon="👩‍⚖️")
+        debug_step("Verdict", f"Score: {score}/100 | {reasoning[:100]}...", icon="")
         
         # 4. Expose Reasoning to User (if score indicates issues)
         if score < 90:
             separator = "\n\n" + "─" * 40 + "\n"
-            ans += f"{separator}🛡️ **VERIFICATION REPORT (Score: {score}/100)**\n"
+            ans += f"{separator}  **VERIFICATION REPORT (Score: {score}/100)**\n"
             ans += f"**Judge's Reasoning:** {reasoning}\n"
         
         # 5. Add verification metadata to metrics
@@ -868,14 +918,15 @@ Required JSON output format:
         debug_step(
             "Complete",
             f"Total time: {latency:.2f}s",
-            icon="✅"
+            icon=""
         )
         
         return ans, latency, metrics.get('sources', {})
 
+
     def close(self):
         """Clean up resources and close log file."""
-        debug_step("Shutdown", "Closing RAG handler...", icon="🔌")
+        debug_step("Shutdown", "Closing RAG handler...", icon="")
         
         # Close log file if open
         global _log_file
@@ -885,9 +936,9 @@ Required JSON output format:
                 _log_file.write(f"Session ended: {datetime.now().isoformat()}\n")
                 _log_file.write(f"{'='*60}\n")
                 _log_file.close()
-                debug_step("Shutdown", "Log file closed", icon="📝")
+                debug_step("Shutdown", "Log file closed", icon="")
             except Exception as e:
-                sys.stderr.write(f"⚠️ [ADVERSARIAL] Error closing log: {e}\n")
+                sys.stderr.write(f" [ADVERSARIAL] Error closing log: {e}\n")
                 sys.stderr.flush()
             finally:
                 _log_file = None
@@ -899,7 +950,7 @@ Required JSON output format:
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit("Usage: python adversarial_rag.py 'question'")
-    
+
     # CLI Test Runner
     handler = AdversarialRAGHandler()
     try:
@@ -907,7 +958,7 @@ if __name__ == "__main__":
         ans, lat, src = handler.process_query(query)
         
         print("\n" + "═" * 60)
-        print(f"🤖 ADVERSARIAL RESPONSE ({lat:.2f}s)")
+        print(f"  ADVERSARIAL RESPONSE ({lat:.2f}s)")
         print("─" * 60)
         print(ans)
         print("═" * 60)
