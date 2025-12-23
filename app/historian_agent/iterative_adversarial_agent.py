@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Tiered Historian Agent with Adversarial Verification
@@ -103,19 +104,6 @@ def debug_event(category: str, msg: str, icon: str = "⚙️", level: str = "INF
 
 
 class TieredHistorianAgent:
-    """
-    Multi-tier investigation agent with adversarial verification.
-    
-    Escalates from quick answers to comprehensive multi-query searches
-    based on verification confidence scores from adversarial RAG.
-    
-    Attributes:
-        handler: RAGQueryHandler for standard retrieval and generation
-        adversarial_handler: AdversarialRAGHandler for verification
-        verifier_model: Name of the verifier model (from .env)
-        llm_model: Name of the generator model (from .env)
-    """
-    
     def __init__(self):
         """
         Initialize RAG handler and adversarial verifier.
@@ -142,7 +130,7 @@ class TieredHistorianAgent:
             f"Initialized with Generator: {self.llm_model}, Verifier: {self.verifier_model}",
             icon="🤖"
         )
-    
+
     def generate_multi_queries(self, original_question: str) -> List[str]:
         """
         Generate 3 alternative search queries for expanded investigation.
@@ -233,7 +221,7 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
                 f"{original_question} historical context",
                 f"{original_question} related documents"
             ]
-    
+
     def reconstruct_sources_list(self, sources_dict: Dict[str, str]) -> List[Dict]:
         """
         Convert sources dict to list format expected by verify().
@@ -257,7 +245,7 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             }
             for doc_id in sources_dict.values()
         ]
-    
+
     def verify_answer(
         self,
         question: str,
@@ -347,7 +335,7 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
                 'reasoning': f"⚠️ Verification system error: {str(e)}. Answer generated from retrieved sources but not verified.",
                 'fallback_used': True
             }
-    
+
     def attach_verification_report(
         self,
         answer: str,
@@ -384,348 +372,347 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
         report += f"**Judge's Reasoning:**\n{reasoning}\n"
         
         return answer + report
-    
 
-def run(self, question: str) -> Dict[str, Any]:
-    """
-    Modern API: execute tiered investigation and return a structured dict.
+    def run(self, question: str) -> Dict[str, Any]:
+        """
+        Modern API: execute tiered investigation and return a structured dict.
 
-    Keeps backwards compatibility with the older investigate() tuple API by
-    simply adapting its outputs.
-    """
-    answer, sources, metrics_list, duration = self.investigate(question)
-    return {
-        "question": question,
-        "answer": answer,
-        "sources": sources,
-        "metrics_list": metrics_list,
-        "duration": duration,
-    }
+        Keeps backwards compatibility with the older investigate() tuple API by
+        simply adapting its outputs.
+        """
+        answer, sources, metrics_list, duration = self.investigate(question)
+        return {
+            "question": question,
+            "answer": answer,
+            "sources": sources,
+            "metrics_list": metrics_list,
+            "duration": duration,
+        }
 
-def investigate(self, question: str) -> Tuple[str, Dict, List[Dict], float]:
-    """
-    Execute tiered investigation with adaptive escalation.
-    
-    WORKFLOW:
-    ---------
-    
-    TIER 1 (Quick Pass):
-    1. Execute hybrid retrieval (vector + keyword, RRF fusion)
-    2. Rerank top 40 → 10 chunks with cross-encoder
-    3. Generate answer from top chunks
-    4. Verify answer with adversarial RAG
-    5. IF score >= 90 → Return answer (done)
-    6. IF score < 90 → Continue to Tier 2
-    
-    TIER 2 (Deep Investigation):
-    1. Generate 3 alternative search queries
-    2. Execute retrieval for each query (3 docs per query)
-    3. Collect all document IDs (Tier 1 + multi-query)
-    4. Deduplicate and cap at PARENT_RETRIEVAL_CAP
-    5. Fetch full document text for all unique docs
-    6. Generate comprehensive answer from expanded context
-    7. Verify expanded answer
-    8. Return final answer with verification report
-    
-    Args:
-        question: User's research question
+    def investigate(self, question: str) -> Tuple[str, Dict, List[Dict], float]:
+        """
+        Execute tiered investigation with adaptive escalation.
         
-    Returns:
-        Tuple of (answer, sources, all_metrics, total_time) where:
-            - answer: Final answer with optional verification report
-            - sources: Dict mapping source labels to document IDs
-            - all_metrics: List of metrics dicts from each stage
-            - total_time: Total investigation time in seconds
+        WORKFLOW:
+        ---------
+        
+        TIER 1 (Quick Pass):
+        1. Execute hybrid retrieval (vector + keyword, RRF fusion)
+        2. Rerank top 40 → 10 chunks with cross-encoder
+        3. Generate answer from top chunks
+        4. Verify answer with adversarial RAG
+        5. IF score >= 90 → Return answer (done)
+        6. IF score < 90 → Continue to Tier 2
+        
+        TIER 2 (Deep Investigation):
+        1. Generate 3 alternative search queries
+        2. Execute retrieval for each query (3 docs per query)
+        3. Collect all document IDs (Tier 1 + multi-query)
+        4. Deduplicate and cap at PARENT_RETRIEVAL_CAP
+        5. Fetch full document text for all unique docs
+        6. Generate comprehensive answer from expanded context
+        7. Verify expanded answer
+        8. Return final answer with verification report
+        
+        Args:
+            question: User's research question
+        
+        Returns:
+            Tuple of (answer, sources, all_metrics, total_time) where:
+                - answer: Final answer with optional verification report
+                - sources: Dict mapping source labels to document IDs
+                - all_metrics: List of metrics dicts from each stage
+                - total_time: Total investigation time in seconds
             
-    Example:
-        >>> agent = TieredHistorianAgent()
-        >>> answer, sources, metrics, time = agent.investigate(
-        ...     "Were brakemen paid better than firemen?"
-        ... )
-        >>> print(f"Answer (verified): {answer}")
-        >>> print(f"Used {len(sources)} sources in {time:.1f}s")
-    """
-    all_metrics = []
-    overall_start = time.time()
-    
-    debug_event(
-        "Start",
-        f"Beginning investigation: '{question}'",
-        icon="🔍"
-    )
-    
-    # ================================================================
-    # TIER 1: Initial Quick Pass
-    # ================================================================
-    debug_event(
-        "Tier 1",
-        "Executing hybrid retrieval + reranking...",
-        icon="📝"
-    )
-    
-    t1_ans, t1_met = self.handler.process_query(
-        f"Create a detailed table for: {question}",
-        label="T1_DRAFT"
-    )
-    
-    t1_duration = time.time() - overall_start
-    
-    debug_event(
-        "Tier 1",
-        f"Generated answer ({len(t1_ans)} chars) from {len(t1_met['sources'])} sources in {t1_duration:.2f}s",
-        icon="✅"
-    )
-    
-    all_metrics.append({
-        "stage": "Tier 1: Initial Draft",
-        "duration": t1_duration,
-        **t1_met
-    })
-    
-    # ================================================================
-    # TIER 1: Adversarial Verification
-    # ================================================================
-    debug_event(
-        "Tier 1",
-        "Running adversarial verification...",
-        icon="🧐"
-    )
-    
-    verification_start = time.time()
-    
-    # Reconstruct sources list from metrics dict
-    sources_list = self.reconstruct_sources_list(t1_met["sources"])
-    
-    # Verify the answer (uses verifier model with adaptive timeout)
-    verdict = self.verify_answer(question, t1_ans, sources_list, t1_met)
-    verification_score = verdict.get('citation_score', 0)
-    verification_duration = time.time() - verification_start
-    
-    debug_event(
-        "Decision",
-        f"Tier 1 Verification: {verification_score}/100 (took {verification_duration:.2f}s)",
-        icon="⚖️"
-    )
-    
-    # Add verification to metrics
-    all_metrics.append({
-        "stage": "Tier 1: Verification",
-        "duration": verification_duration,
-        "score": verification_score,
-        "reasoning_length": len(verdict.get('reasoning', '')),
-        "fallback_used": verdict.get('fallback_used', False),
-        "is_accurate": verdict.get('is_accurate', False)
-    })
-    
-    # ================================================================
-    # DECISION POINT: Escalate to Tier 2?
-    # ================================================================
-    # Convert 0-100 score to 0.0-1.0 for comparison with threshold
-    confidence = verification_score / 100.0
-    
-    if confidence >= CONFIDENCE_THRESHOLD:
+        Example:
+            >>> agent = TieredHistorianAgent()
+            >>> answer, sources, metrics, time = agent.investigate(
+            ...     "Were brakemen paid better than firemen?"
+            ... )
+            >>> print(f"Answer (verified): {answer}")
+            >>> print(f"Used {len(sources)} sources in {time:.1f}s")
+        """
+        all_metrics = []
+        overall_start = time.time()
+        
         debug_event(
-            "Complete",
-            f"High confidence ({verification_score}/100 >= {int(CONFIDENCE_THRESHOLD*100)}). Returning Tier 1 answer.",
+            "Start",
+            f"Beginning investigation: '{question}'",
+            icon="🔍"
+        )
+        
+        # ================================================================
+        # TIER 1: Initial Quick Pass
+        # ================================================================
+        debug_event(
+            "Tier 1",
+            "Executing hybrid retrieval + reranking...",
+            icon="📝"
+        )
+        
+        t1_ans, t1_met = self.handler.process_query(
+            f"Create a detailed table for: {question}",
+            label="T1_DRAFT"
+        )
+        
+        t1_duration = time.time() - overall_start
+        
+        debug_event(
+            "Tier 1",
+            f"Generated answer ({len(t1_ans)} chars) from {len(t1_met['sources'])} sources in {t1_duration:.2f}s",
             icon="✅"
         )
         
-        # Attach verification report if score < 90
-        final_answer = self.attach_verification_report(
-            t1_ans,
-            verification_score,
-            verdict['reasoning']
+        all_metrics.append({
+            "stage": "Tier 1: Initial Draft",
+            "duration": t1_duration,
+            **t1_met
+        })
+        
+        # ================================================================
+        # TIER 1: Adversarial Verification
+        # ================================================================
+        debug_event(
+            "Tier 1",
+            "Running adversarial verification...",
+            icon="🧐"
         )
         
+        verification_start = time.time()
+        
+        # Reconstruct sources list from metrics dict
+        sources_list = self.reconstruct_sources_list(t1_met["sources"])
+        
+        # Verify the answer (uses verifier model with adaptive timeout)
+        verdict = self.verify_answer(question, t1_ans, sources_list, t1_met)
+        verification_score = verdict.get('citation_score', 0)
+        verification_duration = time.time() - verification_start
+        
+        debug_event(
+            "Decision",
+            f"Tier 1 Verification: {verification_score}/100 (took {verification_duration:.2f}s)",
+            icon="⚖️"
+        )
+        
+        # Add verification to metrics
+        all_metrics.append({
+            "stage": "Tier 1: Verification",
+            "duration": verification_duration,
+            "score": verification_score,
+            "reasoning_length": len(verdict.get('reasoning', '')),
+            "fallback_used": verdict.get('fallback_used', False),
+            "is_accurate": verdict.get('is_accurate', False)
+        })
+        
+        # ================================================================
+        # DECISION POINT: Escalate to Tier 2?
+        # ================================================================
+        # Convert 0-100 score to 0.0-1.0 for comparison with threshold
+        confidence = verification_score / 100.0
+        
+        if confidence >= CONFIDENCE_THRESHOLD:
+            debug_event(
+                "Complete",
+                f"High confidence ({verification_score}/100 >= {int(CONFIDENCE_THRESHOLD*100)}). Returning Tier 1 answer.",
+                icon="✅"
+            )
+            
+            # Attach verification report if score < 90
+            final_answer = self.attach_verification_report(
+                t1_ans,
+                verification_score,
+                verdict['reasoning']
+            )
+            
+            total_time = time.time() - overall_start
+            
+            debug_event(
+                "Complete",
+                f"Total time: {total_time:.2f}s",
+                icon="🏁"
+            )
+            
+            return final_answer, t1_met["sources"], all_metrics, total_time
+        
+        # ================================================================
+        # TIER 2: Multi-Query Expansion
+        # ================================================================
+        debug_event(
+            "Tier 2",
+            f"Low verification score ({verification_score}/100 < {int(CONFIDENCE_THRESHOLD*100)}). Escalating to Multi-Query expansion...",
+            icon="🚀"
+        )
+        
+        tier2_start = time.time()
+        
+        # Step 1: Generate alternative search queries
+        new_queries = self.generate_multi_queries(question)
+        
+        debug_event(
+            "Tier 2",
+            f"Generated {len(new_queries)} alternative queries",
+            icon="📋"
+        )
+        
+        # Step 2: Collect document IDs from multi-query results
+        expanded_ids = list(t1_met["sources"].values())
+        
+        debug_event(
+            "Tier 2",
+            f"Starting with {len(expanded_ids)} documents from Tier 1",
+            icon="📚"
+        )
+        
+        for idx, q in enumerate(new_queries, 1):
+            debug_event(
+                "Multi-Query",
+                f"Query {idx}/{len(new_queries)}: {q}",
+                icon="🔍"
+            )
+            
+            try:
+                # Retrieve and rerank for each query
+                chunks = self.handler.hybrid_retriever.get_relevant_documents(q)
+                reranked = self.handler.reranker.rerank(q, chunks, top_k=3)
+                
+                # Extract document IDs
+                new_ids = [
+                    c.metadata.get("document_id")
+                    for c in reranked
+                    if c.metadata.get("document_id")
+                ]
+                
+                expanded_ids.extend(new_ids)
+                
+                debug_event(
+                    "Multi-Query",
+                    f"Found {len(new_ids)} additional documents",
+                    icon="📄"
+                )
+                
+            except Exception as e:
+                debug_event(
+                    "Multi-Query",
+                    f"Query failed: {str(e)}",
+                    icon="⚠️",
+                    level="WARN"
+                )
+                continue
+        
+        # Step 3: De-duplicate and cap document count
+        unique_ids = list(dict.fromkeys(expanded_ids))[:PARENT_RETRIEVAL_CAP]
+        
+        debug_event(
+            "Expansion",
+            f"Collected {len(expanded_ids)} total docs → {len(unique_ids)} unique (capped at {PARENT_RETRIEVAL_CAP})",
+            icon="📊"
+        )
+        
+        # Step 4: Fetch full document text
+        debug_event(
+            "Expansion",
+            f"Fetching full text for {len(unique_ids)} documents...",
+            icon="📖"
+        )
+        
+        full_text, t2_map, io_time = self.handler.get_full_document_text(unique_ids)
+        
+        debug_event(
+            "Expansion",
+            f"Retrieved {len(full_text)} chars in {io_time:.2f}s",
+            icon="✅"
+        )
+        
+        # Step 5: Generate comprehensive answer from expanded context
+        debug_event(
+            "Tier 2",
+            "Synthesizing comprehensive answer from expanded context...",
+            icon="🔨"
+        )
+        
+        synthesis_start = time.time()
+        
+        final_ans, t2_met = self.handler.process_query(
+            f"Using the full document text below, answer comprehensively: {question}. "
+            f"Merge duplicate events and reconcile any conflicting information. "
+            f"Provide specific citations from the documents.",
+            context=full_text,
+            label="T2_ASSEMBLY"
+        )
+        
+        synthesis_duration = time.time() - synthesis_start
+        
+        debug_event(
+            "Tier 2",
+            f"Generated expanded answer ({len(final_ans)} chars) in {synthesis_duration:.2f}s",
+            icon="✅"
+        )
+        
+        t2_met["retrieval_time"] = io_time
+        t2_met["synthesis_time"] = synthesis_duration
+        
+        tier2_duration = time.time() - tier2_start
+        
+        all_metrics.append({
+            "stage": "Tier 2: Multi-Query Assembly",
+            "duration": tier2_duration,
+            **t2_met
+        })
+        
+        # ================================================================
+        # TIER 2: Final Verification
+        # ================================================================
+        debug_event(
+            "Tier 2",
+            "Running final adversarial verification...",
+            icon="🛡️"
+        )
+        
+        t2_verification_start = time.time()
+        
+        # Reconstruct sources for verification (Tier 1 + Tier 2)
+        combined_sources = {**t1_met["sources"], **t2_map}
+        t2_sources = self.reconstruct_sources_list(combined_sources)
+        
+        # Verify Tier 2 answer
+        t2_verdict = self.verify_answer(question, final_ans, t2_sources, t2_met)
+        t2_score = t2_verdict.get('citation_score', 0)
+        t2_verification_duration = time.time() - t2_verification_start
+        
+        debug_event(
+            "Final Score",
+            f"Tier 2 Verification: {t2_score}/100 (took {t2_verification_duration:.2f}s)",
+            icon="🎯"
+        )
+        
+        all_metrics.append({
+            "stage": "Tier 2: Final Verification",
+            "duration": t2_verification_duration,
+            "score": t2_score,
+            "reasoning_length": len(t2_verdict.get('reasoning', '')),
+            "fallback_used": t2_verdict.get('fallback_used', False),
+            "is_accurate": t2_verdict.get('is_accurate', False)
+        })
+        
+        # Attach verification report
+        final_answer = self.attach_verification_report(
+            final_ans,
+            t2_score,
+            t2_verdict['reasoning']
+        )
+        
+        # ================================================================
+        # Return Results
+        # ================================================================
         total_time = time.time() - overall_start
         
         debug_event(
             "Complete",
-            f"Total time: {total_time:.2f}s",
+            f"Investigation complete. Total time: {total_time:.2f}s, Sources: {len(combined_sources)}",
             icon="🏁"
         )
         
-        return final_answer, t1_met["sources"], all_metrics, total_time
-    
-    # ================================================================
-    # TIER 2: Multi-Query Expansion
-    # ================================================================
-    debug_event(
-        "Tier 2",
-        f"Low verification score ({verification_score}/100 < {int(CONFIDENCE_THRESHOLD*100)}). Escalating to Multi-Query expansion...",
-        icon="🚀"
-    )
-    
-    tier2_start = time.time()
-    
-    # Step 1: Generate alternative search queries
-    new_queries = self.generate_multi_queries(question)
-    
-    debug_event(
-        "Tier 2",
-        f"Generated {len(new_queries)} alternative queries",
-        icon="📋"
-    )
-    
-    # Step 2: Collect document IDs from multi-query results
-    expanded_ids = list(t1_met["sources"].values())
-    
-    debug_event(
-        "Tier 2",
-        f"Starting with {len(expanded_ids)} documents from Tier 1",
-        icon="📚"
-    )
-    
-    for idx, q in enumerate(new_queries, 1):
-        debug_event(
-            "Multi-Query",
-            f"Query {idx}/{len(new_queries)}: {q}",
-            icon="🔍"
-        )
-        
-        try:
-            # Retrieve and rerank for each query
-            chunks = self.handler.hybrid_retriever.get_relevant_documents(q)
-            reranked = self.handler.reranker.rerank(q, chunks, top_k=3)
-            
-            # Extract document IDs
-            new_ids = [
-                c.metadata.get("document_id")
-                for c in reranked
-                if c.metadata.get("document_id")
-            ]
-            
-            expanded_ids.extend(new_ids)
-            
-            debug_event(
-                "Multi-Query",
-                f"Found {len(new_ids)} additional documents",
-                icon="📄"
-            )
-            
-        except Exception as e:
-            debug_event(
-                "Multi-Query",
-                f"Query failed: {str(e)}",
-                icon="⚠️",
-                level="WARN"
-            )
-            continue
-    
-    # Step 3: De-duplicate and cap document count
-    unique_ids = list(dict.fromkeys(expanded_ids))[:PARENT_RETRIEVAL_CAP]
-    
-    debug_event(
-        "Expansion",
-        f"Collected {len(expanded_ids)} total docs → {len(unique_ids)} unique (capped at {PARENT_RETRIEVAL_CAP})",
-        icon="📊"
-    )
-    
-    # Step 4: Fetch full document text
-    debug_event(
-        "Expansion",
-        f"Fetching full text for {len(unique_ids)} documents...",
-        icon="📖"
-    )
-    
-    full_text, t2_map, io_time = self.handler.get_full_document_text(unique_ids)
-    
-    debug_event(
-        "Expansion",
-        f"Retrieved {len(full_text)} chars in {io_time:.2f}s",
-        icon="✅"
-    )
-    
-    # Step 5: Generate comprehensive answer from expanded context
-    debug_event(
-        "Tier 2",
-        "Synthesizing comprehensive answer from expanded context...",
-        icon="🔨"
-    )
-    
-    synthesis_start = time.time()
-    
-    final_ans, t2_met = self.handler.process_query(
-        f"Using the full document text below, answer comprehensively: {question}. "
-        f"Merge duplicate events and reconcile any conflicting information. "
-        f"Provide specific citations from the documents.",
-        context=full_text,
-        label="T2_ASSEMBLY"
-    )
-    
-    synthesis_duration = time.time() - synthesis_start
-    
-    debug_event(
-        "Tier 2",
-        f"Generated expanded answer ({len(final_ans)} chars) in {synthesis_duration:.2f}s",
-        icon="✅"
-    )
-    
-    t2_met["retrieval_time"] = io_time
-    t2_met["synthesis_time"] = synthesis_duration
-    
-    tier2_duration = time.time() - tier2_start
-    
-    all_metrics.append({
-        "stage": "Tier 2: Multi-Query Assembly",
-        "duration": tier2_duration,
-        **t2_met
-    })
-    
-    # ================================================================
-    # TIER 2: Final Verification
-    # ================================================================
-    debug_event(
-        "Tier 2",
-        "Running final adversarial verification...",
-        icon="🛡️"
-    )
-    
-    t2_verification_start = time.time()
-    
-    # Reconstruct sources for verification (Tier 1 + Tier 2)
-    combined_sources = {**t1_met["sources"], **t2_map}
-    t2_sources = self.reconstruct_sources_list(combined_sources)
-    
-    # Verify Tier 2 answer
-    t2_verdict = self.verify_answer(question, final_ans, t2_sources, t2_met)
-    t2_score = t2_verdict.get('citation_score', 0)
-    t2_verification_duration = time.time() - t2_verification_start
-    
-    debug_event(
-        "Final Score",
-        f"Tier 2 Verification: {t2_score}/100 (took {t2_verification_duration:.2f}s)",
-        icon="🎯"
-    )
-    
-    all_metrics.append({
-        "stage": "Tier 2: Final Verification",
-        "duration": t2_verification_duration,
-        "score": t2_score,
-        "reasoning_length": len(t2_verdict.get('reasoning', '')),
-        "fallback_used": t2_verdict.get('fallback_used', False),
-        "is_accurate": t2_verdict.get('is_accurate', False)
-    })
-    
-    # Attach verification report
-    final_answer = self.attach_verification_report(
-        final_ans,
-        t2_score,
-        t2_verdict['reasoning']
-    )
-    
-    # ================================================================
-    # Return Results
-    # ================================================================
-    total_time = time.time() - overall_start
-    
-    debug_event(
-        "Complete",
-        f"Investigation complete. Total time: {total_time:.2f}s, Sources: {len(combined_sources)}",
-        icon="🏁"
-    )
-    
-    return final_answer, combined_sources, all_metrics, total_time
+        return final_answer, combined_sources, all_metrics, total_time
 
 
 # ====================================================================

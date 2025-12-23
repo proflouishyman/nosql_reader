@@ -137,6 +137,7 @@ class RAGQueryHandler:
 
         metrics["total_time"] = time.time() - t_start
         metrics["sources"] = mapping
+        metrics["context"] = context 
         return answer, metrics
 
     def close(self):
