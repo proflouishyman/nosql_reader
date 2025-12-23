@@ -162,7 +162,7 @@ load_dotenv()
 DEBUG = os.environ.get("DEBUG_MODE", "0") == "1"
 VERIFIER_MODEL = os.environ.get("VERIFIER_MODEL", os.environ.get("LLM_MODEL", "gpt-oss:20b"))
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
-VERIFIER_TIMEOUT = int(os.environ.get("VERIFIER_TIMEOUT", "30"))  # seconds
+VERIFIER_TIMEOUT = int(os.environ.get("VERIFIER_TIMEOUT", "60"))  # seconds
 VERIFIER_MAX_RETRIES = int(os.environ.get("VERIFIER_MAX_RETRIES", "2"))
 
 # --- Logging Configuration ---
@@ -241,6 +241,34 @@ def debug_step(step_name: str, detail: str = "", icon: str = "⚡", level: str =
             sys.stderr.flush()
 
 
+def calculate_adaptive_timeout(self, token_count):
+    """Calculate timeout based on token count.
+    
+    Args:
+        token_count: Number of tokens in the verification prompt
+        
+    Returns:
+        int: Timeout in seconds
+        
+    Based on observed performance:
+        - qwen2.5:32b processes ~40-50 tokens/second
+        - Add 20% buffer for safety
+        - Minimum 30s, maximum 300s (5 minutes)
+    """
+    # Conservative estimate: 40 tokens/second
+    base_time = token_count / 40
+    
+    # Add 20% buffer
+    timeout = int(base_time * 1.2)
+    
+    # Enforce bounds
+    timeout = max(30, min(300, timeout))
+    
+    return timeout
+
+
+
+
 class AdversarialRAGHandler:
     """
     Handles RAG queries with adversarial verification.
@@ -264,6 +292,32 @@ class AdversarialRAGHandler:
         self.rag_handler = RAGQueryHandler()
         debug_step("Init", f"Verifier Model: {VERIFIER_MODEL}", icon="🤖")
         debug_step("Init", f"Timeout: {VERIFIER_TIMEOUT}s, Max Retries: {VERIFIER_MAX_RETRIES}", icon="⚙️")
+
+    def calculate_adaptive_timeout(self, token_count: int) -> int:
+        """
+        Calculate timeout based on token count.
+        
+        Args:
+            token_count: Number of tokens in the verification prompt
+            
+        Returns:
+            int: Timeout in seconds
+            
+        Based on observed performance:
+            - qwen2.5:32b processes ~40-50 tokens/second
+            - Add 20% buffer for safety
+            - Minimum 30s, maximum 300s (5 minutes)
+        """
+        # Conservative estimate: 40 tokens/second
+        base_time = token_count / 40
+        
+        # Add 20% buffer
+        timeout = int(base_time * 1.2)
+        
+        # Enforce bounds
+        timeout = max(30, min(300, timeout))
+        
+        return timeout
 
     def _call_verifier_with_retry(self, system_prompt: str, user_prompt: str) -> str:
         """
@@ -553,7 +607,7 @@ class AdversarialRAGHandler:
             f"Verifier returned empty/failed response after {VERIFIER_MAX_RETRIES} attempts"
         )
 
-    def verify_citations(self, question: str, answer: str, sources_text: str) -> dict:
+    def verify_citations(self, question: str, answer: str, sources_text: str, timeout: int = None) -> dict:
         """
         Verify that answer claims are supported by source documents.
         
@@ -729,16 +783,13 @@ Required JSON output format:
     def process_query(self, question: str) -> tuple:
         """
         Process a query through the full adversarial pipeline.
-        
         Pipeline:
             1. Generate answer using standard RAG (hybrid retrieval + LLM)
             2. Extract EXACT source context that was used (all chunks)
-            3. Verify answer claims against complete sources
+            3. Verify answer claims against complete sources (with adaptive timeout)
             4. Attach verification report if score < 90
-            
         Args:
             question: User's research question
-            
         Returns:
             tuple of (answer, latency, sources) where:
                 - answer: Generated text with optional verification report
@@ -788,10 +839,17 @@ Required JSON output format:
             f"Using {verify_token_count:,} tokens of source text",
             icon="📊"
         )
-
-        # 3. Verify (The Trial)
-        verdict = self.verify_citations(question, ans, verify_text)
         
+        # Calculate adaptive timeout based on content size
+        adaptive_timeout = self.calculate_adaptive_timeout(verify_token_count)
+        debug_step(
+            "Adaptive Timeout",
+            f"Calculated {adaptive_timeout}s timeout for {verify_token_count:,} tokens",
+            icon="⏱️"
+        )
+        
+        # 3. Verify (The Trial) - with adaptive timeout
+        verdict = self.verify_citations(question, ans, verify_text, timeout=adaptive_timeout)
         score = verdict.get('citation_score', 0)
         reasoning = verdict.get('reasoning', 'No reasoning provided.')
         
