@@ -284,6 +284,15 @@ def historian_agent_query_adversarial():
 # UPDATED: Tiered Agent (Standardized)
 # ============================================================================
 
+_tiered_agent = None
+
+def get_tiered_agent():
+    global _tiered_agent
+    if _tiered_agent is None:
+        from historian_agent.iterative_adversarial_agent import build_agent_from_env
+        _tiered_agent = build_agent_from_env()
+    return _tiered_agent
+
 @app.route('/historian-agent/query-tiered', methods=['POST'])
 def historian_agent_query_tiered():
     """Advanced tiered RAG with confidence-based escalation."""
@@ -291,9 +300,9 @@ def historian_agent_query_tiered():
     question = (payload.get('question') or '').strip()
     conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
     refresh_requested = _is_truthy(payload.get('refresh'))
-    
+
     history_key = _historian_history_cache_key(conversation_id)
-    
+
     if refresh_requested:
         cache.delete(history_key)
         if not question:
@@ -305,49 +314,99 @@ def historian_agent_query_tiered():
                 'metrics': {},
                 'history': [],
             })
-    
+
     if not question:
         return jsonify({'error': 'A question is required.'}), 400
-    
+
     history = cache.get(history_key) or []
-    
+
     try:
         agent = get_tiered_agent()
-        # Returns: ans, sources, metrics_list, duration
-        answer, sources, metrics_list, duration = agent.investigate(question)
-        
+
+        # New API
+        result = agent.run(question)
+
+        answer = (result.get('answer') or '').strip()
+        docs = result.get('sources') or []
+        metrics = result.get('metrics') or {}
+        logs = result.get('logs') or {}
+        tiers = logs.get('tiers') or []
+
+        # Build sources dict: {filename: document_id}
+        sources: Dict[str, str] = {}
+        ordered_doc_ids: List[str] = []
+        for d in docs:
+            if not isinstance(d, dict):
+                continue
+            md = d.get("metadata", {}) if isinstance(d.get("metadata", {}), dict) else {}
+
+            doc_id = md.get("document_id") or d.get("document_id") or d.get("id")
+            if not doc_id:
+                continue
+            doc_id = str(doc_id)
+
+            filename = (
+                md.get("filename")
+                or md.get("file_name")
+                or md.get("title")
+                or md.get("source")
+                or doc_id
+            )
+            filename = str(filename)
+
+            # Avoid collisions if multiple docs share same filename/title
+            key = filename
+            if key in sources and sources[key] != doc_id:
+                key = f"{filename} ({doc_id})"
+
+            sources[key] = doc_id
+            ordered_doc_ids.append(doc_id)
+
         # Consistent Search ID
         search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())]
-        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
-        
-        # Aggregate stats
-        total_tokens = sum(m.get('tokens', 0) for m in metrics_list)
-        
+        cache.set(f'search_{search_id}', ordered_doc_ids, timeout=3600)
+
+        # Convert tiers into your old metrics_list concept
+        metrics_list = []
+        for t in tiers:
+            if not isinstance(t, dict):
+                continue
+            metrics_list.append({
+                "tier": t.get("tier"),
+                "docs": t.get("docs"),
+                "elapsed_s": t.get("elapsed_s"),
+                "verification_score": (t.get("verification") or {}).get("citation_score"),
+            })
+
+        total_tokens = int(metrics.get("tokens", 0) or 0)
+
         # Update history with sources for persistence
         history.append({'role': 'user', 'content': question})
         history.append({'role': 'assistant', 'content': answer, 'sources': sources})
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
-        
+
         return jsonify({
             'conversation_id': conversation_id,
             'answer': answer,
             'sources': sources,
             'search_id': search_id,
             'metrics': {
-                'total_time': duration,
+                'total_time': metrics.get('total_time_s', None),
                 'tokens': total_tokens,
                 'doc_count': len(sources),
-                'stages': metrics_list, 
-                'escalated': len(metrics_list) > 2
+                'stages': metrics_list,
+                'escalated': len(metrics_list) >= 2,
+                'tier1_verification_score': metrics.get('tier1_verification_score', None),
+                'tier2_verification_score': metrics.get('tier2_verification_score', None),
             },
             'history': history,
             'method': 'tiered'
         })
-        
+
     except Exception as exc:
         app.logger.exception('Tiered agent query failed')
         return jsonify({'error': f'Tiered agent query failed: {str(exc)}'}), 500
+
 
 
 @app.route('/historian-agent/reset-rag', methods=['POST'])
