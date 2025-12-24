@@ -698,26 +698,71 @@ class AdversarialRAGHandler:
         
         # Define strict verification prompt
         SYSTEM_PROMPT = """
-You are a strict fact-checking judge.
+You are a fact-checking judge for historical OCR documents.
 
 Your task:
 1. Break the ANSWER into discrete factual claims.
 2. Verify each claim using ONLY the SOURCE TEXT.
-3. A claim is supported ONLY if it is explicitly stated in the SOURCE TEXT.
-- Do NOT use background knowledge.
-- Do NOT infer or assume.
-4. If ANY factual claim is unsupported, mark the answer as inaccurate.
+3. A claim is supported if it is stated in the SOURCE TEXT, allowing for:
+   - Common OCR variations and spelling errors
+   - Standard abbreviations (R. = right, L. = left, etc.)
+   - Different word orders expressing the same meaning
+   - Minor paraphrasing that preserves factual accuracy
+4. Do NOT use background knowledge or make inferences beyond the text.
+5. A claim is UNSUPPORTED only if the core fact contradicts or is absent from sources.
 
-Scoring:
-- citation_score = percentage of claims fully supported by the source.
-- 100 = all claims supported
-- 0 = no claims supported
+Scoring guidelines:
+- Focus on FACTUAL ACCURACY, not exact wording
+- "R. leg cut" and "right leg laceration" = SAME FACT (supported)
+- "tibian" and "tibia" = SAME FACT (OCR variation, supported)
+- "Two fingers mashed" in different word order = SAME FACT (supported)
+- A claim about an injury type is supported if the injury is described, even if worded differently
+- Only mark unsupported if: wrong person, wrong injury, wrong date, or not mentioned at all
+
+Citation score calculation:
+- citation_score = percentage of factual claims supported by sources
+- 100 = all factual claims found in sources (allowing for OCR/abbreviation variations)
+- 0 = no factual claims found in sources
 
 Output rules:
-- Respond with ONLY a valid JSON object. first char must be { and last char must be }
-- Use EXACTLY the schema provided.
-- Do NOT include markdown, commentary, or extra keys.
-    """.strip()
+- Respond with ONLY a valid JSON object
+- First char must be { and last char must be }
+- Use EXACTLY the schema provided
+- Do NOT include markdown, commentary, or extra keys
+
+IMPORTANT: Be lenient with OCR quality issues in historical documents. Focus on whether the CORE FACTS are present, not exact text matching.
+""".strip()
+
+        # Example of what this allows:
+
+        # BEFORE (strict matching):
+        # Answer: "Cut right leg & tibia" 
+        # Source: "R. leg & tibian cut"
+        # Result: UNSUPPORTED (exact text doesn't match)
+
+        # AFTER (lenient with OCR):
+        # Answer: "Cut right leg & tibia"
+        # Source: "R. leg & tibian cut" 
+        # Result: SUPPORTED (same injury, OCR variation + abbreviation)
+
+        # BEFORE:
+        # Answer: "Two fingers mashed left hand"
+        # Source: "Two left fingers mashed"
+        # Result: UNSUPPORTED (word order different)
+
+        # AFTER:
+        # Answer: "Two fingers mashed left hand"
+        # Source: "Two left fingers mashed"
+        # Result: SUPPORTED (same fact, different word order)
+
+        # Still UNSUPPORTED examples (correctly):
+        # Answer: "Fractured right arm"
+        # Source: "Bruised left leg"
+        # Result: UNSUPPORTED (completely different injury)
+
+        # Answer: "John Smith injured on June 15"
+        # Source: "Robert Jones injured on March 3"
+        # Result: UNSUPPORTED (wrong person and date)
 
         USER_PROMPT = f"""
 QUESTION:
@@ -735,7 +780,7 @@ Required JSON output format:
 "citation_score": number,
 "reasoning": "List each unsupported or partially supported claim, or state that all claims are supported."
 }}
-    """.strip()
+        """
         
         try:
             # Try verification with retry logic

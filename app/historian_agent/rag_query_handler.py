@@ -9,8 +9,8 @@ load_dotenv()
 
 # --- Configuration ---
 DEBUG = os.environ.get("DEBUG_MODE", "0") == "1"
-TOP_K = int(os.environ.get("HISTORIAN_AGENT_TOP_K", 5))
-RETRIEVAL_POOL_SIZE = int(os.environ.get("RETRIEVAL_POOL_SIZE", 40)) # Fetch 40, Rerank to 5
+TOP_K = int(os.environ.get("HISTORIAN_AGENT_TOP_K", 10))
+RETRIEVAL_POOL_SIZE = int(os.environ.get("RETRIEVAL_POOL_SIZE", 100)) # Fetch 100, Rerank to 10
 LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-oss:20b")
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://admin:secret@mongodb:27017/admin")

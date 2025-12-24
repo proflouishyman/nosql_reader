@@ -137,25 +137,67 @@ class TieredHistorianAgent:
         debug_event("Init", "Initialization complete", icon="✅")
     
     
-    def generate_multi_queries(self, original_question: str) -> List[str]:
-        """Generate alternative search queries for multi-query expansion."""
-        prompt = f"""TASK: The user asked: "{original_question}"
+    def generate_multi_queries(self, original_question: str, answer: str, verification_reasoning: str) -> List[str]:
+        """
+        Generate diagnostic search queries based on verification failures.
+        
+        Extracts the specific unsupported claims from verification reasoning and
+        creates targeted search queries to find documents containing that evidence.
+        """
+        prompt = f"""You are analyzing why certain claims in an answer could not be verified against source documents.
 
-Generate 3 NEW, DIFFERENT search queries to find missing details or alternative perspectives.
+ORIGINAL QUESTION:
+{original_question}
 
-Requirements:
-- Each query should explore a different angle or time period
-- Focus on what might have been missed in the initial search
-- Be specific and searchable
-- Avoid simply rephrasing the original question
+ANSWER THAT WAS GENERATED:
+{answer[:1500]}
 
-Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
-"""
+VERIFIER'S REASONING (what couldn't be confirmed):
+{verification_reasoning}
+
+TASK: Extract the SPECIFIC unsupported claims and create 3 targeted search queries to find evidence for them.
+
+STRATEGY:
+1. Identify which specific claims the verifier said were "not supported" or "not found"
+2. Extract the key terms/concepts from those unsupported claims
+3. Create search queries using those exact terms
+
+EXAMPLES:
+
+Example 1:
+Verifier says: "Claims about 'Burst knee cap' not found in sources"
+Extract: burst knee cap
+Query: "burst knee cap"
+
+Example 2:
+Verifier says: "The wage amount '$2.50/hour' could not be verified"
+Extract: $2.50/hour, wage amount
+Query: "wage 2.50 dollar hour payment"
+
+Example 3:
+Verifier says: "Claims about 'elected in 1923' and 'served until 1931' not supported"
+Extract: elected 1923, served 1931
+Queries: ["elected 1923", "served 1931 term"]
+
+Example 4:
+Verifier says: "Information about 'transferred to Chicago division' not in source text"
+Extract: transferred Chicago division
+Query: "transferred Chicago division"
+
+YOUR TASK:
+- Look at what the verifier said was NOT supported
+- Pull out the key nouns, numbers, dates, names, or specific terms from those claims
+- Create 3 search queries using those extracted terms
+- DO NOT add generic words like "detailed" or "information"
+- DO use the actual words from the unsupported claims
+
+Return ONLY a JSON array:
+["query_with_unsupported_terms_1", "query_with_unsupported_terms_2", "query_with_unsupported_terms_3"]"""
         
         log_prompt("Multi-Query Generation", prompt)
         
         try:
-            debug_event("Multi-Query Gen", "Generating alternative search queries...", icon="🔄")
+            debug_event("Multi-Query Gen", "Extracting unsupported claims and generating targeted queries...", icon="🔄")
             
             resp = requests.post(
                 f"{OLLAMA_BASE_URL}/api/generate",
@@ -173,11 +215,23 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             response_text = resp.json().get("response", "[]")
             log_response("Multi-Query Generation", response_text)
             
+            # Aggressive cleaning for JSON extraction
             response_text = response_text.strip()
-            if response_text.startswith("```json"):
-                response_text = response_text.split("```json")[1]
-            if response_text.endswith("```"):
-                response_text = response_text.rsplit("```", 1)[0]
+            
+            # Remove markdown code blocks
+            if "```" in response_text:
+                response_text = re.sub(r"```(?:json)?", "", response_text)
+            
+            # Find JSON array pattern - look for [...] even if surrounded by text
+            json_match = re.search(r'\[.*?\]', response_text, re.DOTALL)
+            if json_match:
+                response_text = json_match.group(0)
+            else:
+                # Fallback: try to find just the array content
+                if "[" in response_text and "]" in response_text:
+                    start = response_text.find("[")
+                    end = response_text.rfind("]") + 1
+                    response_text = response_text[start:end]
             
             queries = json.loads(response_text.strip())
             
@@ -216,12 +270,64 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
         """Verify answer using adversarial RAG with adaptive timeout."""
         debug_event("Verification", f"Running adversarial verification with {self.verifier_model}", icon="🛡️")
         
+        # Log verification inputs for debugging
+        if _log_file:
+            try:
+                _log_file.write(f"\n{'='*60}\n")
+                _log_file.write(f"VERIFICATION INPUT\n")
+                _log_file.write(f"{'='*60}\n")
+                _log_file.write(f"Question: {question}\n")
+                _log_file.write(f"Answer Length: {len(answer)} chars\n")
+                _log_file.write(f"Sources Count: {len(sources)}\n")
+                _log_file.write(f"Context in metrics: {'context' in metrics}\n")
+                if 'context' in metrics:
+                    context_preview = metrics['context']
+                    _log_file.write(f"Context Length: {len(context_preview)} chars\n")
+                    _log_file.write(f"\nContext Preview (first 2000 chars):\n")
+                    _log_file.write(f"{'-'*60}\n")
+                    _log_file.write(f"{context_preview[:2000]}\n")
+                    _log_file.write(f"{'-'*60}\n")
+                    
+                    # Check if context looks empty/useless
+                    if len(context_preview.strip()) < 500:
+                        _log_file.write(f"⚠️ WARNING: Context seems very short!\n")
+                    if context_preview.count('---') > len(sources) * 2:
+                        _log_file.write(f"⚠️ WARNING: Lots of document headers but little content!\n")
+                else:
+                    _log_file.write(f"⚠️ WARNING: No context in metrics!\n")
+                _log_file.write(f"{'='*60}\n\n")
+                _log_file.flush()
+            except:
+                pass
+        
         try:
+            # CRITICAL: Pass the context explicitly to verify()
+            # The verify() method accepts context as a keyword argument
+            context_to_verify = metrics.get('context', '')
+            
+            if not context_to_verify:
+                debug_event("Verification", "⚠️ No context in metrics, verify() will fetch documents", icon="⚠️", level="WARN")
+            else:
+                debug_event("Verification", f"Passing {len(context_to_verify)} chars of context to verifier", icon="📄")
+            
+            # Log a sample of the context for debugging
+            if _log_file and context_to_verify:
+                try:
+                    _log_file.write(f"Context Sample (first 500 chars):\n")
+                    _log_file.write(f"{context_to_verify[:500]}\n")
+                    _log_file.write(f"...\n")
+                    _log_file.write(f"Context Sample (last 500 chars):\n")
+                    _log_file.write(f"{context_to_verify[-500:]}\n\n")
+                    _log_file.flush()
+                except:
+                    pass
+            
             verdict = self.adversarial_handler.verify(
                 answer=answer,
                 sources=sources,
                 question=question,
-                metrics=metrics
+                metrics=metrics,
+                context=context_to_verify  # ← Pass context explicitly!
             )
             
             score = verdict.get('citation_score', 0)
@@ -359,7 +465,13 @@ Create a professional table with NO repetition."""
         debug_event("Tier 2", f"Low verification score ({verification_score}/100 < 90). Escalating to Multi-Query expansion...", icon="🚀")
         
         tier2_start = time.time()
-        alt_queries = self.generate_multi_queries(question)
+        
+        # Generate diagnostic queries based on what verification couldn't confirm
+        alt_queries = self.generate_multi_queries(
+            original_question=question,
+            answer=t1_ans,
+            verification_reasoning=verdict.get('reasoning', '')
+        )
         
         debug_event("Tier 2", f"Generated {len(alt_queries)} alternative queries", icon="📋")
         
@@ -384,6 +496,16 @@ Create a professional table with NO repetition."""
         
         debug_event("Expansion", f"Retrieved {len(full_text)} chars in {io_time:.2f}s", icon="✅")
         
+        # t2_map now contains {filename: doc_id} for all documents in unique_ids
+        if _log_file:
+            try:
+                _log_file.write(f"Tier 2 document mapping:\n")
+                for fname, doc_id in t2_map.items():
+                    _log_file.write(f"  {fname} -> {doc_id}\n")
+                _log_file.flush()
+            except:
+                pass
+        
         debug_event("Tier 2", "Synthesizing comprehensive answer from expanded context...", icon="🔨")
         
         synthesis_start = time.time()
@@ -405,26 +527,58 @@ Provide specific citations from the documents in a professional table format."""
         log_prompt("Tier 2 Synthesis", tier2_prompt)
         
         # Use process_query with the expanded context
+        # IMPORTANT: When context is provided, process_query still sets metrics["context"]
+        # So we must use the t2_map we got from get_full_document_text() for sources
         final_ans, t2_met = self.handler.process_query(tier2_prompt, context=full_text, label="T2_ASSEMBLY")
+        
         log_response("Tier 2 Synthesis", final_ans)
         
+        # ERROR HANDLING: Check if LLM returned empty response
+        if not final_ans or len(final_ans.strip()) < 100:
+            debug_event("Tier 2", f"⚠️ LLM returned insufficient response ({len(final_ans)} chars). Falling back to Tier 1.", icon="⚠️", level="ERROR")
+            
+            if _log_file:
+                try:
+                    _log_file.write(f"\n⚠️ TIER 2 SYNTHESIS FAILED\n")
+                    _log_file.write(f"Response length: {len(final_ans)} chars\n")
+                    _log_file.write(f"Context length: {len(full_text)} chars\n")
+                    _log_file.write(f"Falling back to Tier 1 answer\n\n")
+                    _log_file.flush()
+                except:
+                    pass
+            
+            # Fall back to Tier 1 answer instead of returning empty
+            final_ans = t1_ans
+            t2_met = t1_met.copy()
+            t2_met["fallback_to_tier1"] = True
+            combined_sources = t1_met["sources"]  # Use only Tier 1 sources
+            
+            debug_event("Fallback", "Using Tier 1 answer due to Tier 2 failure", icon="🔙")
+        else:
+            # Normal flow - Tier 2 succeeded
+            synthesis_duration = time.time() - synthesis_start
+            debug_event("Tier 2", f"Generated expanded answer ({len(final_ans)} chars) in {synthesis_duration:.2f}s", icon="✅")
+            
+            t2_met["retrieval_time"] = io_time
+            t2_met["synthesis_time"] = synthesis_duration
+            
+            # CRITICAL FIX: Use t2_map from get_full_document_text, NOT from process_query
+            # When process_query receives a context parameter, it doesn't populate metrics["sources"]
+            # So t2_map already has the correct {filename: doc_id} mapping for all documents
+            
+            tier2_duration = time.time() - tier2_start
+            
+            all_metrics.append({
+                "stage": "Tier 2: Multi-Query Assembly",
+                "duration": tier2_duration,
+                **t2_met
+            })
+            
+            # Combine sources from both tiers
+            combined_sources = {**t1_met["sources"], **t2_map}
+        
+        # Continue with verification regardless of which path we took
         synthesis_duration = time.time() - synthesis_start
-        debug_event("Tier 2", f"Generated expanded answer ({len(final_ans)} chars) in {synthesis_duration:.2f}s", icon="✅")
-        
-        t2_met["retrieval_time"] = io_time
-        t2_met["synthesis_time"] = synthesis_duration
-        
-        # Get the sources mapping from t2_met (already set by process_query)
-        # Combine with t1 sources
-        t2_map = t2_met.get("sources", {})
-        
-        tier2_duration = time.time() - tier2_start
-        
-        all_metrics.append({
-            "stage": "Tier 2: Multi-Query Assembly",
-            "duration": tier2_duration,
-            **t2_met
-        })
         
         # ================================================================
         # TIER 2: Final Verification
@@ -432,7 +586,27 @@ Provide specific citations from the documents in a professional table format."""
         debug_event("Tier 2", "Running final adversarial verification...", icon="🛡️")
         
         t2_verification_start = time.time()
+        
+        # Combine sources from both tiers
+        # t1_met["sources"] has Tier 1 sources (filename: doc_id)
+        # t2_map has Tier 2 sources (filename: doc_id) from get_full_document_text
         combined_sources = {**t1_met["sources"], **t2_map}
+        
+        debug_event("Sources", f"T1: {len(t1_met['sources'])}, T2: {len(t2_map)}, Combined: {len(combined_sources)}", icon="📚")
+        
+        if _log_file:
+            try:
+                _log_file.write(f"\nSource Combination:\n")
+                _log_file.write(f"  Tier 1 sources: {len(t1_met['sources'])}\n")
+                _log_file.write(f"  Tier 2 sources: {len(t2_map)}\n")
+                _log_file.write(f"  Combined sources: {len(combined_sources)}\n")
+                _log_file.write(f"  Documents used in synthesis: {len(unique_ids)}\n")
+                if len(combined_sources) != len(unique_ids):
+                    _log_file.write(f"  ⚠️ WARNING: Source count mismatch!\n")
+                _log_file.flush()
+            except:
+                pass
+        
         t2_sources = self.reconstruct_sources_list(combined_sources)
         
         t2_verdict = self.verify_answer(question, final_ans, t2_sources, t2_met)
