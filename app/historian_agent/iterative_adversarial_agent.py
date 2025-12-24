@@ -393,19 +393,29 @@ Return ONLY a JSON array:
         # ================================================================
         debug_event("Tier 1", "Executing hybrid retrieval + reranking...", icon="📝")
         
-        # FIXED PROMPT: Add explicit deduplication instruction
-        tier1_prompt = f"""Create a detailed table answering: {question}
+        # 2025-12-23 19:xx ET
+        # Purpose: Extract only source-grounded claims with explicit citations, no synthesis requirements.
+        tier1_prompt = f"""You will be given a QUESTION and a set of SOURCE DOCUMENTS.
 
-CRITICAL DEDUPLICATION RULES:
-- If the same injury appears in multiple documents, list it ONCE
-- Combine duplicate entries with multiple source citations
-- Format: Injury Type | Description | Source(s)
-- Example: "Sprained ankle | Ligamentous injury... | RDApp-X.json, RDApp-Y.json, RDApp-Z.json"
+Your job: produce ONLY claims that are EXPLICITLY supported by the sources.
+If a claim cannot be directly supported by a specific quote/span in the sources, DO NOT include it.
 
-DO NOT create separate rows for identical injuries.
-DO NOT add "(repeated)" labels - just combine the sources.
+Output format: a JSON array of objects, each object:
+{{
+  "claim": "...",
+  "sources": ["DocNameOrID#location", "DocNameOrID#location"]
+}}
 
-Create a professional table with NO repetition."""
+Rules:
+- Every claim MUST have at least one source pointer.
+- Use only information stated in the sources, no general knowledge, no inference, no summarizing across documents.
+- Claims may be partial or narrow, that is fine.
+- If the sources do not support any claims that answer the QUESTION, output [] (empty array).
+- Do not output any text outside the JSON.
+
+QUESTION: {question}
+"""
+
         
         log_prompt("Tier 1 Generation", tier1_prompt)
         
