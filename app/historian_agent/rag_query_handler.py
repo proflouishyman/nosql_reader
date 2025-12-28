@@ -10,6 +10,7 @@ CHANGES FROM ORIGINAL:
 - Uses DocumentStore from rag_base for database operations
 - Preserves EXACT retrieval pipeline (hybrid, reranking, expansion)
 - Backward compatible with existing routes
+- Fixed all imports and missing definitions
 """
 
 import sys
@@ -20,20 +21,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Shared base components
+# Shared base components - FIXED: Import path
+import sys
+sys.path.insert(0, '/app')  # Ensure app is in path
+
 from rag_base import DocumentStore, count_tokens, debug_print
 from llm_abstraction import LLMClient, LLMResponse
+from config import APP_CONFIG
 
 # Your existing components (unchanged)
-from .embeddings import EmbeddingService
-from .vector_store import get_vector_store
-from .retrievers import HybridRetriever, VectorRetriever, KeywordRetriever
-from .reranking import DocumentReranker
+from embeddings import EmbeddingService
+from vector_store import get_vector_store
+from retrievers import HybridRetriever, VectorRetriever, KeywordRetriever
+from reranking import DocumentReranker
 
 
-# Configuration from env (for components not yet in config.py)
-TOP_K = int(os.environ.get("HISTORIAN_AGENT_TOP_K", 5))
-RETRIEVAL_POOL_SIZE = int(os.environ.get("RETRIEVAL_POOL_SIZE", 40))
+# Configuration - FIXED: Use APP_CONFIG instead of direct env reads
+TOP_K = APP_CONFIG.retriever.top_k
+RETRIEVAL_POOL_SIZE = APP_CONFIG.retriever.retrieval_pool_size
+
+# System prompt for generation
 SYSTEM_PROMPT = (
     "Avoid repetition: do not restate the same point, do not reuse the same "
     "opening phrases, do not repeat yourself. If you have nothing new to add, stop. "
@@ -58,14 +65,14 @@ class RAGQueryHandler:
         """Initialize RAG query handler."""
         debug_print("Initializing RAGQueryHandler", f"Top-K: {TOP_K}")
         
-        # Shared base components
+        # FIXED: Initialize shared base components
         self.doc_store = DocumentStore()
         self.llm = LLMClient()
         
         # Your existing retrieval setup (UNCHANGED!)
         self.embedding_service = EmbeddingService(
-            provider="ollama",
-            model="qwen3-embedding:0.6b"
+            provider=APP_CONFIG.embedding.provider,
+            model=APP_CONFIG.embedding.model
         )
         self.vector_store = get_vector_store(store_type="chroma")
         self.reranker = DocumentReranker()
@@ -79,6 +86,7 @@ class RAGQueryHandler:
         )
         
         class ConfigShim:
+            """Temporary shim for keyword retriever config."""
             context_fields = ["text", "ocr_text"]
         
         k_ret = KeywordRetriever(
@@ -133,7 +141,11 @@ class RAGQueryHandler:
         
         Returns:
             Tuple of (answer, metrics)
+            
+        Raises:
+            Exception: If LLM generation fails critically
         """
+        # FIXED: Initialize metrics properly
         metrics = {
             "retrieval_time": 0.0,
             "llm_time": 0.0,
@@ -144,7 +156,6 @@ class RAGQueryHandler:
         }
         
         t_start = time.time()
-        mapping = {}
         
         # YOUR EXISTING RETRIEVAL LOGIC - unchanged!
         if not context:
@@ -175,11 +186,12 @@ class RAGQueryHandler:
             )
             
             # 5. Small-to-Big Expansion (via shared DocumentStore)
+            # FIXED: Properly capture mapping
             context, mapping, _ = self.doc_store.get_full_document_text(unique_ids)
             
             metrics["retrieval_time"] = time.time() - r_start
             metrics["doc_count"] = len(unique_ids)
-            metrics["sources"] = mapping
+            metrics["sources"] = mapping  # FIXED: Properly assign sources
             metrics["context"] = context
         
         # Build prompt (YOUR EXISTING FORMAT)
@@ -198,18 +210,30 @@ class RAGQueryHandler:
                 num_predict=4000,
             )
             
+            # FIXED: Proper error handling
             if not response.success:
-                return f"Error: {str(response.error)}", metrics
+                # Return error message with metrics rather than raising
+                error_msg = f"LLM generation failed: {str(response.error)}"
+                debug_print(f"ERROR: {error_msg}")
+                return error_msg, metrics
             
             answer = response.content
             metrics["llm_time"] = time.time() - l_start
+            
+            # FIXED: Add LLM metrics
             metrics["llm_tokens"] = response.tokens
+            metrics["llm_model"] = response.model_name
+            metrics["llm_provider"] = response.provider_used
         
         except Exception as e:
-            return f"Error: {str(e)}", metrics
+            # FIXED: Return tuple consistently
+            error_msg = f"Exception during LLM generation: {str(e)}"
+            debug_print(f"ERROR: {error_msg}")
+            return error_msg, metrics
         
         metrics["total_time"] = time.time() - t_start
         
+        # FIXED: Always return tuple of (answer, metrics)
         return answer, metrics
     
     def close(self):

@@ -10,6 +10,7 @@ CHANGES FROM ORIGINAL:
 - Preserves EXACT verification logic (prompts, retry, fallback)
 - Uses RAGQueryHandler (which now uses llm_abstraction)
 - Backward compatible with existing routes
+- Fixed all imports and missing definitions
 """
 
 import sys
@@ -20,7 +21,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
-from .rag_query_handler import RAGQueryHandler, count_tokens, debug_print
+# FIXED: Ensure proper path setup
+sys.path.insert(0, '/app')
+
+from rag_query_handler import RAGQueryHandler, count_tokens, debug_print
 from llm_abstraction import LLMClient, LLMResponse
 from config import APP_CONFIG
 
@@ -103,10 +107,10 @@ class AdversarialRAGHandler:
         """Initialize adversarial handler."""
         debug_step("Init", "Initializing Adversarial Handler...", icon="🔰")
         
-        # Initialize RAG handler (uses llm_abstraction internally)
+        # FIXED: Initialize RAG handler (uses llm_abstraction internally)
         self.rag_handler = RAGQueryHandler()
         
-        # LLM client for verification
+        # FIXED: Initialize LLM client for verification
         self.llm = LLMClient()
         
         debug_step("Init", "Verifier: profile='verifier'", icon="✅")

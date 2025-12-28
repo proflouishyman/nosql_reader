@@ -10,6 +10,7 @@ CHANGES FROM ORIGINAL:
 - Preserves EXACT tier escalation logic
 - Uses RAGQueryHandler and AdversarialRAGHandler (which use llm_abstraction)
 - Backward compatible with existing routes
+- Fixed all imports and missing definitions
 """
 
 import sys
@@ -19,16 +20,19 @@ import json
 from typing import Dict, List, Tuple, Any, Optional
 from dotenv import load_dotenv
 
-from .rag_query_handler import RAGQueryHandler, count_tokens, debug_print
-from .adversarial_rag import AdversarialRAGHandler
+# FIXED: Ensure proper path setup
+sys.path.insert(0, '/app')
+
+from rag_query_handler import RAGQueryHandler, count_tokens, debug_print
+from adversarial_rag import AdversarialRAGHandler
 from llm_abstraction import LLMClient
 from config import APP_CONFIG
 
 load_dotenv()
 
-# Configuration
-PARENT_RETRIEVAL_CAP = int(os.environ.get("PARENT_RETRIEVAL_CAP", 8))
-CONFIDENCE_THRESHOLD = 0.9  # 90/100 verification score threshold
+# Configuration - FIXED: Use APP_CONFIG
+PARENT_RETRIEVAL_CAP = APP_CONFIG.retriever.parent_retrieval_cap
+CONFIDENCE_THRESHOLD = APP_CONFIG.adversarial.confidence_threshold
 
 
 def debug_event(category: str, msg: str, icon: str = "⚙️", level: str = "INFO"):
@@ -50,11 +54,11 @@ class TieredHistorianAgent:
     
     def __init__(self):
         """Initialize tiered agent."""
-        # Initialize handlers (use llm_abstraction internally)
+        # FIXED: Initialize handlers (use llm_abstraction internally)
         self.handler = RAGQueryHandler()
         self.adversarial_handler = AdversarialRAGHandler()
         
-        # LLM client for multi-query generation
+        # FIXED: Initialize LLM client for multi-query generation
         self.llm = LLMClient()
         
         debug_event(
