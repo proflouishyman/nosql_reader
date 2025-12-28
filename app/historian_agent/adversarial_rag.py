@@ -14,6 +14,7 @@ CHANGES FROM ORIGINAL:
 """
 
 import sys
+sys.path.insert(0, '/app/historian_agent')
 import os
 import time
 import json
