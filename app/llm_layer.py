@@ -124,9 +124,27 @@ class OllamaProvider(LLMProvider):
     Uses Ollama's /api/chat endpoint with OpenAI-compatible format.
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config):
+        """
+        Initialize Ollama provider.
+        
+        Args:
+            config: ProviderConfig dataclass from APP_CONFIG.providers['ollama']
+        """
         super().__init__(config)
-        self.base_url = config.get("base_url", "http://localhost:11434").rstrip("/")
+        
+        # Handle ProviderConfig dataclass (frozen, no .get() method)
+        if hasattr(config, 'base_url'):
+            # It's a ProviderConfig dataclass
+            self.base_url = (config.base_url or "http://localhost:11434").rstrip("/")
+            self.timeout = config.timeout
+            self.options = config.options or {}
+        else:
+            # Fallback for dict (testing/compatibility)
+            self.base_url = config.get("base_url", "http://localhost:11434").rstrip("/")
+            self.timeout = config.get("timeout", 120.0)
+            self.options = config.get("options", {})
+        
         self.chat_url = f"{self.base_url}/api/chat"
     
     def call(
@@ -154,9 +172,9 @@ class OllamaProvider(LLMProvider):
         if max_tokens and max_tokens > 0:
             payload["options"]["num_predict"] = max_tokens
         
-        # Ollama-specific options
-        num_ctx = kwargs.get("num_ctx", 131072)
-        repeat_penalty = kwargs.get("repeat_penalty", 1.15)
+        # Ollama-specific options from config
+        num_ctx = kwargs.get("num_ctx") or self.options.get("num_ctx", 131072)
+        repeat_penalty = kwargs.get("repeat_penalty") or self.options.get("repeat_penalty", 1.15)
         
         payload["options"]["num_ctx"] = num_ctx
         payload["options"]["repeat_penalty"] = repeat_penalty
@@ -166,7 +184,7 @@ class OllamaProvider(LLMProvider):
             response = requests.post(
                 self.chat_url,
                 json=payload,
-                timeout=timeout or 120
+                timeout=timeout or self.timeout
             )
             
             response.raise_for_status()
@@ -235,9 +253,22 @@ class OpenAIProvider(LLMProvider):
     Uses OpenAI Python SDK or direct HTTP to /v1/chat/completions.
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config):
+        """
+        Initialize OpenAI provider.
+        
+        Args:
+            config: ProviderConfig dataclass from APP_CONFIG.providers['openai']
+        """
         super().__init__(config)
-        self.api_key = config.get("api_key")
+        
+        # Handle ProviderConfig dataclass
+        if hasattr(config, 'api_key'):
+            self.api_key = config.api_key
+            self.timeout = config.timeout
+        else:
+            self.api_key = config.get("api_key")
+            self.timeout = config.get("timeout", 30.0)
         
         if not self.api_key:
             raise ProviderAuthError("OpenAI API key not configured")
@@ -390,9 +421,22 @@ class LMStudioProvider(LLMProvider):
     Uses OpenAI-compatible API (usually localhost:1234).
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config):
+        """
+        Initialize LM Studio provider.
+        
+        Args:
+            config: ProviderConfig dataclass from APP_CONFIG.providers['lmstudio']
+        """
         super().__init__(config)
-        self.base_url = config.get("base_url", "http://localhost:1234/v1").rstrip("/")
+        
+        # Handle ProviderConfig dataclass
+        if hasattr(config, 'base_url'):
+            self.base_url = (config.base_url or "http://localhost:1234/v1").rstrip("/")
+            self.timeout = config.timeout
+        else:
+            self.base_url = config.get("base_url", "http://localhost:1234/v1").rstrip("/")
+            self.timeout = config.get("timeout", 120.0)
     
     def call(
         self,

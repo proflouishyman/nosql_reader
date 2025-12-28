@@ -249,12 +249,12 @@ class DocumentStore:
         mapping = {}
         
         for idx, doc_id in enumerate(doc_ids, 1):
-            obj_id = ObjectId(doc_id)
+            
             
             # Fetch all chunks for this document, sorted by chunk_index
             chunks = list(
                 self.chunks_coll.find(
-                    {"document_id": obj_id}
+                    {"document_id": doc_id}
                 ).sort("chunk_index", 1)
             )
             
