@@ -1,85 +1,25 @@
-# app/historian_agent/rag_base.py
-# Created: 2025-12-24
-# Purpose: Shared components for RAG pipeline - database access, LLM calls, utilities
+# app/rag_base.py
+# Shared base components for RAG handlers
+# STANDALONE VERSION - No factory dependencies
 
 """
-RAG Base Components - Shared infrastructure for all three RAG handlers.
+Shared infrastructure for all RAG handlers.
 
-Design Principles:
-1. Keep your working retrieval pipeline intact
-2. Don't abstract away complexity you need  
-3. Config management without forced frameworks
-4. Single source of truth for shared operations
-
-What's Shared:
-- Database connections (MongoDB)
-- Document metadata hydration
-- Full document text expansion (chunks → complete docs)
-- LLM HTTP calls (direct Ollama, no LangChain)
-- Utility functions (token counting, debug logging)
-
-What's NOT Shared:
-- Retrieval strategies (each handler has custom needs)
-- Answer generation logic (different prompts/flows)
-- Verification logic (only adversarial needs this)
+Provides:
+- DocumentStore: MongoDB operations and document expansion
+- Utility functions: token counting, debug logging
 """
 
-import sys
 import os
+import sys
 import time
-import requests
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 from pymongo import MongoClient
-from bson import ObjectId
-from dataclasses import dataclass
+from dotenv import load_dotenv
 
-from config import APP_CONFIG, merge_config
-from factories import DatabaseFactory
+load_dotenv()
 
-
-# ============================================================================
-# Configuration
-# ============================================================================
-
-@dataclass
-class RAGConfig:
-    """Runtime configuration for RAG components."""
-    llm_model: str
-    llm_base_url: str
-    llm_temperature: float
-    llm_timeout: float
-    llm_num_predict: int
-    db_name: str
-    top_k: int
-    parent_retrieval_cap: int
-    debug_mode: bool
-    
-    @classmethod
-    def from_config(
-        cls,
-        llm_overrides: Optional[Dict[str, Any]] = None,
-        retriever_overrides: Optional[Dict[str, Any]] = None
-    ) -> "RAGConfig":
-        """Create RAGConfig from APP_CONFIG with optional overrides."""
-        llm_cfg = APP_CONFIG.llm_generator
-        if llm_overrides:
-            llm_cfg = merge_config(llm_cfg, llm_overrides)
-        
-        ret_cfg = APP_CONFIG.retriever
-        if retriever_overrides:
-            ret_cfg = merge_config(ret_cfg, retriever_overrides)
-        
-        return cls(
-            llm_model=llm_cfg.model,
-            llm_base_url=llm_cfg.base_url,
-            llm_temperature=llm_cfg.temperature,
-            llm_timeout=llm_cfg.timeout_s,
-            llm_num_predict=llm_cfg.num_predict,
-            db_name=APP_CONFIG.database.db_name,
-            top_k=ret_cfg.parent_retrieval_cap,
-            parent_retrieval_cap=ret_cfg.parent_retrieval_cap,
-            debug_mode=APP_CONFIG.debug_mode,
-        )
+from config import APP_CONFIG
 
 
 # ============================================================================
@@ -87,165 +27,279 @@ class RAGConfig:
 # ============================================================================
 
 def count_tokens(text: str) -> int:
-    """Rough token count: 4 chars ≈ 1 token."""
+    """
+    Estimate token count for text.
+    
+    Simple approximation: ~4 characters per token for English.
+    This is a rough estimate - actual tokenization varies by model.
+    
+    Args:
+        text: Text to count tokens for
+    
+    Returns:
+        Estimated token count
+    """
+    if not text:
+        return 0
     return len(text) // 4
 
 
-def debug_print(msg: str, detail: str = None, tokens: int = 0, level: str = "INFO"):
-    """Print debug message if debug mode enabled."""
-    if not APP_CONFIG.debug_mode:
-        return
+def debug_print(*args, **kwargs):
+    """
+    Print debug messages if debug mode is enabled.
     
-    timestamp = time.strftime("%H:%M:%S")
-    token_str = f" | 🔋 {tokens} tokens" if tokens > 0 else ""
-    icon = "🔍" if level == "INFO" else "⚠️" if level == "WARN" else "❌"
-    
-    sys.stderr.write(f"{icon} [{timestamp}] {msg}{token_str}\n")
-    if detail:
-        sys.stderr.write(f"   | {detail}\n")
-    sys.stderr.flush()
+    Args:
+        *args: Messages to print
+        **kwargs: Additional arguments (passed to print)
+    """
+    if APP_CONFIG.debug_mode:
+        timestamp = time.strftime("%H:%M:%S")
+        print(f"[{timestamp}] [DEBUG]", *args, **kwargs, file=sys.stderr)
+        sys.stderr.flush()
 
 
 # ============================================================================
-# Database Operations
+# MongoDB Connection (Singleton Pattern)
+# ============================================================================
+
+class MongoDBConnection:
+    """
+    Singleton MongoDB connection manager.
+    
+    Provides single shared connection with proper connection pooling.
+    """
+    _instance = None
+    _client = None
+    _db = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    def __init__(self):
+        if self._client is None:
+            self._connect()
+    
+    def _connect(self):
+        """Establish MongoDB connection."""
+        debug_print(f"Connecting to MongoDB: {APP_CONFIG.database.uri}")
+        
+        self._client = MongoClient(
+            APP_CONFIG.database.uri,
+            serverSelectionTimeoutMS=APP_CONFIG.database.server_selection_timeout_ms,
+            connectTimeoutMS=APP_CONFIG.database.connection_timeout_ms,
+            maxPoolSize=10,
+            minPoolSize=1,
+        )
+        
+        # Test connection
+        try:
+            self._client.admin.command('ping')
+            debug_print("MongoDB connection successful")
+        except Exception as e:
+            debug_print(f"MongoDB connection failed: {e}")
+            raise
+        
+        self._db = self._client[APP_CONFIG.database.db_name]
+    
+    @property
+    def client(self):
+        """Get MongoDB client."""
+        if self._client is None:
+            self._connect()
+        return self._client
+    
+    @property
+    def db(self):
+        """Get database."""
+        if self._db is None:
+            self._connect()
+        return self._db
+    
+    def get_collection(self, collection_name: str):
+        """Get a collection by name."""
+        return self.db[collection_name]
+
+
+# ============================================================================
+# DocumentStore
 # ============================================================================
 
 class DocumentStore:
-    """Handles MongoDB document operations."""
+    """
+    Handles MongoDB document operations and parent document expansion.
+    
+    This is the critical shared component that implements your
+    small-to-big retrieval strategy.
+    """
     
     def __init__(self):
-        """Initialize database connections via factory."""
-        collections = DatabaseFactory.get_collections()
-        self.docs_coll = collections['documents']
-        self.chunks_coll = collections['chunks']
-        debug_print("DocumentStore initialized", f"DB: {APP_CONFIG.database.db_name}")
+        """Initialize document store with MongoDB connection."""
+        debug_print("Initializing DocumentStore")
+        
+        # Get singleton MongoDB connection
+        mongo = MongoDBConnection()
+        
+        # Get collections
+        self.documents_coll = mongo.get_collection(APP_CONFIG.database.documents_collection)
+        self.chunks_coll = mongo.get_collection(APP_CONFIG.database.chunks_collection)
+        
+        debug_print(
+            f"DocumentStore ready: "
+            f"docs={APP_CONFIG.database.documents_collection}, "
+            f"chunks={APP_CONFIG.database.chunks_collection}"
+        )
     
     def hydrate_parent_metadata(self, doc_ids: List[str]) -> Dict[str, Dict]:
-        """Fetch parent document metadata for given document IDs."""
-        query_ids = [ObjectId(d) if ObjectId.is_valid(d) else d for d in doc_ids]
-        docs = self.docs_coll.find({"_id": {"$in": query_ids}})
-        return {str(doc["_id"]): doc for doc in docs}
+        """
+        Fetch parent document metadata for a list of document IDs.
+        
+        Args:
+            doc_ids: List of document ObjectIds (as strings)
+        
+        Returns:
+            Dict mapping document_id -> metadata dict
+        
+        Example:
+            >>> meta = store.hydrate_parent_metadata(['507f1f77bcf86cd799439011'])
+            >>> meta['507f1f77bcf86cd799439011']['filename']
+            'Relief_Record_1234.pdf'
+        """
+        from bson import ObjectId
+        
+        if not doc_ids:
+            return {}
+        
+        # Convert string IDs to ObjectIds
+        try:
+            object_ids = [ObjectId(doc_id) for doc_id in doc_ids]
+        except Exception as e:
+            debug_print(f"Error converting doc_ids to ObjectIds: {e}")
+            return {}
+        
+        # Fetch documents
+        cursor = self.documents_coll.find(
+            {"_id": {"$in": object_ids}},
+            {
+                "filename": 1,
+                "source_type": 1,
+                "upload_date": 1,
+                "metadata": 1,
+            }
+        )
+        
+        # Build mapping
+        result = {}
+        for doc in cursor:
+            doc_id_str = str(doc["_id"])
+            result[doc_id_str] = {
+                "filename": doc.get("filename", "Unknown"),
+                "source_type": doc.get("source_type", "Unknown"),
+                "upload_date": doc.get("upload_date"),
+                "metadata": doc.get("metadata", {}),
+            }
+        
+        return result
     
     def get_full_document_text(
         self,
         doc_ids: List[str]
     ) -> Tuple[str, Dict[str, str], float]:
         """
-        Fetch complete text for multiple documents (small-to-big expansion).
+        Fetch complete text for parent documents (small-to-big expansion).
         
-        Returns: (full_text, filename_mapping, latency)
+        This is your special sauce - retrieving full documents from chunks.
+        
+        Args:
+            doc_ids: List of parent document IDs
+        
+        Returns:
+            Tuple of (full_text, mapping, fetch_time) where:
+                - full_text: Combined text of all documents
+                - mapping: Dict of {label: document_id}
+                - fetch_time: Time taken to fetch documents
+        
+        Example:
+            >>> text, mapping, time = store.get_full_document_text(['doc1', 'doc2'])
+            >>> mapping
+            {'Source 1': 'doc1', 'Source 2': 'doc2'}
         """
-        t_start = time.time()
-        meta = self.hydrate_parent_metadata(doc_ids)
+        from bson import ObjectId
         
-        full_text_block = ""
+        start = time.time()
+        
+        if not doc_ids:
+            return "", {}, 0.0
+        
+        debug_print(f"Fetching full text for {len(doc_ids)} documents")
+        
+        # Convert to ObjectIds
+        try:
+            object_ids = [ObjectId(doc_id) for doc_id in doc_ids]
+        except Exception as e:
+            debug_print(f"Error converting doc_ids: {e}")
+            return "", {}, time.time() - start
+        
+        # Fetch parent metadata for source labels
+        parent_meta = self.hydrate_parent_metadata(doc_ids)
+        
+        # Build full text by fetching ALL chunks for each document
+        full_text_parts = []
         mapping = {}
         
-        for d_id in doc_ids:
-            fname = meta.get(d_id, {}).get("filename", f"Doc-{d_id[:8]}")
-            mapping[fname] = d_id
+        for idx, doc_id in enumerate(doc_ids, 1):
+            obj_id = ObjectId(doc_id)
             
+            # Fetch all chunks for this document, sorted by chunk_index
             chunks = list(
-                self.chunks_coll.find({"document_id": d_id}).sort("chunk_index", 1)
+                self.chunks_coll.find(
+                    {"document_id": obj_id}
+                ).sort("chunk_index", 1)
             )
             
-            full_text_block += f"\n--- FULL DOCUMENT: {fname} (ID: {d_id}) ---\n"
-            for c in chunks:
-                full_text_block += c.get("text", "") + "\n"
+            if not chunks:
+                debug_print(f"No chunks found for document {doc_id}")
+                continue
+            
+            # Combine chunk text
+            doc_text_parts = []
+            for chunk in chunks:
+                # Try both 'text' and 'ocr_text' fields
+                text = chunk.get("text") or chunk.get("ocr_text", "")
+                if text:
+                    doc_text_parts.append(text)
+            
+            if doc_text_parts:
+                doc_text = "\n".join(doc_text_parts)
+                
+                # Get filename from parent metadata
+                filename = parent_meta.get(doc_id, {}).get("filename", f"Document {idx}")
+                
+                # Add to full text with source label
+                source_label = f"Source {idx}"
+                full_text_parts.append(f"[{source_label}: {filename}]\n{doc_text}")
+                
+                # Add to mapping
+                mapping[source_label] = doc_id
         
-        latency = time.time() - t_start
+        full_text = "\n\n".join(full_text_parts)
+        fetch_time = time.time() - start
+        
         debug_print(
-            "Document Expansion",
-            f"Fetched {len(doc_ids)} full documents",
-            tokens=count_tokens(full_text_block)
+            f"Fetched {len(full_text)} characters from {len(mapping)} documents "
+            f"in {fetch_time:.2f}s"
         )
         
-        return full_text_block, mapping, latency
+        return full_text, mapping, fetch_time
 
 
 # ============================================================================
-# LLM Operations
+# Exports
 # ============================================================================
 
-class LLMClient:
-    """Direct HTTP calls to Ollama (no LangChain)."""
-    
-    def __init__(self, config: RAGConfig):
-        """Initialize LLM client with config."""
-        self.config = config
-        debug_print(
-            "LLM Client initialized",
-            f"Model: {config.llm_model}, URL: {config.llm_base_url}"
-        )
-    
-    def generate(
-        self,
-        prompt: str,
-        system: str = "",
-        temperature: Optional[float] = None,
-        timeout: Optional[float] = None,
-        num_predict: Optional[int] = None,
-    ) -> str:
-        """Generate text using Ollama."""
-        temp = temperature if temperature is not None else self.config.llm_temperature
-        tout = timeout if timeout is not None else self.config.llm_timeout
-        npred = num_predict if num_predict is not None else self.config.llm_num_predict
-        
-        debug_print(
-            "LLM Generate",
-            f"Model: {self.config.llm_model}, Temp: {temp}",
-            tokens=count_tokens(prompt)
-        )
-        
-        t_start = time.time()
-        resp = requests.post(
-            f"{self.config.llm_base_url}/api/generate",
-            json={
-                "model": self.config.llm_model,
-                "prompt": prompt,
-                "system": system,
-                "stream": False,
-                "options": {
-                    "temperature": temp,
-                    "num_predict": npred,
-                    "num_ctx": 131072,
-                    "repeat_penalty": 1.15,
-                }
-            },
-            timeout=tout
-        )
-        
-        resp.raise_for_status()
-        answer = resp.json().get("response", "")
-        
-        elapsed = time.time() - t_start
-        debug_print("LLM Complete", f"{count_tokens(answer)} tokens in {elapsed:.1f}s")
-        
-        return answer
-    
-    def generate_with_retry(
-        self,
-        prompt: str,
-        system: str = "",
-        max_retries: int = 3,
-        **kwargs
-    ) -> str:
-        """Generate with exponential backoff retry."""
-        for attempt in range(max_retries):
-            try:
-                return self.generate(prompt, system, **kwargs)
-            except requests.RequestException as e:
-                if attempt < max_retries - 1:
-                    wait_time = 2 ** attempt
-                    debug_print(
-                        "LLM Retry",
-                        f"Attempt {attempt + 1} failed, waiting {wait_time}s",
-                        level="WARN"
-                    )
-                    time.sleep(wait_time)
-                else:
-                    debug_print("LLM Failed", f"All {max_retries} attempts exhausted", level="ERROR")
-                    raise
-
-
-__all__ = ["RAGConfig", "count_tokens", "debug_print", "DocumentStore", "LLMClient"]
+__all__ = [
+    "DocumentStore",
+    "count_tokens",
+    "debug_print",
+]
