@@ -205,11 +205,13 @@ class DocumentStore:
     def get_full_document_text(
         self,
         doc_ids: List[str]
-    ) -> Tuple[str, Dict[str, str], float]:
+    ) -> Tuple[str, Dict[str, Dict[str, str]], float]:
         """
         Fetch complete text for parent documents (small-to-big expansion).
         
-        This is your special sauce - retrieving full documents from chunks.
+        Supports TWO data structures:
+        1. Chunked: Separate chunks collection with document_id references
+        2. Embedded: Text stored directly in document (ocr_text, content, etc.)
         
         Args:
             doc_ids: List of parent document IDs
@@ -217,13 +219,8 @@ class DocumentStore:
         Returns:
             Tuple of (full_text, mapping, fetch_time) where:
                 - full_text: Combined text of all documents
-                - mapping: Dict of {label: document_id}
+                - mapping: Dict of {label: {"id": doc_id, "filename": ..., "display_name": ...}}
                 - fetch_time: Time taken to fetch documents
-        
-        Example:
-            >>> text, mapping, time = store.get_full_document_text(['doc1', 'doc2'])
-            >>> mapping
-            {'Source 1': 'doc1', 'Source 2': 'doc2'}
         """
         from bson import ObjectId
         
@@ -244,44 +241,164 @@ class DocumentStore:
         # Fetch parent metadata for source labels
         parent_meta = self.hydrate_parent_metadata(doc_ids)
         
-        # Build full text by fetching ALL chunks for each document
+        # Helper function to strip file extensions
+        def strip_extensions(filename: str) -> str:
+            """Strip common file extensions from filename for display."""
+            extensions = ['.json', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.pdf']
+            display = filename
+            while True:
+                stripped = False
+                for ext in extensions:
+                    if display.lower().endswith(ext):
+                        display = display[:-len(ext)]
+                        stripped = True
+                        break
+                if not stripped:
+                    break
+            return display
+        
+        # Try to build full text from chunks first
         full_text_parts = []
         mapping = {}
+        docs_found_in_chunks = set()
         
         for idx, doc_id in enumerate(doc_ids, 1):
-            
             
             # Fetch all chunks for this document, sorted by chunk_index
             chunks = list(
                 self.chunks_coll.find(
-                    {"document_id": doc_id}
+                    {"document_id": doc_id}  # Use string directly (not ObjectId)
                 ).sort("chunk_index", 1)
             )
             
-            if not chunks:
-                debug_print(f"No chunks found for document {doc_id}")
-                continue
+            if chunks:
+                # Found chunks - use chunked structure
+                docs_found_in_chunks.add(doc_id)
+                
+                # Combine chunk text
+                doc_text_parts = []
+                for chunk in chunks:
+                    # Try both 'text' and 'ocr_text' fields
+                    text = chunk.get("text") or chunk.get("ocr_text", "")
+                    if text:
+                        doc_text_parts.append(text)
+                
+                if doc_text_parts:
+                    doc_text = "\n".join(doc_text_parts)
+                    
+                    # Get filename from parent metadata
+                    filename = parent_meta.get(doc_id, {}).get("filename", f"Document {idx}")
+                    display_name = strip_extensions(filename)
+                    
+                    # Add to full text with source label
+                    source_label = f"Source {idx}"
+                    full_text_parts.append(f"[{source_label}: {display_name}]\n{doc_text}")
+                    
+                    # Add to mapping with full metadata
+                    mapping[source_label] = {
+                        "id": doc_id,
+                        "filename": filename,
+                        "display_name": display_name
+                    }
+        
+        # If no chunks found for ANY documents, fall back to embedded text structure
+        if not docs_found_in_chunks:
+            debug_print("No chunks found - using embedded text structure")
             
-            # Combine chunk text
-            doc_text_parts = []
-            for chunk in chunks:
-                # Try both 'text' and 'ocr_text' fields
-                text = chunk.get("text") or chunk.get("ocr_text", "")
-                if text:
-                    doc_text_parts.append(text)
+            # Fetch documents directly and extract embedded text
+            docs = list(
+                self.documents_coll.find(
+                    {"_id": {"$in": object_ids}},
+                    {
+                        "filename": 1,
+                        "ocr_text": 1,
+                        "content": 1,
+                        "text": 1,
+                        "summary": 1,
+                    }
+                )
+            )
             
-            if doc_text_parts:
-                doc_text = "\n".join(doc_text_parts)
+            for idx, doc in enumerate(docs, 1):
+                # Try multiple text fields in order of preference
+                text = (
+                    doc.get("ocr_text") or 
+                    doc.get("content") or 
+                    doc.get("text") or 
+                    doc.get("summary") or 
+                    ""
+                )
                 
-                # Get filename from parent metadata
-                filename = parent_meta.get(doc_id, {}).get("filename", f"Document {idx}")
+                if text and text.strip():
+                    doc_id = str(doc["_id"])
+                    filename = doc.get("filename", f"Document {idx}")
+                    display_name = strip_extensions(filename)
+                    
+                    source_label = f"Source {idx}"
+                    full_text_parts.append(f"[{source_label}: {display_name}]\n{text}")
+                    
+                    # Add to mapping with full metadata
+                    mapping[source_label] = {
+                        "id": doc_id,
+                        "filename": filename,
+                        "display_name": display_name
+                    }
+                else:
+                    debug_print(f"No text found in document {doc.get('_id')}")
+        
+        # Handle mixed case: some docs have chunks, others don't
+        elif len(docs_found_in_chunks) < len(doc_ids):
+            debug_print(
+                f"Mixed structure: {len(docs_found_in_chunks)} with chunks, "
+                f"{len(doc_ids) - len(docs_found_in_chunks)} without"
+            )
+            
+            # Fetch remaining documents without chunks
+            missing_ids = [
+                ObjectId(doc_id) 
+                for doc_id in doc_ids 
+                if doc_id not in docs_found_in_chunks
+            ]
+            
+            if missing_ids:
+                docs = list(
+                    self.documents_coll.find(
+                        {"_id": {"$in": missing_ids}},
+                        {
+                            "filename": 1,
+                            "ocr_text": 1,
+                            "content": 1,
+                            "text": 1,
+                            "summary": 1,
+                        }
+                    )
+                )
                 
-                # Add to full text with source label
-                source_label = f"Source {idx}"
-                full_text_parts.append(f"[{source_label}: {filename}]\n{doc_text}")
-                
-                # Add to mapping
-                mapping[source_label] = doc_id
+                current_idx = len(mapping) + 1
+                for doc in docs:
+                    text = (
+                        doc.get("ocr_text") or 
+                        doc.get("content") or 
+                        doc.get("text") or 
+                        doc.get("summary") or 
+                        ""
+                    )
+                    
+                    if text and text.strip():
+                        doc_id = str(doc["_id"])
+                        filename = doc.get("filename", f"Document {current_idx}")
+                        display_name = strip_extensions(filename)
+                        
+                        source_label = f"Source {current_idx}"
+                        full_text_parts.append(f"[{source_label}: {display_name}]\n{text}")
+                        
+                        # Add to mapping with full metadata
+                        mapping[source_label] = {
+                            "id": doc_id,
+                            "filename": filename,
+                            "display_name": display_name
+                        }
+                        current_idx += 1
         
         full_text = "\n\n".join(full_text_parts)
         fetch_time = time.time() - start

@@ -145,6 +145,8 @@ def get_tiered_agent():
 # ============================================================================
 # UPDATED: Basic RAG Query Handler (Standardized)
 # ============================================================================
+# Updated route for routes.py
+# Replace the existing @app.route('/historian-agent/query-basic', methods=['POST'])
 
 @app.route('/historian-agent/query-basic', methods=['POST'])
 def historian_agent_query_basic():
@@ -181,15 +183,27 @@ def historian_agent_query_basic():
             label="BASIC_RAG"
         )
         
-        # Consistent Sources and Search ID
-        sources = metrics_raw.get('sources', {})
+        # Sources now come as: {"Source 1": {"id": "...", "filename": "...", "display_name": "..."}}
+        sources_with_metadata = metrics_raw.get('sources', {})
+        
+        # Create search_id and cache the ordered list of document IDs
         search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())]
+        ordered_ids = [source_data["id"] for source_data in sources_with_metadata.values()]
         cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
+        
+        # Format sources for frontend display
+        # Frontend expects: {"Source 1": {"id": "...", "display_name": "...", "url": "..."}}
+        formatted_sources = {}
+        for label, source_data in sources_with_metadata.items():
+            formatted_sources[label] = {
+                "id": source_data["id"],
+                "display_name": source_data["display_name"],
+                "url": f"/document/{source_data['id']}?search_id={search_id}"
+            }
         
         # Update history with sources for persistence
         history.append({'role': 'user', 'content': question})
-        history.append({'role': 'assistant', 'content': answer, 'sources': sources})
+        history.append({'role': 'assistant', 'content': answer, 'sources': formatted_sources})
         if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
             history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
         cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
@@ -197,7 +211,7 @@ def historian_agent_query_basic():
         return jsonify({
             'conversation_id': conversation_id,
             'answer': answer,
-            'sources': sources,
+            'sources': formatted_sources,
             'search_id': search_id,
             'metrics': {
                 'total_time': metrics_raw.get('total_time', 0),
