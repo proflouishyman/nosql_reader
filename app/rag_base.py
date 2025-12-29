@@ -205,7 +205,7 @@ class DocumentStore:
     def get_full_document_text(
         self,
         doc_ids: List[str]
-    ) -> Tuple[str, Dict[str, Dict[str, str]], float]:
+    ) -> Tuple[str, List[Dict[str, str]], float]:
         """
         Fetch complete text for parent documents (small-to-big expansion).
         
@@ -217,9 +217,9 @@ class DocumentStore:
             doc_ids: List of parent document IDs
         
         Returns:
-            Tuple of (full_text, mapping, fetch_time) where:
+            Tuple of (full_text, sources_list, fetch_time) where:
                 - full_text: Combined text of all documents
-                - mapping: Dict of {label: {"id": doc_id, "filename": ..., "display_name": ...}}
+                - sources_list: List of source dicts [{"label": "Source 1", "id": "...", ...}]
                 - fetch_time: Time taken to fetch documents
         """
         from bson import ObjectId
@@ -227,7 +227,7 @@ class DocumentStore:
         start = time.time()
         
         if not doc_ids:
-            return "", {}, 0.0
+            return "", [], 0.0
         
         debug_print(f"Fetching full text for {len(doc_ids)} documents")
         
@@ -236,7 +236,7 @@ class DocumentStore:
             object_ids = [ObjectId(doc_id) for doc_id in doc_ids]
         except Exception as e:
             debug_print(f"Error converting doc_ids: {e}")
-            return "", {}, time.time() - start
+            return "", [], time.time() - start
         
         # Fetch parent metadata for source labels
         parent_meta = self.hydrate_parent_metadata(doc_ids)
@@ -259,7 +259,7 @@ class DocumentStore:
         
         # Try to build full text from chunks first
         full_text_parts = []
-        mapping = {}
+        sources_list = []  # Internal list format
         docs_found_in_chunks = set()
         
         for idx, doc_id in enumerate(doc_ids, 1):
@@ -294,12 +294,13 @@ class DocumentStore:
                     source_label = f"Source {idx}"
                     full_text_parts.append(f"[{source_label}: {display_name}]\n{doc_text}")
                     
-                    # Add to mapping with full metadata
-                    mapping[source_label] = {
+                    # Add to sources list (internal format)
+                    sources_list.append({
+                        "label": source_label,
                         "id": doc_id,
                         "filename": filename,
                         "display_name": display_name
-                    }
+                    })
         
         # If no chunks found for ANY documents, fall back to embedded text structure
         if not docs_found_in_chunks:
@@ -337,12 +338,13 @@ class DocumentStore:
                     source_label = f"Source {idx}"
                     full_text_parts.append(f"[{source_label}: {display_name}]\n{text}")
                     
-                    # Add to mapping with full metadata
-                    mapping[source_label] = {
+                    # Add to sources list (internal format)
+                    sources_list.append({
+                        "label": source_label,
                         "id": doc_id,
                         "filename": filename,
                         "display_name": display_name
-                    }
+                    })
                 else:
                     debug_print(f"No text found in document {doc.get('_id')}")
         
@@ -374,7 +376,7 @@ class DocumentStore:
                     )
                 )
                 
-                current_idx = len(mapping) + 1
+                current_idx = len(sources_list) + 1
                 for doc in docs:
                     text = (
                         doc.get("ocr_text") or 
@@ -392,23 +394,24 @@ class DocumentStore:
                         source_label = f"Source {current_idx}"
                         full_text_parts.append(f"[{source_label}: {display_name}]\n{text}")
                         
-                        # Add to mapping with full metadata
-                        mapping[source_label] = {
+                        # Add to sources list (internal format)
+                        sources_list.append({
+                            "label": source_label,
                             "id": doc_id,
                             "filename": filename,
                             "display_name": display_name
-                        }
+                        })
                         current_idx += 1
         
         full_text = "\n\n".join(full_text_parts)
         fetch_time = time.time() - start
         
         debug_print(
-            f"Fetched {len(full_text)} characters from {len(mapping)} documents "
+            f"Fetched {len(full_text)} characters from {len(sources_list)} documents "
             f"in {fetch_time:.2f}s"
         )
         
-        return full_text, mapping, fetch_time
+        return full_text, sources_list, fetch_time
 
 
 # ============================================================================

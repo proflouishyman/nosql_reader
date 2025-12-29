@@ -187,12 +187,26 @@ class RAGQueryHandler:
             
             # 5. Small-to-Big Expansion (via shared DocumentStore)
             # FIXED: Properly capture mapping
-            context, mapping, _ = self.doc_store.get_full_document_text(unique_ids)
+            context, sources_list, _ = self.doc_store.get_full_document_text(unique_ids)
             
             metrics["retrieval_time"] = time.time() - r_start
             metrics["doc_count"] = len(unique_ids)
-            metrics["sources"] = mapping  # FIXED: Properly assign sources
+            metrics["sources"] = sources_list  # Already a list!
             metrics["context"] = context
+            # # Normalize sources list for API compatibility, need to add mapping if to work
+            # if isinstance(mapping, dict):
+            #     sources_list = [
+            #         {
+            #             "label": label,
+            #             "id": info["id"],
+            #             "display_name": info.get("display_name", label),
+            #         }
+            #         for label, info in mapping.items()
+            #     ]
+            # else:
+            #     sources_list = []
+
+            # metrics["sources"] = sources_list
         
         # Build prompt (YOUR EXISTING FORMAT)
         prompt = f"TASK: {question}\n\nCONTEXT:\n{context}"

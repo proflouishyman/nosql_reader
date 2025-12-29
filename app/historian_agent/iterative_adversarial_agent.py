@@ -34,12 +34,42 @@ load_dotenv()
 PARENT_RETRIEVAL_CAP = APP_CONFIG.retriever.parent_retrieval_cap
 CONFIDENCE_THRESHOLD = APP_CONFIG.adversarial.confidence_threshold
 
+def strip_extensions(filename: str) -> str:
+    """Strip common file extensions from filename for display."""
+    extensions = ['.json', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.pdf']
+    display = filename
+    while True:
+        stripped = False
+        for ext in extensions:
+            if display.lower().endswith(ext):
+                display = display[:-len(ext)]
+                stripped = True
+                break
+        if not stripped:
+            break
+    return display
 
 def debug_event(category: str, msg: str, icon: str = "⚙️", level: str = "INFO"):
     """Print debug events if debug mode enabled."""
     if APP_CONFIG.debug_mode:
         timestamp = time.strftime("%H:%M:%S")
         sys.stderr.write(f"{icon} [{timestamp}] [{category.upper()}] {msg}\n")
+
+
+def strip_extensions(filename: str) -> str:
+    """Strip common file extensions from filename for display."""
+    extensions = ['.json', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.pdf']
+    display = filename
+    while True:
+        stripped = False
+        for ext in extensions:
+            if display.lower().endswith(ext):
+                display = display[:-len(ext)]
+                stripped = True
+                break
+        if not stripped:
+            break
+    return display
 
 
 class TieredHistorianAgent:
@@ -332,6 +362,55 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             total_time = time.time() - total_start
             sources = tier1_metrics.get("sources", {})
             
+            # Format sources list as requested
+            # Build sources list (internal format)
+            sources_list: List[Dict[str, str]] = []
+            for idx, d in enumerate(docs, 1):
+                if not isinstance(d, dict):
+                    continue
+                md = d.get("metadata", {}) if isinstance(d.get("metadata", {}), dict) else {}
+                
+                doc_id = md.get("document_id") or d.get("document_id") or d.get("id")
+                if not doc_id:
+                    continue
+                doc_id = str(doc_id)
+                
+                filename = (
+                    md.get("filename") or 
+                    md.get("file_name") or 
+                    md.get("title") or 
+                    md.get("source") or 
+                    doc_id
+                )
+                filename = str(filename)
+                display_name = strip_extensions(filename)
+                
+                sources_list.append({
+                    "label": f"Source {idx}",
+                    "id": doc_id,
+                    "filename": filename,
+                    "display_name": display_name
+                })
+                
+                filename = (
+                    md.get("filename") or 
+                    md.get("file_name") or 
+                    md.get("title") or 
+                    md.get("source") or 
+                    doc_id
+                )
+                filename = str(filename)
+                display_name = strip_extensions(filename)
+                
+                sources_list.append({
+                    "label": f"Source {idx}",
+                    "id": doc_id,
+                    "filename": filename,
+                    "display_name": display_name
+                })
+
+            sources = sources_list
+
             return tier1_answer, sources, all_metrics, total_time
         
         # ========================================
@@ -398,6 +477,39 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             icon="🏁"
         )
         
+        # Format sources list as requested
+        sources_list = []
+        docs = tier2_sources or []
+
+        for idx, d in enumerate(docs, 1):
+            if not isinstance(d, dict):
+                continue
+            md = d.get("metadata", {}) if isinstance(d.get("metadata", {}), dict) else {}
+            
+            doc_id = md.get("document_id") or d.get("document_id") or d.get("id")
+            if not doc_id:
+                continue
+            doc_id = str(doc_id)
+            
+            filename = (
+                md.get("filename") or 
+                md.get("file_name") or 
+                md.get("title") or 
+                md.get("source") or 
+                doc_id
+            )
+            filename = str(filename)
+            display_name = strip_extensions(filename)
+            
+            sources_list.append({
+                "label": f"Source {idx}",
+                "id": doc_id,
+                "filename": filename,
+                "display_name": display_name
+            })
+
+        tier2_sources = sources_list
+
         return final_answer, tier2_sources, all_metrics, total_time
 
 

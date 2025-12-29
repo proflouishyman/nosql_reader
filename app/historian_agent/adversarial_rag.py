@@ -283,11 +283,12 @@ TASK: Verify each factual claim. Report citation_score as percentage with direct
             ans += report
         
         latency = time.time() - start
-        sources = metrics.get('sources', {})
+        sources = metrics.get('sources', [])
         
         debug_step("Complete", f"Total: {latency:.1f}s, Score: {score}/100", icon="🏁")
         
         return ans, latency, sources
+        
     
     def close(self):
         """Clean up resources."""
