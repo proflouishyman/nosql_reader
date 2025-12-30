@@ -162,21 +162,13 @@
                 sourcesContainer.hidden = false;
                 sourcesList.innerHTML = '';
                 
-                Object.entries(sources).forEach(([filename, docId]) => {
+                Object.entries(sources).forEach(([label, source]) => {
                     const item = document.createElement('li');
                     const link = document.createElement('a');
-                    
-                    if (searchId) {
-                        link.href = `/document/${docId}?search_id=${searchId}`;
-                    } else {
-                        link.href = `/document/${docId}`;
-                    }
+                    link.href = source.url;  // Use the url property directly
                     link.target = '_blank';
                     link.rel = 'noopener noreferrer';
-                    
-                    const displayName = filename.replace(/\.json$/i, '');
-                    link.textContent = displayName;
-                    
+                    link.textContent = `${label}: ${source.display_name}`;  // Already clean!
                     item.appendChild(link);
                     sourcesList.appendChild(item);
                 });
