@@ -32,5 +32,35 @@
         "small": "12px",
         "medium": "17px",
         "large": "22px"
+    },
+    
+    "dropdown_fields": {
+        "collection": {
+            "values": ["Microfilm Digitization", "Relief Record Scans"],
+            "min_values": 2,
+            "max_values": 10,
+            "count": 2
+        },
+        "archive_structure.physical_box": {
+            "values": [
+                "Blue Box 128", 
+                "Blue Box 129", 
+                "Relief Department Box 4", 
+                "Relief Department Box 5", 
+                "Relief Department Box 6"
+            ],
+            "min_values": 2,
+            "max_values": 10,
+            "count": 7
+        }
+    },
+    "dropdown_config": {
+        "last_updated": "2024-01-01T12:00:00Z",
+        "excluded_fields": [
+            "archive_structure.format",
+            "entities.ORG",
+            "metadata.migrated_from"
+        ]
     }
+    
 }

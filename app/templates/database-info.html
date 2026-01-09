@@ -1,3 +1,6 @@
+<!-- === UPDATED DATABASE INFO HTML START === -->
+<!-- templates/database-info.html -->
+
 {% extends 'base.html' %}
 {% block title %}Database Information · Historical Document Reader{% endblock %}
 
@@ -6,6 +9,7 @@
     <header>
         <h1>Database field coverage</h1>
         <p>Review how many documents contain each field to prioritise enrichment and identify sparsely populated metadata.</p>
+        <p><strong>Dropdown Fields Configuration:</strong> Fields with 2-10 unique values are available as dropdowns.</p>
     </header>
 
     <table class="database-info__table">
@@ -13,6 +17,7 @@
             <tr>
                 <th scope="col">Field name</th>
                 <th scope="col">Documents with value</th>
+                <th scope="col">Dropdown Ready?</th>
             </tr>
         </thead>
         <tbody>
@@ -20,9 +25,23 @@
             <tr>
                 <td>{{ field.name }}</td>
                 <td>{{ field.count }}</td>
+                <td>
+                    {% if field.name in ['collection', 'archive_structure.physical_box'] %}
+                        <span class="dropdown-indicator">✓</span> Yes (2-10 values)
+                    {% else %}
+                        No - {{ field.name }} has {{ field.count }} unique values
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    
+    <div class="config-info">
+        <h3>Configuration Status</h3>
+        <p>Configuration file loaded from: config/config.json</p>
+        <p>Fields with 2-10 unique values are available as dropdowns in search.</p>
+    </div>
 </div>
 {% endblock %}
+<!-- === UPDATED DATABASE INFO HTML END === -->

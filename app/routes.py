@@ -763,6 +763,39 @@ def search_database():
         field_structure=field_structure,
     )
 
+@app.route('/api/dropdown-fields', methods=['GET'])
+def get_dropdown_fields():
+    """
+    Return fields that should render as dropdowns (2-10 unique values).
+    Frontend fetches this to dynamically create dropdown menus.
+    """
+    try:
+        # For now, return hardcoded dropdown fields
+        # In the future, this could be generated dynamically from the database
+        dropdown_fields = {
+            "collection": {
+                "values": ["Microfilm Digitization", "Relief Record Scans"]
+            },
+            "archive_structure.physical_box": {
+                "values": [
+                    "Blue Box 128", 
+                    "Blue Box 129", 
+                    "Relief Department Box 4", 
+                    "Relief Department Box 5", 
+                    "Relief Department Box 6"
+                ]
+            }
+        }
+        
+        logger.debug(f"Returning dropdown fields: {dropdown_fields}")
+        return jsonify({"dropdown_fields": dropdown_fields})
+        
+    except Exception as e:
+        logger.error(f"Error fetching dropdown fields: {str(e)}", exc_info=True)
+        return jsonify({
+            "error": "Failed to fetch dropdown fields",
+            "dropdown_fields": {}
+        }), 500
 
 @app.route('/historian-agent')
 def historian_agent_page():
@@ -1029,6 +1062,61 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('index'))
+
+
+# === NEW FUNCTIONS ADDED TO routes.py START ===
+
+def load_dropdown_fields_from_config():
+    """Load dropdown configuration from existing config.json."""
+    try:
+        # Load the main config file
+        config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        # Extract dropdown fields from the config
+        dropdown_fields = config.get('dropdown_fields', {})
+        return dropdown_fields
+        
+    except Exception as e:
+        # Fallback to hardcoded values if config loading fails
+        print(f"Warning: Could not load dropdown config - {e}")
+        return {
+            "collection": {
+                "values": ["Microfilm Digitization", "Relief Record Scans"],
+                "min_values": 2,
+                "max_values": 10,
+                "count": 2
+            },
+            "archive_structure.physical_box": {
+                "values": [
+                    "Blue Box 128", 
+                    "Blue Box 129", 
+                    "Relief Department Box 4", 
+                    "Relief Department Box 5", 
+                    "Relief Department Box 6"
+                ],
+                "min_values": 2,
+                "max_values": 10,
+                "count": 7
+            }
+        }
+
+
+# In routes.py - Add to your existing file (around line ~2035 or end of file)
+
+@app.route('/api/searchable-fields')
+def get_searchable_fields():
+    """Return all fields that should appear in search dropdown."""
+    # This returns ALL fields for selection, but we'll show which ones can use dropdowns
+    return jsonify({
+        "fields": ["collection", "archive_structure.physical_box"]  # Fields that qualify for dropdowns
+    })
+
+
+
+
+
 
 @app.route('/search', methods=['POST'])
 # @login_required
