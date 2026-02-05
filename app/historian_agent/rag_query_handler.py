@@ -1,91 +1,166 @@
-#!/usr/bin/env python3
-import sys, os, requests, time
-from typing import Dict, List, Any, Tuple
-from pymongo import MongoClient
-from bson import ObjectId
+# app/historian_agent/rag_query_handler.py
+# UPDATED: 2025-12-28 - Integrated with llm_abstraction layer
+
+"""
+RAG Query Handler - Basic retrieval + generation pipeline.
+
+CHANGES FROM ORIGINAL:
+- Removed scattered env reads (LLM_MODEL, OLLAMA_BASE_URL, etc.)
+- Uses LLMClient from llm_abstraction instead of raw requests
+- Uses DocumentStore from rag_base for database operations
+- Preserves EXACT retrieval pipeline (hybrid, reranking, expansion)
+- Backward compatible with existing routes
+- Fixed all imports and missing definitions
+"""
+
+import sys
+import os
+import time
+from typing import Dict, List, Any, Tuple, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# --- Configuration ---
-DEBUG = os.environ.get("DEBUG_MODE", "0") == "1"
-TOP_K = int(os.environ.get("HISTORIAN_AGENT_TOP_K", 10))
-RETRIEVAL_POOL_SIZE = int(os.environ.get("RETRIEVAL_POOL_SIZE", 100)) # Fetch 100, Rerank to 10
-LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-oss:20b")
-OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb://admin:secret@mongodb:27017/admin")
-DB_NAME = os.environ.get("DB_NAME", "railroad_documents")
-SYSTEM_PROMPT = "Avoid repetition: do not restate the same point, do not reuse the same opening phrases, do not repeat yourself. If you have nothing new to add, stop.  You are an expert historian commited to accuracy. False positives are much worse than false negatives."
+# Shared base components - FIXED: Import path
+import sys
+sys.path.insert(0, '/app')  # Ensure app is in path
+
+from rag_base import DocumentStore, count_tokens, debug_print
+from llm_abstraction import LLMClient, LLMResponse
+from config import APP_CONFIG
+
+# Your existing components (unchanged)
+from embeddings import EmbeddingService
+from vector_store import get_vector_store
+from retrievers import HybridRetriever, VectorRetriever, KeywordRetriever
+from reranking import DocumentReranker
 
 
+# Configuration - FIXED: Use APP_CONFIG instead of direct env reads
+TOP_K = APP_CONFIG.retriever.top_k
+RETRIEVAL_POOL_SIZE = APP_CONFIG.retriever.retrieval_pool_size
 
+# System prompt for generation
+SYSTEM_PROMPT = (
+    "Avoid repetition: do not restate the same point, do not reuse the same "
+    "opening phrases, do not repeat yourself. If you have nothing new to add, stop. "
+    "You are an expert historian committed to accuracy. "
+    "False positives are much worse than false negatives."
+)
 
-
-def count_tokens(text: str) -> int:
-    return len(text) // 4
-
-def debug_print(msg: str, detail: str = None, tokens: int = 0, level: str = "INFO"):
-    if not DEBUG: return
-    timestamp = time.strftime("%H:%M:%S")
-    token_str = f" | 🔋 {tokens} tokens" if tokens > 0 else ""
-    icon = "🔍" if level == "INFO" else "⚠️" if level == "WARN" else "🚀"
-    sys.stderr.write(f"{icon} [{timestamp}] {msg}{token_str}\n")
-    if detail:
-        sys.stderr.write(f"   | {detail}\n")
-    sys.stderr.flush()
 
 class RAGQueryHandler:
+    """
+    Basic RAG query handler.
+    
+    Pipeline (YOUR EXISTING LOGIC - unchanged):
+        1. Hybrid retrieval (vector + keyword) → Pool of 40 chunks
+        2. Reranking → Top 10 chunks
+        3. De-duplication → Unique parent document IDs
+        4. Full document expansion → Complete text
+        5. LLM generation → Answer
+    """
+    
     def __init__(self):
-        debug_print("Initializing RAGQueryHandler...", f"DB: {DB_NAME}")
-        self.client = MongoClient(MONGO_URI)
-        self.db = self.client[DB_NAME]
-        self.docs_coll = self.db['documents']
-        self.chunks_coll = self.db['document_chunks']
+        """Initialize RAG query handler."""
+        debug_print("Initializing RAGQueryHandler", f"Top-K: {TOP_K}")
         
-        # Load AI Components
-        from .embeddings import EmbeddingService
-        from .vector_store import get_vector_store
-        from .retrievers import HybridRetriever, VectorRetriever, KeywordRetriever
-        from .reranking import DocumentReranker 
+        # FIXED: Initialize shared base components
+        self.doc_store = DocumentStore()
+        self.llm = LLMClient()
         
-        self.embedding_service = EmbeddingService(provider="ollama", model="qwen3-embedding:0.6b")
+        # Your existing retrieval setup (UNCHANGED!)
+        self.embedding_service = EmbeddingService(
+            provider=APP_CONFIG.embedding.provider,
+            model=APP_CONFIG.embedding.model
+        )
         self.vector_store = get_vector_store(store_type="chroma")
         self.reranker = DocumentReranker()
         
-        # Retrieve larger pool for reranking
-        v_ret = VectorRetriever(self.vector_store, self.embedding_service, self.chunks_coll, top_k=RETRIEVAL_POOL_SIZE)
-        class ConfigShim: context_fields = ["text", "ocr_text"]
-        k_ret = KeywordRetriever(self.chunks_coll, ConfigShim(), top_k=RETRIEVAL_POOL_SIZE)
-        self.hybrid_retriever = HybridRetriever(v_ret, k_ret, top_k=RETRIEVAL_POOL_SIZE)
-
-    def hydrate_parent_metadata(self, doc_ids):
-        query_ids = [ObjectId(d) if ObjectId.is_valid(d) else d for d in doc_ids]
-        return {str(doc["_id"]): doc for doc in self.docs_coll.find({"_id": {"$in": query_ids}})}
-
-    def get_full_document_text(self, doc_ids: List[str]) -> Tuple[str, Dict[str, str], float]:
-        t_start = time.time()
-        full_text_block = ""
-        meta = self.hydrate_parent_metadata(doc_ids)
-        mapping = {}
+        # Build hybrid retriever (YOUR EXISTING LOGIC)
+        v_ret = VectorRetriever(
+            self.vector_store,
+            self.embedding_service,
+            self.doc_store.chunks_coll,
+            top_k=RETRIEVAL_POOL_SIZE
+        )
         
-        for d_id in doc_ids:
-            fname = meta.get(d_id, {}).get("filename", f"Doc-{d_id[:8]}")
-            mapping[fname] = d_id
-            chunks = list(self.chunks_coll.find({"document_id": d_id}).sort("chunk_index", 1))
+        class ConfigShim:
+            """Temporary shim for keyword retriever config."""
+            context_fields = ["text", "ocr_text"]
+        
+        k_ret = KeywordRetriever(
+            self.doc_store.chunks_coll,
+            ConfigShim(),
+            top_k=RETRIEVAL_POOL_SIZE
+        )
+        
+        self.hybrid_retriever = HybridRetriever(
+            v_ret,
+            k_ret,
+            top_k=RETRIEVAL_POOL_SIZE
+        )
+        
+        debug_print("Initialization complete")
+    
+    def hydrate_parent_metadata(self, doc_ids: List[str]) -> Dict[str, Dict]:
+        """
+        Fetch parent document metadata (delegates to DocumentStore).
+        
+        Kept for backward compatibility - just wraps DocumentStore method.
+        """
+        return self.doc_store.hydrate_parent_metadata(doc_ids)
+    
+    def get_full_document_text(
+        self,
+        doc_ids: List[str]
+    ) -> Tuple[str, Dict[str, str], float]:
+        """
+        Fetch complete text for documents (delegates to DocumentStore).
+        
+        Kept for backward compatibility - just wraps DocumentStore method.
+        """
+        return self.doc_store.get_full_document_text(doc_ids)
+    
+    def process_query(
+        self,
+        question: str,
+        context: str = "",
+        label: str = "LLM"
+    ) -> Tuple[str, Dict[str, Any]]:
+        """
+        Process a RAG query.
+        
+        YOUR EXISTING PIPELINE - preserved exactly!
+        Only change: LLM call uses llm_abstraction instead of raw requests.
+        
+        Args:
+            question: User's research question
+            context: Optional pre-assembled context (bypasses retrieval)
+            label: Label for logging
+        
+        Returns:
+            Tuple of (answer, metrics)
             
-            full_text_block += f"\n--- FULL DOCUMENT: {fname} (ID: {d_id}) ---\n"
-            for c in chunks:
-                full_text_block += c.get("text", "") + "\n"
-                
-        return full_text_block, mapping, time.time() - t_start
-
-    def process_query(self, question: str, context: str = "", label: str = "LLM") -> Tuple[str, Dict[str, Any]]:
-        metrics = {"retrieval_time": 0.0, "llm_time": 0.0, "tokens": 0, "doc_count": 0}
-        t_start = time.time()
-        mapping = {}
+        Raises:
+            Exception: If LLM generation fails critically
+        """
+        # FIXED: Initialize metrics properly
+        metrics = {
+            "retrieval_time": 0.0,
+            "llm_time": 0.0,
+            "tokens": 0,
+            "doc_count": 0,
+            "sources": {},
+            "context": ""
+        }
         
+        t_start = time.time()
+        
+        # YOUR EXISTING RETRIEVAL LOGIC - unchanged!
         if not context:
             r_start = time.time()
+            
             # 1. Broad Retrieval (Pool of 40)
             raw_chunks = self.hybrid_retriever.get_relevant_documents(question)
             
@@ -101,44 +176,101 @@ class RAGQueryHandler:
                     unique_ids.append(d_id)
                     seen.add(d_id)
             
-            # 4. Cap to TOP_K (5)
+            # 4. Cap to TOP_K
             unique_ids = unique_ids[:TOP_K]
-            debug_print(f"Retrieval: {len(raw_chunks)} -> Rerank: {len(reranked)} -> Expansion: {len(unique_ids)}")
             
-            # 5. Small-to-Big Expansion
-            context, mapping, _ = self.get_full_document_text(unique_ids)
+            debug_print(
+                f"Retrieval: {len(raw_chunks)} -> "
+                f"Rerank: {len(reranked)} -> "
+                f"Expansion: {len(unique_ids)}"
+            )
+            
+            # 5. Small-to-Big Expansion (via shared DocumentStore)
+            # FIXED: Properly capture mapping
+            context, sources_list, _ = self.doc_store.get_full_document_text(unique_ids)
+            
             metrics["retrieval_time"] = time.time() - r_start
             metrics["doc_count"] = len(unique_ids)
+            metrics["sources"] = sources_list  # Already a list!
+            metrics["context"] = context
+            # # Normalize sources list for API compatibility, need to add mapping if to work
+            # if isinstance(mapping, dict):
+            #     sources_list = [
+            #         {
+            #             "label": label,
+            #             "id": info["id"],
+            #             "display_name": info.get("display_name", label),
+            #         }
+            #         for label, info in mapping.items()
+            #     ]
+            # else:
+            #     sources_list = []
 
+            # metrics["sources"] = sources_list
+        
+        # Build prompt (YOUR EXISTING FORMAT)
         prompt = f"TASK: {question}\n\nCONTEXT:\n{context}"
         metrics["tokens"] = count_tokens(prompt)
         
+        # LLM generation (UPDATED: uses llm_abstraction)
         try:
             l_start = time.time()
-            resp = requests.post(f"{OLLAMA_BASE_URL}/api/generate", json={
-                "model": LLM_MODEL, 
-                "prompt": prompt,
-                "system": SYSTEM_PROMPT, 
-                "stream": False,
-                "options": {
-                    "temperature": 0.1,
-                    "num_predict": 4000,
-                    "num_ctx": 131072,
-                    "repeat_penalty": 1.15
-                },
-            },
-            timeout=500)
-
-            resp.raise_for_status()
-            answer = resp.json().get("response", "")
+            
+            response = self.llm.generate_simple(
+                prompt=prompt,
+                system=SYSTEM_PROMPT,
+                profile="quality",  # Uses config from llm_profiles
+                temperature=0.1,
+                num_predict=4000,
+            )
+            
+            # FIXED: Proper error handling
+            if not response.success:
+                # Return error message with metrics rather than raising
+                error_msg = f"LLM generation failed: {str(response.error)}"
+                debug_print(f"ERROR: {error_msg}")
+                return error_msg, metrics
+            
+            answer = response.content
             metrics["llm_time"] = time.time() - l_start
+            
+            # FIXED: Add LLM metrics
+            metrics["llm_tokens"] = response.tokens
+            metrics["llm_model"] = response.model_name
+            metrics["llm_provider"] = response.provider_used
+        
         except Exception as e:
-            return f"Error: {str(e)}", metrics
-
+            # FIXED: Return tuple consistently
+            error_msg = f"Exception during LLM generation: {str(e)}"
+            debug_print(f"ERROR: {error_msg}")
+            return error_msg, metrics
+        
         metrics["total_time"] = time.time() - t_start
-        metrics["sources"] = mapping
-        metrics["context"] = context 
+        
+        # FIXED: Always return tuple of (answer, metrics)
         return answer, metrics
-
+    
     def close(self):
-        self.client.close()
+        """Clean up resources."""
+        # MongoDB client closed by factory singleton
+        pass
+
+
+# For backward compatibility and CLI testing
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python rag_query_handler.py 'your question'")
+        sys.exit(1)
+    
+    question = " ".join(sys.argv[1:])
+    handler = RAGQueryHandler()
+    
+    try:
+        answer, metrics = handler.process_query(question)
+        print(answer)
+        print(f"\nTime: {metrics['total_time']:.1f}s, Sources: {metrics['doc_count']}")
+    except Exception as e:
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)

@@ -1,3 +1,4 @@
+<!-- templates/search.html -->
 {% extends 'base.html' %}
 {% block title %}Search Database · Historical Document Reader{% endblock %}
 
@@ -13,10 +14,16 @@
             {% for i in range(1, num_search_fields + 1) %}
             <div class="search-field">
                 <label for="field{{ i }}">Field</label>
-                <select name="field{{ i }}" id="field{{ i }}">
+                <select name="field{{ i }}" id="field{{ i }}" class="field-select">
                     <option value="" disabled selected>Select a field</option>
+                    <!-- Dropdown fields (2-10 unique values) -->
+                    <option value="collection" class="dropdown-field">collection</option>
+                    <option value="archive_structure.physical_box" class="dropdown-field">archive_structure.physical_box</option>
+                    <!-- Searchable fields (many unique values) -->
                     {% for field in field_structure|dictsort %}
-                    <option value="{{ field[0] }}">{{ field[0] }}</option>
+                    {% if field[0] not in ['collection', 'archive_structure.physical_box'] %}
+                    <option value="{{ field[0] }}" class="searchable-field">{{ field[0] }}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
                 <label for="operator{{ i }}">Operator</label>
@@ -50,4 +57,123 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+<style>
+    /* Color code dropdown vs searchable fields in selector */
+    .field-select option.dropdown-field {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        font-weight: 500;
+    }
+    
+    .field-select option.searchable-field {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    /* Visual indicator for active dropdown inputs */
+    select.dropdown-input {
+        border-left: 4px solid #1565c0;
+        background-color: #f0f7ff;
+    }
+    
+    /* Visual indicator for text search inputs */
+    input[type="text"][name^="searchTerm"] {
+        border-left: 4px solid #2e7d32;
+        background-color: #f1f8f4;
+    }
+</style>
+<script>
+// Load dropdown configuration from existing config.json
+let dropdownFields = {};
+
+// Fetch dropdown config from backend (which reads from config.json)
+fetch('/api/dropdown-fields')
+    .then(response => response.json())
+    .then(data => {
+        dropdownFields = data.dropdown_fields || {};
+        console.log('Loaded dropdown fields:', dropdownFields);
+    })
+    .catch(error => {
+        console.error('Failed to load dropdown config:', error);
+        // Fallback to hardcoded values
+        dropdownFields = {
+            "collection": {
+                "values": ["Microfilm Digitization", "Relief Record Scans"]
+            },
+            "archive_structure.physical_box": {
+                "values": [
+                    "Blue Box 128", 
+                    "Blue Box 129", 
+                    "Relief Department Box 4", 
+                    "Relief Department Box 5", 
+                    "Relief Department Box 6"
+                ]
+            }
+        };
+    })
+    .finally(() => {
+        // Attach event listeners after config is loaded
+        updateSearchFieldInputs();
+    });
+
+function updateSearchFieldInputs() {
+    const searchFields = document.querySelectorAll('.search-field');
+    
+    searchFields.forEach((field, index) => {
+        const fieldSelect = field.querySelector(`#field${index + 1}`);
+        
+        if (fieldSelect) {
+            fieldSelect.addEventListener('change', function() {
+                const selectedField = this.value;
+                const currentInput = field.querySelector(`#searchTerm${index + 1}`);
+                
+                if (!currentInput) {
+                    console.error('Could not find search term input for field', index + 1);
+                    return;
+                }
+                
+                // Check if this field should have a dropdown
+                if (dropdownFields[selectedField]) {
+                    // Create dropdown to replace text input
+                    const select = document.createElement('select');
+                    select.className = 'dropdown-input';
+                    select.name = `searchTerm${index + 1}`;
+                    select.id = `searchTerm${index + 1}`;
+                    
+                    // Add default option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select value';
+                    select.appendChild(defaultOption);
+                    
+                    // Add dropdown options from config
+                    dropdownFields[selectedField].values.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+                        select.appendChild(optionElement);
+                    });
+                    
+                    // CRITICAL: Replace the text input with the dropdown
+                    currentInput.parentNode.replaceChild(select, currentInput);
+                    console.log(`Replaced text input with dropdown for field: ${selectedField}`);
+                } else {
+                    // If switching back to a non-dropdown field, ensure text input exists
+                    if (currentInput.tagName === 'SELECT' && !currentInput.classList.contains('field-select')) {
+                        const textInput = document.createElement('input');
+                        textInput.type = 'text';
+                        textInput.name = `searchTerm${index + 1}`;
+                        textInput.id = `searchTerm${index + 1}`;
+                        textInput.placeholder = 'Enter search term';
+                        
+                        // CRITICAL: Replace the dropdown with text input
+                        currentInput.parentNode.replaceChild(textInput, currentInput);
+                        console.log(`Replaced dropdown with text input for field: ${selectedField}`);
+                    }
+                }
+            });
+        }
+    });
+}
+</script>
 {% endblock %}

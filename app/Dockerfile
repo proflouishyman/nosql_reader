@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # 2. Install dependencies BEFORE copying code (Layer Caching)
 COPY requirements.txt .  
-RUN uv pip install --system --no-cache -r requirements.txt
+RUN uv pip install --system -r requirements.txt
 
 # 3. Pre-download spaCy (Only re-runs if requirements change)
 RUN python -m spacy download en_core_web_lg

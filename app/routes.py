@@ -143,9 +143,110 @@ def get_tiered_agent():
     return _tiered_agent
 
 # ============================================================================
-# UPDATED: Basic RAG Query Handler (Standardized)
+# SHARED RAG HELPER FUNCTIONS
 # ============================================================================
 
+def sources_list_to_dict(sources: List[Dict[str, str]], search_id: str) -> Dict[str, Dict[str, str]]:
+    """
+    Convert internal list format to API dict format at boundary.
+    
+    This is the ONLY place where we convert from list to dict.
+    
+    Args:
+        sources: List of source dicts [{"label": "Source 1", "id": "...", ...}]
+        search_id: Search ID for building document URLs
+        
+    Returns:
+        Dict formatted for API response
+    """
+    return {
+        source["label"]: {
+            "id": source["id"],
+            "display_name": source["display_name"],
+            "url": f"/document/{source['id']}?search_id={search_id}"
+        }
+        for source in sources
+    }
+
+
+def process_rag_query(
+    method: str,
+    question: str,
+    conversation_id: str,
+    history: List[Dict]
+) -> Dict[str, Any]:
+    """
+    Unified RAG query processor for all three methods.
+    
+    Handles:
+        - Dispatching to appropriate handler
+        - Converting sources list to dict (API boundary)
+        - Creating and caching search_id
+        - Updating conversation history
+        - Formatting response
+    
+    Args:
+        method: 'basic', 'adversarial', or 'tiered'
+        question: User's question
+        conversation_id: Session ID
+        history: Chat history
+        
+    Returns:
+        Standardized API response dict ready for jsonify()
+    """
+    # Dispatch to appropriate handler
+    if method == 'basic':
+        handler = get_rag_handler()
+        answer, metrics = handler.process_query(question, context="", label="BASIC_RAG")
+        sources_list = metrics.get('sources', [])
+        
+    elif method == 'adversarial':
+        handler = get_adversarial_handler()
+        answer, latency, sources_list = handler.process_query(question)
+        metrics = {
+            'total_time': latency,
+            'tokens': 0,
+            'doc_count': len(sources_list)
+        }
+        
+    elif method == 'tiered':
+        agent = get_tiered_agent()
+        result = agent.run(question)
+        answer = result.get('answer', '')
+        sources_list = result.get('sources', [])
+        metrics = result.get('metrics', {})
+        
+    else:
+        raise ValueError(f"Unknown method: {method}")
+    
+    # Create search_id and cache ordered document IDs
+    search_id = str(uuid.uuid4())
+    ordered_ids = [source["id"] for source in sources_list]
+    cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
+    
+    # Convert sources list to dict format (API BOUNDARY)
+    sources_dict = sources_list_to_dict(sources_list, search_id)
+    
+    # Update history
+    history.append({'role': 'user', 'content': question})
+    history.append({'role': 'assistant', 'content': answer, 'sources': sources_dict})
+    if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
+        history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
+    
+    # Return standardized response
+    return {
+        'conversation_id': conversation_id,
+        'answer': answer,
+        'sources': sources_dict,
+        'search_id': search_id,
+        'metrics': metrics,
+        'history': history,
+        'method': method
+    }
+
+# ============================================================================
+# UPDATED: Basic RAG Query Handler (Standardized)
+# ============================================================================
 @app.route('/historian-agent/query-basic', methods=['POST'])
 def historian_agent_query_basic():
     """Basic RAG query using direct hybrid retrieval."""
@@ -174,50 +275,13 @@ def historian_agent_query_basic():
     history = cache.get(history_key) or []
     
     try:
-        handler = get_rag_handler()
-        answer, metrics_raw = handler.process_query(
-            question=question,
-            context="",
-            label="BASIC_RAG"
-        )
-        
-        # Consistent Sources and Search ID
-        sources = metrics_raw.get('sources', {})
-        search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())]
-        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
-        
-        # Update history with sources for persistence
-        history.append({'role': 'user', 'content': question})
-        history.append({'role': 'assistant', 'content': answer, 'sources': sources})
-        if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
-            history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
-        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
-        
-        return jsonify({
-            'conversation_id': conversation_id,
-            'answer': answer,
-            'sources': sources,
-            'search_id': search_id,
-            'metrics': {
-                'total_time': metrics_raw.get('total_time', 0),
-                'tokens': metrics_raw.get('tokens', 0),
-                'doc_count': metrics_raw.get('doc_count', 0),
-                'retrieval_time': metrics_raw.get('retrieval_time', 0),
-                'llm_time': metrics_raw.get('llm_time', 0)
-            },
-            'history': history,
-            'method': 'basic'
-        })
+        result = process_rag_query('basic', question, conversation_id, history)
+        cache.set(history_key, result['history'], timeout=HISTORIAN_HISTORY_TIMEOUT)
+        return jsonify(result)
         
     except Exception as exc:
         app.logger.exception('Basic RAG query failed')
         return jsonify({'error': f'Basic RAG query failed: {str(exc)}'}), 500
-
-
-# ============================================================================
-# UPDATED: Adversarial RAG (Standardized)
-# ============================================================================
 
 @app.route('/historian-agent/query-adversarial', methods=['POST'])
 def historian_agent_query_adversarial():
@@ -247,51 +311,14 @@ def historian_agent_query_adversarial():
     history = cache.get(history_key) or []
     
     try:
-        handler = get_adversarial_handler()
-        # Returns: ans, total_lat, sources
-        answer, latency, sources = handler.process_query(question)
-        
-        # Consistent Search ID
-        search_id = str(uuid.uuid4())
-        ordered_ids = [doc_id for filename, doc_id in sorted(sources.items())]
-        cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
-        
-        # Update history with sources for persistence
-        history.append({'role': 'user', 'content': question})
-        history.append({'role': 'assistant', 'content': answer, 'sources': sources})
-        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
-        
-        return jsonify({
-            'conversation_id': conversation_id,
-            'answer': answer,
-            'sources': sources,
-            'search_id': search_id,
-            'metrics': {
-                'total_time': latency,
-                'tokens': 0, 
-                'doc_count': len(sources)
-            },
-            'history': history,
-            'method': 'adversarial'
-        })
+        result = process_rag_query('adversarial', question, conversation_id, history)
+        cache.set(history_key, result['history'], timeout=HISTORIAN_HISTORY_TIMEOUT)
+        return jsonify(result)
         
     except Exception as exc:
         app.logger.exception('Adversarial RAG query failed')
         return jsonify({'error': f'Adversarial RAG query failed: {str(exc)}'}), 500
 
-
-# ============================================================================
-# UPDATED: Tiered Agent (Standardized)
-# ============================================================================
-
-_tiered_agent = None
-
-def get_tiered_agent():
-    """Lazy initialization of TieredHistorianAgent (via factory)."""
-    global _tiered_agent
-    if _tiered_agent is None:
-        _tiered_agent = build_agent_from_env()
-    return _tiered_agent
 
 @app.route('/historian-agent/query-tiered', methods=['POST'])
 def historian_agent_query_tiered():
@@ -300,9 +327,9 @@ def historian_agent_query_tiered():
     question = (payload.get('question') or '').strip()
     conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
     refresh_requested = _is_truthy(payload.get('refresh'))
-
+    
     history_key = _historian_history_cache_key(conversation_id)
-
+    
     if refresh_requested:
         cache.delete(history_key)
         if not question:
@@ -314,99 +341,20 @@ def historian_agent_query_tiered():
                 'metrics': {},
                 'history': [],
             })
-
+    
     if not question:
         return jsonify({'error': 'A question is required.'}), 400
-
+    
     history = cache.get(history_key) or []
-
+    
     try:
-        agent = get_tiered_agent()
-
-        # New API
-        result = agent.run(question)
-
-        answer = (result.get('answer') or '').strip()
-        docs = result.get('sources') or []
-        metrics = result.get('metrics') or {}
-        logs = result.get('logs') or {}
-        tiers = logs.get('tiers') or []
-
-        # Build sources dict: {filename: document_id}
-        sources: Dict[str, str] = {}
-        ordered_doc_ids: List[str] = []
-        for d in docs:
-            if not isinstance(d, dict):
-                continue
-            md = d.get("metadata", {}) if isinstance(d.get("metadata", {}), dict) else {}
-
-            doc_id = md.get("document_id") or d.get("document_id") or d.get("id")
-            if not doc_id:
-                continue
-            doc_id = str(doc_id)
-
-            filename = (
-                md.get("filename")
-                or md.get("file_name")
-                or md.get("title")
-                or md.get("source")
-                or doc_id
-            )
-            filename = str(filename)
-
-            # Avoid collisions if multiple docs share same filename/title
-            key = filename
-            if key in sources and sources[key] != doc_id:
-                key = f"{filename} ({doc_id})"
-
-            sources[key] = doc_id
-            ordered_doc_ids.append(doc_id)
-
-        # Consistent Search ID
-        search_id = str(uuid.uuid4())
-        cache.set(f'search_{search_id}', ordered_doc_ids, timeout=3600)
-
-        # Convert tiers into your old metrics_list concept
-        metrics_list = []
-        for t in tiers:
-            if not isinstance(t, dict):
-                continue
-            metrics_list.append({
-                "tier": t.get("tier"),
-                "docs": t.get("docs"),
-                "elapsed_s": t.get("elapsed_s"),
-                "verification_score": (t.get("verification") or {}).get("citation_score"),
-            })
-
-        total_tokens = int(metrics.get("tokens", 0) or 0)
-
-        # Update history with sources for persistence
-        history.append({'role': 'user', 'content': question})
-        history.append({'role': 'assistant', 'content': answer, 'sources': sources})
-        cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
-
-        return jsonify({
-            'conversation_id': conversation_id,
-            'answer': answer,
-            'sources': sources,
-            'search_id': search_id,
-            'metrics': {
-                'total_time': metrics.get('total_time_s', None),
-                'tokens': total_tokens,
-                'doc_count': len(sources),
-                'stages': metrics_list,
-                'escalated': len(metrics_list) >= 2,
-                'tier1_verification_score': metrics.get('tier1_verification_score', None),
-                'tier2_verification_score': metrics.get('tier2_verification_score', None),
-            },
-            'history': history,
-            'method': 'tiered'
-        })
-
+        result = process_rag_query('tiered', question, conversation_id, history)
+        cache.set(history_key, result['history'], timeout=HISTORIAN_HISTORY_TIMEOUT)
+        return jsonify(result)
+        
     except Exception as exc:
         app.logger.exception('Tiered agent query failed')
         return jsonify({'error': f'Tiered agent query failed: {str(exc)}'}), 500
-
 
 
 @app.route('/historian-agent/reset-rag', methods=['POST'])
@@ -815,6 +763,39 @@ def search_database():
         field_structure=field_structure,
     )
 
+@app.route('/api/dropdown-fields', methods=['GET'])
+def get_dropdown_fields():
+    """
+    Return fields that should render as dropdowns (2-10 unique values).
+    Frontend fetches this to dynamically create dropdown menus.
+    """
+    try:
+        # For now, return hardcoded dropdown fields
+        # In the future, this could be generated dynamically from the database
+        dropdown_fields = {
+            "collection": {
+                "values": ["Microfilm Digitization", "Relief Record Scans"]
+            },
+            "archive_structure.physical_box": {
+                "values": [
+                    "Blue Box 128", 
+                    "Blue Box 129", 
+                    "Relief Department Box 4", 
+                    "Relief Department Box 5", 
+                    "Relief Department Box 6"
+                ]
+            }
+        }
+        
+        logger.debug(f"Returning dropdown fields: {dropdown_fields}")
+        return jsonify({"dropdown_fields": dropdown_fields})
+        
+    except Exception as e:
+        logger.error(f"Error fetching dropdown fields: {str(e)}", exc_info=True)
+        return jsonify({
+            "error": "Failed to fetch dropdown fields",
+            "dropdown_fields": {}
+        }), 500
 
 @app.route('/historian-agent')
 def historian_agent_page():
@@ -1081,6 +1062,61 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('index'))
+
+
+# === NEW FUNCTIONS ADDED TO routes.py START ===
+
+def load_dropdown_fields_from_config():
+    """Load dropdown configuration from existing config.json."""
+    try:
+        # Load the main config file
+        config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        # Extract dropdown fields from the config
+        dropdown_fields = config.get('dropdown_fields', {})
+        return dropdown_fields
+        
+    except Exception as e:
+        # Fallback to hardcoded values if config loading fails
+        print(f"Warning: Could not load dropdown config - {e}")
+        return {
+            "collection": {
+                "values": ["Microfilm Digitization", "Relief Record Scans"],
+                "min_values": 2,
+                "max_values": 10,
+                "count": 2
+            },
+            "archive_structure.physical_box": {
+                "values": [
+                    "Blue Box 128", 
+                    "Blue Box 129", 
+                    "Relief Department Box 4", 
+                    "Relief Department Box 5", 
+                    "Relief Department Box 6"
+                ],
+                "min_values": 2,
+                "max_values": 10,
+                "count": 7
+            }
+        }
+
+
+# In routes.py - Add to your existing file (around line ~2035 or end of file)
+
+@app.route('/api/searchable-fields')
+def get_searchable_fields():
+    """Return all fields that should appear in search dropdown."""
+    # This returns ALL fields for selection, but we'll show which ones can use dropdowns
+    return jsonify({
+        "fields": ["collection", "archive_structure.physical_box"]  # Fields that qualify for dropdowns
+    })
+
+
+
+
+
 
 @app.route('/search', methods=['POST'])
 # @login_required

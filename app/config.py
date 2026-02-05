@@ -1,0 +1,409 @@
+# app/config.py
+# Complete configuration system for Historical Document Reader
+# Created: 2025-12-28
+
+"""
+Configuration Management
+
+Loads all environment variables once at module import.
+Provides typed, immutable configuration objects.
+No runtime env reads anywhere else in the application.
+
+Usage:
+    from config import APP_CONFIG
+    
+    # Access any config
+    db_name = APP_CONFIG.database.db_name
+    llm_model = APP_CONFIG.llm_profiles['quality']['model']
+    provider_url = APP_CONFIG.providers['ollama'].base_url
+"""
+
+import os
+from dataclasses import dataclass, field
+from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+
+# ============================================================================
+# Helper Functions
+# ============================================================================
+
+def _env(key: str, default: str = "") -> str:
+    """Get string environment variable."""
+    return os.environ.get(key, default)
+
+
+def _env_int(key: str, default: int) -> int:
+    """Get integer environment variable."""
+    try:
+        return int(os.environ.get(key, str(default)))
+    except ValueError:
+        return default
+
+
+def _env_float(key: str, default: float) -> float:
+    """Get float environment variable."""
+    try:
+        return float(os.environ.get(key, str(default)))
+    except ValueError:
+        return default
+
+
+def _env_bool(key: str, default: bool = False) -> bool:
+    """Get boolean environment variable."""
+    value = os.environ.get(key, "").lower()
+    if value in ("1", "true", "yes", "on"):
+        return True
+    elif value in ("0", "false", "no", "off"):
+        return False
+    return default
+
+
+# ============================================================================
+# Configuration Dataclasses
+# ============================================================================
+
+@dataclass(frozen=True)
+class DatabaseConfig:
+    """MongoDB configuration."""
+    uri: str
+    db_name: str
+    documents_collection: str
+    chunks_collection: str
+    connection_timeout_ms: int
+    server_selection_timeout_ms: int
+
+
+@dataclass(frozen=True)
+class ChromaConfig:
+    """ChromaDB configuration."""
+    persist_directory: str
+    collection_name: str
+
+
+@dataclass(frozen=True)
+class EmbeddingConfig:
+    """Embedding service configuration."""
+    provider: str  # "local", "openai", "ollama"
+    model: str
+    dimension: int
+    batch_size: int
+
+
+@dataclass(frozen=True)
+class RetrieverConfig:
+    """Retrieval configuration."""
+    top_k: int
+    retrieval_pool_size: int
+    parent_retrieval_cap: int
+    vector_weight: float
+    keyword_weight: float
+    rrf_k: int
+
+
+@dataclass(frozen=True)
+class LLMConfig:
+    """LLM configuration (legacy - for backward compatibility)."""
+    model: str
+    base_url: str
+    temperature: float
+    num_predict: int
+    timeout_s: float
+
+
+@dataclass(frozen=True)
+class ProviderConfig:
+    """Configuration for a specific LLM provider."""
+    base_url: Optional[str] = None
+    api_key: Optional[str] = None
+    timeout: float = 120.0
+    options: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class AdversarialConfig:
+    """Adversarial verification configuration."""
+    confidence_threshold: float
+    min_score_fallback: int
+    max_retries: int
+
+
+@dataclass(frozen=True)
+class AppConfig:
+    """Complete application configuration."""
+    
+    # Database
+    database: DatabaseConfig
+    chroma: ChromaConfig
+    
+    # Embeddings
+    embedding: EmbeddingConfig
+    
+    # Retrieval
+    retriever: RetrieverConfig
+    
+    # LLM (legacy - for backward compatibility)
+    llm_generator: LLMConfig
+    llm_verifier: LLMConfig
+    
+    # NEW: Provider configurations
+    providers: Dict[str, ProviderConfig]
+    
+    # NEW: LLM profiles for easy selection
+    llm_profiles: Dict[str, Dict[str, Any]]
+    
+    # Adversarial
+    adversarial: AdversarialConfig
+    
+    # Application
+    debug_mode: bool
+    flask_debug: bool
+    secret_key: str
+    session_dir: Optional[str]
+
+
+# ============================================================================
+# Configuration Loader
+# ============================================================================
+
+class ConfigLoader:
+    """Loads configuration from environment variables."""
+    
+    @staticmethod
+    def from_env() -> AppConfig:
+        """Load complete configuration from environment."""
+        
+        # --- Database Configuration ---
+        database = DatabaseConfig(
+            uri=_env("APP_MONGO_URI") or _env("MONGO_URI", "mongodb://localhost:27017"),
+            db_name=_env("MONGO_DB_NAME", "railroad_documents"),
+            documents_collection=_env("DOCUMENTS_COLLECTION", "documents"),
+            chunks_collection=_env("CHUNKS_COLLECTION", "chunks"),
+            connection_timeout_ms=_env_int("MONGO_CONNECT_TIMEOUT_MS", 5000),
+            server_selection_timeout_ms=_env_int("MONGO_SERVER_TIMEOUT_MS", 5000)
+        )
+        
+        # --- ChromaDB Configuration ---
+        chroma = ChromaConfig(
+            persist_directory=_env("CHROMA_PERSIST_DIRECTORY", "/app/data/chroma"),
+            collection_name=_env("CHROMA_COLLECTION_NAME", "historian_documents")
+        )
+        
+        # --- Embedding Configuration ---
+        embedding = EmbeddingConfig(
+            provider=_env("EMBEDDING_PROVIDER", "ollama"),
+            model=_env("HISTORIAN_AGENT_EMBEDDING_MODEL", "qwen3-embedding:0.6b"),
+            dimension=_env_int("EMBEDDING_DIMENSION", 1024),
+            batch_size=_env_int("EMBEDDING_BATCH_SIZE", 32)
+        )
+        
+        # --- Retrieval Configuration ---
+        retriever = RetrieverConfig(
+            top_k=_env_int("HISTORIAN_AGENT_TOP_K", 5),
+            retrieval_pool_size=_env_int("RETRIEVAL_POOL_SIZE", 40),
+            parent_retrieval_cap=_env_int("PARENT_RETRIEVAL_CAP", 8),
+            vector_weight=_env_float("VECTOR_WEIGHT", 0.7),
+            keyword_weight=_env_float("KEYWORD_WEIGHT", 0.3),
+            rrf_k=_env_int("RRF_K", 60)
+        )
+        
+        # --- Legacy LLM Configuration (backward compatibility) ---
+        ollama_base_url = _env("OLLAMA_BASE_URL", "http://host.docker.internal:11434")
+        
+        llm_generator = LLMConfig(
+            model=_env("LLM_MODEL", "qwen2.5:32b"),
+            base_url=ollama_base_url,
+            temperature=_env_float("LLM_TEMPERATURE", 0.2),
+            num_predict=_env_int("LLM_NUM_PREDICT", 4000),
+            timeout_s=_env_float("LLM_TIMEOUT", 120.0)
+        )
+        
+        llm_verifier = LLMConfig(
+            model=_env("VERIFIER_MODEL", "qwen2.5:32b"),
+            base_url=ollama_base_url,
+            temperature=0.0,  # Verifier always uses 0 temperature
+            num_predict=_env_int("VERIFIER_NUM_PREDICT", 500),
+            timeout_s=_env_float("VERIFIER_TIMEOUT", 60.0)
+        )
+        
+        # --- NEW: Provider Configurations ---
+        providers = {
+            "ollama": ProviderConfig(
+                base_url=ollama_base_url,
+                timeout=_env_float("OLLAMA_TIMEOUT", 120.0),
+                options={
+                    "num_ctx": _env_int("OLLAMA_NUM_CTX", 131072),
+                    "repeat_penalty": _env_float("OLLAMA_REPEAT_PENALTY", 1.15),
+                }
+            ),
+            "openai": ProviderConfig(
+                api_key=_env("OPENAI_API_KEY", ""),
+                timeout=_env_float("OPENAI_TIMEOUT", 30.0),
+                options={}
+            ),
+            "lmstudio": ProviderConfig(
+                base_url=_env("LMSTUDIO_BASE_URL", "http://localhost:1234/v1"),
+                timeout=_env_float("LMSTUDIO_TIMEOUT", 120.0),
+                options={}
+            ),
+        }
+        
+        # --- NEW: LLM Profiles ---
+        llm_profiles = {
+            # Fast local model for quick operations (multi-query generation, etc.)
+            "fast": {
+                "provider": "ollama",
+                "model": _env("LLM_FAST_MODEL", "llama3.2:3b"),
+                "temperature": 0.3,
+                "timeout": 30.0,
+            },
+            
+            # Quality local model for main generation
+            "quality": {
+                "provider": "ollama",
+                "model": _env("LLM_MODEL", "qwen2.5:32b"),
+                "temperature": 0.2,
+                "timeout": 120.0,
+            },
+            
+            # Verifier model for fact-checking (strict, deterministic)
+            "verifier": {
+                "provider": "ollama",
+                "model": _env("VERIFIER_MODEL", "qwen2.5:32b"),
+                "temperature": 0.0,
+                "timeout": 60.0,
+            },
+            
+            # Cloud fallback for when local models are unavailable
+            "cloud": {
+                "provider": "openai",
+                "model": _env("OPENAI_MODEL", "gpt-4"),
+                "temperature": 0.2,
+                "timeout": 30.0,
+            },
+        }
+        
+        # --- Adversarial Configuration ---
+        adversarial = AdversarialConfig(
+            confidence_threshold=_env_float("CONFIDENCE_THRESHOLD", 0.9),
+            min_score_fallback=_env_int("MIN_SCORE_FALLBACK", 75),
+            max_retries=_env_int("VERIFIER_MAX_RETRIES", 3)
+        )
+        
+        # --- Application Configuration ---
+        debug_mode = _env_bool("DEBUG_MODE", False)
+        flask_debug = _env_bool("FLASK_DEBUG", False)
+        secret_key = _env("SECRET_KEY", "change-me-in-production")
+        session_dir = _env("SESSION_FILE_DIR") or None
+        
+        return AppConfig(
+            database=database,
+            chroma=chroma,
+            embedding=embedding,
+            retriever=retriever,
+            llm_generator=llm_generator,
+            llm_verifier=llm_verifier,
+            providers=providers,
+            llm_profiles=llm_profiles,
+            adversarial=adversarial,
+            debug_mode=debug_mode,
+            flask_debug=flask_debug,
+            secret_key=secret_key,
+            session_dir=session_dir
+        )
+
+
+# ============================================================================
+# Config Merging Utilities
+# ============================================================================
+
+def merge_config(base: Any, overrides: Dict[str, Any]) -> Any:
+    """
+    Merge configuration overrides with base config.
+    
+    Args:
+        base: Base configuration object (dataclass or dict)
+        overrides: Dict of values to override
+    
+    Returns:
+        New configuration object with overrides applied
+    """
+    if isinstance(base, dict):
+        result = base.copy()
+        result.update(overrides)
+        return result
+    
+    # Dataclass - convert to dict, merge, return dict
+    if hasattr(base, '__dataclass_fields__'):
+        result = {k: getattr(base, k) for k in base.__dataclass_fields__}
+        result.update(overrides)
+        return result
+    
+    # Unknown type - return overrides
+    return overrides
+
+
+# ============================================================================
+# Global Configuration Instance
+# ============================================================================
+
+# Load configuration once at module import
+APP_CONFIG = ConfigLoader.from_env()
+
+
+# ============================================================================
+# Exports
+# ============================================================================
+
+__all__ = [
+    "APP_CONFIG",
+    "AppConfig",
+    "DatabaseConfig",
+    "ChromaConfig",
+    "EmbeddingConfig",
+    "RetrieverConfig",
+    "LLMConfig",
+    "ProviderConfig",
+    "AdversarialConfig",
+    "merge_config",
+]
+
+
+# ============================================================================
+# Configuration Validation (Optional - Run on Import)
+# ============================================================================
+
+def _validate_config():
+    """Validate critical configuration at startup."""
+    issues = []
+    
+    # Check MongoDB URI
+    if not APP_CONFIG.database.uri:
+        issues.append("MONGO_URI not set")
+    
+    # Check Ollama URL for default provider
+    if APP_CONFIG.providers['ollama'].base_url is None:
+        issues.append("OLLAMA_BASE_URL not set")
+    
+    # Check OpenAI key if using cloud profile
+    if (APP_CONFIG.llm_profiles.get('cloud', {}).get('provider') == 'openai' 
+        and not APP_CONFIG.providers['openai'].api_key):
+        issues.append("OPENAI_API_KEY not set but 'cloud' profile uses OpenAI")
+    
+    # Warn about secret key
+    if APP_CONFIG.secret_key == "change-me-in-production":
+        issues.append("SECRET_KEY still set to default - should be changed in production")
+    
+    if issues and APP_CONFIG.debug_mode:
+        import sys
+        sys.stderr.write("\n⚠️  Configuration Issues:\n")
+        for issue in issues:
+            sys.stderr.write(f"   - {issue}\n")
+        sys.stderr.write("\n")
+
+
+# Run validation on import
+_validate_config()
