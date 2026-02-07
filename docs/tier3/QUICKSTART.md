@@ -15,6 +15,11 @@ Minimum settings to review:
 TIER0_EXPLORATION_BUDGET=2000
 TIER0_EXPLORATION_STRATEGY=balanced
 TIER0_FULL_CORPUS=0
+TIER0_LLM_CACHE_ENABLED=1
+TIER0_LLM_CACHE_DIR=/app/logs/llm_cache
+TIER0_SYNTHESIS_CHECKPOINT_DIR=/app/logs/synthesis_checkpoints
+TIER0_EXTRACT_DATES_STRICT=1
+TIER0_GROUP_INDICATOR_MIN_DOCS=3
 TIER0_BATCH_MAX_CHARS=60000
 TIER0_SEMANTIC_CHUNKING=1
 TIER0_BLOCK_MAX_CHARS=2000
@@ -44,6 +49,14 @@ TIER0_ANSWERABILITY_MAX_DOCS=200
 TIER0_ANSWERABILITY_TOP_K=50
 TIER0_SYNTHESIS_ENABLED=1
 TIER0_SYNTHESIS_DYNAMIC=1
+TIER0_SYNTHESIS_SEMANTIC_ASSIGNMENT=1
+TIER0_SYNTHESIS_EMBED_PROVIDER=ollama
+TIER0_SYNTHESIS_EMBED_MODEL=qwen3-embedding:0.6b
+TIER0_SYNTHESIS_EMBED_CACHE=/app/logs/embedding_cache.pkl
+TIER0_SYNTHESIS_EMBED_TIMEOUT=120
+TIER0_SYNTHESIS_ASSIGN_MIN_SIM=0.2
+TIER0_SYNTHESIS_DEDUPE_THRESHOLD=0.86
+TIER0_SYNTHESIS_THEME_MERGE_THRESHOLD=0.84
 TIER0_SYNTHESIS_THEME_COUNT=5
 TIER0_SYNTHESIS_MAX_QUESTION_SAMPLE=24
 TIER0_SYNTHESIS_MAX_PATTERN_SAMPLE=12
@@ -93,11 +106,15 @@ Notes:
   "question_synthesis": {
     "grand_narrative": {"question": "...", "themes": ["..."]},
     "themes": [...],
+    "contradiction_questions": [...],
+    "temporal_questions": [...],
+    "hierarchy": {...},
     "gaps": [...]
   },
   "patterns": [...],
   "entities": [...],
   "contradictions": [...],
+  "group_indicators": [...],
   "notebook_path": "/app/logs/corpus_exploration/.../notebook_YYYYMMDD_HHMMSS.json"
 }
 ```

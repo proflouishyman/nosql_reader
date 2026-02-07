@@ -137,6 +137,11 @@ class Tier0Config:
     exploration_budget: int
     exploration_strategy: str
     full_corpus: bool
+    llm_cache_enabled: bool
+    llm_cache_dir: str
+    synthesis_checkpoint_dir: str
+    extract_dates_strict: bool
+    group_indicator_min_docs: int
     batch_max_chars: int
     sub_batch_docs: int
     llm_timeout: int
@@ -167,6 +172,14 @@ class Tier0Config:
     answerability_top_k: int
     synthesis_enabled: bool
     synthesis_dynamic: bool
+    synthesis_semantic_assignment: bool
+    synthesis_embed_provider: str
+    synthesis_embed_model: str
+    synthesis_embed_cache: str
+    synthesis_embed_timeout: int
+    synthesis_assign_min_sim: float
+    synthesis_dedupe_threshold: float
+    synthesis_theme_merge_threshold: float
     synthesis_theme_count: int
     synthesis_max_question_sample: int
     synthesis_max_pattern_sample: int
@@ -342,6 +355,11 @@ class ConfigLoader:
             exploration_budget=_env_int("TIER0_EXPLORATION_BUDGET", 2000),
             exploration_strategy=_env("TIER0_EXPLORATION_STRATEGY", "balanced"),
             full_corpus=_env_bool("TIER0_FULL_CORPUS", False),
+            llm_cache_enabled=_env_bool("TIER0_LLM_CACHE_ENABLED", True),
+            llm_cache_dir=_env("TIER0_LLM_CACHE_DIR", "/app/logs/llm_cache"),
+            synthesis_checkpoint_dir=_env("TIER0_SYNTHESIS_CHECKPOINT_DIR", "/app/logs/synthesis_checkpoints"),
+            extract_dates_strict=_env_bool("TIER0_EXTRACT_DATES_STRICT", True),
+            group_indicator_min_docs=_env_int("TIER0_GROUP_INDICATOR_MIN_DOCS", 3),
             batch_max_chars=_env_int("TIER0_BATCH_MAX_CHARS", 60000),
             sub_batch_docs=_env_int("TIER0_SUB_BATCH_DOCS", 10),
             llm_timeout=_env_int("TIER0_LLM_TIMEOUT", 300),
@@ -372,6 +390,14 @@ class ConfigLoader:
             answerability_top_k=_env_int("TIER0_ANSWERABILITY_TOP_K", 50),
             synthesis_enabled=_env_bool("TIER0_SYNTHESIS_ENABLED", True),
             synthesis_dynamic=_env_bool("TIER0_SYNTHESIS_DYNAMIC", True),
+            synthesis_semantic_assignment=_env_bool("TIER0_SYNTHESIS_SEMANTIC_ASSIGNMENT", True),
+            synthesis_embed_provider=_env("TIER0_SYNTHESIS_EMBED_PROVIDER", "ollama"),
+            synthesis_embed_model=_env("TIER0_SYNTHESIS_EMBED_MODEL", "qwen3-embedding:0.6b"),
+            synthesis_embed_cache=_env("TIER0_SYNTHESIS_EMBED_CACHE", "/app/logs/embedding_cache.pkl"),
+            synthesis_embed_timeout=_env_int("TIER0_SYNTHESIS_EMBED_TIMEOUT", 120),
+            synthesis_assign_min_sim=_env_float("TIER0_SYNTHESIS_ASSIGN_MIN_SIM", 0.2),
+            synthesis_dedupe_threshold=_env_float("TIER0_SYNTHESIS_DEDUPE_THRESHOLD", 0.86),
+            synthesis_theme_merge_threshold=_env_float("TIER0_SYNTHESIS_THEME_MERGE_THRESHOLD", 0.84),
             synthesis_theme_count=_env_int("TIER0_SYNTHESIS_THEME_COUNT", 5),
             synthesis_max_question_sample=_env_int("TIER0_SYNTHESIS_MAX_QUESTION_SAMPLE", 24),
             synthesis_max_pattern_sample=_env_int("TIER0_SYNTHESIS_MAX_PATTERN_SAMPLE", 12),

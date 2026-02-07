@@ -15,7 +15,11 @@ Tier 0 performs **systematic corpus exploration** before question‑answering. I
 - **Evidence thresholding** (skip low‑evidence patterns/questions)
 - **Time-scope guard** (remove unsupported time windows)
 - **Contradiction typing** (name/ID/date vs true conflicts)
-- **Question synthesis** (LLM‑derived buckets + hierarchy + gap analysis)
+- **Group indicators** (race/gender/class/ethnicity/origin/occupation; explicit mentions only)
+- **Question synthesis** (LLM‑derived buckets + hierarchy + gap analysis + contradiction/temporal questions)
+- **Cronon‑style framing** (purpose statement, why‑then/why‑there, terms/assumptions)
+- **Semantic assignment + caching** (theme/ question embeddings cached)
+- **Synthesis checkpoints** (skip recomputation when inputs unchanged)
 - **Notebook persistence** (timestamped saves)
 
 ## File Map
@@ -54,6 +58,15 @@ Full corpus mode can be enabled with `TIER0_FULL_CORPUS=1` or by using `strategy
   ],
   "patterns": [...],
   "entities": [...],
-  "contradictions": [...]
+  "contradictions": [...],
+  "group_indicators": [...],
+  "question_synthesis": {
+    "grand_narrative": {...},
+    "themes": [...],
+    "contradiction_questions": [...],
+    "temporal_questions": [...],
+    "hierarchy": {...},
+    "gaps": [...]
+  }
 }
 ```

@@ -14,6 +14,7 @@ from typing import List, Dict, Any, Tuple, Optional
 from dataclasses import dataclass
 from collections import defaultdict
 import json
+import re
 
 from rag_base import DocumentStore, debug_print, MongoDBConnection
 from config import APP_CONFIG
@@ -407,6 +408,14 @@ class StratumReader:
                     stats["earliest_year"] = year
                 if stats["latest_year"] is None or year > stats["latest_year"]:
                     stats["latest_year"] = year
+            elif APP_CONFIG.tier0.extract_dates_strict:
+                extracted = self._extract_year_from_text(doc)
+                if extracted is not None:
+                    stats["by_year"][str(extracted)] += 1
+                    if stats["earliest_year"] is None or extracted < stats["earliest_year"]:
+                        stats["earliest_year"] = extracted
+                    if stats["latest_year"] is None or extracted > stats["latest_year"]:
+                        stats["latest_year"] = extracted
 
             collection = doc.get("collection")
             if collection:
@@ -463,6 +472,35 @@ class StratumReader:
         stats["by_person"] = dict(stats["by_person"])
 
         return stats
+
+    def _extract_year_from_text(self, doc: Dict[str, Any]) -> Optional[int]:
+        """Extract year from OCR text using strict date-label patterns."""
+        text = ""
+        for field in ("ocr_text", "content", "text"):
+            value = doc.get(field)
+            if isinstance(value, str) and value.strip():
+                text = value
+                break
+
+        if not text:
+            return None
+
+        # Strict patterns: require a date label and a 4-digit year
+        patterns = [
+            r"\\bDate\\s*[:\\-]\\s*(?:[A-Za-z]{3,9}\\s+\\d{1,2},\\s+)?(18\\d{2}|19\\d{2}|20\\d{2})",
+            r"\\bDated\\s*[:\\-]?\\s*(?:[A-Za-z]{3,9}\\s+\\d{1,2},\\s+)?(18\\d{2}|19\\d{2}|20\\d{2})",
+            r"\\bDate of (?:Injury|Accident|Examination|Employment|Birth)\\s*[:\\-]?\\s*(?:[A-Za-z]{3,9}\\s+\\d{1,2},\\s+)?(18\\d{2}|19\\d{2}|20\\d{2})",
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                try:
+                    return int(match.group(1))
+                except Exception:
+                    continue
+
+        return None
 
     def _document_to_object(self, doc: Dict[str, Any]) -> DocumentObject:
         doc_id = str(doc.get("_id", "unknown"))

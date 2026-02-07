@@ -42,6 +42,7 @@ CLOSED-WORLD RULES:
 - Do NOT use outside knowledge or assumptions.
 - If a fact is not in the documents, do not include it.
 - You may compare with PRIOR KNOWLEDGE to spot contradictions, but do NOT add facts that are not in the new documents.
+- Historians prefer false negatives to false positives: only record group indicators when explicitly stated.
 
 PRIOR KNOWLEDGE (summary from previous batches):
 {prior_knowledge}
@@ -61,6 +62,9 @@ Return ONLY valid JSON with this schema:
   ],
   "contradictions": [
     {{"claim_a": str, "claim_b": str, "source_a": "block_id", "source_b": "block_id", "context": str}}
+  ],
+  "group_indicators": [
+    {{"group_type": "race|gender|class|ethnicity|national_origin|occupation", "label": str, "evidence_blocks": ["block_id"], "confidence": "low|medium|high"}}
   ],
   "questions": [
     {{"question": str, "why_interesting": str, "evidence_needed": str, "time_window": str}}
@@ -179,6 +183,7 @@ class CorpusExplorer:
             "patterns": self._export_patterns(),
             "entities": self._export_entities(),
             "contradictions": self._export_contradictions(),
+            "group_indicators": self._export_group_indicators(),
             "notebook_summary": self.notebook.get_summary(),
             "exploration_metadata": {
                 "strategy": strategy,
@@ -359,6 +364,7 @@ class CorpusExplorer:
             "entities": [],
             "patterns": [],
             "contradictions": [],
+            "group_indicators": [],
             "questions": [],
             "temporal_events": {},
         }
@@ -429,6 +435,23 @@ class CorpusExplorer:
                 continue
             contra.setdefault("context", "")
             clean["contradictions"].append(contra)
+
+        for indicator in findings.get("group_indicators", []):
+            if not isinstance(indicator, dict):
+                continue
+            group_type = indicator.get("group_type") or indicator.get("type")
+            label = indicator.get("label") or indicator.get("value")
+            if not group_type or not label:
+                continue
+            raw_blocks = indicator.get("evidence_blocks") or indicator.get("evidence") or []
+            valid_block_ids = [b for b in raw_blocks if b in valid_blocks]
+            if not valid_block_ids:
+                continue
+            indicator["group_type"] = str(group_type)
+            indicator["label"] = str(label)
+            indicator["evidence_blocks"] = valid_block_ids
+            indicator.setdefault("confidence", "low")
+            clean["group_indicators"].append(indicator)
 
         for question in findings.get("questions", []):
             if not isinstance(question, dict):
@@ -565,6 +588,19 @@ class CorpusExplorer:
                 "confidence": c.confidence,
             }
             for c in self.notebook.contradictions
+        ]
+
+    def _export_group_indicators(self) -> List[Dict[str, Any]]:
+        indicators = list(self.notebook.group_indicators.values())
+        return [
+            {
+                "group_type": g.group_type,
+                "label": g.label,
+                "evidence_count": len(g.evidence_doc_ids),
+                "confidence": g.confidence,
+                "first_noticed": g.first_noticed,
+            }
+            for g in indicators
         ]
 
 

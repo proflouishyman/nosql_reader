@@ -195,3 +195,40 @@ class Heartbeat:
         while not self._stop.wait(self.interval_s):
             elapsed += self.interval_s
             self.logger.log("heartbeat", f"{self.step} {self.detail} elapsed={elapsed}s")
+
+
+# ============================================================================
+# Checkpoints
+# ============================================================================
+
+
+class CheckpointManager:
+    """Save and load lightweight JSON checkpoints for long-running synthesis."""
+
+    def __init__(self, checkpoint_dir: Path) -> None:
+        self.checkpoint_dir = Path(checkpoint_dir)
+        self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
+    def save(self, stage: str, payload: Any, checksum: Optional[str] = None) -> Path:
+        record = {
+            "stage": stage,
+            "checksum": checksum,
+            "timestamp": datetime.now().isoformat(),
+            "payload": payload,
+        }
+        latest_path = self.checkpoint_dir / f"{stage}_latest.json"
+        latest_path.write_text(json.dumps(record, indent=2, default=str), encoding="utf-8")
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        archive_path = self.checkpoint_dir / f"{stage}_{timestamp}.json"
+        archive_path.write_text(json.dumps(record, indent=2, default=str), encoding="utf-8")
+        return archive_path
+
+    def load_latest(self, stage: str) -> Optional[Dict[str, Any]]:
+        latest_path = self.checkpoint_dir / f"{stage}_latest.json"
+        if not latest_path.exists():
+            return None
+        try:
+            return json.loads(latest_path.read_text(encoding="utf-8"))
+        except Exception:
+            return None

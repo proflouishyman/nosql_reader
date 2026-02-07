@@ -5,16 +5,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, Tuple
 import json
 import re
+import hashlib
+import pickle
+from pathlib import Path
 
 from rag_base import debug_print
 from config import APP_CONFIG
-from llm_abstraction import LLMClient
-from tier0_utils import parse_llm_json
+from llm_abstraction import LLMClient, LLMResponse
+from tier0_utils import parse_llm_json, CheckpointManager
 from question_models import Question
 from research_notebook import ResearchNotebook, Pattern
+from historian_agent.embeddings import EmbeddingService
 
 
 @dataclass
@@ -23,6 +27,7 @@ class ThemeDefinition:
     name: str
     description: str
     keywords: List[str] = field(default_factory=list)
+    scope: Dict[str, Any] = field(default_factory=dict)
 
 
 THEMES: List[ThemeDefinition] = [
@@ -87,6 +92,7 @@ Generate {theme_count} theme buckets. For each, return:
     "place": "locations/divisions if evident",
     "actors": ["groups or institutions if evident"]
   }}
+Themes must be distinct and non-overlapping; avoid near-synonyms.
 
 Return ONLY JSON array:
 [
@@ -99,6 +105,62 @@ Return ONLY JSON array:
 ]
 """
 
+
+THEME_EXPANSION_PROMPT = """You are a historian expanding theme coverage.
+
+CLOSED-WORLD RULES:
+- Use ONLY the questions and patterns provided below.
+- Do NOT introduce outside context.
+
+EXISTING THEMES:
+{themes}
+
+QUESTIONS (sample):
+{questions}
+
+PATTERNS (sample):
+{patterns}
+
+TASK:
+Propose up to {theme_count} NEW, distinct themes that do NOT overlap with existing themes.
+Each theme must be substantively different.
+
+Return ONLY JSON array:
+[
+  {{
+    "name": "...",
+    "description": "...",
+    "keywords": ["...", "..."],
+    "scope": {{"time": "...", "place": "...", "actors": ["...", "..."]}}
+  }}
+]
+"""
+
+INDUCTIVE_LOGIC_PROMPT = """You are a historian performing inductive reasoning.
+
+CLOSED-WORLD RULES:
+- Use ONLY the evidence provided below.
+- Do NOT introduce outside context.
+- If a conclusion is speculative, phrase it as tentative ("suggests", "may indicate").
+
+THEME:
+{theme_name}
+
+EVIDENCE (patterns with counts):
+{patterns}
+
+CONTRADICTIONS (count={contradiction_count}):
+{contradictions}
+
+TASK:
+Return ONLY JSON:
+{{
+  "patterns_observed": [str],
+  "contradictions_observed": int,
+  "inference": "short, cautious inference grounded in evidence",
+  "historical_argument": "1-2 sentences connecting evidence to significance without adding facts"
+}}
+"""
 
 GRAND_NARRATIVE_PROMPT = """You are a historian formulating a highest-order research question.
 
@@ -245,8 +307,21 @@ class QuestionSynthesizer:
     def __init__(self) -> None:
         self.llm = LLMClient()
         self._theme_cache: List[ThemeDefinition] | None = None
+        self._llm_cache = _LLMCache(
+            cache_dir=Path(APP_CONFIG.tier0.llm_cache_dir),
+            enabled=APP_CONFIG.tier0.llm_cache_enabled,
+        )
+        self._checkpoint = CheckpointManager(Path(APP_CONFIG.tier0.synthesis_checkpoint_dir))
+        self._embedding_cache = _EmbeddingCache(Path(APP_CONFIG.tier0.synthesis_embed_cache))
+        self._embedder: Optional[EmbeddingService] = None
+        self._embedder_failed = False
 
     def bucket_questions(self, questions: List[Question], themes: List[ThemeDefinition]) -> Dict[str, List[Question]]:
+        if APP_CONFIG.tier0.synthesis_semantic_assignment:
+            semantic = self._bucket_questions_semantic(questions, themes)
+            if semantic:
+                return semantic
+
         buckets: Dict[str, List[Question]] = {t.key: [] for t in themes}
         buckets["other"] = []
 
@@ -260,9 +335,18 @@ class QuestionSynthesizer:
         if not APP_CONFIG.tier0.synthesis_enabled:
             return {}
 
+        checksum = self._synthesis_checksum(notebook, questions)
+        cached = self._checkpoint.load_latest("synthesis")
+        if cached and cached.get("checksum") == checksum:
+            payload = cached.get("payload")
+            if isinstance(payload, dict):
+                return payload
+
         themes = self._get_themes(notebook, questions)
         buckets = self.bucket_questions(questions, themes)
         themes_out: List[Dict[str, Any]] = []
+        contradiction_questions = self._contradiction_questions(notebook)
+        temporal_questions = self._temporal_questions(notebook)
 
         for theme in themes:
             theme_questions = buckets.get(theme.key, [])
@@ -276,29 +360,36 @@ class QuestionSynthesizer:
             )
 
             broad = sorted_qs[0]
-            sub_questions = [q.to_dict() for q in sorted_qs[1:6]]
+            sub_candidates = sorted_qs[1:8]
+            sub_deduped = self._dedupe_questions_semantic(sub_candidates)
+            sub_questions = [q.to_dict() for q in sub_deduped[:6]]
 
             theme_patterns = self._patterns_for_theme(notebook, theme)
+            theme_contradictions = self._contradictions_for_theme(notebook, theme)
+            inductive_logic = self._inductive_logic_for_theme(
+                theme,
+                theme_patterns,
+                theme_contradictions,
+            )
 
             themes_out.append({
                 "theme": theme.name,
                 "theme_key": theme.key,
                 "theme_description": theme.description,
                 "theme_keywords": theme.keywords,
+                "theme_scope": theme.scope,
                 "overview_question": broad.to_dict(),
                 "sub_questions": sub_questions,
-                "inductive_logic": {
-                    "patterns_observed": [p.pattern_text for p in theme_patterns[:3]],
-                    "inference": f"Observed patterns suggest {theme.description.lower()} as a recurring mechanism in the corpus.",
-                },
+                "inductive_logic": inductive_logic,
                 "evidence_base": {
                     "pattern_count": len(theme_patterns),
                     "question_count": len(theme_questions),
+                    "contradiction_count": len(theme_contradictions),
                     "confidence_distribution": self._confidence_distribution(theme_patterns),
                 },
             })
 
-        group_difference_questions = self._group_difference_questions(notebook, questions)
+        group_difference_questions = self._group_difference_questions(notebook)
         gaps = self._identify_gaps(notebook, questions)
         if not group_difference_questions:
             gaps.append({
@@ -310,8 +401,9 @@ class QuestionSynthesizer:
                 ],
             })
         grand_question = self._grand_narrative_question(themes_out, notebook, questions)
+        hierarchy = self._build_hierarchy(grand_question, themes_out, contradiction_questions)
 
-        return {
+        agenda = {
             "grand_narrative": grand_question,
             "theme_definitions": [
                 {
@@ -319,13 +411,20 @@ class QuestionSynthesizer:
                     "name": t.name,
                     "description": t.description,
                     "keywords": t.keywords,
+                    "scope": t.scope,
                 }
                 for t in themes
             ],
             "themes": themes_out,
             "group_difference_questions": group_difference_questions,
+            "contradiction_questions": contradiction_questions,
+            "temporal_questions": temporal_questions,
+            "hierarchy": hierarchy,
             "gaps": gaps,
         }
+
+        self._checkpoint.save("synthesis", agenda, checksum)
+        return agenda
 
     def _assign_bucket(self, question: Question, themes: List[ThemeDefinition]) -> str:
         text = " ".join([
@@ -369,8 +468,16 @@ class QuestionSynthesizer:
 
         generated = self._generate_dynamic_themes(notebook, questions)
         if generated:
-            self._theme_cache = generated
-            return generated
+            target = APP_CONFIG.tier0.synthesis_theme_count
+            merged = self._merge_overlapping_themes(generated)
+            if len(merged) < target:
+                extra = self._expand_themes(notebook, questions, merged, target - len(merged))
+                merged = self._merge_overlapping_themes(merged + extra)
+
+            if merged:
+                merged = merged[:target]
+                self._theme_cache = merged
+                return merged
 
         self._theme_cache = THEMES
         return THEMES
@@ -396,7 +503,7 @@ class QuestionSynthesizer:
             theme_count=APP_CONFIG.tier0.synthesis_theme_count,
         )
 
-        response = self.llm.generate(
+        response = self._generate_cached(
             messages=[
                 {"role": "system", "content": "You synthesize research themes from evidence only."},
                 {"role": "user", "content": prompt},
@@ -428,10 +535,148 @@ class QuestionSynthesizer:
             if not isinstance(keywords, list):
                 keywords = []
             keywords = [str(k).lower() for k in keywords if k]
+            scope = item.get("scope") or {}
+            if not isinstance(scope, dict):
+                scope = {}
             key = self._slugify(name)
-            themes.append(ThemeDefinition(key=key, name=name, description=description, keywords=keywords))
+            themes.append(ThemeDefinition(key=key, name=name, description=description, keywords=keywords, scope=scope))
 
         return themes
+
+    def _expand_themes(
+        self,
+        notebook: ResearchNotebook,
+        questions: List[Question],
+        existing: List[ThemeDefinition],
+        max_new: int,
+    ) -> List[ThemeDefinition]:
+        if max_new <= 0:
+            return []
+
+        question_sample = sorted(
+            questions,
+            key=lambda q: q.validation_score or 0,
+            reverse=True,
+        )[: APP_CONFIG.tier0.synthesis_max_question_sample]
+        pattern_sample = list(notebook.patterns.values())[: APP_CONFIG.tier0.synthesis_max_pattern_sample]
+
+        questions_text = "\n".join(f"- {q.question_text}" for q in question_sample) or "- (none)"
+        patterns_text = "\n".join(f"- {p.pattern_text}" for p in pattern_sample) or "- (none)"
+        themes_text = "\n".join(f"- {t.name}: {t.description}" for t in existing) or "- (none)"
+
+        prompt = THEME_EXPANSION_PROMPT.format(
+            themes=themes_text,
+            questions=questions_text,
+            patterns=patterns_text,
+            theme_count=max_new,
+        )
+
+        response = self._generate_cached(
+            messages=[
+                {"role": "system", "content": "You expand research themes without overlap."},
+                {"role": "user", "content": prompt},
+            ],
+            profile="quality",
+            temperature=0.2,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+
+        if not response.success:
+            return []
+
+        data = parse_llm_json(response.content, default=[])
+        if not isinstance(data, list):
+            return []
+
+        existing_keys = {t.key for t in existing}
+        new_themes: List[ThemeDefinition] = []
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or "").strip()
+            if not name:
+                continue
+            description = str(item.get("description") or "").strip()
+            keywords = item.get("keywords") or []
+            if isinstance(keywords, str):
+                keywords = [k.strip() for k in keywords.split(",") if k.strip()]
+            if not isinstance(keywords, list):
+                keywords = []
+            keywords = [str(k).lower() for k in keywords if k]
+            scope = item.get("scope") or {}
+            if not isinstance(scope, dict):
+                scope = {}
+            key = self._slugify(name)
+            if key in existing_keys:
+                continue
+            new_themes.append(ThemeDefinition(key=key, name=name, description=description, keywords=keywords, scope=scope))
+            existing_keys.add(key)
+            if len(new_themes) >= max_new:
+                break
+
+        return new_themes
+
+    def _merge_overlapping_themes(self, themes: List[ThemeDefinition]) -> List[ThemeDefinition]:
+        if len(themes) <= 1:
+            return themes
+
+        merge_threshold = getattr(APP_CONFIG.tier0, "synthesis_theme_merge_threshold", None)
+        if merge_threshold is None:
+            merge_threshold = APP_CONFIG.tier0.synthesis_dedupe_threshold
+
+        theme_texts = [self._theme_text(t) for t in themes]
+        vectors = self._get_embeddings(theme_texts)
+        index_map = {id(theme): idx for idx, theme in enumerate(themes)}
+
+        merged: List[ThemeDefinition] = []
+        if vectors is not None:
+            similarities = _cosine_similarity_matrix(vectors, vectors)
+            for idx, theme in enumerate(themes):
+                placed = False
+                for kept in merged:
+                    kept_idx = index_map.get(id(kept), 0)
+                    if float(similarities[idx][kept_idx]) >= merge_threshold:
+                        self._merge_theme_into(kept, theme)
+                        placed = True
+                        break
+                if not placed:
+                    merged.append(theme)
+            return merged
+
+        # Fallback: keyword overlap
+        for theme in themes:
+            placed = False
+            for kept in merged:
+                overlap = set(theme.keywords or []) & set(kept.keywords or [])
+                denom = max(1, len(set(theme.keywords or []) | set(kept.keywords or [])))
+                if overlap and (len(overlap) / denom) >= 0.6:
+                    self._merge_theme_into(kept, theme)
+                    placed = True
+                    break
+            if not placed:
+                merged.append(theme)
+
+        return merged
+
+    def _merge_theme_into(self, base: ThemeDefinition, other: ThemeDefinition) -> None:
+        base.keywords = sorted(set(base.keywords + other.keywords))
+        if len(other.description) > len(base.description):
+            base.description = other.description
+            base.name = base.name or other.name
+        base.scope = self._merge_scope(base.scope, other.scope)
+
+    def _merge_scope(self, a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
+        merged = dict(a or {})
+        for key, value in (b or {}).items():
+            if key not in merged or not merged.get(key):
+                merged[key] = value
+            elif isinstance(value, list):
+                existing = merged.get(key)
+                if not isinstance(existing, list):
+                    merged[key] = value
+                else:
+                    merged[key] = sorted(set(existing + value))
+        return merged
 
     def _slugify(self, text: str) -> str:
         slug = re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
@@ -449,6 +694,8 @@ class QuestionSynthesizer:
             q.question_text for q in questions
         ] + [
             p.pattern_text for p in notebook.patterns.values()
+        ] + [
+            g.label for g in notebook.group_indicators.values()
         ]).lower()
 
         gaps = []
@@ -460,6 +707,201 @@ class QuestionSynthesizer:
                     "suggested_questions": axis["questions"],
                 })
         return gaps
+
+    def _synthesis_checksum(self, notebook: ResearchNotebook, questions: List[Question]) -> str:
+        payload = {
+            "questions": [
+                {
+                    "text": q.question_text,
+                    "score": q.validation_score,
+                    "pattern": q.pattern_source,
+                    "contradiction": q.contradiction_source,
+                }
+                for q in questions
+            ],
+            "patterns": [
+                {
+                    "text": p.pattern_text,
+                    "count": len(p.evidence_doc_ids),
+                    "confidence": p.confidence,
+                }
+                for p in notebook.patterns.values()
+            ],
+            "contradictions": [
+                {
+                    "a": c.claim_a,
+                    "b": c.claim_b,
+                    "type": c.contradiction_type,
+                }
+                for c in notebook.contradictions
+            ],
+            "group_indicators": [
+                {
+                    "type": g.group_type,
+                    "label": g.label,
+                    "count": len(g.evidence_doc_ids),
+                    "confidence": g.confidence,
+                }
+                for g in notebook.group_indicators.values()
+            ],
+            "corpus_map": {
+                "time_coverage": notebook.corpus_map.get("time_coverage"),
+                "density_by_decade": notebook.corpus_map.get("density_by_decade"),
+                "temporal_gaps": notebook.corpus_map.get("temporal_gaps"),
+                "peak_period": notebook.corpus_map.get("peak_period"),
+            },
+        }
+        encoded = json.dumps(payload, sort_keys=True, ensure_ascii=True).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def _contradictions_for_theme(
+        self,
+        notebook: ResearchNotebook,
+        theme: ThemeDefinition,
+    ) -> List[Any]:
+        if not theme.keywords:
+            return notebook.contradictions
+        matches = []
+        for contra in notebook.contradictions:
+            text = " ".join([
+                contra.claim_a,
+                contra.claim_b,
+                contra.context,
+            ]).lower()
+            if any(kw in text for kw in theme.keywords):
+                matches.append(contra)
+        return matches or notebook.contradictions
+
+    def _inductive_logic_for_theme(
+        self,
+        theme: ThemeDefinition,
+        patterns: List[Pattern],
+        contradictions: List[Any],
+    ) -> Dict[str, Any]:
+        pattern_summaries = [
+            f"{p.pattern_text} (n={len(p.evidence_doc_ids)})"
+            for p in patterns[:5]
+        ]
+        contradiction_summaries = [
+            f"{c.claim_a} vs {c.claim_b}"
+            for c in contradictions[:3]
+        ]
+
+        prompt = INDUCTIVE_LOGIC_PROMPT.format(
+            theme_name=theme.name,
+            patterns="\n".join(f"- {p}" for p in pattern_summaries) or "- (none)",
+            contradictions="\n".join(f"- {c}" for c in contradiction_summaries) or "- (none)",
+            contradiction_count=len(contradictions),
+        )
+
+        response = self._generate_cached(
+            messages=[
+                {"role": "system", "content": "You synthesize cautious inductive logic."},
+                {"role": "user", "content": prompt},
+            ],
+            profile="quality",
+            temperature=0.1,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+
+        if response.success:
+            data = parse_llm_json(response.content, default={})
+            if isinstance(data, dict):
+                data.setdefault("patterns_observed", pattern_summaries[:3])
+                data.setdefault("contradictions_observed", len(contradictions))
+                return data
+
+        return {
+            "patterns_observed": pattern_summaries[:3],
+            "contradictions_observed": len(contradictions),
+            "inference": f"Evidence suggests {theme.description.lower()} as a recurring dynamic, but details remain to be verified.",
+            "historical_argument": "Additional evidence is needed to establish mechanisms and scope without overclaiming.",
+        }
+
+    def _contradiction_questions(self, notebook: ResearchNotebook) -> List[Dict[str, Any]]:
+        questions: List[Dict[str, Any]] = []
+        for contra in notebook.contradictions:
+            claim_a = contra.claim_a.strip()
+            claim_b = contra.claim_b.strip()
+            if not claim_a or not claim_b:
+                continue
+            if contra.contradiction_type == "name_variant_or_ocr":
+                question = "How do name variants or OCR errors affect record linkage for this individual?"
+            elif contra.contradiction_type == "certificate_number_conflict":
+                question = "What explains conflicting certificate numbers in the records for this case?"
+            elif contra.contradiction_type == "date_conflict":
+                question = "Why do the documents disagree on the date of the same event?"
+            else:
+                question = "What explains the discrepancy between two records describing the same case?"
+
+            questions.append({
+                "question": question,
+                "contradiction_type": contra.contradiction_type,
+                "claims": [claim_a, claim_b],
+                "sources": [contra.source_a, contra.source_b],
+                "context": contra.context,
+            })
+
+        max_micro = 30
+        return questions[:max_micro]
+
+    def _temporal_questions(self, notebook: ResearchNotebook) -> List[Dict[str, Any]]:
+        corpus_map = notebook.corpus_map
+        time_coverage = corpus_map.get("time_coverage", {})
+        density = corpus_map.get("density_by_decade", {})
+        if not time_coverage or not density:
+            return []
+
+        questions: List[Dict[str, Any]] = []
+        start = time_coverage.get("start")
+        end = time_coverage.get("end")
+        if start and end:
+            questions.append({
+                "question": f"How did Relief Department practices change between {start} and {end}?",
+                "evidence_basis": "time_coverage",
+            })
+
+        peak = corpus_map.get("peak_period")
+        if peak:
+            questions.append({
+                "question": f"Why does documentation peak in the {peak}s, and what changed in that decade?",
+                "evidence_basis": "density_by_decade",
+            })
+
+        gaps = corpus_map.get("temporal_gaps", [])
+        if gaps:
+            questions.append({
+                "question": f"What explains sparse or missing records in the {', '.join(gaps[:3])}s?",
+                "evidence_basis": "temporal_gaps",
+            })
+
+        return questions
+
+    def _build_hierarchy(
+        self,
+        grand_question: Dict[str, Any],
+        themes_out: List[Dict[str, Any]],
+        contradiction_questions: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        level_2 = [
+            {
+                "theme": theme["theme"],
+                "question": theme["overview_question"],
+            }
+            for theme in themes_out
+        ]
+        level_3 = {
+            theme["theme_key"]: theme.get("sub_questions", [])
+            for theme in themes_out
+        }
+        level_4 = contradiction_questions[:25]
+
+        return {
+            "level_1_grand": grand_question,
+            "level_2_thematic": level_2,
+            "level_3_specific": level_3,
+            "level_4_micro": level_4,
+        }
 
     def _grand_narrative_question(
         self,
@@ -488,7 +930,7 @@ class QuestionSynthesizer:
             themes=themes_text,
         )
 
-        response = self.llm.generate(
+        response = self._generate_cached(
             messages=[
                 {"role": "system", "content": "You are a historian refining a research question."},
                 {"role": "user", "content": prompt},
@@ -517,7 +959,7 @@ class QuestionSynthesizer:
             patterns=patterns_text,
             proposed=json.dumps(data, ensure_ascii=True),
         )
-        repair_response = self.llm.generate(
+        repair_response = self._generate_cached(
             messages=[
                 {"role": "system", "content": "You enforce closed-world evidence alignment."},
                 {"role": "user", "content": repair_prompt},
@@ -537,62 +979,332 @@ class QuestionSynthesizer:
     def _group_difference_questions(
         self,
         notebook: ResearchNotebook,
-        questions: List[Question],
     ) -> List[Dict[str, Any]]:
-        if not questions:
+        indicators = list(notebook.group_indicators.values())
+        if not indicators:
             return []
 
-        question_sample = sorted(
-            questions,
-            key=lambda q: q.validation_score or 0,
-            reverse=True,
-        )[: APP_CONFIG.tier0.synthesis_max_question_sample]
-        pattern_sample = list(notebook.patterns.values())[: APP_CONFIG.tier0.synthesis_max_pattern_sample]
+        min_docs = APP_CONFIG.tier0.group_indicator_min_docs
+        grouped: Dict[str, List[Any]] = {}
+        for indicator in indicators:
+            if indicator.confidence not in {"medium", "high"}:
+                continue
+            if len(indicator.evidence_doc_ids) < min_docs:
+                continue
+            grouped.setdefault(indicator.group_type, []).append(indicator)
 
-        questions_text = "\n".join(f"- {q.question_text}" for q in question_sample) or "- (none)"
-        patterns_text = "\n".join(f"- {p.pattern_text}" for p in pattern_sample) or "- (none)"
+        questions: List[Dict[str, Any]] = []
+        for group_type, items in grouped.items():
+            items = sorted(items, key=lambda i: len(i.evidence_doc_ids), reverse=True)
+            if len(items) < 2:
+                continue
+            first, second = items[0], items[1]
+            label_a = first.label
+            label_b = second.label
+            question = self._format_group_difference_question(group_type, label_a, label_b)
+            questions.append({
+                "question": question,
+                "groups": [label_a, label_b],
+                "group_type": group_type,
+                "evidence_basis": f"{label_a} (n={len(first.evidence_doc_ids)}), {label_b} (n={len(second.evidence_doc_ids)})",
+                "time_window": "",
+            })
 
-        group_axes = [
-            "race",
-            "gender",
-            "class",
-            "ethnicity",
-            "national origin",
-            "occupation",
-            "job category",
-        ]
-        prompt = GROUP_DIFFERENCE_PROMPT.format(
-            group_axes=", ".join(group_axes),
-            questions=questions_text,
-            patterns=patterns_text,
-            max_questions=5,
-        )
+        return questions
+
+    def _format_group_difference_question(self, group_type: str, a: str, b: str) -> str:
+        if group_type == "occupation":
+            return f"How did Relief Department outcomes differ between {a} and {b} occupations?"
+        if group_type == "gender":
+            return f"Do the records show differences in Relief outcomes between {a} and {b}?"
+        if group_type == "race":
+            return f"Do the records show differences in Relief outcomes between {a} and {b}?"
+        if group_type == "ethnicity":
+            return f"Do the records show differences in Relief outcomes between {a} and {b} ethnic groups?"
+        if group_type == "national_origin":
+            return f"Do the records show differences in Relief outcomes between workers of {a} and {b} origin?"
+        if group_type == "class":
+            return f"How did Relief outcomes differ between {a} and {b} class categories?"
+        return f"How did Relief outcomes differ between {a} and {b} groups?"
+
+    def _generate_cached(
+        self,
+        messages: List[Dict[str, str]],
+        profile: str,
+        temperature: float,
+        timeout: int,
+    ) -> LLMResponse:
+        if not APP_CONFIG.tier0.llm_cache_enabled:
+            return self.llm.generate(
+                messages=messages,
+                profile=profile,
+                temperature=temperature,
+                timeout=timeout,
+            )
+
+        profile_cfg = APP_CONFIG.llm_profiles.get(profile, {})
+        cache_payload = {
+            "profile": profile,
+            "provider": profile_cfg.get("provider"),
+            "model": profile_cfg.get("model"),
+            "temperature": temperature,
+            "messages": messages,
+        }
+
+        cached = self._llm_cache.get(cache_payload)
+        if cached is not None:
+            return _CachedResponse(content=cached)
 
         response = self.llm.generate(
-            messages=[
-                {"role": "system", "content": "You identify group-comparison questions from evidence."},
-                {"role": "user", "content": prompt},
-            ],
-            profile="quality",
-            temperature=0.2,
-            timeout=APP_CONFIG.tier0.llm_timeout,
+            messages=messages,
+            profile=profile,
+            temperature=temperature,
+            timeout=timeout,
         )
 
-        if not response.success:
-            return []
+        if response.success:
+            self._llm_cache.set(cache_payload, response.content)
 
-        data = parse_llm_json(response.content, default=[])
-        if isinstance(data, dict) and "questions" in data:
-            data = data.get("questions", [])
-        if not isinstance(data, list):
-            return []
+        return response
 
-        cleaned = []
-        for item in data:
-            if not isinstance(item, dict) or not item.get("question"):
+    def _bucket_questions_semantic(
+        self,
+        questions: List[Question],
+        themes: List[ThemeDefinition],
+    ) -> Optional[Dict[str, List[Question]]]:
+        if not questions or not themes:
+            return None
+
+        embeddings = self._get_embeddings_for_assignment(questions, themes)
+        if embeddings is None:
+            return None
+
+        question_vectors, theme_vectors = embeddings
+        if question_vectors is None or theme_vectors is None:
+            return None
+
+        similarities = _cosine_similarity_matrix(question_vectors, theme_vectors)
+        buckets: Dict[str, List[Question]] = {t.key: [] for t in themes}
+        buckets["other"] = []
+
+        min_sim = APP_CONFIG.tier0.synthesis_assign_min_sim
+        for q_idx, question in enumerate(questions):
+            row = similarities[q_idx]
+            best_idx = int(row.argmax())
+            best_sim = float(row[best_idx])
+            if best_sim < min_sim:
+                buckets["other"].append(question)
                 continue
-            item.setdefault("groups", [])
-            item.setdefault("time_window", "")
-            item.setdefault("evidence_basis", "")
-            cleaned.append(item)
-        return cleaned
+            buckets[themes[best_idx].key].append(question)
+
+        return buckets
+
+    def _dedupe_questions_semantic(self, questions: List[Question]) -> List[Question]:
+        if len(questions) <= 1 or not APP_CONFIG.tier0.synthesis_semantic_assignment:
+            return questions
+
+        vectors = self._get_embeddings([self._question_text(q) for q in questions])
+        if vectors is None:
+            return questions
+
+        threshold = APP_CONFIG.tier0.synthesis_dedupe_threshold
+        similarities = _cosine_similarity_matrix(vectors, vectors)
+
+        keep: List[Question] = []
+        for idx, question in enumerate(questions):
+            if not keep:
+                keep.append(question)
+                continue
+            is_duplicate = False
+            for kept_idx, kept_question in enumerate(keep):
+                kept_orig_idx = questions.index(kept_question)
+                if float(similarities[idx][kept_orig_idx]) >= threshold:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                keep.append(question)
+        return keep
+
+    def _get_embeddings_for_assignment(
+        self,
+        questions: List[Question],
+        themes: List[ThemeDefinition],
+    ) -> Optional[Tuple[Any, Any]]:
+        question_texts = [self._question_text(q) for q in questions]
+        theme_texts = [self._theme_text(t) for t in themes]
+
+        question_vectors = self._get_embeddings(question_texts)
+        if question_vectors is None:
+            return None
+
+        theme_vectors = self._get_embeddings(theme_texts)
+        if theme_vectors is None:
+            return None
+
+        return question_vectors, theme_vectors
+
+    def _question_text(self, question: Question) -> str:
+        return " ".join([
+            question.question_text,
+            question.why_interesting or "",
+            question.pattern_source or "",
+            question.contradiction_source or "",
+        ]).strip()
+
+    def _theme_text(self, theme: ThemeDefinition) -> str:
+        return " ".join([
+            theme.name,
+            theme.description,
+            "keywords: " + ", ".join(theme.keywords or []),
+        ]).strip()
+
+    def _get_embeddings(self, texts: List[str]):
+        if not texts:
+            return None
+
+        if self._embedder_failed:
+            return None
+
+        if self._embedder is None:
+            try:
+                self._embedder = EmbeddingService(
+                    provider=APP_CONFIG.tier0.synthesis_embed_provider,
+                    model=APP_CONFIG.tier0.synthesis_embed_model,
+                    timeout=APP_CONFIG.tier0.synthesis_embed_timeout,
+                )
+            except Exception as exc:
+                debug_print(f"Embedding service unavailable: {exc}")
+                self._embedder_failed = True
+                return None
+
+        cached = self._embedding_cache.get_batch(texts, self._embedder.model_name)
+        missing = [text for text, vec in cached if vec is None]
+
+        if missing:
+            try:
+                vectors = self._embedder.embed_documents(missing)
+            except Exception as exc:
+                debug_print(f"Embedding generation failed: {exc}")
+                self._embedder_failed = True
+                return None
+
+            for text, vec in zip(missing, vectors):
+                self._embedding_cache.set(text, self._embedder.model_name, vec.tolist())
+
+            self._embedding_cache.flush()
+
+            cached = self._embedding_cache.get_batch(texts, self._embedder.model_name)
+
+        vectors = [vec for _text, vec in cached if vec is not None]
+        if len(vectors) != len(texts):
+            return None
+
+        array = _to_numpy(vectors)
+        if array is None:
+            return None
+        return array
+
+
+@dataclass
+class _CachedResponse:
+    content: str
+    success: bool = True
+
+
+class _LLMCache:
+    def __init__(self, cache_dir: Path, enabled: bool = True) -> None:
+        self.enabled = enabled
+        self.cache_dir = cache_dir
+        if self.enabled:
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
+
+    def _key(self, payload: Dict[str, Any]) -> str:
+        encoded = json.dumps(payload, sort_keys=True, ensure_ascii=True).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def get(self, payload: Dict[str, Any]) -> Optional[str]:
+        if not self.enabled:
+            return None
+        key = self._key(payload)
+        path = self.cache_dir / f"{key}.json"
+        if not path.exists():
+            return None
+        try:
+            data = json.loads(path.read_text())
+        except Exception:
+            return None
+        return data.get("response")
+
+    def set(self, payload: Dict[str, Any], response: str) -> None:
+        if not self.enabled:
+            return
+        key = self._key(payload)
+        path = self.cache_dir / f"{key}.json"
+        data = {
+            "response": response,
+            "profile": payload.get("profile"),
+            "provider": payload.get("provider"),
+            "model": payload.get("model"),
+        }
+        try:
+            path.write_text(json.dumps(data, ensure_ascii=True))
+        except Exception:
+            return
+
+
+class _EmbeddingCache:
+    def __init__(self, cache_path: Path) -> None:
+        self.cache_path = cache_path
+        self.cache: Dict[str, List[float]] = {}
+        if cache_path.exists():
+            try:
+                self.cache = pickle.loads(cache_path.read_bytes())
+            except Exception:
+                self.cache = {}
+
+    def _key(self, text: str, model: str) -> str:
+        encoded = f"{model}:{text}".encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def get_batch(self, texts: List[str], model: str) -> List[Tuple[str, Optional[List[float]]]]:
+        results: List[Tuple[str, Optional[List[float]]]] = []
+        for text in texts:
+            key = self._key(text, model)
+            results.append((text, self.cache.get(key)))
+        return results
+
+    def set(self, text: str, model: str, vector: List[float]) -> None:
+        key = self._key(text, model)
+        self.cache[key] = vector
+
+    def flush(self) -> None:
+        try:
+            self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+            self.cache_path.write_bytes(pickle.dumps(self.cache))
+        except Exception:
+            return
+
+
+def _to_numpy(vectors: List[List[float]]):
+    try:
+        import numpy as np
+    except Exception:
+        return None
+    return np.array(vectors, dtype=float)
+
+
+def _cosine_similarity_matrix(a, b):
+    try:
+        import numpy as np
+    except Exception:
+        # Fallback: no numpy, return zeros
+        return [[0.0 for _ in range(len(b))] for _ in range(len(a))]
+
+    if not len(a) or not len(b):
+        return np.zeros((len(a), len(b)))
+
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    a_norm = a / (np.linalg.norm(a, axis=1, keepdims=True) + 1e-12)
+    b_norm = b / (np.linalg.norm(b, axis=1, keepdims=True) + 1e-12)
+    return a_norm @ b_norm.T

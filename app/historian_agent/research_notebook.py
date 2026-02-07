@@ -85,6 +85,30 @@ class Contradiction:
 
 
 @dataclass
+class GroupIndicator:
+    """Evidence of group/category mentions (race, gender, occupation, etc.)."""
+    group_type: str
+    label: str
+    evidence_doc_ids: List[str] = field(default_factory=list)
+    evidence_block_ids: List[str] = field(default_factory=list)
+    confidence: str = "low"
+    first_noticed: str = ""
+
+    def add_evidence(self, doc_ids: List[str], block_ids: Optional[List[str]] = None) -> None:
+        self.evidence_doc_ids.extend(doc_ids)
+        self.evidence_doc_ids = list(set(self.evidence_doc_ids))
+
+        if block_ids:
+            self.evidence_block_ids.extend(block_ids)
+            self.evidence_block_ids = list(set(self.evidence_block_ids))
+
+        if len(self.evidence_doc_ids) >= 5:
+            self.confidence = "high"
+        elif len(self.evidence_doc_ids) >= 3:
+            self.confidence = "medium"
+
+
+@dataclass
 class ResearchQuestion:
     """Emerging research question."""
     question: str
@@ -106,16 +130,20 @@ class ResearchNotebook:
         self.entities: Dict[str, Entity] = {}
         self.patterns: Dict[str, Pattern] = {}
         self.contradictions: List[Contradiction] = []
+        self.group_indicators: Dict[str, GroupIndicator] = {}
         self.questions: List[ResearchQuestion] = []
         self.temporal_map: Dict[str, List[str]] = defaultdict(list)
         self.corpus_map = {
             "total_documents_read": 0,
             "by_year": defaultdict(int),
+            "density_by_decade": defaultdict(int),
             "by_collection": defaultdict(int),
             "by_document_type": defaultdict(int),
             "by_person": defaultdict(int),
             "batches_processed": 0,
             "time_coverage": {"start": None, "end": None},
+            "temporal_gaps": [],
+            "peak_period": None,
             "gaps_identified": [],
         }
         self.created_at = datetime.now().isoformat()
@@ -135,6 +163,9 @@ class ResearchNotebook:
             contra_dict["contradiction_type"] = contra_type
             contra_dict["confidence"] = confidence
             self.contradictions.append(Contradiction(**contra_dict))
+
+        for indicator_dict in findings.get("group_indicators", []):
+            self._add_group_indicator(indicator_dict, batch_label)
 
         for question_dict in findings.get("questions", []):
             question_dict["noticed_in_batch"] = batch_label
@@ -225,6 +256,41 @@ class ResearchNotebook:
                 first_noticed=batch_label,
             )
 
+    def _add_group_indicator(self, indicator_dict: Dict[str, Any], batch_label: str) -> None:
+        group_type = str(indicator_dict.get("group_type") or indicator_dict.get("type") or "unknown").lower()
+        label = str(indicator_dict.get("label") or indicator_dict.get("value") or "").strip()
+        if not label or group_type == "unknown":
+            return
+
+        raw_evidence = indicator_dict.get("evidence_blocks") or indicator_dict.get("evidence") or []
+        doc_ids: List[str] = []
+        block_ids: List[str] = []
+
+        for item in raw_evidence:
+            if isinstance(item, str) and "::" in item:
+                block_ids.append(item)
+                doc_ids.append(item.split("::")[0])
+            elif item:
+                doc_ids.append(str(item))
+
+        doc_ids = list(set(doc_ids))
+        block_ids = list(set(block_ids))
+
+        key = f"{group_type}:{label.lower()}"
+        if key in self.group_indicators:
+            self.group_indicators[key].add_evidence(doc_ids, block_ids)
+        else:
+            indicator = GroupIndicator(
+                group_type=group_type,
+                label=label,
+                evidence_doc_ids=doc_ids,
+                evidence_block_ids=block_ids,
+                confidence=str(indicator_dict.get("confidence") or "low"),
+                first_noticed=batch_label,
+            )
+            indicator.add_evidence(doc_ids, block_ids)
+            self.group_indicators[key] = indicator
+
     def _classify_contradiction(self, contra_dict: Dict[str, Any]) -> tuple[str, str]:
         claim_a = str(contra_dict.get("claim_a", "")).lower()
         claim_b = str(contra_dict.get("claim_b", "")).lower()
@@ -262,6 +328,11 @@ class ResearchNotebook:
 
         for year, count in stats.get("by_year", {}).items():
             self.corpus_map["by_year"][year] += count
+            try:
+                decade = (int(year) // 10) * 10
+                self.corpus_map["density_by_decade"][str(decade)] += count
+            except Exception:
+                continue
 
         for collection, count in stats.get("by_collection", {}).items():
             self.corpus_map["by_collection"][collection] += count
@@ -290,6 +361,30 @@ class ResearchNotebook:
                     stats["latest_year"],
                 )
 
+        self._refresh_temporal_stats()
+
+    def _refresh_temporal_stats(self) -> None:
+        years = []
+        for year in self.corpus_map.get("by_year", {}):
+            if str(year).isdigit():
+                years.append(int(year))
+
+        if not years:
+            self.corpus_map["temporal_gaps"] = []
+            self.corpus_map["peak_period"] = None
+            return
+
+        min_year = min(years)
+        max_year = max(years)
+        decades = list(range((min_year // 10) * 10, (max_year // 10) * 10 + 1, 10))
+        existing_decades = {int(d) for d in self.corpus_map.get("density_by_decade", {}).keys() if str(d).isdigit()}
+        gaps = [str(d) for d in decades if d not in existing_decades]
+        self.corpus_map["temporal_gaps"] = gaps
+
+        if self.corpus_map.get("density_by_decade"):
+            peak = max(self.corpus_map["density_by_decade"].items(), key=lambda item: item[1])[0]
+            self.corpus_map["peak_period"] = peak
+
     def get_summary(self) -> Dict[str, Any]:
         return {
             "total_entities": len(self.entities),
@@ -299,6 +394,7 @@ class ResearchNotebook:
                 reverse=True,
             )[:20],
             "total_patterns": len(self.patterns),
+            "total_group_indicators": len(self.group_indicators),
             "high_confidence_patterns": [
                 p.pattern_text for p in self.patterns.values() if p.confidence == "high"
             ],
@@ -334,6 +430,7 @@ class ResearchNotebook:
             "entities": {k: asdict(v) for k, v in self.entities.items()},
             "patterns": {k: asdict(v) for k, v in self.patterns.items()},
             "contradictions": [asdict(c) for c in self.contradictions],
+            "group_indicators": {k: asdict(v) for k, v in self.group_indicators.items()},
             "questions": [asdict(q) for q in self.questions],
             "temporal_map": dict(self.temporal_map),
             "corpus_map": dict(self.corpus_map),
@@ -355,6 +452,7 @@ class ResearchNotebook:
         notebook.entities = {k: Entity(**v) for k, v in data.get("entities", {}).items()}
         notebook.patterns = {k: Pattern(**v) for k, v in data.get("patterns", {}).items()}
         notebook.contradictions = [Contradiction(**c) for c in data.get("contradictions", [])]
+        notebook.group_indicators = {k: GroupIndicator(**v) for k, v in data.get("group_indicators", {}).items()}
         notebook.questions = [ResearchQuestion(**q) for q in data.get("questions", [])]
         notebook.temporal_map = defaultdict(list, data.get("temporal_map", {}))
         notebook.corpus_map = data.get("corpus_map", notebook.corpus_map)

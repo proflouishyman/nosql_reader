@@ -54,7 +54,7 @@ curl -X POST http://localhost:5006/api/rag/explore_corpus \
 4. **Notebook accumulates** findings across batches
 5. **Question pipeline** generates typed questions and validates them
 6. **Answerability precheck** filters questions with too little evidence
-7. **Question synthesis** (LLM‑derived buckets) builds a hierarchy and flags gaps
+7. **Question synthesis** (LLM‑derived buckets) builds a hierarchy, contradiction questions, temporal questions, and flags gaps
 
 ## Configuration (All in `.env`)
 Tier 0 is configured through `APP_CONFIG.tier0` which reads from `.env`. See `docs/tier3/QUICKSTART.md` for the full list of variables.
@@ -64,7 +64,7 @@ The endpoint returns:
 - `corpus_map` (stats + archive notes)
 - `questions` (typed + validated)
 - `question_synthesis` (hierarchy + gaps)
-- `patterns`, `entities`, `contradictions`
+- `patterns`, `entities`, `contradictions`, `group_indicators`
 - `notebook_path` (if auto‑save enabled)
 
 ## Notes
@@ -72,4 +72,6 @@ The endpoint returns:
 - Batch statistics are computed in code, not by the LLM.
 - Question generation uses typology + adversarial validation + answerability precheck.
 - Contradictions include a lightweight type classification (name variant, ID conflict, date conflict, etc.).
+- Group indicators are extracted only when explicitly stated; the system prefers false negatives over false positives.
+- Cronon‑style synthesis adds purpose statements and why‑then/why‑there framing.
 - Full corpus mode streams documents without `$sample` and can be forced by `TIER0_FULL_CORPUS=1`.
