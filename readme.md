@@ -20,12 +20,15 @@ The Historical Document Reader is a Flask + MongoDB application for ingesting, s
 5. [Using the web app](#using-the-web-app)
 6. [Data ingestion workflows](#data-ingestion-workflows)
 7. [Vector retrieval and RAG pipelines](#vector-retrieval-and-rag-pipelines)
-8. [Data layout and schema notes](#data-layout-and-schema-notes)
-9. [Scripts and utilities](#scripts-and-utilities)
-10. [Troubleshooting](#troubleshooting)
-11. [Documentation map](#documentation-map)
-12. [Planned features](#planned-features)
-13. [License and contact](#license-and-contact)
+8. [RAG logic and historian context](#rag-logic-and-historian-context)
+9. [Dynamic document display](#dynamic-document-display)
+10. [Historian-first design](#historian-first-design)
+11. [Data layout and schema notes](#data-layout-and-schema-notes)
+12. [Scripts and utilities](#scripts-and-utilities)
+13. [Troubleshooting](#troubleshooting)
+14. [Documentation map](#documentation-map)
+15. [Planned features](#planned-features)
+16. [License and contact](#license-and-contact)
 <!-- Rebuilt TOC to match the updated sections. -->
 
 ## Core capabilities
@@ -148,6 +151,31 @@ Notes:
 - `app/historian_agent/embed_existing_documents.py` is the maintained migration script. The legacy `scripts/embed_existing_documents.py` imports classes that no longer exist and is likely to fail without updates.
 - If `HISTORIAN_AGENT_USE_VECTOR_RETRIEVAL=false`, the agent falls back to keyword-only retrieval.
 <!-- Added accurate RAG setup steps and clarified the active migration script. -->
+
+## RAG logic and historian context
+
+The Historian Agent deliberately exposes multiple retrieval strategies so researchers can trade speed for evidence depth without hiding the pipeline behind a single black-box chain. <!-- Added a section intro to explain why multiple RAG modes exist. -->
+
+- **Good (direct RAG)** runs a single-pass hybrid retrieval (keyword + vector) and builds a compact context for fast answers. <!-- Added per-mode behavior to mirror the UI labels and explain baseline logic. -->
+- **Better (adversarial RAG)** adds reranking to prioritize the most information-dense chunks before generation, improving precision for archival summaries. <!-- Added adversarial mode explanation to distinguish it from the baseline. -->
+- **Best (tiered)** evaluates its own confidence and, when needed, expands context by pulling additional queries and reconstructing full parent documents from chunks. This is the primary defense against RAG myopia. <!-- Added tiered logic and explicit link to myopia mitigation. -->
+- **Tier 0 (corpus exploration)** runs a corpus scan and produces a high-level overview for orientation before deep dives. <!-- Added Tier 0 intent so researchers know it is exploratory rather than answer-only. -->
+
+**How this differs from a conventional LangChain RAG stack**: instead of a single retriever + chain, the app wires multiple handlers (`rag_query_handler`, `adversarial_rag`, `iterative_adversarial_agent`) and switches between them in the UI, while keeping retrieval metadata aligned with MongoDB documents for citations and follow-on inspection. Hybrid search is the default, vector retrieval can be disabled at runtime, and the tiered agent can reconstruct full documents rather than only the top-K chunks. <!-- Added a concise comparison to conventional LangChain patterns. -->
+
+**RAG myopia handling**: chunk-only retrieval can miss essential context (forms, headers, or nearby text). The tiered agent mitigates this by escalating to full-document reconstruction when confidence drops, and the document viewer lets researchers inspect the original OCR and image in-place to validate claims. <!-- Added a direct explanation of myopia and the system's mitigation steps. -->
+
+## Dynamic document display
+
+The document detail page is designed to adapt to heterogeneous archival formats. It conditionally renders summary text, OCR text, structured `sections`, grouped entities, and optional person synthesis if those fields exist in a record. Nested JSON objects are rendered recursively so new or irregular field structures remain readable without template rewrites. <!-- Added dynamic rendering explanation tied to the template logic. -->
+
+Image handling is likewise dynamic: the server derives a media path from the stored archive-relative JSON path, strips the `.json` suffix, and serves the underlying image if present. If no image is found, the UI falls back to a placeholder panel rather than breaking the page. Navigation controls preserve the search context so researchers can move through result sets as they would in an archive box. <!-- Added image resolution and navigation behavior for dynamic formats. -->
+
+## Historian-first design
+
+This project is built by historians for historians, so the UI and pipeline bias toward provenance, citation, and interpretive control rather than opaque automation. The Historian Agent always surfaces sources, the document viewer keeps OCR text and original imagery adjacent, and exports preserve raw JSON so researchers can recheck or reuse evidence. <!-- Added explicit historian-centered framing and evidence handling. -->
+
+Operationally, the system favors local processing (Ollama) for sensitive archives, supports careful ingestion workflows (scan, rebuild, and manual archive uploads), and keeps configuration visible in the UI so scholars can document methodological choices. The design prioritizes transparency, reproducibility, and source validation over aggressive auto-editing. <!-- Added historian-oriented operational concerns and transparency goals. -->
 
 ## Data layout and schema notes
 

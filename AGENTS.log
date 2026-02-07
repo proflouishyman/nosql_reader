@@ -11,3 +11,4 @@
 [2026-02-05 21:28] app/templates/historian_agent.html; app/static/historian_agent.js; app/routes.py; readme.md edited — added Tier 0 query method wiring in UI, backend endpoint, and docs.
 [2026-02-07 11:15] readme.md edited — Rewrote README for accuracy, current ports, scripts, and RAG setup guidance based on repo docs.
 [2026-02-07 11:15] readme.md edited — Added troubleshooting note about quick_check port mismatch.
+[2026-02-07 11:45] readme.md edited — Expanded README with RAG logic, myopia handling, dynamic document display, and historian-first design notes.
