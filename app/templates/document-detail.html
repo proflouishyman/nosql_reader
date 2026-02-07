@@ -7,16 +7,22 @@
     <div class="info-panel">
       <!-- Navigation -->
       <div class="navigation">
-        <a href="{{ url_for('search_database') }}?return_to_search=true" class="nav-button" title="Return to Search Results">
+        <a href="{{ url_for('search_database') }}?return_to_search=true" class="button button--secondary nav-button" title="Return to Search Results">
           <span>Search</span>
         </a>
-        <a href="{{ prev_id and url_for('document_detail', doc_id=prev_id, search_id=search_id) or '#' }}" class="nav-button {{ 'disabled' if not prev_id else '' }}" title="Previous Result">
+        <a href="{{ prev_id and url_for('document_detail', doc_id=prev_id, search_id=search_id) or '#' }}"
+           class="button button--secondary nav-button {{ 'disabled' if not prev_id else '' }}"
+           title="Previous Result"
+           {% if not prev_id %}aria-disabled="true" tabindex="-1"{% endif %}>
           <span>Previous</span>
         </a>
-        <a href="{{ url_for('index') }}" class="nav-button" title="Home">
+        <a href="{{ url_for('index') }}" class="button button--secondary nav-button" title="Home">
           <span>Home</span>
         </a>
-        <a href="{{ next_id and url_for('document_detail', doc_id=next_id, search_id=search_id) or '#' }}" class="nav-button {{ 'disabled' if not next_id else '' }}" title="Next Result">
+        <a href="{{ next_id and url_for('document_detail', doc_id=next_id, search_id=search_id) or '#' }}"
+           class="button button--secondary nav-button {{ 'disabled' if not next_id else '' }}"
+           title="Next Result"
+           {% if not next_id %}aria-disabled="true" tabindex="-1"{% endif %}>
           <span>Next</span>
         </a>
       </div>

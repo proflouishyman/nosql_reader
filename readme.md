@@ -108,6 +108,7 @@ Open `http://localhost:5000` in your browser once Docker reports that the Flask 
 Navigate to **Historian Agent** in the top navigation to open the conversational interface. The page provides:
 
 - A chat workspace with prompt suggestions, message bubbles, and citations that link back to the supporting documents.
+- Select the Query Method dropdown to choose Good/Better/Best chat modes or Tier 0 corpus exploration, which runs the exploration pipeline and summarizes findings in the chat. <!-- Added Tier 0 query method note for the Historian Agent UI. -->
 - A configuration sidebar that mirrors the environment variables defined in `.env`. You can:
   - Toggle between **Ollama (local)** and **OpenAI (cloud)** providers.
   - Supply an Ollama base URL, choose the model name, or paste an OpenAI API key without restarting the app.
@@ -216,6 +217,7 @@ When an override is active, the sidebar displays a badge showing the active prov
 Navigate to **Historian Agent** in the top navigation to open the conversational interface. The page provides:
 
 - A chat workspace with prompt suggestions, message bubbles, and citations that link back to the supporting documents.
+- Select the Query Method dropdown to choose Good/Better/Best chat modes or Tier 0 corpus exploration, which runs the exploration pipeline and summarizes findings in the chat. <!-- Added Tier 0 query method note for the Historian Agent UI. -->
 - A configuration sidebar that mirrors the environment variables defined in `.env`. You can:
   - Toggle between **Ollama (local)** and **OpenAI (cloud)** providers.
   - Supply an Ollama base URL, choose the model name, or paste an OpenAI API key without restarting the app.
@@ -288,4 +290,3 @@ Following this convention ensures the `/images/<path:filename>` route can resolv
 ## License & contact
 
 Project licensing and contact information are not yet finalised. Please open an issue if you need additional details.
-

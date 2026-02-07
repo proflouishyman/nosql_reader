@@ -1,11 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Unique Terms · Historical Document Reader{% endblock %}
 
-{% block styles %}
-{{ super() }}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-{% endblock %}
-
 {% block content %}
 <div class="container search-terms-page">
     <header>
@@ -16,7 +11,7 @@
     <div id="searchContainer" class="search-terms__controls">
         <label for="searchInput">Search terms</label>
         <input type="text" id="searchInput" placeholder="Enter search term..." aria-label="Search terms">
-        <button id="searchButton" aria-label="Search">Search</button>
+        <button id="searchButton" class="button" aria-label="Search">Search</button>
     </div>
 
     <div class="search-terms__filters">
@@ -70,9 +65,9 @@
     </section>
 
     <div class="pagination-controls">
-        <button id="prevPage" disabled>Previous</button>
+        <button id="prevPage" class="secondary" disabled>Previous</button>
         <span>Page <span id="currentPage">1</span></span>
-        <button id="nextPage">Next</button>
+        <button id="nextPage" class="secondary">Next</button>
     </div>
 </div>
 {% endblock %}

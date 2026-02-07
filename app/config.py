@@ -132,6 +132,47 @@ class AdversarialConfig:
 
 
 @dataclass(frozen=True)
+class Tier0Config:
+    """Tier 0 (corpus exploration) configuration."""
+    exploration_budget: int
+    exploration_strategy: str
+    full_corpus: bool
+    batch_max_chars: int
+    sub_batch_docs: int
+    llm_timeout: int
+    heartbeat_seconds: int
+    batch_profile: str
+    semantic_chunking: bool
+    block_max_chars: int
+    max_blocks_per_doc: int
+    min_entities_per_batch: int
+    min_patterns_per_batch: int
+    repair_attempts: int
+    strict_closed_world: bool
+    notebook_save_dir: str
+    notebook_auto_save: bool
+    tier0_log_dir: str
+    tier0_debug_mode: bool
+    question_min_evidence_docs: int
+    question_per_type: int
+    question_min_score: int
+    question_min_score_refine: int
+    question_max_refinements: int
+    question_target_count: int
+    question_min_count: int
+    question_enforce_type_diversity: bool
+    question_min_types: int
+    answerability_min_docs: int
+    answerability_max_docs: int
+    answerability_top_k: int
+    synthesis_enabled: bool
+    synthesis_dynamic: bool
+    synthesis_theme_count: int
+    synthesis_max_question_sample: int
+    synthesis_max_pattern_sample: int
+
+
+@dataclass(frozen=True)
 class AppConfig:
     """Complete application configuration."""
     
@@ -157,6 +198,9 @@ class AppConfig:
     
     # Adversarial
     adversarial: AdversarialConfig
+
+    # Tier 0 (corpus exploration)
+    tier0: Tier0Config
     
     # Application
     debug_mode: bool
@@ -292,6 +336,46 @@ class ConfigLoader:
             min_score_fallback=_env_int("MIN_SCORE_FALLBACK", 75),
             max_retries=_env_int("VERIFIER_MAX_RETRIES", 3)
         )
+
+        # --- Tier 0 Configuration ---
+        tier0 = Tier0Config(
+            exploration_budget=_env_int("TIER0_EXPLORATION_BUDGET", 2000),
+            exploration_strategy=_env("TIER0_EXPLORATION_STRATEGY", "balanced"),
+            full_corpus=_env_bool("TIER0_FULL_CORPUS", False),
+            batch_max_chars=_env_int("TIER0_BATCH_MAX_CHARS", 60000),
+            sub_batch_docs=_env_int("TIER0_SUB_BATCH_DOCS", 10),
+            llm_timeout=_env_int("TIER0_LLM_TIMEOUT", 300),
+            heartbeat_seconds=_env_int("TIER0_HEARTBEAT_SECONDS", 60),
+            batch_profile=_env("TIER0_BATCH_PROFILE", "fast"),
+            semantic_chunking=_env_bool("TIER0_SEMANTIC_CHUNKING", True),
+            block_max_chars=_env_int("TIER0_BLOCK_MAX_CHARS", 2000),
+            max_blocks_per_doc=_env_int("TIER0_MAX_BLOCKS_PER_DOC", 12),
+            min_entities_per_batch=_env_int("TIER0_MIN_ENTITIES_PER_BATCH", 5),
+            min_patterns_per_batch=_env_int("TIER0_MIN_PATTERNS_PER_BATCH", 2),
+            repair_attempts=_env_int("TIER0_REPAIR_ATTEMPTS", 1),
+            strict_closed_world=_env_bool("TIER0_STRICT_CLOSED_WORLD", True),
+            notebook_save_dir=_env("NOTEBOOK_SAVE_DIR", "/app/logs/corpus_exploration"),
+            notebook_auto_save=_env_bool("NOTEBOOK_AUTO_SAVE", True),
+            tier0_log_dir=_env("TIER0_LOG_DIR", "/app/logs/tier0"),
+            tier0_debug_mode=_env_bool("TIER0_DEBUG_MODE", False),
+            question_min_evidence_docs=_env_int("TIER0_QUESTION_MIN_EVIDENCE_DOCS", 5),
+            question_per_type=_env_int("TIER0_QUESTION_PER_TYPE", 4),
+            question_min_score=_env_int("TIER0_QUESTION_MIN_SCORE", 60),
+            question_min_score_refine=_env_int("TIER0_QUESTION_MIN_SCORE_REFINE", 50),
+            question_max_refinements=_env_int("TIER0_QUESTION_MAX_REFINEMENTS", 2),
+            question_target_count=_env_int("TIER0_QUESTION_TARGET_COUNT", 12),
+            question_min_count=_env_int("TIER0_QUESTION_MIN_COUNT", 8),
+            question_enforce_type_diversity=_env_bool("TIER0_QUESTION_ENFORCE_TYPE_DIVERSITY", True),
+            question_min_types=_env_int("TIER0_QUESTION_MIN_TYPES", 3),
+            answerability_min_docs=_env_int("TIER0_ANSWERABILITY_MIN_DOCS", 5),
+            answerability_max_docs=_env_int("TIER0_ANSWERABILITY_MAX_DOCS", 200),
+            answerability_top_k=_env_int("TIER0_ANSWERABILITY_TOP_K", 50),
+            synthesis_enabled=_env_bool("TIER0_SYNTHESIS_ENABLED", True),
+            synthesis_dynamic=_env_bool("TIER0_SYNTHESIS_DYNAMIC", True),
+            synthesis_theme_count=_env_int("TIER0_SYNTHESIS_THEME_COUNT", 5),
+            synthesis_max_question_sample=_env_int("TIER0_SYNTHESIS_MAX_QUESTION_SAMPLE", 24),
+            synthesis_max_pattern_sample=_env_int("TIER0_SYNTHESIS_MAX_PATTERN_SAMPLE", 12),
+        )
         
         # --- Application Configuration ---
         debug_mode = _env_bool("DEBUG_MODE", False)
@@ -309,6 +393,7 @@ class ConfigLoader:
             providers=providers,
             llm_profiles=llm_profiles,
             adversarial=adversarial,
+            tier0=tier0,
             debug_mode=debug_mode,
             flask_debug=flask_debug,
             secret_key=secret_key,
@@ -368,6 +453,7 @@ __all__ = [
     "LLMConfig",
     "ProviderConfig",
     "AdversarialConfig",
+    "Tier0Config",
     "merge_config",
 ]
 

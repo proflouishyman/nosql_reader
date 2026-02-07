@@ -43,7 +43,8 @@
         const METHOD_HINTS = {
             'basic': 'Fast hybrid retrieval with direct LLM generation (~15-30s)',
             'adversarial': 'Same as Good but with detailed pipeline monitoring (~15-30s)',
-            'tiered': 'Best quality with confidence-based escalation (~20-60s)'
+            'tiered': 'Best quality with confidence-based escalation (~20-60s)',
+            'tier0': 'Corpus exploration and question generation (budget-driven, may take a few minutes)' // Added Tier 0 hint for corpus exploration.
         };
 
         if (methodSelect && methodHint) {
@@ -98,7 +99,8 @@
                 addMetric('Context Tokens', totalTokens.toLocaleString(), 'info');
             }
             
-            addMetric('Sources Cited', docCount, 'info');
+            const docLabel = data.method === 'tier0' ? 'Documents Read' : 'Sources Cited'; // Added Tier 0 label to match corpus exploration output.
+            addMetric(docLabel, docCount, 'info');
 
             // 2. Method-Specific Detail Logic
             if (data.method === 'tiered' && data.metrics.stages) {
@@ -114,6 +116,23 @@
                 }
                 if (data.metrics.llm_time) {
                     addMetric('LLM Time', `${data.metrics.llm_time.toFixed(2)}s`, 'info');
+                }
+            } else if (data.method === 'tier0') {
+                // Added Tier 0 metrics so corpus exploration runs show batch and question counts.
+                if (data.metrics.batches_processed) {
+                    addMetric('Batches', data.metrics.batches_processed, 'info');
+                }
+                if (data.metrics.questions) {
+                    addMetric('Questions', data.metrics.questions, 'info');
+                }
+                if (data.metrics.patterns) {
+                    addMetric('Patterns', data.metrics.patterns, 'info');
+                }
+                if (data.metrics.entities) {
+                    addMetric('Entities', data.metrics.entities, 'info');
+                }
+                if (data.metrics.contradictions) {
+                    addMetric('Contradictions', data.metrics.contradictions, 'info');
                 }
             }
         }
@@ -232,6 +251,11 @@
                     debugLog(`Escalated to Tier 2: ${data.metrics.escalated ? 'YES' : 'NO'}`, data.metrics.escalated ? 'warning' : 'success');
                 } else if (method === 'basic' || method === 'adversarial') {
                     debugLog(`Total Time: ${data.metrics.total_time.toFixed(1)}s`, 'info');
+                } else if (method === 'tier0') {
+                    debugLog(`Documents read: ${data.metrics.doc_count || 0}`, 'info'); // Added Tier 0 logging for exploration runs.
+                    if (data.metrics.questions) {
+                        debugLog(`Questions generated: ${data.metrics.questions}`, 'info');
+                    }
                 }
                 
                 debugLog(`Sources found: ${Object.keys(data.sources || {}).length}`, 'info');

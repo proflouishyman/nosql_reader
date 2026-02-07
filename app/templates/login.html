@@ -2,30 +2,32 @@
 <!-- Created: 2024-08-12 11:00 -->
 
 {% extends "base.html" %}
+{% block title %}Login · Historical Document Reader{% endblock %}
 
 {% block content %}
-    <h1>Login</h1>
-    
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    
-    <form method="post">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br><br>
-        
-        <label for="captcha">CAPTCHA: What is {{ captcha_num1 }} + {{ captcha_num2 }}?</label>
-        <input type="number" id="captcha" name="captcha" required>
-        <input type="hidden" name="captcha_answer" value="{{ captcha_answer }}">
-        <br><br>
-        
-        <input type="submit" value="Login">
-    </form>
+<div class="container auth-page">
+    <section class="auth-card">
+        <header class="auth-card__header">
+            <h1>Log in</h1>
+            <p class="auth-card__lead">Enter the password and complete the CAPTCHA to continue.</p>
+        </header>
+
+        <form method="post" class="auth-form">
+            <div class="form-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-field">
+                <label for="captcha">CAPTCHA: What is {{ captcha_num1 }} + {{ captcha_num2 }}?</label>
+                <input type="number" id="captcha" name="captcha" required>
+                <input type="hidden" name="captcha_answer" value="{{ captcha_answer }}">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="button">Log in</button>
+            </div>
+        </form>
+    </section>
+</div>
 {% endblock %}
