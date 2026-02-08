@@ -323,7 +323,7 @@ class CorpusExplorer:
                 "temporal_events": {},
             }
 
-        if self._needs_repair(findings):
+        if self._needs_repair(findings, len(doc_objects)):
             attempts = 0
             while attempts < APP_CONFIG.tier0.repair_attempts:
                 attempts += 1
@@ -344,14 +344,16 @@ class CorpusExplorer:
                     )
                 repaired = parse_llm_json(repair_response.content, default={}) if repair_response.success else {}
                 repaired = self._normalize_findings(repaired, doc_objects)
-                if not self._needs_repair(repaired):
+                if not self._needs_repair(repaired, len(doc_objects)):
                     findings = repaired
                     break
 
         return findings
 
-    def _needs_repair(self, findings: Dict[str, Any]) -> bool:
+    def _needs_repair(self, findings: Dict[str, Any], doc_count: int) -> bool:
         if not APP_CONFIG.tier0.strict_closed_world:
+            return False
+        if doc_count < APP_CONFIG.tier0.repair_min_docs:
             return False
         if len(findings.get("entities", [])) < APP_CONFIG.tier0.min_entities_per_batch:
             return True

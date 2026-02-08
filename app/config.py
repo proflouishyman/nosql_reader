@@ -153,6 +153,7 @@ class Tier0Config:
     min_entities_per_batch: int
     min_patterns_per_batch: int
     repair_attempts: int
+    repair_min_docs: int
     strict_closed_world: bool
     notebook_save_dir: str
     notebook_auto_save: bool
@@ -179,10 +180,13 @@ class Tier0Config:
     synthesis_embed_timeout: int
     synthesis_assign_min_sim: float
     synthesis_dedupe_threshold: float
+    synthesis_cluster_threshold: float
     synthesis_theme_merge_threshold: float
     synthesis_theme_count: int
+    synthesis_min_themes: int
     synthesis_max_question_sample: int
     synthesis_max_pattern_sample: int
+    pattern_merge_threshold: float
 
 
 @dataclass(frozen=True)
@@ -371,6 +375,7 @@ class ConfigLoader:
             min_entities_per_batch=_env_int("TIER0_MIN_ENTITIES_PER_BATCH", 5),
             min_patterns_per_batch=_env_int("TIER0_MIN_PATTERNS_PER_BATCH", 2),
             repair_attempts=_env_int("TIER0_REPAIR_ATTEMPTS", 1),
+            repair_min_docs=_env_int("TIER0_REPAIR_MIN_DOCS", 6),
             strict_closed_world=_env_bool("TIER0_STRICT_CLOSED_WORLD", True),
             notebook_save_dir=_env("NOTEBOOK_SAVE_DIR", "/app/logs/corpus_exploration"),
             notebook_auto_save=_env_bool("NOTEBOOK_AUTO_SAVE", True),
@@ -397,10 +402,13 @@ class ConfigLoader:
             synthesis_embed_timeout=_env_int("TIER0_SYNTHESIS_EMBED_TIMEOUT", 120),
             synthesis_assign_min_sim=_env_float("TIER0_SYNTHESIS_ASSIGN_MIN_SIM", 0.2),
             synthesis_dedupe_threshold=_env_float("TIER0_SYNTHESIS_DEDUPE_THRESHOLD", 0.86),
+            synthesis_cluster_threshold=_env_float("TIER0_SYNTHESIS_CLUSTER_THRESHOLD", 0.78),
             synthesis_theme_merge_threshold=_env_float("TIER0_SYNTHESIS_THEME_MERGE_THRESHOLD", 0.84),
             synthesis_theme_count=_env_int("TIER0_SYNTHESIS_THEME_COUNT", 5),
+            synthesis_min_themes=_env_int("TIER0_SYNTHESIS_MIN_THEMES", 4),
             synthesis_max_question_sample=_env_int("TIER0_SYNTHESIS_MAX_QUESTION_SAMPLE", 24),
             synthesis_max_pattern_sample=_env_int("TIER0_SYNTHESIS_MAX_PATTERN_SAMPLE", 12),
+            pattern_merge_threshold=_env_float("TIER0_PATTERN_MERGE_THRESHOLD", 0.9),
         )
         
         # --- Application Configuration ---

@@ -136,6 +136,23 @@ Return ONLY JSON array:
 ]
 """
 
+THEME_REPAIR_PROMPT = """You are a strict JSON formatter.
+
+INPUT (raw model output):
+{raw_output}
+
+TASK:
+- Convert the input into a JSON array of theme objects with fields:
+  - name
+  - description
+  - keywords
+  - scope
+- Do NOT add new content. Only reformat what is present.
+- If no valid themes exist, return [].
+
+Return ONLY JSON.
+"""
+
 INDUCTIVE_LOGIC_PROMPT = """You are a historian performing inductive reasoning.
 
 CLOSED-WORLD RULES:
@@ -196,6 +213,8 @@ Return ONLY JSON:
   "terms_to_define": ["...", "..."]
 }}
 """
+
+GRAND_NARRATIVE_FALLBACK = "How did the Relief Department shape worker welfare and labor control, as reflected in the archival record?"
 
 
 GRAND_NARRATIVE_REPAIR_PROMPT = """You are auditing a highest-order research question for evidence alignment.
@@ -344,6 +363,7 @@ class QuestionSynthesizer:
 
         themes = self._get_themes(notebook, questions)
         buckets = self.bucket_questions(questions, themes)
+        themes, buckets = self._ensure_theme_diversity(themes, buckets, questions)
         themes_out: List[Dict[str, Any]] = []
         contradiction_questions = self._contradiction_questions(notebook)
         temporal_questions = self._temporal_questions(notebook)
@@ -362,7 +382,10 @@ class QuestionSynthesizer:
             broad = sorted_qs[0]
             sub_candidates = sorted_qs[1:8]
             sub_deduped = self._dedupe_questions_semantic(sub_candidates)
-            sub_questions = [q.to_dict() for q in sub_deduped[:6]]
+            sub_questions = [self._attach_supporting_documents(q.to_dict()) for q in sub_deduped[:6]]
+
+            clusters = self._cluster_questions_semantic(sorted_qs)
+            clustered_questions = self._format_question_clusters(sorted_qs, clusters)
 
             theme_patterns = self._patterns_for_theme(notebook, theme)
             theme_contradictions = self._contradictions_for_theme(notebook, theme)
@@ -378,8 +401,9 @@ class QuestionSynthesizer:
                 "theme_description": theme.description,
                 "theme_keywords": theme.keywords,
                 "theme_scope": theme.scope,
-                "overview_question": broad.to_dict(),
+                "overview_question": self._attach_supporting_documents(broad.to_dict()),
                 "sub_questions": sub_questions,
+                "question_clusters": clustered_questions,
                 "inductive_logic": inductive_logic,
                 "evidence_base": {
                     "pattern_count": len(theme_patterns),
@@ -390,6 +414,9 @@ class QuestionSynthesizer:
             })
 
         group_difference_questions = self._group_difference_questions(notebook)
+        group_difference_questions = [
+            self._attach_supporting_documents(q) for q in group_difference_questions
+        ]
         gaps = self._identify_gaps(notebook, questions)
         if not group_difference_questions:
             gaps.append({
@@ -401,7 +428,12 @@ class QuestionSynthesizer:
                 ],
             })
         grand_question = self._grand_narrative_question(themes_out, notebook, questions)
-        hierarchy = self._build_hierarchy(grand_question, themes_out, contradiction_questions)
+        hierarchy = self._build_hierarchy(
+            grand_question,
+            themes_out,
+            contradiction_questions,
+            group_difference_questions,
+        )
 
         agenda = {
             "grand_narrative": grand_question,
@@ -425,6 +457,142 @@ class QuestionSynthesizer:
 
         self._checkpoint.save("synthesis", agenda, checksum)
         return agenda
+
+    def _ensure_theme_diversity(
+        self,
+        themes: List[ThemeDefinition],
+        buckets: Dict[str, List[Question]],
+        questions: List[Question],
+    ) -> Tuple[List[ThemeDefinition], Dict[str, List[Question]]]:
+        if not questions:
+            return themes, buckets
+
+        non_empty = [t for t in themes if buckets.get(t.key)]
+        min_themes = APP_CONFIG.tier0.synthesis_min_themes
+        if len(non_empty) >= min_themes:
+            return themes, buckets
+
+        clustered_themes, clustered_buckets = self._cluster_questions_into_themes(questions, min_themes)
+        if clustered_themes:
+            return clustered_themes, clustered_buckets
+        return themes, buckets
+
+    def _cluster_questions_into_themes(
+        self,
+        questions: List[Question],
+        target: int,
+    ) -> Tuple[List[ThemeDefinition], Dict[str, List[Question]]]:
+        if not questions:
+            return [], {}
+        if len(questions) <= target:
+            themes = []
+            buckets: Dict[str, List[Question]] = {}
+            for idx, q in enumerate(questions, 1):
+                key = f"cluster_{idx}"
+                name = f"Theme {idx}"
+                themes.append(ThemeDefinition(key=key, name=name, description="Derived from question cluster.", keywords=[]))
+                buckets[key] = [q]
+            return themes, buckets
+
+        vectors = self._get_embeddings([self._question_text(q) for q in questions])
+        if vectors is None:
+            return [], {}
+
+        # seed with highest-scoring questions
+        seeds = sorted(range(len(questions)), key=lambda i: questions[i].validation_score or 0, reverse=True)[:target]
+        clusters: Dict[int, List[int]] = {seed: [seed] for seed in seeds}
+        similarities = _cosine_similarity_matrix(vectors, vectors)
+
+        for idx in range(len(questions)):
+            if idx in seeds:
+                continue
+            best_seed = None
+            best_sim = -1.0
+            for seed in seeds:
+                sim = float(similarities[idx][seed])
+                if sim > best_sim:
+                    best_sim = sim
+                    best_seed = seed
+            if best_seed is None:
+                continue
+            clusters[best_seed].append(idx)
+
+        themes: List[ThemeDefinition] = []
+        buckets: Dict[str, List[Question]] = {}
+        for cluster_idx, (seed, members) in enumerate(clusters.items(), 1):
+            cluster_questions = [questions[i] for i in members]
+            keywords = self._extract_keywords(cluster_questions)
+            name = " / ".join([k.title() for k in keywords[:2]]) or f"Theme {cluster_idx}"
+            key = self._slugify(name or f"theme_{cluster_idx}")
+            themes.append(ThemeDefinition(key=key, name=name, description="Derived from clustered questions.", keywords=keywords))
+            buckets[key] = cluster_questions
+
+        return themes, buckets
+
+    def _cluster_questions_semantic(self, questions: List[Question]) -> List[List[int]]:
+        if len(questions) <= 1 or not APP_CONFIG.tier0.synthesis_semantic_assignment:
+            return [[i] for i in range(len(questions))]
+
+        vectors = self._get_embeddings([self._question_text(q) for q in questions])
+        if vectors is None:
+            return [[i] for i in range(len(questions))]
+
+        threshold = APP_CONFIG.tier0.synthesis_cluster_threshold
+        similarities = _cosine_similarity_matrix(vectors, vectors)
+        clusters: List[List[int]] = []
+
+        for idx in range(len(questions)):
+            placed = False
+            for cluster in clusters:
+                rep_idx = cluster[0]
+                if float(similarities[idx][rep_idx]) >= threshold:
+                    cluster.append(idx)
+                    placed = True
+                    break
+            if not placed:
+                clusters.append([idx])
+
+        return clusters
+
+    def _format_question_clusters(
+        self,
+        questions: List[Question],
+        clusters: List[List[int]],
+    ) -> List[Dict[str, Any]]:
+        clustered = []
+        for cluster in clusters:
+            cluster_questions = [questions[i] for i in cluster]
+            cluster_questions = sorted(cluster_questions, key=lambda q: q.validation_score or 0, reverse=True)
+            rep = cluster_questions[0]
+            related = [self._attach_supporting_documents(q.to_dict()) for q in cluster_questions[1:]]
+            clustered.append({
+                "representative_question": self._attach_supporting_documents(rep.to_dict()),
+                "related_questions": related,
+            })
+        return clustered
+
+    def _extract_keywords(self, questions: List[Question]) -> List[str]:
+        stop = {
+            "the", "and", "of", "to", "in", "for", "did", "does", "do", "how",
+            "what", "why", "when", "where", "were", "was", "with", "on", "by",
+            "from", "a", "an", "is", "are", "as", "between", "over", "into",
+        }
+        counts: Dict[str, int] = {}
+        for q in questions:
+            tokens = re.findall(r"[a-z0-9]+", q.question_text.lower())
+            for token in tokens:
+                if token in stop or len(token) < 3:
+                    continue
+                counts[token] = counts.get(token, 0) + 1
+        return [k for k, _ in sorted(counts.items(), key=lambda x: x[1], reverse=True)[:6]]
+
+    def _attach_supporting_documents(self, question_dict: Dict[str, Any]) -> Dict[str, Any]:
+        docs = set(question_dict.get("evidence_sample") or [])
+        precheck = question_dict.get("answerability_precheck") or {}
+        for doc_id in precheck.get("sample_doc_ids") or []:
+            docs.add(doc_id)
+        question_dict["supporting_documents"] = list(docs)[:10]
+        return question_dict
 
     def _assign_bucket(self, question: Question, themes: List[ThemeDefinition]) -> str:
         text = " ".join([
@@ -473,6 +641,9 @@ class QuestionSynthesizer:
             if len(merged) < target:
                 extra = self._expand_themes(notebook, questions, merged, target - len(merged))
                 merged = self._merge_overlapping_themes(merged + extra)
+            if len(merged) < target:
+                fallback = self._fallback_themes_from_patterns(notebook, merged, target - len(merged))
+                merged = self._merge_overlapping_themes(merged + fallback)
 
             if merged:
                 merged = merged[:target]
@@ -481,6 +652,45 @@ class QuestionSynthesizer:
 
         self._theme_cache = THEMES
         return THEMES
+
+    def _fallback_themes_from_patterns(
+        self,
+        notebook: ResearchNotebook,
+        existing: List[ThemeDefinition],
+        max_new: int,
+    ) -> List[ThemeDefinition]:
+        if max_new <= 0:
+            return []
+
+        existing_keys = {t.key for t in existing}
+        pattern_types = [p.pattern_type or "unknown" for p in notebook.patterns.values()]
+        if not pattern_types:
+            return []
+
+        counts: Dict[str, int] = {}
+        for ptype in pattern_types:
+            counts[ptype] = counts.get(ptype, 0) + 1
+
+        sorted_types = sorted(counts.items(), key=lambda x: x[1], reverse=True)
+        themes: List[ThemeDefinition] = []
+        for ptype, count in sorted_types:
+            if len(themes) >= max_new:
+                break
+            name = ptype.replace("_", " ").strip().title()
+            key = self._slugify(name)
+            if key in existing_keys:
+                continue
+            keywords = [w for w in re.split(r"\\s+", name.lower()) if w]
+            themes.append(ThemeDefinition(
+                key=key,
+                name=name,
+                description=f"Recurring '{ptype}' patterns observed across {count} instances.",
+                keywords=keywords,
+                scope={},
+            ))
+            existing_keys.add(key)
+
+        return themes
 
     def _generate_dynamic_themes(
         self,
@@ -518,6 +728,19 @@ class QuestionSynthesizer:
             return []
 
         data = parse_llm_json(response.content, default=[])
+        if not isinstance(data, list) or not data:
+            repair_prompt = THEME_REPAIR_PROMPT.format(raw_output=response.content)
+            repair = self._generate_cached(
+                messages=[
+                    {"role": "system", "content": "You only reformat text into strict JSON."},
+                    {"role": "user", "content": repair_prompt},
+                ],
+                profile="verifier",
+                temperature=0.0,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            if repair.success:
+                data = parse_llm_json(repair.content, default=[])
         if not isinstance(data, list):
             return []
 
@@ -585,6 +808,19 @@ class QuestionSynthesizer:
             return []
 
         data = parse_llm_json(response.content, default=[])
+        if not isinstance(data, list) or not data:
+            repair_prompt = THEME_REPAIR_PROMPT.format(raw_output=response.content)
+            repair = self._generate_cached(
+                messages=[
+                    {"role": "system", "content": "You only reformat text into strict JSON."},
+                    {"role": "user", "content": repair_prompt},
+                ],
+                profile="verifier",
+                temperature=0.0,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            if repair.success:
+                data = parse_llm_json(repair.content, default=[])
         if not isinstance(data, list):
             return []
 
@@ -764,9 +1000,9 @@ class QuestionSynthesizer:
         matches = []
         for contra in notebook.contradictions:
             text = " ".join([
-                contra.claim_a,
-                contra.claim_b,
-                contra.context,
+                str(contra.claim_a or ""),
+                str(contra.claim_b or ""),
+                str(contra.context or ""),
             ]).lower()
             if any(kw in text for kw in theme.keywords):
                 matches.append(contra)
@@ -882,6 +1118,7 @@ class QuestionSynthesizer:
         grand_question: Dict[str, Any],
         themes_out: List[Dict[str, Any]],
         contradiction_questions: List[Dict[str, Any]],
+        group_difference_questions: List[Dict[str, Any]],
     ) -> Dict[str, Any]:
         level_2 = [
             {
@@ -891,7 +1128,7 @@ class QuestionSynthesizer:
             for theme in themes_out
         ]
         level_3 = {
-            theme["theme_key"]: theme.get("sub_questions", [])
+            theme["theme_key"]: theme.get("question_clusters", theme.get("sub_questions", []))
             for theme in themes_out
         }
         level_4 = contradiction_questions[:25]
@@ -900,6 +1137,7 @@ class QuestionSynthesizer:
             "level_1_grand": grand_question,
             "level_2_thematic": level_2,
             "level_3_specific": level_3,
+            "level_3_group_comparisons": group_difference_questions,
             "level_4_micro": level_4,
         }
 
@@ -972,6 +1210,13 @@ class QuestionSynthesizer:
         repaired = parse_llm_json(repair_response.content, default={}) if repair_response.success else data
         if not isinstance(repaired, dict):
             repaired = data
+
+        if not isinstance(repaired, dict) or not repaired.get("question"):
+            question = GRAND_NARRATIVE_FALLBACK
+            return {
+                "question": question,
+                "themes": theme_names,
+            }
 
         repaired["themes"] = theme_names
         return repaired

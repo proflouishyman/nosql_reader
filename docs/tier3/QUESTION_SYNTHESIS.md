@@ -4,6 +4,7 @@
 After question generation, Tier 0 now synthesizes a **research agenda**:
 - Buckets questions into themes
 - Builds a hierarchy (grand narrative → theme → sub‑questions)
+- Clusters semantically similar questions under each theme
 - Adds micro‑level questions from contradictions
 - Adds temporal questions from coverage statistics
 - Flags missing areas (gaps)
@@ -38,11 +39,17 @@ This turns exploratory questions into an integrative research plan.
         "scope": {"time": "...", "place": "...", "actors": ["..."]}
       }
     ],
-      "themes": [
+    "themes": [
         {
           "theme": "Medical Certification as Labor Control",
           "overview_question": {...},
         "sub_questions": [...],
+        "question_clusters": [
+          {
+            "representative_question": {...},
+            "related_questions": [...]
+          }
+        ],
         "inductive_logic": {
           "patterns_observed": ["..."],
           "contradictions_observed": 2,
@@ -82,7 +89,8 @@ This turns exploratory questions into an integrative research plan.
     "hierarchy": {
       "level_1_grand": {...},
       "level_2_thematic": [...],
-      "level_3_specific": {"theme_key": [...]},
+      "level_3_specific": {"theme_key": [{"representative_question": {...}, "related_questions": [...]}]},
+      "level_3_group_comparisons": [...],
       "level_4_micro": [...]
     },
     "gaps": [
@@ -125,8 +133,10 @@ TIER0_SYNTHESIS_EMBED_CACHE=/app/logs/embedding_cache.pkl
 TIER0_SYNTHESIS_EMBED_TIMEOUT=120
 TIER0_SYNTHESIS_ASSIGN_MIN_SIM=0.2
 TIER0_SYNTHESIS_DEDUPE_THRESHOLD=0.86
+TIER0_SYNTHESIS_CLUSTER_THRESHOLD=0.78
 TIER0_SYNTHESIS_THEME_MERGE_THRESHOLD=0.84
 TIER0_SYNTHESIS_THEME_COUNT=5
+TIER0_SYNTHESIS_MIN_THEMES=4
 TIER0_SYNTHESIS_MAX_QUESTION_SAMPLE=24
 TIER0_SYNTHESIS_MAX_PATTERN_SAMPLE=12
 TIER0_GROUP_INDICATOR_MIN_DOCS=3

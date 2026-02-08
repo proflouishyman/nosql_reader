@@ -78,6 +78,44 @@ Return JSON:
 }}
 """
 
+VALIDATION_REPAIR_PROMPT = """You are a strict JSON formatter.
+
+INPUT (raw model output):
+{raw_output}
+
+TASK:
+- Convert the input into a JSON object with fields:
+  - score
+  - answerability
+  - significance
+  - specificity
+  - evidence_based
+  - critique
+  - suggestions
+- Do NOT add new content. Only reformat what is present.
+- If no valid content exists, return an empty JSON object: {{}}
+
+Return ONLY JSON.
+"""
+
+REFINE_REPAIR_PROMPT = """You are a strict JSON formatter.
+
+INPUT (raw model output):
+{raw_output}
+
+TASK:
+- Convert the input into a JSON array (or single object) with fields:
+  - question
+  - type
+  - why_interesting
+  - entities_involved
+  - time_window
+- Do NOT add new content. Only reformat what is present.
+- If no valid question exists, return [].
+
+Return ONLY JSON.
+"""
+
 
 class QuestionValidator:
     """Validate and refine research questions."""
@@ -114,6 +152,19 @@ class QuestionValidator:
             )
 
         validation = parse_validation_response(response.content)
+        if validation.total_score == 0 and response.content.strip():
+            repair_prompt = VALIDATION_REPAIR_PROMPT.format(raw_output=response.content)
+            repair = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You only reformat text into strict JSON."},
+                    {"role": "user", "content": repair_prompt},
+                ],
+                profile="verifier",
+                temperature=0.0,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            if repair.success:
+                validation = parse_validation_response(repair.content)
         validation.apply_to_question(question)
         return validation
 
@@ -142,6 +193,19 @@ class QuestionValidator:
         from question_models import parse_llm_question_response
 
         candidates = parse_llm_question_response(response.content)
+        if not candidates and response.content.strip():
+            repair_prompt = REFINE_REPAIR_PROMPT.format(raw_output=response.content)
+            repair = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You only reformat text into strict JSON."},
+                    {"role": "user", "content": repair_prompt},
+                ],
+                profile="verifier",
+                temperature=0.0,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            if repair.success:
+                candidates = parse_llm_question_response(repair.content)
         if not candidates:
             return question
 
@@ -153,6 +217,59 @@ class QuestionValidator:
         refined.evidence_block_ids = list(question.evidence_block_ids)
         refined.original_question = question.original_question or question.question_text
         refined.refinement_count = question.refinement_count + 1
+        return refined
+
+    def refine_with_critique(self, question: Question, notebook: ResearchNotebook, critique: str) -> Question:
+        """Refine using an explicit critique (overrides stored critique)."""
+        summary = notebook.get_summary()
+        prompt = REFINE_PROMPT.format(
+            question=question.question_text,
+            critique=critique,
+            notebook_summary=summary,
+            qtype=question.question_type.value,
+        )
+
+        response = self.llm.generate(
+            messages=[
+                {"role": "system", "content": "You refine research questions."},
+                {"role": "user", "content": prompt},
+            ],
+            profile="quality",
+            temperature=0.3,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+
+        if not response.success:
+            return question
+
+        from question_models import parse_llm_question_response
+
+        candidates = parse_llm_question_response(response.content)
+        if not candidates and response.content.strip():
+            repair_prompt = REFINE_REPAIR_PROMPT.format(raw_output=response.content)
+            repair = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You only reformat text into strict JSON."},
+                    {"role": "user", "content": repair_prompt},
+                ],
+                profile="verifier",
+                temperature=0.0,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            if repair.success:
+                candidates = parse_llm_question_response(repair.content)
+        if not candidates:
+            return question
+
+        refined = candidates[0]
+        refined.question_type = question.question_type
+        refined.pattern_source = question.pattern_source
+        refined.contradiction_source = question.contradiction_source
+        refined.evidence_doc_ids = list(question.evidence_doc_ids)
+        refined.evidence_block_ids = list(question.evidence_block_ids)
+        refined.original_question = question.original_question or question.question_text
+        refined.refinement_count = question.refinement_count + 1
+        refined.critique = critique
         return refined
 
     def validate_and_refine(

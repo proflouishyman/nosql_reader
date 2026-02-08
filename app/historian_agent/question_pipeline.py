@@ -25,6 +25,13 @@ from question_validator import QuestionValidator
 from question_answerability import AnswerabilityChecker
 from research_notebook import ResearchNotebook
 
+PLACEHOLDER_RE = re.compile(r"\[[^\\]]+\\]|\\{[^\\}]+\\}")
+
+CAUSAL_MARKERS = ("why", "how", "what explains", "what caused", "what led", "what contributed", "what resulted")
+COMPARATIVE_MARKERS = ("between", "compare", "difference", "differ", "versus", "vs.")
+DISTRIBUTIONAL_MARKERS = ("who", "which group", "differ", "difference", "distribution", "disproportion")
+INSTITUTIONAL_MARKERS = ("criteria", "rule", "policy", "procedure", "eligibility", "requirement", "standard")
+SCOPE_MARKERS = ("where", "when", "under what conditions", "scope", "limits", "apply")
 
 @dataclass
 class PipelineConfig:
@@ -70,6 +77,9 @@ class QuestionGenerationPipeline:
         validated = self._validate_candidates(candidates, notebook)
         debug_print(f"Validated {len(validated)} candidates")
 
+        validated = self._improve_quality(validated, notebook)
+        debug_print(f"Quality pass kept {len(validated)} candidates")
+
         filtered = self._apply_answerability_precheck(validated)
         debug_print(f"Answerability precheck kept {len(filtered)} candidates")
 
@@ -99,6 +109,54 @@ class QuestionGenerationPipeline:
             total_validated=len(validated),
             total_accepted=len(filtered),
         )
+
+    def _improve_quality(self, questions: List[Question], notebook: ResearchNotebook) -> List[Question]:
+        improved: List[Question] = []
+        for q in questions:
+            critique = self._quality_critique(q)
+            if not critique:
+                improved.append(q)
+                continue
+
+            refined = self.validator.refine_with_critique(q, notebook, critique)
+            # Re-validate to update scores if refinement occurred
+            if refined.question_text != q.question_text:
+                self.validator.validate(refined, notebook)
+
+            # Drop if still low-quality (placeholders or missing intent markers)
+            if self._quality_critique(refined):
+                continue
+            improved.append(refined)
+
+        return improved
+
+    def _quality_critique(self, question: Question) -> str | None:
+        text = (question.question_text or "").strip().lower()
+        if not text:
+            return "Question is empty."
+
+        if PLACEHOLDER_RE.search(text):
+            return "Remove placeholders like [name] or {date} and replace with concrete entities from evidence."
+
+        qtype = question.question_type
+        if qtype == QuestionType.CAUSAL and not self._contains_any(text, CAUSAL_MARKERS):
+            return "Make this a causal question by using why/how or an explicit mechanism."
+        if qtype == QuestionType.COMPARATIVE and not self._contains_any(text, COMPARATIVE_MARKERS):
+            return "Make this explicitly comparative (e.g., between X and Y)."
+        if qtype == QuestionType.DISTRIBUTIONAL and not self._contains_any(text, DISTRIBUTIONAL_MARKERS):
+            return "Make this distributional (who benefited or suffered, or which group differed)."
+        if qtype == QuestionType.INSTITUTIONAL and not self._contains_any(text, INSTITUTIONAL_MARKERS):
+            return "Make this institutional by naming criteria, rules, or procedures."
+        if qtype == QuestionType.SCOPE_CONDITIONS and not self._contains_any(text, SCOPE_MARKERS):
+            return "Make this a scope question (where/when/under what conditions a pattern applies)."
+
+        if "pattern" in text and not question.pattern_source:
+            return "Avoid vague references to 'pattern' and anchor the question in a specific observed claim."
+
+        return None
+
+    def _contains_any(self, text: str, markers: tuple[str, ...]) -> bool:
+        return any(marker in text for marker in markers)
 
     def _generate_candidates(self, notebook: ResearchNotebook) -> List[Question]:
         context = {

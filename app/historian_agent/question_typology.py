@@ -155,6 +155,23 @@ Return JSON:
 }}
 """
 
+QUESTION_REPAIR_PROMPT = """You are a strict JSON formatter.
+
+INPUT (raw model output):
+{raw_output}
+
+TASK:
+- Convert the input into a JSON array of objects with fields:
+  - question
+  - type
+  - why_interesting
+  - entities_involved
+  - time_window
+- Do NOT add new content. Only reformat what is present.
+- If no valid question exists, return an empty JSON array: []
+
+Return ONLY JSON.
+"""
 
 # ============================================================================
 # Generator
@@ -306,6 +323,19 @@ class TypedQuestionGenerator:
             return []
 
         questions = parse_llm_question_response(response.content)
+        if not questions and response.content.strip():
+            repair_prompt = QUESTION_REPAIR_PROMPT.format(raw_output=response.content)
+            repair = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You only reformat text into strict JSON."},
+                    {"role": "user", "content": repair_prompt},
+                ],
+                profile="verifier",
+                temperature=0.0,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            if repair.success:
+                questions = parse_llm_question_response(repair.content)
         for q in questions:
             q.question_type = qtype
         return questions

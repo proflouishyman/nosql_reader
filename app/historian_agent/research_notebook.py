@@ -13,11 +13,13 @@ from __future__ import annotations
 
 import json
 import re
+from difflib import SequenceMatcher
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from collections import defaultdict
 
+from config import APP_CONFIG
 
 # ============================================================================
 # Data Classes
@@ -242,12 +244,14 @@ class ResearchNotebook:
         doc_ids = list(set(doc_ids))
         block_ids = list(set(block_ids))
 
-        if pattern_text in self.patterns:
-            existing = self.patterns[pattern_text]
+        target_key = self._find_similar_pattern_key(str(pattern_text))
+
+        if target_key in self.patterns:
+            existing = self.patterns[target_key]
             existing.add_evidence(doc_ids, block_ids)
         else:
-            self.patterns[pattern_text] = Pattern(
-                pattern_text=str(pattern_text),
+            self.patterns[target_key] = Pattern(
+                pattern_text=target_key,
                 pattern_type=str(pattern_dict.get("type") or pattern_dict.get("pattern_type") or "unknown"),
                 evidence_doc_ids=doc_ids,
                 evidence_block_ids=block_ids,
@@ -255,6 +259,30 @@ class ResearchNotebook:
                 time_range=pattern_dict.get("time_range"),
                 first_noticed=batch_label,
             )
+
+    def _normalize_pattern_text(self, text: str) -> str:
+        cleaned = re.sub(r"[^a-z0-9\\s]", " ", text.lower())
+        cleaned = re.sub(r"\\s+", " ", cleaned).strip()
+        return cleaned
+
+    def _find_similar_pattern_key(self, pattern_text: str) -> str:
+        threshold = getattr(APP_CONFIG.tier0, "pattern_merge_threshold", 1.0)
+        if threshold >= 1.0 or not self.patterns:
+            return pattern_text
+
+        normalized = self._normalize_pattern_text(pattern_text)
+        best_key = pattern_text
+        best_score = 0.0
+
+        for key in self.patterns.keys():
+            score = SequenceMatcher(None, normalized, self._normalize_pattern_text(key)).ratio()
+            if score > best_score:
+                best_score = score
+                best_key = key
+
+        if best_score >= threshold:
+            return best_key
+        return pattern_text
 
     def _add_group_indicator(self, indicator_dict: Dict[str, Any], batch_label: str) -> None:
         group_type = str(indicator_dict.get("group_type") or indicator_dict.get("type") or "unknown").lower()
