@@ -1334,8 +1334,35 @@ class QuestionSynthesizer:
                 "themes": theme_names,
             }
 
+        question_text = str(repaired.get("question") or "").strip()
+        scope = repaired.get("scope") or {}
+        if self._grand_too_specific(question_text, scope):
+            question_text = (
+                "How did the Relief Department shape worker welfare and labor control, "
+                f"as reflected across {', '.join(theme_names)} in the archival record?"
+            )
+            repaired["question"] = question_text
+            repaired["purpose_statement"] = (
+                "I am studying the Relief Department archive because I want to know how its policies "
+                "structured worker welfare and control in order to help my readers understand institutional "
+                "welfare regimes in early twentieth-century railroads."
+            )
+
         repaired["themes"] = theme_names
         return repaired
+
+    def _grand_too_specific(self, question: str, scope: Dict[str, Any]) -> bool:
+        if not question:
+            return True
+        if re.search(r\"\\b[a-f0-9]{8,}\\b\", question.lower()):
+            return True
+        name_hits = re.findall(r\"\\b[A-Z][a-z]+ [A-Z][a-z]+\\b\", question)
+        if name_hits and len(question.split()) < 18:
+            return True
+        actors = scope.get(\"actors\") if isinstance(scope, dict) else None
+        if isinstance(actors, list) and 0 < len(actors) <= 2:
+            return True
+        return False
 
     def _narrative_summary(
         self,
