@@ -212,6 +212,7 @@ class Tier0Config:
     essay_conclusion_min_words: int
     recursive_theme_max_leaves: int
     recursive_theme_use_llm: bool
+    recursive_subquestion_min_docs: int
     leaf_answers_collection: str
     pattern_merge_threshold: float
     runs_collection: str
@@ -460,6 +461,7 @@ class ConfigLoader:
             essay_conclusion_min_words=_env_int("TIER0_ESSAY_CONCLUSION_MIN_WORDS", 140),
             recursive_theme_max_leaves=_env_int("TIER0_RECURSIVE_THEME_MAX_LEAVES", 20),
             recursive_theme_use_llm=_env_bool("TIER0_RECURSIVE_THEME_USE_LLM", False),
+            recursive_subquestion_min_docs=_env_int("TIER0_RECURSIVE_SUBQUESTION_MIN_DOCS", 1),
             leaf_answers_collection=_env("TIER0_LEAF_ANSWERS_COLLECTION", "tier0_leaf_answers"),
             pattern_merge_threshold=_env_float("TIER0_PATTERN_MERGE_THRESHOLD", 0.9),
             runs_collection=_env("TIER0_RUNS_COLLECTION", "tier0_runs"),

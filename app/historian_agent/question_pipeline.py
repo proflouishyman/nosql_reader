@@ -76,6 +76,7 @@ class QuestionGenerationPipeline:
 
         validated = self._validate_candidates(candidates, notebook)
         debug_print(f"Validated {len(validated)} candidates")
+        validated = self._fallback_validation_scores(validated)
 
         validated = self._improve_quality(validated, notebook)
         debug_print(f"Quality pass kept {len(validated)} candidates")
@@ -190,6 +191,50 @@ class QuestionGenerationPipeline:
                 )
             )
         return validated
+
+    def _fallback_validation_scores(self, questions: List[Question]) -> List[Question]:
+        scores = [q.validation_score for q in questions if q.validation_score is not None]
+        if not scores:
+            return questions
+        if len(set(scores)) > 1:
+            return questions
+        debug_print("Validation scores collapsed; applying heuristic scoring fallback.")
+        for q in questions:
+            total, a, s, sp, e = self._heuristic_score(q)
+            q.validation_score = total
+            q.answerability_score = a
+            q.significance_score = s
+            q.specificity_score = sp
+            q.evidence_based_score = e
+        return questions
+
+    def _heuristic_score(self, q: Question) -> tuple[int, int, int, int, int]:
+        evidence = len(q.evidence_doc_ids)
+        answerability = min(25, 5 + evidence * 2)
+        significance = 10
+        if q.question_type in {QuestionType.CAUSAL, QuestionType.COMPARATIVE}:
+            significance += 6
+        if q.pattern_source or q.contradiction_source:
+            significance += 5
+        significance = min(25, significance)
+
+        specificity = 8
+        if q.time_window:
+            specificity += 6
+        if q.entities_involved:
+            specificity += 6
+        if len(q.question_text.split()) > 10:
+            specificity += 4
+        specificity = min(25, specificity)
+
+        evidence_based = 6
+        if q.pattern_source or q.contradiction_source:
+            evidence_based += 8
+        evidence_based += min(11, evidence)
+        evidence_based = min(25, evidence_based)
+
+        total = min(100, answerability + significance + specificity + evidence_based)
+        return total, answerability, significance, specificity, evidence_based
 
     def _filter_by_score(self, questions: List[Question]) -> List[Question]:
         return [

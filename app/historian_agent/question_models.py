@@ -122,7 +122,7 @@ class Question:
             why_interesting=str(data.get("why_interesting", "")),
             time_window=data.get("time_window"),
             entities_involved=data.get("entities_involved", []) or [],
-            evidence_doc_ids=data.get("evidence_doc_ids", []) or [],
+            evidence_doc_ids=data.get("evidence_doc_ids", []) or data.get("evidence_sample", []) or [],
             evidence_block_ids=data.get("evidence_block_ids", []) or [],
             pattern_source=data.get("pattern_source"),
             contradiction_source=data.get("contradiction_source"),

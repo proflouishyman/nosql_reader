@@ -28,19 +28,29 @@ CLOSED-WORLD RULES:
 - Favor interpretive questions (why/how) over descriptive ones.
 - If evidence does not name groups, do NOT invent group comparisons.
 - Make the question narrower in time/place/actors if possible.
+- Every sub-question MUST cite one or more doc_ids from the allowed list.
+- If you cannot anchor a sub-question to a doc_id, do NOT include it.
 
 PARENT QUESTION:
 {question}
 
-EVIDENCE HINTS (from the archive):
+ALLOWED DOC IDS:
+{allowed_doc_ids}
+
+EVIDENCE EXCERPTS (from the archive):
 {evidence_hints}
 
 TASK:
 Generate {count} sub-questions that are more specific and more directly answerable.
 Each sub-question should narrow scope (time/place/actors) or target a mechanism.
 
-Return ONLY JSON array:
-["sub-question 1", "sub-question 2", ...]
+Return ONLY JSON array of objects:
+[
+  {{
+    "question": "sub-question text",
+    "doc_ids": ["...","..."]
+  }}
+]
 """
 
 
@@ -214,6 +224,9 @@ class RecursiveSynthesizer:
         self._leaf_coll = self._mongo.get_collection(APP_CONFIG.tier0.leaf_answers_collection)
         self._ensure_indexes()
 
+    def _normalize_question(self, text: str) -> str:
+        return " ".join((text or "").strip().lower().split())
+
     def _ensure_indexes(self) -> None:
         try:
             self._leaf_coll.create_index([("run_id", 1), ("question_id", 1)], name="run_question")
@@ -235,7 +248,7 @@ class RecursiveSynthesizer:
             return {}
 
         run_id = run_id or datetime.utcnow().strftime("recursive_%Y%m%d_%H%M%S")
-        question_map = {q.question_text: q for q in questions}
+        question_map = {self._normalize_question(q.question_text): q for q in questions}
 
         theme_trees: List[Dict[str, Any]] = []
         leaf_answers: List[Dict[str, Any]] = []
@@ -370,9 +383,10 @@ class RecursiveSynthesizer:
         level: int,
         parent_id: Optional[str],
         run_id: str,
+        evidence_override: Optional[EvidencePack] = None,
     ) -> QuestionNode:
         node_id = str(uuid.uuid4())
-        evidence = self._build_evidence_pack(question_text, notebook, question_map)
+        evidence = evidence_override or self._build_evidence_pack(question_text, notebook, question_map)
 
         node = QuestionNode(
             node_id=node_id,
@@ -396,13 +410,21 @@ class RecursiveSynthesizer:
             return node
 
         for sub in sub_questions:
+            if not isinstance(sub, dict):
+                continue
+            sub_text = str(sub.get("question") or "").strip()
+            sub_doc_ids = sub.get("doc_ids") or []
+            if not sub_text or not sub_doc_ids:
+                continue
+            sub_pack = EvidencePack(doc_ids=sub_doc_ids, block_ids=[])
             child = self._build_node(
-                sub,
+                sub_text,
                 notebook,
                 question_map,
                 level=level + 1,
                 parent_id=node_id,
                 run_id=run_id,
+                evidence_override=sub_pack,
             )
             node.children.append(child)
 
@@ -421,7 +443,9 @@ class RecursiveSynthesizer:
         min_docs = APP_CONFIG.tier0.recursive_min_docs
         max_docs = APP_CONFIG.tier0.recursive_max_docs
         count = len(evidence.doc_ids)
-        if count == 0 and level > 0:
+        if count == 0:
+            return True
+        if count < min_docs:
             return True
         return count >= min_docs and count <= max_docs
 
@@ -434,7 +458,7 @@ class RecursiveSynthesizer:
         doc_ids: List[str] = []
         block_ids: List[str] = []
 
-        q = question_map.get(question_text)
+        q = question_map.get(self._normalize_question(question_text))
         if q:
             doc_ids.extend(q.evidence_doc_ids or [])
             doc_ids.extend(q.answerability_sample or [])
@@ -467,16 +491,18 @@ class RecursiveSynthesizer:
         return EvidencePack(doc_ids=doc_ids, block_ids=block_ids)
 
     def _generate_subquestions(self, node: QuestionNode, notebook: ResearchNotebook) -> List[str]:
-        hints = []
-        for pattern in list(notebook.patterns.values())[:5]:
-            hints.append(f"- {pattern.pattern_text} (n={len(pattern.evidence_doc_ids)})")
-        for contra in list(notebook.contradictions)[:3]:
-            hints.append(f"- {contra.claim_a} vs {contra.claim_b}")
-        evidence_hints = "\n".join(hints) or "- (none)"
+        allowed_doc_ids = list(node.evidence.doc_ids or [])
+        if not allowed_doc_ids:
+            return []
+
+        sources_text, _ = self._build_evidence_snippets(node.question_text, allowed_doc_ids)
+        evidence_blocks = sources_text.split("\n\n") if sources_text else []
+        evidence_hints = "\n\n".join(evidence_blocks[:3]) if evidence_blocks else "- (none)"
 
         prompt = SUBQUESTION_PROMPT.format(
             question=node.question_text,
             evidence_hints=evidence_hints,
+            allowed_doc_ids=", ".join(allowed_doc_ids[:8]),
             count=APP_CONFIG.tier0.recursive_subquestion_count,
         )
 
@@ -493,7 +519,27 @@ class RecursiveSynthesizer:
         data = parse_llm_json(response.content, default=[]) if response.success else []
         if not isinstance(data, list):
             return []
-        return [str(q).strip() for q in data if str(q).strip()]
+
+        min_docs = getattr(APP_CONFIG.tier0, "recursive_subquestion_min_docs", 1)
+        cleaned: List[Dict[str, Any]] = []
+        for item in data:
+            if isinstance(item, str):
+                continue
+            if not isinstance(item, dict):
+                continue
+            qtext = str(item.get("question") or "").strip()
+            doc_ids = item.get("doc_ids") or []
+            if isinstance(doc_ids, str):
+                doc_ids = [d.strip() for d in doc_ids.split(",") if d.strip()]
+            if not isinstance(doc_ids, list):
+                doc_ids = []
+            doc_ids = [str(d).split("::")[0] for d in doc_ids if d]
+            doc_ids = [d for d in doc_ids if d in allowed_doc_ids]
+            if not qtext or len(doc_ids) < min_docs:
+                continue
+            cleaned.append({"question": qtext, "doc_ids": list(dict.fromkeys(doc_ids))})
+
+        return cleaned
 
     def _answer_leaf(self, node: QuestionNode, run_id: str) -> Optional[Dict[str, Any]]:
         if not node.evidence.doc_ids:
@@ -952,6 +998,8 @@ class RecursiveSynthesizer:
         if len(" ".join(body_parts).split()) < APP_CONFIG.tier0.essay_min_words:
             body_parts.append(self._build_methods_note())
             body_parts.extend(self._build_evidence_register(theme_summaries))
+        if len(" ".join(body_parts).split()) < APP_CONFIG.tier0.essay_min_words:
+            body_parts.extend(self._build_detailed_walkthrough(theme_summaries))
 
         return sections, body_parts
 
@@ -971,6 +1019,13 @@ class RecursiveSynthesizer:
             scope = grand_narrative.get("scope") or {}
         themes = [t.get("theme") for t in theme_summaries if t.get("theme")]
         roadmap = ", ".join(themes[:3])
+        if not purpose and thesis:
+            clause = self._to_purpose_clause(thesis)
+            purpose = (
+                "I am studying the Relief Department archive because I want to know "
+                f"{clause} in order to help my readers understand "
+                f"{roadmap or 'the institution’s welfare practices'}."
+            )
         intro_bits = []
         if purpose:
             intro_bits.append(purpose)
@@ -1008,6 +1063,51 @@ class RecursiveSynthesizer:
             gap_line = "Gaps and next questions: The archive is thin on demographic variation and comparative context, so these lines of inquiry remain open."
         return self._ensure_length(gap_line, APP_CONFIG.tier0.essay_paragraph_min_words)
 
+    def _to_purpose_clause(self, thesis: str) -> str:
+        if not thesis:
+            return "what the records reveal"
+        text = thesis.strip()
+        if text.endswith("?"):
+            text = text[:-1]
+        if text:
+            text = text[0].lower() + text[1:]
+        prefixes = [
+            ("How did ", "how "),
+            ("Why did ", "why "),
+            ("What was ", "what "),
+            ("What were ", "what "),
+            ("Did ", "whether "),
+            ("Do ", "whether "),
+            ("Does ", "whether "),
+        ]
+        for prefix, replacement in prefixes:
+            if thesis.startswith(prefix):
+                rest = thesis[len(prefix):].strip()
+                if rest.endswith("?"):
+                    rest = rest[:-1]
+                if rest:
+                    rest = rest[0].lower() + rest[1:]
+                if prefix.startswith("How") or prefix.startswith("Why"):
+                    rest = self._past_tense_first_verb(rest)
+                return replacement + rest
+        return text or thesis
+
+    def _past_tense_first_verb(self, clause: str) -> str:
+        tokens = clause.split()
+        skip = {"the", "a", "an", "of", "in", "on", "for", "and", "or", "to"}
+        for idx, tok in enumerate(tokens):
+            if tok.lower() in skip:
+                continue
+            if tok and tok[0].islower():
+                if not tok.endswith("ed"):
+                    if tok.endswith("e"):
+                        tok = tok + "d"
+                    else:
+                        tok = tok + "ed"
+                tokens[idx] = tok
+                break
+        return " ".join(tokens)
+
     def _build_conclusion(self, theme_summaries: List[Dict[str, Any]]) -> str:
         return self._ensure_length(
             "Conclusion: Taken together, the themes suggest a relief system that recorded health, eligibility, and employment decisions in ways that shaped worker experience while leaving important silences. The evidence does not resolve every contradiction, but it does delineate the institutional logic that can be investigated further through deeper archival work.",
@@ -1034,6 +1134,30 @@ class RecursiveSynthesizer:
                 evidence = " ".join(para.get("evidence_sentences", []))
                 if topic or evidence:
                     parts.append(f"- {topic} {evidence}".strip())
+        return parts
+
+    def _build_detailed_walkthrough(self, theme_summaries: List[Dict[str, Any]]) -> List[str]:
+        parts = ["\nDetailed evidence walkthrough\n"]
+        for theme in theme_summaries:
+            name = theme.get("theme", "Theme")
+            summary = theme.get("summary", {})
+            paragraphs = summary.get("paragraphs", [])
+            if not paragraphs:
+                continue
+            parts.append(f"{name}:")
+            for para in paragraphs:
+                subq = para.get("subquestion") or ""
+                topic = para.get("topic_sentence") or ""
+                evidence = " ".join(para.get("evidence_sentences", []))
+                analysis = para.get("analysis_sentence", "")
+                if subq:
+                    parts.append(f"Subquestion: {subq}")
+                if topic:
+                    parts.append(f"Topic: {topic}")
+                if evidence:
+                    parts.append(f"Evidence: {evidence}")
+                if analysis:
+                    parts.append(f"Analysis: {analysis}")
         return parts
 
     def _paragraph_from_summary(self, para: Dict[str, Any]) -> str:
@@ -1063,11 +1187,15 @@ class RecursiveSynthesizer:
         words = text.split()
         if len(words) >= min_words:
             return text
-        filler = (
-            " The surviving records are incomplete; where the evidence is thin, the analysis remains cautious and provisional."
-        )
-        while len((text + filler).split()) < min_words:
-            text += filler
+        fillers = [
+            " The surviving records are incomplete; where the evidence is thin, the analysis remains cautious and provisional.",
+            " The evidence base favors administrative documentation, which requires careful interpretation rather than assumption.",
+            " Archival silence here should be treated as a gap to investigate, not as a basis for inference.",
+        ]
+        idx = 0
+        while len(text.split()) < min_words:
+            text += fillers[idx % len(fillers)]
+            idx += 1
         return text
 
     def _node_to_dict(self, node: QuestionNode) -> Dict[str, Any]:
