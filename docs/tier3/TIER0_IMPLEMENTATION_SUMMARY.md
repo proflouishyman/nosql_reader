@@ -7,6 +7,8 @@ Tier 0 performs **systematic corpus exploration** before question‑answering. I
 - **Stratified sampling** (temporal, genre, biographical, collection)
 - **Full-corpus streaming** (no sampling, processes every document)
 - **Notebook‑style document objects** with semantic blocks
+- **Batch coverage guarantee** (no doc skipping when `batch_max_chars` is reached)
+- **Strict year extraction** (optional date-label extraction when `year` field missing)
 - **Closed‑world batch analysis** (no outside knowledge)
 - **Evidence alignment** (block IDs validated/repairable)
 - **Repair guard** (skip repair on very small batches)
@@ -21,10 +23,21 @@ Tier 0 performs **systematic corpus exploration** before question‑answering. I
 - **Group indicators** (race/gender/class/ethnicity/origin/occupation; explicit mentions only)
 - **Question synthesis** (LLM‑derived buckets + hierarchy + gap analysis + contradiction/temporal questions)
 - **Cronon‑style framing** (purpose statement, why‑then/why‑there, terms/assumptions)
+- **Narrative synthesis** (closed‑world, multi‑paragraph historian narrative)
+- **Recursive synthesis** (drill-down leaf answers → theme summaries → long-form essay)
 - **Semantic assignment + caching** (theme/ question embeddings cached)
 - **Semantic clustering** (similar questions grouped under each theme)
 - **Synthesis checkpoints** (skip recomputation when inputs unchanged)
 - **Notebook persistence** (timestamped saves)
+- **Doc-level cache** (per-doc findings stored in Mongo with model+prompt signature)
+
+## Recursive Essay Method (History Essay Guidelines)
+Recursive synthesis now follows the method in `docs/historypdf.pdf`:
+- **Selection + interpretation** drive scope (no pretense of total coverage).
+- **Sources vs evidence**: sources are raw; evidence is selected, quoted, and argued.
+- **Interpretive questions** (why/how) are favored over descriptive ones.
+- **Paragraph structure**: topic sentence + supporting evidence + analysis.
+- **Historical writing conventions**: past tense, specificity, avoid presentism.
 
 ## File Map
 **Core:**
@@ -66,6 +79,8 @@ Full corpus mode can be enabled with `TIER0_FULL_CORPUS=1` or by using `strategy
   "group_indicators": [...],
   "question_synthesis": {
     "grand_narrative": {...},
+    "narrative": {...},
+    "recursive_synthesis": {...},
     "themes": [...],
     "contradiction_questions": [...],
     "temporal_questions": [...],

@@ -19,6 +19,7 @@ from tier0_utils import parse_llm_json, CheckpointManager
 from question_models import Question
 from research_notebook import ResearchNotebook, Pattern
 from historian_agent.embeddings import EmbeddingService
+from historian_agent.recursive_synthesis import RecursiveSynthesizer
 
 
 @dataclass
@@ -74,6 +75,7 @@ CLOSED-WORLD RULES:
 CRONON-STYLE GUIDELINES:
 - Make themes specific in time/place/actors when possible.
 - Emphasize "why then" and "why there" when evidence allows.
+- Put boundaries on scope so themes are researchable and distinct.
 - Favor questions that can be filled into: "I am studying ___ because I want to know ___ in order to help my readers understand ___."
 
 QUESTIONS (sample):
@@ -191,7 +193,8 @@ CRONON-STYLE FRAME:
 2) Explicitly address:
    - Why then? (why this time period)
    - Why there? (why this place/organization)
-3) Identify assumptions or terms that need definition.
+3) Put boundaries on scope (time/place/actors) and, if evident, name the document set or archive.
+4) Identify assumptions or terms that need definition.
 
 QUESTIONS (sample):
 {questions}
@@ -261,6 +264,48 @@ Return ONLY JSON array of up to {max_questions} items:
     "evidence_basis": "short phrase referencing patterns/questions"
   }}
 ]
+"""
+
+NARRATIVE_SYNTHESIS_PROMPT = """You are a historian writing a concise synthesis narrative.
+
+CLOSED-WORLD RULES:
+- Use ONLY the evidence provided below.
+- Do NOT introduce outside context or facts.
+- Historians prefer false negatives to false positives; be cautious.
+
+CRONON-STYLE GUIDELINES:
+- Make the narrative specific in time/place/actors when the evidence supports it.
+- Emphasize "why then" and "why there" when possible.
+- Highlight patterns, contradictions, and gaps without overclaiming.
+
+THEMES (summary with inductive logic):
+{themes}
+
+GROUP COMPARISONS:
+{group_comparisons}
+
+TEMPORAL QUESTIONS:
+{temporal_questions}
+
+GAPS:
+{gaps}
+
+CORPUS MAP:
+{corpus_map}
+
+TASK:
+Write a synthesis narrative (3-5 paragraphs) that:
+1) Summarizes the most defensible patterns.
+2) Names the main tensions or contradictions.
+3) Identifies what is missing or uncertain.
+4) Sets up the strongest research agenda implied by the archive.
+
+Return ONLY JSON:
+{{
+  "narrative": "multi-paragraph narrative",
+  "key_claims": ["short claim 1", "short claim 2"],
+  "limits": "1-3 sentences on uncertainty or missing evidence"
+}}
 """
 
 
@@ -359,6 +404,14 @@ class QuestionSynthesizer:
         if cached and cached.get("checksum") == checksum:
             payload = cached.get("payload")
             if isinstance(payload, dict):
+                if APP_CONFIG.tier0.recursive_enabled and "recursive_synthesis" not in payload:
+                    recursive = RecursiveSynthesizer()
+                    payload["recursive_synthesis"] = recursive.build(
+                        notebook,
+                        questions,
+                        payload.get("themes", []),
+                    )
+                    self._checkpoint.save("synthesis", payload, checksum)
                 return payload
 
         themes = self._get_themes(notebook, questions)
@@ -428,6 +481,13 @@ class QuestionSynthesizer:
                 ],
             })
         grand_question = self._grand_narrative_question(themes_out, notebook, questions)
+        narrative = self._narrative_summary(
+            notebook,
+            themes_out,
+            group_difference_questions,
+            temporal_questions,
+            gaps,
+        )
         hierarchy = self._build_hierarchy(
             grand_question,
             themes_out,
@@ -437,6 +497,7 @@ class QuestionSynthesizer:
 
         agenda = {
             "grand_narrative": grand_question,
+            "narrative": narrative,
             "theme_definitions": [
                 {
                     "key": t.key,
@@ -456,6 +517,13 @@ class QuestionSynthesizer:
         }
 
         self._checkpoint.save("synthesis", agenda, checksum)
+        if APP_CONFIG.tier0.recursive_enabled:
+            recursive = RecursiveSynthesizer()
+            agenda["recursive_synthesis"] = recursive.build(
+                notebook,
+                questions,
+                themes_out,
+            )
         return agenda
 
     def _ensure_theme_diversity(
@@ -614,7 +682,11 @@ class QuestionSynthesizer:
         return best_key
 
     def _patterns_for_theme(self, notebook: ResearchNotebook, theme: ThemeDefinition) -> List[Pattern]:
-        patterns = list(notebook.patterns.values())
+        patterns = sorted(
+            notebook.patterns.values(),
+            key=lambda p: len(p.evidence_doc_ids),
+            reverse=True,
+        )
         if not theme.keywords:
             return patterns
         filtered = []
@@ -625,6 +697,14 @@ class QuestionSynthesizer:
         if not filtered:
             return patterns
         return filtered
+
+    def _top_patterns(self, notebook: ResearchNotebook, limit: int) -> List[Pattern]:
+        patterns = sorted(
+            notebook.patterns.values(),
+            key=lambda p: len(p.evidence_doc_ids),
+            reverse=True,
+        )
+        return patterns[:limit]
 
     def _get_themes(self, notebook: ResearchNotebook, questions: List[Question]) -> List[ThemeDefinition]:
         if self._theme_cache:
@@ -702,7 +782,10 @@ class QuestionSynthesizer:
             key=lambda q: q.validation_score or 0,
             reverse=True,
         )[: APP_CONFIG.tier0.synthesis_max_question_sample]
-        pattern_sample = list(notebook.patterns.values())[: APP_CONFIG.tier0.synthesis_max_pattern_sample]
+        pattern_sample = self._top_patterns(
+            notebook,
+            APP_CONFIG.tier0.synthesis_max_pattern_sample,
+        )
 
         questions_text = "\n".join(f"- {q.question_text}" for q in question_sample) or "- (none)"
         patterns_text = "\n".join(f"- {p.pattern_text}" for p in pattern_sample) or "- (none)"
@@ -781,7 +864,10 @@ class QuestionSynthesizer:
             key=lambda q: q.validation_score or 0,
             reverse=True,
         )[: APP_CONFIG.tier0.synthesis_max_question_sample]
-        pattern_sample = list(notebook.patterns.values())[: APP_CONFIG.tier0.synthesis_max_pattern_sample]
+        pattern_sample = self._top_patterns(
+            notebook,
+            APP_CONFIG.tier0.synthesis_max_pattern_sample,
+        )
 
         questions_text = "\n".join(f"- {q.question_text}" for q in question_sample) or "- (none)"
         patterns_text = "\n".join(f"- {p.pattern_text}" for p in pattern_sample) or "- (none)"
@@ -986,6 +1072,27 @@ class QuestionSynthesizer:
                 "temporal_gaps": notebook.corpus_map.get("temporal_gaps"),
                 "peak_period": notebook.corpus_map.get("peak_period"),
             },
+            "config": {
+                "synthesis_dynamic": APP_CONFIG.tier0.synthesis_dynamic,
+                "synthesis_semantic_assignment": APP_CONFIG.tier0.synthesis_semantic_assignment,
+                "synthesis_theme_count": APP_CONFIG.tier0.synthesis_theme_count,
+                "synthesis_min_themes": APP_CONFIG.tier0.synthesis_min_themes,
+                "synthesis_max_question_sample": APP_CONFIG.tier0.synthesis_max_question_sample,
+                "synthesis_max_pattern_sample": APP_CONFIG.tier0.synthesis_max_pattern_sample,
+                "synthesis_assign_min_sim": APP_CONFIG.tier0.synthesis_assign_min_sim,
+                "synthesis_dedupe_threshold": APP_CONFIG.tier0.synthesis_dedupe_threshold,
+                "synthesis_cluster_threshold": APP_CONFIG.tier0.synthesis_cluster_threshold,
+                "synthesis_theme_merge_threshold": APP_CONFIG.tier0.synthesis_theme_merge_threshold,
+                "synthesis_narrative_enabled": APP_CONFIG.tier0.synthesis_narrative_enabled,
+                "synthesis_narrative_max_themes": APP_CONFIG.tier0.synthesis_narrative_max_themes,
+                "question_target_count": APP_CONFIG.tier0.question_target_count,
+                "question_per_type": APP_CONFIG.tier0.question_per_type,
+                "question_min_score": APP_CONFIG.tier0.question_min_score,
+            },
+            "models": {
+                "quality": APP_CONFIG.llm_profiles.get("quality", {}).get("model"),
+                "verifier": APP_CONFIG.llm_profiles.get("verifier", {}).get("model"),
+            },
         }
         encoded = json.dumps(payload, sort_keys=True, ensure_ascii=True).encode("utf-8")
         return hashlib.sha256(encoded).hexdigest()
@@ -1156,7 +1263,10 @@ class QuestionSynthesizer:
             key=lambda q: q.validation_score or 0,
             reverse=True,
         )[: APP_CONFIG.tier0.synthesis_max_question_sample]
-        pattern_sample = list(notebook.patterns.values())[: APP_CONFIG.tier0.synthesis_max_pattern_sample]
+        pattern_sample = self._top_patterns(
+            notebook,
+            APP_CONFIG.tier0.synthesis_max_pattern_sample,
+        )
 
         questions_text = "\n".join(f"- {q.question_text}" for q in question_sample) or "- (none)"
         patterns_text = "\n".join(f"- {p.pattern_text}" for p in pattern_sample) or "- (none)"
@@ -1220,6 +1330,77 @@ class QuestionSynthesizer:
 
         repaired["themes"] = theme_names
         return repaired
+
+    def _narrative_summary(
+        self,
+        notebook: ResearchNotebook,
+        themes_out: List[Dict[str, Any]],
+        group_difference_questions: List[Dict[str, Any]],
+        temporal_questions: List[Dict[str, Any]],
+        gaps: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        if not APP_CONFIG.tier0.synthesis_narrative_enabled:
+            return {}
+        if not themes_out:
+            return {}
+
+        max_themes = APP_CONFIG.tier0.synthesis_narrative_max_themes
+        theme_lines = []
+        for theme in themes_out[:max_themes]:
+            inductive = theme.get("inductive_logic") or {}
+            inference = inductive.get("inference") or ""
+            argument = inductive.get("historical_argument") or ""
+            evidence = theme.get("evidence_base") or {}
+            theme_lines.append(
+                f"- {theme.get('theme')} | {theme.get('theme_description')} | "
+                f"patterns={evidence.get('pattern_count')}, "
+                f"contradictions={evidence.get('contradiction_count')} | "
+                f"inference={inference} | argument={argument}"
+            )
+
+        themes_text = "\n".join(theme_lines) or "- (none)"
+        group_text = "\n".join(
+            f"- {q.get('question')} (evidence: {q.get('evidence_basis', '')})"
+            for q in group_difference_questions[:5]
+        ) or "- (none)"
+        temporal_text = "\n".join(
+            f"- {q.get('question')} (evidence: {q.get('evidence_basis', '')})"
+            for q in temporal_questions[:5]
+        ) or "- (none)"
+        gaps_text = "\n".join(f"- {g.get('gap')}: {', '.join(g.get('missing_evidence', []))}" for g in gaps[:6]) or "- (none)"
+
+        corpus_map = {
+            "time_coverage": notebook.corpus_map.get("time_coverage"),
+            "density_by_decade": notebook.corpus_map.get("density_by_decade"),
+            "temporal_gaps": notebook.corpus_map.get("temporal_gaps"),
+            "peak_period": notebook.corpus_map.get("peak_period"),
+        }
+
+        prompt = NARRATIVE_SYNTHESIS_PROMPT.format(
+            themes=themes_text,
+            group_comparisons=group_text,
+            temporal_questions=temporal_text,
+            gaps=gaps_text,
+            corpus_map=json.dumps(corpus_map, ensure_ascii=True),
+        )
+
+        response = self._generate_cached(
+            messages=[
+                {"role": "system", "content": "You write careful historical syntheses."},
+                {"role": "user", "content": prompt},
+            ],
+            profile="quality",
+            temperature=0.2,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+
+        if not response.success:
+            return {}
+
+        data = parse_llm_json(response.content, default={})
+        if not isinstance(data, dict):
+            return {}
+        return data
 
     def _group_difference_questions(
         self,

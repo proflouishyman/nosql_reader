@@ -10,6 +10,7 @@ After question generation, Tier 0 now synthesizes a **research agenda**:
 - Flags missing areas (gaps)
 - Promotes Cronon‑style framing (scope, purpose, why‑then/why‑there)
 - Surfaces group‑difference questions only when explicit evidence supports them
+- Builds recursive, evidence‑anchored essays (topic sentence + evidence + analysis)
 
 This turns exploratory questions into an integrative research plan.
 
@@ -120,6 +121,13 @@ The system checks for missing axes (demographic, group differences, economic, la
 Group‑difference questions are only produced when explicit group indicators are found
 in the text, with minimum evidence thresholds. This favors **false negatives** over
 false positives.
+
+## Recursive Essay Synthesis (History Essay Method)
+Based on `docs/historypdf.pdf`, recursive synthesis:
+- Breaks each theme into sub‑questions until answerable.
+- Answers each sub‑question with a **topic sentence** and **evidence excerpts**.
+- Assembles theme paragraphs from topic sentences + evidence.
+- Writes a long‑form essay in past tense with specific, evidence‑grounded claims.
 
 ## Configuration
 Controlled by:

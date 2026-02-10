@@ -16,11 +16,12 @@ from __future__ import annotations
 
 import time
 import json
+import hashlib
 from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 from pathlib import Path
 
-from rag_base import DocumentStore, debug_print, count_tokens
+from rag_base import DocumentStore, MongoDBConnection, debug_print, count_tokens
 from llm_abstraction import LLMClient
 from config import APP_CONFIG
 
@@ -142,6 +143,8 @@ class CorpusExplorer:
         self.question_pipeline = QuestionGenerationPipeline()
         self.question_synthesizer = QuestionSynthesizer()
         self._last_question_batch = None
+        self._doc_cache_indexed = False
+        self._ensure_doc_cache_indexes()
 
     def explore(
         self,
@@ -205,12 +208,56 @@ class CorpusExplorer:
             report["notebook_path"] = str(notebook_path)
             self.logger.log("notebook", f"saved {notebook_path}")
 
+        self._persist_run(report, strategy, total_budget, year_range)
+
         self.logger.log(
             "complete",
             f"docs={report['exploration_metadata']['documents_read']} questions={len(questions)}",
         )
 
         return report
+
+    def _persist_run(
+        self,
+        report: Dict[str, Any],
+        strategy: str,
+        total_budget: int,
+        year_range: Optional[Tuple[int, int]],
+    ) -> None:
+        try:
+            mongo = MongoDBConnection()
+            runs = mongo.get_collection(APP_CONFIG.tier0.runs_collection)
+
+            tier0_cfg = APP_CONFIG.tier0
+            profile_models = {
+                name: profile.get("model")
+                for name, profile in APP_CONFIG.llm_profiles.items()
+            }
+
+            run_doc: Dict[str, Any] = {
+                "created_at": datetime.now().isoformat(),
+                "strategy": strategy,
+                "total_budget": total_budget,
+                "year_range": year_range,
+                "models": profile_models,
+                "embedding": {
+                    "provider": tier0_cfg.synthesis_embed_provider,
+                    "model": tier0_cfg.synthesis_embed_model,
+                },
+                "results": report,
+                "notebook_path": report.get("notebook_path"),
+            }
+
+            if tier0_cfg.runs_store_notebook:
+                notebook_payload = self.notebook.to_dict()
+                run_doc["notebook"] = notebook_payload
+            else:
+                run_doc["notebook"] = None
+
+            runs.insert_one(run_doc)
+            self.logger.log("run_persisted", f"saved to {tier0_cfg.runs_collection}")
+        except Exception as exc:
+            self.logger.log("run_persist_error", str(exc), level="WARN")
 
     def _build_strata(
         self,
@@ -232,26 +279,56 @@ class CorpusExplorer:
 
     def _process_stratum(self, stratum: Stratum) -> None:
         sub_batch_size = max(1, APP_CONFIG.tier0.sub_batch_docs)
+        cache_mode = APP_CONFIG.tier0.doc_cache_mode.lower()
 
         if stratum.stream:
             batch_index = 0
+            cache_batch_index = 0
             for sub_docs in self.reader.iter_stratum_batches(stratum, sub_batch_size):
-                batch_index += 1
-                doc_objects = self.reader.build_document_objects(sub_docs, APP_CONFIG.tier0.batch_max_chars)
-                if not doc_objects:
-                    self.logger.log("batch_skip", f"{stratum.label} sub-batch {batch_index} no blocks")
+                combined = list(sub_docs)
+                cache_key = self._doc_cache_key()
+                cached_map = self._fetch_doc_cache(
+                    [str(doc.get("_id")) for doc in combined],
+                    cache_key,
+                )
+                if cached_map:
+                    cache_batch_index += 1
+                    cache_label = f"{stratum.label} [cache {cache_batch_index}]"
+                    self._integrate_cached_docs(combined, cached_map, cache_key, cache_label)
+
+                if cache_mode == "rebuild":
                     continue
 
-                stats = self.reader.compute_object_stats(doc_objects)
-                findings = self._analyze_batch(doc_objects)
-                findings["stats"] = stats
+                uncached_docs = [
+                    doc for doc in combined if str(doc.get("_id")) not in cached_map
+                ] if self._doc_cache_should_use() else combined
 
-                batch_label = f"{stratum.label} [{batch_index}]"
-                self.notebook.integrate_batch_findings(findings, batch_label)
-                self.logger.log(
-                    "batch_done",
-                    f"{batch_label} entities={len(findings.get('entities', []))} patterns={len(findings.get('patterns', []))}",
-                )
+                while uncached_docs:
+                    batch_index += 1
+                    doc_objects, consumed = self.reader.build_document_objects(
+                        uncached_docs,
+                        APP_CONFIG.tier0.batch_max_chars,
+                    )
+                    if consumed <= 0:
+                        consumed = 1
+
+                    if not doc_objects:
+                        self.logger.log("batch_skip", f"{stratum.label} sub-batch {batch_index} no blocks")
+                        uncached_docs = uncached_docs[consumed:]
+                        continue
+
+                    stats = self.reader.compute_object_stats(doc_objects)
+                    findings = self._analyze_batch(doc_objects)
+                    findings["stats"] = stats
+
+                    batch_label = f"{stratum.label} [{batch_index}]"
+                    self.notebook.integrate_batch_findings(findings, batch_label)
+                    self.logger.log(
+                        "batch_done",
+                        f"{batch_label} entities={len(findings.get('entities', []))} patterns={len(findings.get('patterns', []))}",
+                    )
+                    self._persist_doc_cache(findings, doc_objects, cache_key)
+                    uncached_docs = uncached_docs[consumed:]
             return
 
         docs = self.reader.read_stratum(stratum)
@@ -262,13 +339,37 @@ class CorpusExplorer:
         total_docs = len(docs)
         processed = 0
         batch_index = 0
+        cache_batch_index = 0
 
         while processed < total_docs:
             batch_index += 1
             sub_docs = docs[processed: processed + sub_batch_size]
+            cache_key = self._doc_cache_key()
+            cached_map = self._fetch_doc_cache(
+                [str(doc.get("_id")) for doc in sub_docs],
+                cache_key,
+            )
+            if cached_map:
+                cache_batch_index += 1
+                cache_label = f"{stratum.label} [cache {cache_batch_index}]"
+                self._integrate_cached_docs(sub_docs, cached_map, cache_key, cache_label)
+
+            if cache_mode == "rebuild":
+                processed += len(sub_docs)
+                continue
+
+            uncached_docs = [
+                doc for doc in sub_docs if str(doc.get("_id")) not in cached_map
+            ] if self._doc_cache_should_use() else sub_docs
+
+            doc_objects, consumed = self.reader.build_document_objects(
+                uncached_docs,
+                APP_CONFIG.tier0.batch_max_chars,
+            )
+            if consumed <= 0:
+                consumed = 1
             processed += len(sub_docs)
 
-            doc_objects = self.reader.build_document_objects(sub_docs, APP_CONFIG.tier0.batch_max_chars)
             if not doc_objects:
                 self.logger.log("batch_skip", f"{stratum.label} sub-batch {batch_index} no blocks")
                 continue
@@ -283,6 +384,7 @@ class CorpusExplorer:
                 "batch_done",
                 f"{batch_label} entities={len(findings.get('entities', []))} patterns={len(findings.get('patterns', []))}",
             )
+            self._persist_doc_cache(findings, doc_objects, cache_key)
 
     def _analyze_batch(self, doc_objects: List[Any]) -> Dict[str, Any]:
         prior_knowledge = self.notebook.format_for_llm_context()
@@ -475,6 +577,207 @@ class CorpusExplorer:
             clean["temporal_events"] = cleaned_temporal
 
         return clean
+
+    def _doc_cache_should_use(self) -> bool:
+        cfg = APP_CONFIG.tier0
+        return cfg.doc_cache_enabled and cfg.doc_cache_mode.lower() in {"use", "rebuild"}
+
+    def _doc_cache_is_rebuild(self) -> bool:
+        cfg = APP_CONFIG.tier0
+        return cfg.doc_cache_enabled and cfg.doc_cache_mode.lower() == "rebuild"
+
+    def _ensure_doc_cache_indexes(self) -> None:
+        cfg = APP_CONFIG.tier0
+        if not cfg.doc_cache_enabled or self._doc_cache_indexed:
+            return
+        try:
+            mongo = MongoDBConnection()
+            coll = mongo.get_collection(cfg.doc_cache_collection)
+            coll.create_index(
+                [("doc_id", 1), ("cache_key", 1)],
+                unique=True,
+                name="doc_id_cache_key_unique",
+            )
+            coll.create_index(
+                [("cache_key", 1), ("created_at", -1)],
+                name="cache_key_created_at",
+            )
+            self._doc_cache_indexed = True
+        except Exception as exc:
+            self.logger.log("cache_index_error", str(exc), level="WARN")
+
+    def _doc_cache_key(self) -> str:
+        cfg = APP_CONFIG.tier0
+        profile = cfg.batch_profile
+        model = APP_CONFIG.llm_profiles.get(profile, {}).get("model", "unknown")
+        chunk_cfg = f"{int(cfg.semantic_chunking)}:{cfg.block_max_chars}:{cfg.max_blocks_per_doc}"
+        prompt_version = cfg.doc_cache_prompt_version
+        raw = f"{profile}:{model}:{prompt_version}:{chunk_cfg}"
+        return hashlib.sha256(raw.encode()).hexdigest()
+
+    def _fetch_doc_cache(self, doc_ids: List[str], cache_key: str) -> Dict[str, Dict[str, Any]]:
+        cfg = APP_CONFIG.tier0
+        if not cfg.doc_cache_enabled:
+            return {}
+        if cfg.doc_cache_mode.lower() in {"refresh", "off"}:
+            return {}
+
+        if not doc_ids:
+            return {}
+
+        mongo = MongoDBConnection()
+        coll = mongo.get_collection(cfg.doc_cache_collection)
+        cursor = coll.find(
+            {"doc_id": {"$in": doc_ids}, "cache_key": cache_key},
+            {"doc_id": 1, "findings": 1, "cache_key": 1},
+        )
+        return {doc["doc_id"]: doc for doc in cursor if doc.get("doc_id")}
+
+    def _integrate_cached_docs(
+        self,
+        docs: List[Dict[str, Any]],
+        cached_map: Dict[str, Dict[str, Any]],
+        cache_key: str,
+        batch_label: str,
+    ) -> None:
+        if not self._doc_cache_should_use():
+            return
+
+        cached_docs = []
+        for doc in docs:
+            doc_id = str(doc.get("_id"))
+            if doc_id in cached_map:
+                cached_docs.append(doc)
+
+        if not cached_docs:
+            return
+
+        stats = self.reader.compute_batch_stats(cached_docs)
+        merged = {
+            "entities": [],
+            "patterns": [],
+            "contradictions": [],
+            "group_indicators": [],
+            "questions": [],
+            "temporal_events": {},
+            "stats": stats,
+        }
+
+        for doc in cached_docs:
+            doc_id = str(doc.get("_id"))
+            cached = cached_map.get(doc_id) or {}
+            findings = cached.get("findings") or {}
+            merged["entities"].extend(findings.get("entities", []))
+            merged["patterns"].extend(findings.get("patterns", []))
+            merged["contradictions"].extend(findings.get("contradictions", []))
+            merged["group_indicators"].extend(findings.get("group_indicators", []))
+
+        self.notebook.integrate_batch_findings(merged, batch_label)
+
+        missing = [str(doc.get("_id")) for doc in docs if str(doc.get("_id")) not in cached_map]
+        if missing and self._doc_cache_is_rebuild():
+            self.logger.log("cache_miss", f"{len(missing)} docs missing for {cache_key[:8]}")
+        self.logger.log("cache_hit", f"{len(cached_docs)} docs {cache_key[:8]}")
+
+    def _persist_doc_cache(self, findings: Dict[str, Any], doc_objects: List[Any], cache_key: str) -> None:
+        cfg = APP_CONFIG.tier0
+        if not cfg.doc_cache_enabled:
+            return
+        if cfg.doc_cache_mode.lower() in {"off", "rebuild"}:
+            return
+
+        per_doc = self._split_findings_by_doc(findings, doc_objects)
+        if not per_doc:
+            return
+
+        mongo = MongoDBConnection()
+        coll = mongo.get_collection(cfg.doc_cache_collection)
+        profile = cfg.batch_profile
+        model = APP_CONFIG.llm_profiles.get(profile, {}).get("model", "unknown")
+
+        for doc_id, doc_findings in per_doc.items():
+            payload = {
+                "doc_id": doc_id,
+                "cache_key": cache_key,
+                "profile": profile,
+                "model": model,
+                "prompt_version": cfg.doc_cache_prompt_version,
+                "created_at": datetime.now().isoformat(),
+                "findings": doc_findings,
+            }
+            coll.update_one(
+                {"doc_id": doc_id, "cache_key": cache_key},
+                {"$set": payload},
+                upsert=True,
+            )
+
+    def _split_findings_by_doc(
+        self,
+        findings: Dict[str, Any],
+        doc_objects: List[Any],
+    ) -> Dict[str, Dict[str, Any]]:
+        block_to_doc = {}
+        doc_ids = {doc.doc_id for doc in doc_objects}
+        for doc in doc_objects:
+            for block in doc.blocks:
+                block_to_doc[block.block_id] = doc.doc_id
+
+        per_doc: Dict[str, Dict[str, Any]] = {}
+        for doc_id in doc_ids:
+            per_doc[doc_id] = {
+                "entities": [],
+                "patterns": [],
+                "contradictions": [],
+                "group_indicators": [],
+            }
+
+        for entity in findings.get("entities", []):
+            block_id = entity.get("first_seen_block")
+            doc_id = block_to_doc.get(block_id) or entity.get("first_seen")
+            if doc_id in per_doc:
+                per_doc[doc_id]["entities"].append(entity)
+
+        for pattern in findings.get("patterns", []):
+            blocks = pattern.get("evidence_blocks") or []
+            doc_blocks: Dict[str, List[str]] = {}
+            for block_id in blocks:
+                doc_id = block_to_doc.get(block_id)
+                if not doc_id:
+                    continue
+                doc_blocks.setdefault(doc_id, []).append(block_id)
+            for doc_id, block_ids in doc_blocks.items():
+                if doc_id not in per_doc:
+                    continue
+                per_pattern = dict(pattern)
+                per_pattern["evidence_blocks"] = block_ids
+                per_pattern["evidence"] = [doc_id]
+                per_doc[doc_id]["patterns"].append(per_pattern)
+
+        for indicator in findings.get("group_indicators", []):
+            blocks = indicator.get("evidence_blocks") or []
+            doc_blocks: Dict[str, List[str]] = {}
+            for block_id in blocks:
+                doc_id = block_to_doc.get(block_id)
+                if not doc_id:
+                    continue
+                doc_blocks.setdefault(doc_id, []).append(block_id)
+            for doc_id, block_ids in doc_blocks.items():
+                if doc_id not in per_doc:
+                    continue
+                per_indicator = dict(indicator)
+                per_indicator["evidence_blocks"] = block_ids
+                per_doc[doc_id]["group_indicators"].append(per_indicator)
+
+        for contra in findings.get("contradictions", []):
+            source_a = contra.get("source_a")
+            source_b = contra.get("source_b")
+            doc_id = block_to_doc.get(source_a) or (source_a if source_a in doc_ids else None)
+            if not doc_id:
+                doc_id = block_to_doc.get(source_b) or (source_b if source_b in doc_ids else None)
+            if doc_id in per_doc:
+                per_doc[doc_id]["contradictions"].append(contra)
+
+        return per_doc
 
     def _generate_corpus_map(self) -> Dict[str, Any]:
         notebook_summary = json.dumps(self.notebook.get_summary(), indent=2)

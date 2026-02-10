@@ -175,9 +175,18 @@ class OllamaProvider(LLMProvider):
         # Ollama-specific options from config
         num_ctx = kwargs.get("num_ctx") or self.options.get("num_ctx", 131072)
         repeat_penalty = kwargs.get("repeat_penalty") or self.options.get("repeat_penalty", 1.15)
+        num_gpu = kwargs.get("num_gpu") if kwargs.get("num_gpu") is not None else self.options.get("num_gpu")
+        num_batch = kwargs.get("num_batch") if kwargs.get("num_batch") is not None else self.options.get("num_batch")
+        num_thread = kwargs.get("num_thread") if kwargs.get("num_thread") is not None else self.options.get("num_thread")
         
         payload["options"]["num_ctx"] = num_ctx
         payload["options"]["repeat_penalty"] = repeat_penalty
+        if num_gpu is not None:
+            payload["options"]["num_gpu"] = num_gpu
+        if num_batch is not None:
+            payload["options"]["num_batch"] = num_batch
+        if num_thread is not None:
+            payload["options"]["num_thread"] = num_thread
         
         # Make HTTP request
         try:

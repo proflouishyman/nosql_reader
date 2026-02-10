@@ -44,6 +44,16 @@ def _env_int(key: str, default: int) -> int:
         return default
 
 
+def _env_optional_int(key: str) -> Optional[int]:
+    value = os.getenv(key)
+    if value is None or value == "":
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
 def _env_float(key: str, default: float) -> float:
     """Get float environment variable."""
     try:
@@ -186,7 +196,25 @@ class Tier0Config:
     synthesis_min_themes: int
     synthesis_max_question_sample: int
     synthesis_max_pattern_sample: int
+    synthesis_narrative_enabled: bool
+    synthesis_narrative_max_themes: int
+    recursive_enabled: bool
+    recursive_min_docs: int
+    recursive_max_docs: int
+    recursive_max_depth: int
+    recursive_subquestion_count: int
+    recursive_leaf_profile: str
+    recursive_writer_profile: str
+    essay_min_words: int
+    recursive_theme_max_leaves: int
+    leaf_answers_collection: str
     pattern_merge_threshold: float
+    runs_collection: str
+    runs_store_notebook: bool
+    doc_cache_enabled: bool
+    doc_cache_mode: str
+    doc_cache_collection: str
+    doc_cache_prompt_version: str
 
 
 @dataclass(frozen=True)
@@ -298,6 +326,9 @@ class ConfigLoader:
                 options={
                     "num_ctx": _env_int("OLLAMA_NUM_CTX", 131072),
                     "repeat_penalty": _env_float("OLLAMA_REPEAT_PENALTY", 1.15),
+                    "num_gpu": _env_optional_int("OLLAMA_NUM_GPU"),
+                    "num_batch": _env_optional_int("OLLAMA_NUM_BATCH"),
+                    "num_thread": _env_optional_int("OLLAMA_NUM_THREAD"),
                 }
             ),
             "openai": ProviderConfig(
@@ -408,7 +439,25 @@ class ConfigLoader:
             synthesis_min_themes=_env_int("TIER0_SYNTHESIS_MIN_THEMES", 4),
             synthesis_max_question_sample=_env_int("TIER0_SYNTHESIS_MAX_QUESTION_SAMPLE", 24),
             synthesis_max_pattern_sample=_env_int("TIER0_SYNTHESIS_MAX_PATTERN_SAMPLE", 12),
+            synthesis_narrative_enabled=_env_bool("TIER0_SYNTHESIS_NARRATIVE_ENABLED", True),
+            synthesis_narrative_max_themes=_env_int("TIER0_SYNTHESIS_NARRATIVE_MAX_THEMES", 5),
+            recursive_enabled=_env_bool("TIER0_RECURSIVE_ENABLED", False),
+            recursive_min_docs=_env_int("TIER0_RECURSIVE_MIN_DOCS", 5),
+            recursive_max_docs=_env_int("TIER0_RECURSIVE_MAX_DOCS", 15),
+            recursive_max_depth=_env_int("TIER0_RECURSIVE_MAX_DEPTH", 3),
+            recursive_subquestion_count=_env_int("TIER0_RECURSIVE_SUBQUESTION_COUNT", 3),
+            recursive_leaf_profile=_env("TIER0_RECURSIVE_LEAF_PROFILE", "quality"),
+            recursive_writer_profile=_env("TIER0_RECURSIVE_WRITER_PROFILE", "quality"),
+            essay_min_words=_env_int("TIER0_ESSAY_MIN_WORDS", 1200),
+            recursive_theme_max_leaves=_env_int("TIER0_RECURSIVE_THEME_MAX_LEAVES", 20),
+            leaf_answers_collection=_env("TIER0_LEAF_ANSWERS_COLLECTION", "tier0_leaf_answers"),
             pattern_merge_threshold=_env_float("TIER0_PATTERN_MERGE_THRESHOLD", 0.9),
+            runs_collection=_env("TIER0_RUNS_COLLECTION", "tier0_runs"),
+            runs_store_notebook=_env_bool("TIER0_RUNS_STORE_NOTEBOOK", True),
+            doc_cache_enabled=_env_bool("TIER0_DOC_CACHE_ENABLED", True),
+            doc_cache_mode=_env("TIER0_DOC_CACHE_MODE", "use"),
+            doc_cache_collection=_env("TIER0_DOC_CACHE_COLLECTION", "tier0_doc_cache"),
+            doc_cache_prompt_version=_env("TIER0_DOC_CACHE_PROMPT_VERSION", "v1"),
         )
         
         # --- Application Configuration ---

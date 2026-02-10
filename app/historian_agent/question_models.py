@@ -238,15 +238,39 @@ def parse_llm_question_response(response_text: str) -> List[Question]:
     return questions
 
 
+def _coerce_int(value: Any) -> int:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, (int, float)):
+        return int(value)
+    if isinstance(value, str):
+        try:
+            return int(float(value.strip()))
+        except Exception:
+            return 0
+    if isinstance(value, dict):
+        for key in ("score", "value", "total", "number"):
+            if key in value:
+                return _coerce_int(value[key])
+        for v in value.values():
+            coerced = _coerce_int(v)
+            if coerced:
+                return coerced
+        return 0
+    if isinstance(value, list) and value:
+        return _coerce_int(value[0])
+    return 0
+
+
 def parse_validation_response(response_text: str) -> QuestionValidation:
     data = parse_llm_json(response_text, default={})
 
     return QuestionValidation(
-        total_score=int(data.get("score", 0)),
-        answerability=int(data.get("answerability", 0)),
-        significance=int(data.get("significance", 0)),
-        specificity=int(data.get("specificity", 0)),
-        evidence_based=int(data.get("evidence_based", 0)),
+        total_score=_coerce_int(data.get("score", 0)),
+        answerability=_coerce_int(data.get("answerability", 0)),
+        significance=_coerce_int(data.get("significance", 0)),
+        specificity=_coerce_int(data.get("specificity", 0)),
+        evidence_based=_coerce_int(data.get("evidence_based", 0)),
         critique=str(data.get("critique", "")),
         suggestions=data.get("suggestions", []) if isinstance(data.get("suggestions"), list)
         else [str(data.get("suggestions", ""))],

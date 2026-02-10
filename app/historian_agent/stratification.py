@@ -336,51 +336,64 @@ class StratumReader:
         return docs
 
     def iter_stratum_batches(self, stratum: Stratum, batch_size: int):
-        """Stream documents for a stratum in batches (for full-corpus runs)."""
+        """Stream documents for a stratum in batches (cursor-safe pagination)."""
         debug_print(f"Streaming stratum: {stratum.label} (limit {stratum.sample_size} docs)")
 
         query = stratum.filters.copy()
-        mongo = MongoDBConnection()
-        with mongo.client.start_session() as session:
-            cursor = self.documents_coll.find(query, no_cursor_timeout=True, session=session)
+        remaining = stratum.sample_size or None
+        last_id = None
+        fetched = 0
 
-            if stratum.sample_size:
-                cursor = cursor.limit(stratum.sample_size)
+        while remaining is None or remaining > 0:
+            page_query = dict(query)
+            if last_id is not None:
+                page_query["_id"] = {"$gt": last_id}
 
-            batch: List[Dict[str, Any]] = []
-            try:
-                for doc in cursor:
-                    batch.append(doc)
-                    if len(batch) >= batch_size:
-                        yield batch
-                        batch = []
-                if batch:
-                    yield batch
-            finally:
-                cursor.close()
+            limit = batch_size
+            if remaining is not None:
+                limit = min(limit, remaining)
+
+            cursor = self.documents_coll.find(page_query).sort("_id", 1).limit(limit)
+            batch = list(cursor)
+            if not batch:
+                break
+
+            yield batch
+
+            fetched += len(batch)
+            last_id = batch[-1]["_id"]
+            if remaining is not None:
+                remaining -= len(batch)
 
     def build_document_objects(
         self,
         docs: List[Dict[str, Any]],
         max_chars: int
-    ) -> List[DocumentObject]:
-        """Build notebook-style document objects with semantic blocks."""
+    ) -> Tuple[List[DocumentObject], int]:
+        """Build notebook-style document objects with semantic blocks.
+
+        Returns (objects, consumed_count) so callers can avoid skipping docs
+        when a batch hits the max_chars limit.
+        """
         objects: List[DocumentObject] = []
         total_chars = 0
+        consumed = 0
 
-        for doc in docs:
+        for idx, doc in enumerate(docs):
             doc_obj = self._document_to_object(doc)
+            consumed = idx + 1
             if not doc_obj.blocks:
                 continue
 
             estimated = len(json.dumps(doc_obj.to_prompt_dict(), ensure_ascii=True))
             if total_chars + estimated > max_chars and objects:
+                consumed = idx
                 break
 
             objects.append(doc_obj)
             total_chars += estimated
 
-        return objects
+        return objects, consumed
 
     def format_document_objects_for_llm(self, objects: List[DocumentObject]) -> str:
         """Format document objects as JSON for LLM context."""
@@ -505,10 +518,13 @@ class StratumReader:
     def _document_to_object(self, doc: Dict[str, Any]) -> DocumentObject:
         doc_id = str(doc.get("_id", "unknown"))
         blocks = self.chunker.chunk_document(doc_id, doc)
+        year = doc.get("year")
+        if year is None and APP_CONFIG.tier0.extract_dates_strict:
+            year = self._extract_year_from_text(doc)
         return DocumentObject(
             doc_id=doc_id,
             filename=str(doc.get("filename", "Unknown")),
-            year=doc.get("year"),
+            year=year,
             document_type=str(doc.get("document_type") or doc.get("type") or "unknown"),
             person_name=doc.get("person_name"),
             collection=doc.get("collection"),
