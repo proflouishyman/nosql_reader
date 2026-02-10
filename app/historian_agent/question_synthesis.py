@@ -1354,7 +1354,7 @@ class QuestionSynthesizer:
     def _grand_too_specific(self, question: str, scope: Dict[str, Any]) -> bool:
         if not question:
             return True
-        if re.search(r\"\\b[a-f0-9]{8,}\\b\", question.lower()):
+        if re.search(r"\b[a-f0-9]{8,}\b", question.lower()):
             return True
         name_hits = re.findall(r\"\\b[A-Z][a-z]+ [A-Z][a-z]+\\b\", question)
         if name_hits and len(question.split()) < 18:
