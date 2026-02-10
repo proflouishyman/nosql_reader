@@ -1356,10 +1356,10 @@ class QuestionSynthesizer:
             return True
         if re.search(r"\b[a-f0-9]{8,}\b", question.lower()):
             return True
-        name_hits = re.findall(r\"\\b[A-Z][a-z]+ [A-Z][a-z]+\\b\", question)
+        name_hits = re.findall(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b", question)
         if name_hits and len(question.split()) < 18:
             return True
-        actors = scope.get(\"actors\") if isinstance(scope, dict) else None
+        actors = scope.get("actors") if isinstance(scope, dict) else None
         if isinstance(actors, list) and 0 < len(actors) <= 2:
             return True
         return False
