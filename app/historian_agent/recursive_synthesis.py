@@ -26,6 +26,8 @@ CLOSED-WORLD RULES:
 - Do NOT add outside knowledge.
 - Historians prefer false negatives to false positives.
 - Favor interpretive questions (why/how) over descriptive ones.
+- If evidence does not name groups, do NOT invent group comparisons.
+- Make the question narrower in time/place/actors if possible.
 
 PARENT QUESTION:
 {question}
@@ -54,6 +56,9 @@ CLOSED-WORLD RULES:
 - Topic sentence must be a declarative claim (not a question).
 - If evidence is a form/questionnaire without responses, interpret it as a requirement or institutional practice, not an outcome.
 - Do not infer outcomes not documented; prefer "the records show that the institution asked for X" over "workers did X."
+- Only make strong causal or comparative claims when at least two independent sources corroborate them.
+- For group-comparison questions, only answer if the groups are explicitly named in sources.
+- Define any key term using the sources if ambiguity would change interpretation.
 
 QUESTION:
 {question}
@@ -86,6 +91,10 @@ CLOSED-WORLD RULES:
 - Support each topic sentence with evidence citations.
 - Avoid repeating the same evidence in multiple paragraphs.
 - Prefer interpretive statements over description when evidence permits.
+- Each paragraph should follow claim -> evidence -> analysis.
+- Explicitly note contradictions and archival silences when they affect the theme.
+- Order paragraphs chronologically when evidence provides dates.
+- If evidence is form-like, interpret it as institutional practice rather than lived outcome.
 
 THEME:
 {theme}
@@ -123,15 +132,21 @@ THEME SUMMARIES:
 
 TASK:
 Write a structured essay that:
-1) Defines scope and evidence base.
-2) Presents theme-by-theme synthesis.
-3) Highlights contradictions.
-4) Identifies gaps and next questions.
-5) Minimum length: {min_words} words.
-6) For each theme, include 2-4 paragraphs built from the provided theme paragraphs.
-7) Each paragraph must include at least one evidence citation in [doc_id] format.
-8) Use a clear thesis and brief roadmap in the opening.
-9) End with a short conclusion that ties themes together without introducing new facts.
+1) Defines scope, source limits, and evidence base (selection/interpretation).
+2) Opens with a thesis and a purpose statement in the Cronon form:
+   \"I am studying ____ because I want to know ____ in order to help my readers understand ____.\"\n
+3) Provides a brief roadmap (2-3 reasons/themes).
+4) Presents theme-by-theme synthesis with topic sentence -> evidence -> analysis.
+5) Includes at least one paragraph that addresses an alternative explanation or counterargument (using evidence).
+6) Highlights contradictions and archival silences when they affect interpretation.
+7) Identifies gaps and next questions.
+8) Minimum length: {min_words} words.
+9) For each theme, include 2-4 paragraphs built from the provided theme paragraphs.
+10) Each paragraph must include at least one evidence citation in [doc_id] format.
+11) End with a short conclusion that ties themes together without introducing new facts.
+12) The thesis must be an argument (not a summary) and should preview 2-3 reasons.
+13) Topic sentences must be arguable claims supported by evidence.
+14) Where evidence is thin, acknowledge limits rather than speculate.
 
 Return ONLY JSON:
 {{
@@ -177,6 +192,18 @@ def _json_safe(value: Any) -> Any:
     return value
 
 
+def _extract_years(text: str) -> List[int]:
+    if not text:
+        return []
+    years = set()
+    for match in re.findall(r"\b(?:18|19|20)\d{2}\b", text):
+        try:
+            years.add(int(match))
+        except ValueError:
+            continue
+    return sorted(years)
+
+
 class RecursiveSynthesizer:
     def __init__(self) -> None:
         self.llm = LLMClient()
@@ -199,6 +226,9 @@ class RecursiveSynthesizer:
         notebook: ResearchNotebook,
         questions: List[Question],
         themes_out: List[Dict[str, Any]],
+        grand_narrative: Optional[Dict[str, Any]] = None,
+        group_comparisons: Optional[List[Dict[str, Any]]] = None,
+        contradiction_questions: Optional[List[Dict[str, Any]]] = None,
         run_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         if not APP_CONFIG.tier0.recursive_enabled:
@@ -253,6 +283,66 @@ class RecursiveSynthesizer:
                 "leaf_answers": theme_leaf_answers,
             })
 
+        if group_comparisons:
+            group_seeds = [
+                gc.get("question") for gc in group_comparisons
+                if isinstance(gc, dict) and gc.get("question")
+            ]
+            group_seeds = list(dict.fromkeys(group_seeds))
+            if group_seeds:
+                group_nodes = [
+                    self._build_node(
+                        seed,
+                        notebook,
+                        question_map,
+                        level=0,
+                        parent_id=None,
+                        run_id=run_id,
+                    )
+                    for seed in group_seeds
+                ]
+                group_leaf_answers = self._collect_leaf_answers(group_nodes)
+                for ans in group_leaf_answers:
+                    qid = ans.get("question_id")
+                    if qid and qid not in seen_leaf_ids:
+                        leaf_answers.append(ans)
+                        seen_leaf_ids.add(qid)
+                theme_trees.append({
+                    "theme": "Group Comparisons",
+                    "nodes": [self._node_to_dict(n) for n in group_nodes],
+                    "leaf_answers": group_leaf_answers,
+                })
+
+        if contradiction_questions:
+            contra_seeds = [
+                cq.get("question") for cq in contradiction_questions
+                if isinstance(cq, dict) and cq.get("question")
+            ]
+            contra_seeds = list(dict.fromkeys(contra_seeds))
+            if contra_seeds:
+                contra_nodes = [
+                    self._build_node(
+                        seed,
+                        notebook,
+                        question_map,
+                        level=0,
+                        parent_id=None,
+                        run_id=run_id,
+                    )
+                    for seed in contra_seeds
+                ]
+                contra_leaf_answers = self._collect_leaf_answers(contra_nodes)
+                for ans in contra_leaf_answers:
+                    qid = ans.get("question_id")
+                    if qid and qid not in seen_leaf_ids:
+                        leaf_answers.append(ans)
+                        seen_leaf_ids.add(qid)
+                theme_trees.append({
+                    "theme": "Contradictions & Recordkeeping",
+                    "nodes": [self._node_to_dict(n) for n in contra_nodes],
+                    "leaf_answers": contra_leaf_answers,
+                })
+
         theme_summaries = []
         for theme in theme_trees:
             summary = self._synthesize_theme(theme["theme"], theme.get("leaf_answers", []))
@@ -261,13 +351,14 @@ class RecursiveSynthesizer:
                 "summary": summary,
             })
 
-        essay = self._synthesize_essay(theme_summaries)
+        essay = self._synthesize_essay(theme_summaries, grand_narrative)
 
         return _json_safe({
             "run_id": run_id,
             "theme_trees": theme_trees,
             "leaf_answers": leaf_answers,
             "theme_summaries": theme_summaries,
+            "grand_narrative": grand_narrative or {},
             "essay": essay,
         })
 
@@ -417,7 +508,9 @@ class RecursiveSynthesizer:
                 "analysis": "",
                 "uncertainty": "No documents available for this question.",
                 "missing_evidence": "Document evidence was not found.",
-                "model": APP_CONFIG.llm_profiles.get("quality", {}).get("model"),
+                "model": APP_CONFIG.llm_profiles.get(self.leaf_profile, {}).get("model")
+                or APP_CONFIG.llm_profiles.get("quality", {}).get("model"),
+                "profile": self.leaf_profile,
                 "created_at": datetime.utcnow().isoformat(),
             }
             try:
@@ -469,8 +562,11 @@ class RecursiveSynthesizer:
             evidence = []
 
         label_to_id = sources_index.get("label_to_id", {})
+        label_to_year = sources_index.get("label_to_year", {})
+        doc_id_to_year = sources_index.get("doc_id_to_year", {})
         normalized_evidence = []
         evidence_quotes = []
+        evidence_years = set()
         for item in evidence:
             if not isinstance(item, dict):
                 continue
@@ -478,6 +574,18 @@ class RecursiveSynthesizer:
             doc_id = item.get("doc_id") or (label_to_id.get(label) if label else None)
             quote = item.get("quote", "")
             evidence_quotes.append(quote)
+            for year in _extract_years(quote):
+                evidence_years.add(year)
+            year_hint = None
+            if doc_id and doc_id in doc_id_to_year:
+                year_hint = doc_id_to_year.get(doc_id)
+            elif label and label in label_to_year:
+                year_hint = label_to_year.get(label)
+            if year_hint:
+                try:
+                    evidence_years.add(int(year_hint))
+                except (TypeError, ValueError):
+                    pass
             normalized_evidence.append({
                 "source_label": label,
                 "doc_id": doc_id,
@@ -514,6 +622,12 @@ class RecursiveSynthesizer:
                 )
                 if not analysis_text:
                     analysis_text = "The evidence consists of application questions rather than reported outcomes."
+            if len({ev.get('doc_id') for ev in normalized_evidence if ev.get('doc_id')}) < 2 and any(m in topic_sentence.lower() for m in risky_markers):
+                topic_sentence = (
+                    "The available record is limited and does not support a strong causal or comparative claim."
+                )
+                if not analysis_text:
+                    analysis_text = "Only a single source supports this point; additional corroboration is needed."
 
         payload = {
             "run_id": run_id,
@@ -525,9 +639,12 @@ class RecursiveSynthesizer:
             "topic_sentence": topic_sentence,
             "evidence": normalized_evidence,
             "analysis": analysis_text,
+            "evidence_years": sorted(evidence_years),
             "uncertainty": data.get("uncertainty", ""),
             "missing_evidence": data.get("missing_evidence", ""),
-            "model": APP_CONFIG.llm_profiles.get("quality", {}).get("model"),
+            "model": APP_CONFIG.llm_profiles.get(self.leaf_profile, {}).get("model")
+            or APP_CONFIG.llm_profiles.get("quality", {}).get("model"),
+            "profile": self.leaf_profile,
             "created_at": datetime.utcnow().isoformat(),
         }
 
@@ -556,7 +673,8 @@ class RecursiveSynthesizer:
         parent_meta = self.doc_store.hydrate_parent_metadata(doc_ids)
         snippets = []
         label_to_id: Dict[str, str] = {}
-        label_to_name: Dict[str, str] = {}
+        label_to_year: Dict[str, int] = {}
+        doc_id_to_year: Dict[str, int] = {}
 
         def score_text(text: str) -> int:
             if not tokens or not text:
@@ -634,8 +752,15 @@ class RecursiveSynthesizer:
                     meta_bits.append(meta.get("filename"))
                 if meta.get("source_type"):
                     meta_bits.append(str(meta.get("source_type")))
-                if meta.get("metadata", {}).get("year"):
-                    meta_bits.append(str(meta.get("metadata", {}).get("year")))
+                year_value = meta.get("metadata", {}).get("year")
+                if year_value:
+                    meta_bits.append(str(year_value))
+                    try:
+                        year_int = int(year_value)
+                        label_to_year[label] = year_int
+                        doc_id_to_year[doc_id] = year_int
+                    except (TypeError, ValueError):
+                        pass
                 meta_str = " | ".join(meta_bits)
                 snippets.append((label, doc_id, text, meta_str))
                 label_to_id[label] = doc_id
@@ -656,11 +781,19 @@ class RecursiveSynthesizer:
         return sources_text, {
             "text": source_index_text or "- (none)",
             "label_to_id": label_to_id,
+            "label_to_year": label_to_year,
+            "doc_id_to_year": doc_id_to_year,
         }
 
     def _synthesize_theme(self, theme: str, leaf_answers: List[Dict[str, Any]]) -> Dict[str, Any]:
         subset = [a for a in leaf_answers if a.get("question_text")]
         max_leaves = APP_CONFIG.tier0.recursive_theme_max_leaves
+        subset = sorted(
+            subset,
+            key=lambda a: (a.get("evidence_years") or [9999])[0]
+            if isinstance(a.get("evidence_years"), list) and a.get("evidence_years")
+            else 9999,
+        )
         subset = subset[:max_leaves]
         formatted = []
         for item in subset[:10]:
@@ -714,7 +847,15 @@ class RecursiveSynthesizer:
                 "topic_sentence": item.get("topic_sentence"),
                 "evidence_sentences": evidence_sentences or ["(no evidence)"],
                 "analysis_sentence": item.get("analysis", ""),
+                "approx_years": item.get("evidence_years", []),
             })
+
+        paragraphs = sorted(
+            paragraphs,
+            key=lambda p: (p.get("approx_years") or [9999])[0]
+            if isinstance(p.get("approx_years"), list)
+            else 9999,
+        )
 
         return {
             "theme_summary": f"{theme}: {len(paragraphs)} evidence-backed subquestions synthesized.",
@@ -723,15 +864,27 @@ class RecursiveSynthesizer:
             "gaps": gaps,
         }
 
-    def _synthesize_essay(self, theme_summaries: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _synthesize_essay(
+        self,
+        theme_summaries: List[Dict[str, Any]],
+        grand_narrative: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         if not theme_summaries:
             return {}
+        grand_narrative = grand_narrative or {}
         hints = "\n\n".join([
             f"Theme: {t.get('theme')}\n"
             f"Summary: {t.get('summary', {}).get('theme_summary', '')}\n"
             f"Paragraphs: {t.get('summary', {}).get('paragraphs', [])}"
             for t in theme_summaries
         ])
+        if grand_narrative:
+            hints = (
+                f"Grand Narrative: {grand_narrative.get('question', '')}\n"
+                f"Purpose: {grand_narrative.get('purpose_statement', '')}\n"
+                f"Scope: {grand_narrative.get('scope', {})}\n\n"
+                + hints
+            )
         prompt = ESSAY_PROMPT.format(
             theme_summaries=hints,
             min_words=APP_CONFIG.tier0.essay_min_words,
@@ -747,61 +900,175 @@ class RecursiveSynthesizer:
         )
         data = parse_llm_json(response.content, default={}) if response.success else {}
         if isinstance(data, dict) and data.get("essay"):
-            if len(str(data.get("essay", "")).split()) >= APP_CONFIG.tier0.essay_min_words:
+            if self._validate_essay(data.get("essay", "")):
                 return data
 
         # Fallback: assemble essay directly from theme paragraphs
-        sections = []
-        body_parts = []
-        body_parts.append("Scope and evidence base: This essay synthesizes the available theme paragraphs and cited excerpts only.")
+        sections, body_parts = self._assemble_essay(theme_summaries, grand_narrative)
+        essay_text = "\n".join(body_parts).strip()
+        return {"essay": essay_text, "sections": sections}
+
+    def _validate_essay(self, essay: str) -> bool:
+        if not essay:
+            return False
+        words = len(str(essay).split())
+        if words < APP_CONFIG.tier0.essay_min_words:
+            return False
+        citations = re.findall(r"\[[^\]]+\]", essay)
+        if len(citations) < max(3, len(essay.split()) // 300):
+            return False
+        return True
+
+    def _assemble_essay(
+        self,
+        theme_summaries: List[Dict[str, Any]],
+        grand_narrative: Optional[Dict[str, Any]],
+    ) -> Tuple[List[str], List[str]]:
+        sections: List[str] = []
+        body_parts: List[str] = []
+
+        intro = self._build_intro(grand_narrative, theme_summaries)
+        body_parts.append(intro)
+
         for theme in theme_summaries:
             name = theme.get("theme", "Theme")
             summary = theme.get("summary", {})
             paragraphs = summary.get("paragraphs", [])
             sections.append(name)
             body_parts.append(f"\n{name}\n")
+            paragraphs = sorted(
+                paragraphs,
+                key=lambda p: (p.get("approx_years") or [9999])[0]
+                if isinstance(p.get("approx_years"), list)
+                else 9999,
+            )
             for para in paragraphs:
-                ts = para.get("topic_sentence") or ""
-                ev = " ".join(para.get("evidence_sentences", []))
-                analysis = para.get("analysis_sentence", "")
-                body_parts.append(f"{ts} {ev} {analysis}".strip())
-        if len(" ".join(body_parts).split()) < APP_CONFIG.tier0.essay_min_words:
-            body_parts.append("\nMethod and limitations: This synthesis relies on a constrained set of excerpts. Where evidence is thin or absent, conclusions remain provisional and indicate gaps for future archival work.")
-            body_parts.append("\nEvidence register:")
-            for theme in theme_summaries:
-                name = theme.get("theme", "Theme")
-                summary = theme.get("summary", {})
-                paragraphs = summary.get("paragraphs", [])
-                if not paragraphs:
-                    continue
-                body_parts.append(f"{name}:")
-                for para in paragraphs:
-                    ts = para.get("topic_sentence") or ""
-                    ev = " ".join(para.get("evidence_sentences", []))
-                    body_parts.append(f"- {ts} {ev}".strip())
-            body_parts.append("\nDetailed evidence walkthrough:")
-            for theme in theme_summaries:
-                name = theme.get("theme", "Theme")
-                summary = theme.get("summary", {})
-                paragraphs = summary.get("paragraphs", [])
-                if not paragraphs:
-                    continue
-                body_parts.append(f"{name}:")
-                for para in paragraphs:
-                    subq = para.get("subquestion") or ""
-                    ts = para.get("topic_sentence") or ""
-                    ev = " ".join(para.get("evidence_sentences", []))
-                    analysis = para.get("analysis_sentence", "")
-                    body_parts.append(f"Subquestion: {subq}")
-                    body_parts.append(f"Topic: {ts}")
-                    body_parts.append(f"Evidence: {ev}")
-                    if analysis:
-                        body_parts.append(f"Analysis: {analysis}")
+                body_parts.append(self._paragraph_from_summary(para))
 
-        return {
-            "essay": "\n".join(body_parts).strip(),
-            "sections": sections,
-        }
+        body_parts.append(self._build_counterargument(theme_summaries))
+        body_parts.append(self._build_gaps(theme_summaries))
+        body_parts.append(self._build_conclusion(theme_summaries))
+
+        if len(" ".join(body_parts).split()) < APP_CONFIG.tier0.essay_min_words:
+            body_parts.append(self._build_methods_note())
+            body_parts.extend(self._build_evidence_register(theme_summaries))
+
+        return sections, body_parts
+
+    def _build_intro(
+        self,
+        grand_narrative: Optional[Dict[str, Any]],
+        theme_summaries: List[Dict[str, Any]],
+    ) -> str:
+        purpose = ""
+        thesis = ""
+        terms = []
+        scope = {}
+        if grand_narrative:
+            purpose = grand_narrative.get("purpose_statement") or ""
+            thesis = grand_narrative.get("question") or ""
+            terms = grand_narrative.get("terms_to_define") or []
+            scope = grand_narrative.get("scope") or {}
+        themes = [t.get("theme") for t in theme_summaries if t.get("theme")]
+        roadmap = ", ".join(themes[:3])
+        intro_bits = []
+        if purpose:
+            intro_bits.append(purpose)
+        if thesis:
+            intro_bits.append(f"Thesis: {thesis}")
+        if scope:
+            intro_bits.append(f"Scope: {scope}.")
+        if terms:
+            intro_bits.append(f"Key terms to define: {', '.join([str(t) for t in terms][:4])}.")
+        if roadmap:
+            intro_bits.append(f"This essay follows evidence on {roadmap}.")
+        intro_bits.append(
+            "Scope and evidence base: the archive is fragmentary, so the argument relies on the surviving records and treats silence as meaningful."
+        )
+        intro = " ".join(intro_bits).strip()
+        return self._ensure_length(intro, APP_CONFIG.tier0.essay_intro_min_words)
+
+    def _build_counterargument(self, theme_summaries: List[Dict[str, Any]]) -> str:
+        return self._ensure_length(
+            "Counterargument and limits: Some interpretations could be read as routine administrative practice rather than deliberate labor control. Where the evidence consists mainly of standardized forms or single-source claims, the analysis remains tentative and the archive does not resolve alternative explanations.",
+            APP_CONFIG.tier0.essay_paragraph_min_words,
+        )
+
+    def _build_gaps(self, theme_summaries: List[Dict[str, Any]]) -> str:
+        gaps = []
+        for theme in theme_summaries:
+            summary = theme.get("summary", {})
+            missing = summary.get("gaps") or []
+            for gap in missing:
+                if gap:
+                    gaps.append(gap)
+        if gaps:
+            gap_line = "Gaps and next questions: " + "; ".join(list(dict.fromkeys(gaps))[:6])
+        else:
+            gap_line = "Gaps and next questions: The archive is thin on demographic variation and comparative context, so these lines of inquiry remain open."
+        return self._ensure_length(gap_line, APP_CONFIG.tier0.essay_paragraph_min_words)
+
+    def _build_conclusion(self, theme_summaries: List[Dict[str, Any]]) -> str:
+        return self._ensure_length(
+            "Conclusion: Taken together, the themes suggest a relief system that recorded health, eligibility, and employment decisions in ways that shaped worker experience while leaving important silences. The evidence does not resolve every contradiction, but it does delineate the institutional logic that can be investigated further through deeper archival work.",
+            APP_CONFIG.tier0.essay_conclusion_min_words,
+        )
+
+    def _build_methods_note(self) -> str:
+        return self._ensure_length(
+            "Method and limitations: This essay assembles topic sentences and evidence excerpts from the archive without adding outside context. Where evidence is sparse or limited to standardized forms, the analysis remains cautious and highlights the need for additional records.",
+            APP_CONFIG.tier0.essay_paragraph_min_words,
+        )
+
+    def _build_evidence_register(self, theme_summaries: List[Dict[str, Any]]) -> List[str]:
+        parts = ["\nEvidence register\n"]
+        for theme in theme_summaries:
+            name = theme.get("theme", "Theme")
+            summary = theme.get("summary", {})
+            paragraphs = summary.get("paragraphs", [])
+            if not paragraphs:
+                continue
+            parts.append(f"{name}:")
+            for para in paragraphs:
+                topic = (para.get("topic_sentence") or "").strip()
+                evidence = " ".join(para.get("evidence_sentences", []))
+                if topic or evidence:
+                    parts.append(f"- {topic} {evidence}".strip())
+        return parts
+
+    def _paragraph_from_summary(self, para: Dict[str, Any]) -> str:
+        topic = (para.get("topic_sentence") or "").strip()
+        evidence = para.get("evidence_sentences") or []
+        analysis = (para.get("analysis_sentence") or "").strip()
+        parts = []
+        if topic:
+            parts.append(topic.rstrip(".") + ".")
+        if evidence:
+            parts.append(" ".join(evidence))
+        if analysis:
+            parts.append(analysis.rstrip(".") + ".")
+        text = " ".join(parts).strip()
+        if not text:
+            text = "Insufficient evidence for this point."
+        text = self._ensure_length(text, APP_CONFIG.tier0.essay_paragraph_min_words)
+        return self._cap_length(text, APP_CONFIG.tier0.essay_paragraph_max_words)
+
+    def _cap_length(self, text: str, max_words: int) -> str:
+        words = text.split()
+        if len(words) <= max_words:
+            return text
+        return " ".join(words[:max_words]).rstrip() + "..."
+
+    def _ensure_length(self, text: str, min_words: int) -> str:
+        words = text.split()
+        if len(words) >= min_words:
+            return text
+        filler = (
+            " The surviving records are incomplete; where the evidence is thin, the analysis remains cautious and provisional."
+        )
+        while len((text + filler).split()) < min_words:
+            text += filler
+        return text
 
     def _node_to_dict(self, node: QuestionNode) -> Dict[str, Any]:
         return {

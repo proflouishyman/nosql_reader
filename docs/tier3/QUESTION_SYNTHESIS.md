@@ -128,6 +128,9 @@ Based on `docs/historypdf.pdf`, recursive synthesis:
 - Answers each sub‑question with a **topic sentence** and **evidence excerpts**.
 - Assembles theme paragraphs from topic sentences + evidence.
 - Writes a long‑form essay in past tense with specific, evidence‑grounded claims.
+- Opens with a thesis and a Cronon‑style purpose statement.
+- Uses topic sentence → evidence → analysis in each paragraph.
+- Includes counterargument/limits and explicit archival gaps.
 
 ## Configuration
 Controlled by:
@@ -159,4 +162,13 @@ TIER0_LLM_CACHE_DIR=/app/logs/llm_cache
 Synthesis checkpointing (skip recompute when inputs unchanged):
 ```
 TIER0_SYNTHESIS_CHECKPOINT_DIR=/app/logs/synthesis_checkpoints
+```
+
+Recursive essay length controls:
+```
+TIER0_ESSAY_MIN_WORDS=1200
+TIER0_ESSAY_INTRO_MIN_WORDS=180
+TIER0_ESSAY_CONCLUSION_MIN_WORDS=140
+TIER0_ESSAY_PARAGRAPH_MIN_WORDS=110
+TIER0_ESSAY_PARAGRAPH_MAX_WORDS=180
 ```

@@ -206,6 +206,10 @@ class Tier0Config:
     recursive_leaf_profile: str
     recursive_writer_profile: str
     essay_min_words: int
+    essay_paragraph_min_words: int
+    essay_paragraph_max_words: int
+    essay_intro_min_words: int
+    essay_conclusion_min_words: int
     recursive_theme_max_leaves: int
     recursive_theme_use_llm: bool
     leaf_answers_collection: str
@@ -450,6 +454,10 @@ class ConfigLoader:
             recursive_leaf_profile=_env("TIER0_RECURSIVE_LEAF_PROFILE", "quality"),
             recursive_writer_profile=_env("TIER0_RECURSIVE_WRITER_PROFILE", "quality"),
             essay_min_words=_env_int("TIER0_ESSAY_MIN_WORDS", 1200),
+            essay_paragraph_min_words=_env_int("TIER0_ESSAY_PARAGRAPH_MIN_WORDS", 110),
+            essay_paragraph_max_words=_env_int("TIER0_ESSAY_PARAGRAPH_MAX_WORDS", 180),
+            essay_intro_min_words=_env_int("TIER0_ESSAY_INTRO_MIN_WORDS", 180),
+            essay_conclusion_min_words=_env_int("TIER0_ESSAY_CONCLUSION_MIN_WORDS", 140),
             recursive_theme_max_leaves=_env_int("TIER0_RECURSIVE_THEME_MAX_LEAVES", 20),
             recursive_theme_use_llm=_env_bool("TIER0_RECURSIVE_THEME_USE_LLM", False),
             leaf_answers_collection=_env("TIER0_LEAF_ANSWERS_COLLECTION", "tier0_leaf_answers"),

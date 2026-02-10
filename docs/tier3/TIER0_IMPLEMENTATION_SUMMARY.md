@@ -38,6 +38,8 @@ Recursive synthesis now follows the method in `docs/historypdf.pdf`:
 - **Interpretive questions** (why/how) are favored over descriptive ones.
 - **Paragraph structure**: topic sentence + supporting evidence + analysis.
 - **Historical writing conventions**: past tense, specificity, avoid presentism.
+- **Thesis + purpose statement** (Cronon “I am studying… because… in order to…”).
+- **Counterargument & limits** (explicitly note alternatives, contradictions, gaps).
 
 ## File Map
 **Core:**

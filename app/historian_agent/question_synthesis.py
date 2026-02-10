@@ -410,6 +410,9 @@ class QuestionSynthesizer:
                         notebook,
                         questions,
                         payload.get("themes", []),
+                        grand_narrative=payload.get("grand_narrative"),
+                        group_comparisons=payload.get("group_difference_questions"),
+                        contradiction_questions=payload.get("contradiction_questions"),
                     )
                     self._checkpoint.save("synthesis", payload, checksum)
                 return payload
@@ -523,6 +526,9 @@ class QuestionSynthesizer:
                 notebook,
                 questions,
                 themes_out,
+                grand_narrative=grand_question,
+                group_comparisons=group_difference_questions,
+                contradiction_questions=contradiction_questions,
             )
         return agenda
 
