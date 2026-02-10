@@ -52,6 +52,8 @@ CLOSED-WORLD RULES:
 - Avoid vague generalizations; be specific.
 - Avoid presentism; treat the past on its own terms.
 - Topic sentence must be a declarative claim (not a question).
+- If evidence is a form/questionnaire without responses, interpret it as a requirement or institutional practice, not an outcome.
+- Do not infer outcomes not documented; prefer "the records show that the institution asked for X" over "workers did X."
 
 QUESTION:
 {question}
@@ -82,6 +84,8 @@ CLOSED-WORLD RULES:
 - Do NOT add outside facts.
 - Each paragraph must start with a topic sentence.
 - Support each topic sentence with evidence citations.
+- Avoid repeating the same evidence in multiple paragraphs.
+- Prefer interpretive statements over description when evidence permits.
 
 THEME:
 {theme}
@@ -126,6 +130,8 @@ Write a structured essay that:
 5) Minimum length: {min_words} words.
 6) For each theme, include 2-4 paragraphs built from the provided theme paragraphs.
 7) Each paragraph must include at least one evidence citation in [doc_id] format.
+8) Use a clear thesis and brief roadmap in the opening.
+9) End with a short conclusion that ties themes together without introducing new facts.
 
 Return ONLY JSON:
 {{
@@ -464,17 +470,50 @@ class RecursiveSynthesizer:
 
         label_to_id = sources_index.get("label_to_id", {})
         normalized_evidence = []
+        evidence_quotes = []
         for item in evidence:
             if not isinstance(item, dict):
                 continue
             label = item.get("source_label")
             doc_id = item.get("doc_id") or (label_to_id.get(label) if label else None)
+            quote = item.get("quote", "")
+            evidence_quotes.append(quote)
             normalized_evidence.append({
                 "source_label": label,
                 "doc_id": doc_id,
-                "quote": item.get("quote", ""),
+                "quote": quote,
                 "reason": item.get("reason", ""),
             })
+
+        if evidence_quotes:
+            lower_quotes = " ".join(evidence_quotes).lower()
+            form_markers = [
+                "questions to be asked",
+                "have you ever",
+                "are you now in good health",
+                "i hereby apply",
+                "i hereby certify",
+                "were you ever employed",
+            ]
+            form_like = "?" in " ".join(evidence_quotes) or any(m in lower_quotes for m in form_markers)
+            risky_markers = [
+                "increased",
+                "decreased",
+                "caused",
+                "led to",
+                "resulted",
+                "more likely",
+                "less likely",
+                "improved",
+                "worsened",
+            ]
+            if form_like and any(m in topic_sentence.lower() for m in risky_markers):
+                topic_sentence = (
+                    "The surviving forms indicate that the institution asked about "
+                    f"{node.question_text.rstrip('?').lower()}, but they do not record outcomes."
+                )
+                if not analysis_text:
+                    analysis_text = "The evidence consists of application questions rather than reported outcomes."
 
         payload = {
             "run_id": run_id,
@@ -632,6 +671,7 @@ class RecursiveSynthesizer:
                 quote = (ev.get("quote") or "")[:140].replace("\n", " ")
                 if quote:
                     evidence_lines.append(f"{quote} [{doc_id}]")
+            evidence_lines = evidence_lines[:2]
             evidence_block = " | ".join(evidence_lines) if evidence_lines else "(no evidence)"
             formatted.append(
                 f"Q: {item.get('question_text')}\n"
@@ -640,21 +680,22 @@ class RecursiveSynthesizer:
                 f"Analysis: {item.get('analysis', '')}"
             )
         hints = "\n\n".join(formatted) or "- (none)"
-        prompt = THEME_SYNTHESIS_PROMPT.format(theme=theme, leaf_answers=hints)
-        response = self.llm.generate(
-            messages=[
-                {"role": "system", "content": "You synthesize theme summaries."},
-                {"role": "user", "content": prompt},
-            ],
-            profile=self.writer_profile,
-            temperature=0.2,
-            timeout=APP_CONFIG.tier0.llm_timeout,
-        )
-        data = parse_llm_json(response.content, default={}) if response.success else {}
-        if isinstance(data, dict) and data.get("paragraphs"):
-            return data
+        if APP_CONFIG.tier0.recursive_theme_use_llm:
+            prompt = THEME_SYNTHESIS_PROMPT.format(theme=theme, leaf_answers=hints)
+            response = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You synthesize theme summaries."},
+                    {"role": "user", "content": prompt},
+                ],
+                profile=self.writer_profile,
+                temperature=0.2,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            data = parse_llm_json(response.content, default={}) if response.success else {}
+            if isinstance(data, dict) and data.get("paragraphs"):
+                return data
 
-        # Fallback: deterministic theme assembly from leaf answers
+        # Deterministic theme assembly from leaf answers
         paragraphs = []
         gaps = []
         for item in subset:
@@ -738,6 +779,24 @@ class RecursiveSynthesizer:
                     ts = para.get("topic_sentence") or ""
                     ev = " ".join(para.get("evidence_sentences", []))
                     body_parts.append(f"- {ts} {ev}".strip())
+            body_parts.append("\nDetailed evidence walkthrough:")
+            for theme in theme_summaries:
+                name = theme.get("theme", "Theme")
+                summary = theme.get("summary", {})
+                paragraphs = summary.get("paragraphs", [])
+                if not paragraphs:
+                    continue
+                body_parts.append(f"{name}:")
+                for para in paragraphs:
+                    subq = para.get("subquestion") or ""
+                    ts = para.get("topic_sentence") or ""
+                    ev = " ".join(para.get("evidence_sentences", []))
+                    analysis = para.get("analysis_sentence", "")
+                    body_parts.append(f"Subquestion: {subq}")
+                    body_parts.append(f"Topic: {ts}")
+                    body_parts.append(f"Evidence: {ev}")
+                    if analysis:
+                        body_parts.append(f"Analysis: {analysis}")
 
         return {
             "essay": "\n".join(body_parts).strip(),
