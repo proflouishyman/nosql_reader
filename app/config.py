@@ -210,9 +210,18 @@ class Tier0Config:
     essay_paragraph_max_words: int
     essay_intro_min_words: int
     essay_conclusion_min_words: int
+    essay_revision_enabled: bool
+    essay_revision_passes: int
+    essay_revision_profile: str
+    paragraph_min_evidence: int
+    notebook_synthesis_enabled: bool
+    pattern_citation_count: int
     recursive_theme_max_leaves: int
     recursive_theme_use_llm: bool
     recursive_subquestion_min_docs: int
+    recursive_paragraph_min_docs: int
+    recursive_group_min_paragraphs: int
+    recursive_group_target: int
     leaf_answers_collection: str
     pattern_merge_threshold: float
     runs_collection: str
@@ -339,6 +348,7 @@ class ConfigLoader:
             ),
             "openai": ProviderConfig(
                 api_key=_env("OPENAI_API_KEY", ""),
+                base_url=_env("OPENAI_BASE_URL", None),  # Allow OpenAI-compatible endpoints (e.g., DeepSeek).
                 timeout=_env_float("OPENAI_TIMEOUT", 30.0),
                 options={}
             ),
@@ -381,6 +391,12 @@ class ConfigLoader:
                 "model": _env("OPENAI_MODEL", "gpt-4"),
                 "temperature": 0.2,
                 "timeout": 30.0,
+            },
+            "editor": {
+                "provider": "ollama",
+                "model": _env("TIER0_ESSAY_REVISE_MODEL", "llama3.3:latest"),
+                "temperature": 0.2,
+                "timeout": _env_float("TIER0_ESSAY_REVISE_TIMEOUT", 300.0),
             },
         }
         
@@ -459,9 +475,18 @@ class ConfigLoader:
             essay_paragraph_max_words=_env_int("TIER0_ESSAY_PARAGRAPH_MAX_WORDS", 180),
             essay_intro_min_words=_env_int("TIER0_ESSAY_INTRO_MIN_WORDS", 180),
             essay_conclusion_min_words=_env_int("TIER0_ESSAY_CONCLUSION_MIN_WORDS", 140),
+            essay_revision_enabled=_env_bool("TIER0_ESSAY_REVISE", True),
+            essay_revision_passes=_env_int("TIER0_ESSAY_REVISE_PASSES", 3),
+            essay_revision_profile=_env("TIER0_ESSAY_REVISE_PROFILE", "editor"),
+            paragraph_min_evidence=_env_int("TIER0_PARAGRAPH_MIN_EVIDENCE", 2),
+            notebook_synthesis_enabled=_env_bool("TIER0_NOTEBOOK_SYNTHESIS", True),
+            pattern_citation_count=_env_int("TIER0_PATTERN_CITATION_COUNT", 3),
             recursive_theme_max_leaves=_env_int("TIER0_RECURSIVE_THEME_MAX_LEAVES", 20),
             recursive_theme_use_llm=_env_bool("TIER0_RECURSIVE_THEME_USE_LLM", False),
             recursive_subquestion_min_docs=_env_int("TIER0_RECURSIVE_SUBQUESTION_MIN_DOCS", 1),
+            recursive_paragraph_min_docs=_env_int("TIER0_RECURSIVE_PARAGRAPH_MIN_DOCS", 2),
+            recursive_group_min_paragraphs=_env_int("TIER0_RECURSIVE_GROUP_MIN_PARAGRAPHS", 3),
+            recursive_group_target=_env_int("TIER0_RECURSIVE_GROUP_TARGET", 5),
             leaf_answers_collection=_env("TIER0_LEAF_ANSWERS_COLLECTION", "tier0_leaf_answers"),
             pattern_merge_threshold=_env_float("TIER0_PATTERN_MERGE_THRESHOLD", 0.9),
             runs_collection=_env("TIER0_RUNS_COLLECTION", "tier0_runs"),

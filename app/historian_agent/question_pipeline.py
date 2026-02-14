@@ -19,11 +19,11 @@ from config import APP_CONFIG
 
 import re
 
-from question_models import Question, QuestionBatch, QuestionType
-from question_typology import TypedQuestionGenerator
-from question_validator import QuestionValidator
-from question_answerability import AnswerabilityChecker
-from research_notebook import ResearchNotebook
+from historian_agent.question_models import Question, QuestionBatch, QuestionType
+from historian_agent.question_typology import TypedQuestionGenerator
+from historian_agent.question_validator import QuestionValidator
+from historian_agent.question_answerability import AnswerabilityChecker
+from historian_agent.research_notebook import ResearchNotebook
 
 PLACEHOLDER_RE = re.compile(r"\[[^\\]]+\\]|\\{[^\\}]+\\}")
 

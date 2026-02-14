@@ -14,8 +14,8 @@ from rag_base import debug_print
 from llm_abstraction import LLMClient
 from config import APP_CONFIG
 
-from question_models import Question, QuestionValidation, ValidationStatus, parse_validation_response
-from research_notebook import ResearchNotebook
+from historian_agent.question_models import Question, QuestionValidation, ValidationStatus, parse_validation_response
+from historian_agent.research_notebook import ResearchNotebook
 
 
 VALIDATION_PROMPT = """You are a historian evaluating a research question.
@@ -190,7 +190,7 @@ class QuestionValidator:
         if not response.success:
             return question
 
-        from question_models import parse_llm_question_response
+        from historian_agent.question_models import parse_llm_question_response
 
         candidates = parse_llm_question_response(response.content)
         if not candidates and response.content.strip():
@@ -242,7 +242,7 @@ class QuestionValidator:
         if not response.success:
             return question
 
-        from question_models import parse_llm_question_response
+        from historian_agent.question_models import parse_llm_question_response
 
         candidates = parse_llm_question_response(response.content)
         if not candidates and response.content.strip():

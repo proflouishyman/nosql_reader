@@ -12,3 +12,14 @@
 [2026-02-07 11:15] readme.md edited — Rewrote README for accuracy, current ports, scripts, and RAG setup guidance based on repo docs.
 [2026-02-07 11:15] readme.md edited — Added troubleshooting note about quick_check port mismatch.
 [2026-02-07 11:45] readme.md edited — Expanded README with RAG logic, myopia handling, dynamic document display, and historian-first design notes.
+[2026-02-07 20:54] architecture.md edited — Added architecture overview, full file inventory, orphan flags, data architecture, and refactoring/improvement notes.
+[2026-02-08 19:58] lit_review_topk_myopia.md edited — Added literature review on top-k myopia with citations and code comparison.
+[2026-02-08 20:18] lit_review_topk_myopia.md edited — Added corpus‑level analysis section, Tier 0/notebook novelty framing, and updated citations for cross‑field context.
+[2026-02-12 13:03] app/config.py, app/llm_layer.py edited — add OPENAI_BASE_URL support for OpenAI-compatible endpoints
+[2026-02-12 13:04] AGENTS.md edited — add overnight and workflow interaction rules.
+[2026-02-12 13:04] app/historian_agent/recursive_synthesis.py edited — improve paragraph prompts, group intros, dedupe paragraph ids, and essay expansion logic.
+[2026-02-12 19:38] app/historian_agent/question_pipeline.py, app/historian_agent/question_synthesis.py, app/historian_agent/question_validator.py, app/historian_agent/question_typology.py, app/historian_agent/question_models.py, app/historian_agent/recursive_synthesis.py edited — fix package-qualified imports for historian_agent modules and tier0_utils.
+[2026-02-12 19:40] app/historian_agent/question_synthesis.py edited — add LLM-based theme assignment fallback for semantic bucketing with conservative grouping.
+[2026-02-12 20:55] app/historian_agent/recursive_synthesis.py edited — expand doc_ids with evidence_doc_ids, add paragraph cleaning, enforce minimum theme group count with deterministic fallbacks.
+[2026-02-12 22:36] app/config.py, app/historian_agent/recursive_synthesis.py edited — add essay revision pass with LLM editor and config flag.
+[2026-02-13 11:40] app/historian_agent/recursive_synthesis.py edited — tighten essay revision to use provided section headers and require citations in body paragraphs.

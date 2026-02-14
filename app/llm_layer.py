@@ -275,9 +275,11 @@ class OpenAIProvider(LLMProvider):
         if hasattr(config, 'api_key'):
             self.api_key = config.api_key
             self.timeout = config.timeout
+            self.base_url = getattr(config, "base_url", None)  # Support OpenAI-compatible endpoints.
         else:
             self.api_key = config.get("api_key")
             self.timeout = config.get("timeout", 30.0)
+            self.base_url = config.get("base_url")  # Support OpenAI-compatible endpoints.
         
         if not self.api_key:
             raise ProviderAuthError("OpenAI API key not configured")
@@ -285,12 +287,15 @@ class OpenAIProvider(LLMProvider):
         # Try to use OpenAI SDK if available
         try:
             from openai import OpenAI
-            self.client = OpenAI(api_key=self.api_key)
+            if self.base_url:
+                self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)  # Use custom endpoint when set.
+            else:
+                self.client = OpenAI(api_key=self.api_key)
             self.use_sdk = True
         except ImportError:
             # Fall back to HTTP
             self.use_sdk = False
-            self.base_url = "https://api.openai.com/v1"
+            self.base_url = self.base_url or "https://api.openai.com/v1"
     
     def call(
         self,

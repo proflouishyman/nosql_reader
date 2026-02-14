@@ -14,7 +14,7 @@ import re
 from rag_base import DocumentStore, MongoDBConnection, debug_print
 from llm_abstraction import LLMClient
 from config import APP_CONFIG
-from tier0_utils import parse_llm_json
+from historian_agent.tier0_utils import parse_llm_json
 from historian_agent.question_models import Question
 from historian_agent.research_notebook import ResearchNotebook, Pattern, Contradiction
 
@@ -128,6 +128,156 @@ Return ONLY JSON:
 }}
 """
 
+PARAGRAPH_PROMPT = """You are a historian drafting a single paragraph from evidence.
+
+CLOSED-WORLD RULES:
+- Use ONLY the evidence provided.
+- Do NOT add outside context.
+- Prefer false negatives to false positives.
+- Write in the past tense.
+- If evidence is a form/questionnaire, interpret it as institutional practice, not outcome.
+- Require at least two distinct doc_ids for strong claims; otherwise qualify the claim as tentative.
+- Avoid presentism; keep claims in the historical moment implied by the sources.
+
+QUESTION:
+{question}
+
+TOPIC SENTENCE:
+{topic_sentence}
+
+EVIDENCE EXCERPTS:
+{evidence}
+
+TASK:
+Write one paragraph with:
+1) Topic sentence as the first sentence (a mini-thesis for the paragraph).
+2) Evidence sentences that cite doc_ids in brackets (include at least one direct quote when present).
+3) 1-2 analysis sentences tying evidence to the claim and explaining why the evidence matters.
+4) If evidence is thin (one doc_id), explicitly mark the claim as tentative in analysis.
+5) If the evidence suggests a source type (form, letter, record), briefly note it in analysis.
+
+Return ONLY JSON:
+{{
+  "paragraph": "...",
+  "doc_ids": ["...","..."],
+  "claim_type": "institutional_practice|outcome|contradiction|gap"
+}}
+"""
+
+GROUPING_PROMPT = """You are a historian grouping paragraphs into themes.
+
+CLOSED-WORLD RULES:
+- Use ONLY the paragraph summaries below.
+- Do NOT add outside context.
+
+PARAGRAPHS:
+{paragraphs}
+
+TASK:
+Group the paragraphs into {target_groups} coherent themes.
+Each group should be distinct and have a short title.
+Return JSON:
+[
+  {{
+    "group": "Theme title",
+    "paragraph_ids": ["p1", "p2"]
+  }}
+]
+"""
+
+GROUP_SYNTHESIS_PROMPT = """You are a historian synthesizing a thematic argument from grouped paragraphs.
+
+CLOSED-WORLD RULES:
+- Use ONLY the paragraphs provided.
+- Do NOT add outside context.
+- Write in past tense.
+
+GROUP: {group_name}
+
+PARAGRAPHS:
+{paragraphs}
+
+TASK:
+Produce a short thematic synthesis with:
+1) A thematic claim.
+2) Ordered paragraphs (by time if possible).
+3) A brief closing sentence that explains why this theme matters.
+
+Return ONLY JSON:
+{{
+  "group": "{group_name}",
+  "thematic_claim": "...",
+  "ordered_paragraphs": ["p1", "p2"],
+  "closing_sentence": "..."
+}}
+"""
+
+GROUP_INTRO_PROMPT = """You are a historian writing a one-sentence topic claim for a section.
+
+CLOSED-WORLD RULES:
+- Use ONLY the paragraphs provided.
+- Do NOT add outside context.
+- Write in past tense.
+
+PARAGRAPHS:
+{paragraphs}
+
+TASK:
+Write exactly one sentence that states the interpretive claim of this section.
+Return ONLY JSON:
+{{
+  "claim": "..."
+}}
+"""
+
+ESSAY_STITCH_PROMPT = """You are a historian stitching theme groups into a full essay.
+
+CLOSED-WORLD RULES:
+- Use ONLY the group syntheses and paragraphs provided.
+- Do NOT add outside context.
+- Write in past tense.
+
+GRAND NARRATIVE:
+{grand_narrative}
+
+GROUPS:
+{groups}
+
+PARAGRAPHS:
+{paragraphs}
+
+TASK:
+Write a full essay:
+1) Introduction with thesis and roadmap.
+2) Theme sections using the ordered paragraphs from each group.
+3) Counterargument/limits section.
+4) Gaps and next questions.
+5) Conclusion.
+
+Return ONLY JSON:
+{{
+  "essay": "...",
+  "sections": ["..."]
+}}
+"""
+
+COHESION_PROMPT = """You are a historian-editor improving cohesion and flow.
+
+CRITICAL RULES:
+- The text below contains paragraph markers like [PARA p1]. Do NOT remove or edit these paragraphs.
+- You may add 1-2 transition sentences BETWEEN paragraphs or sections.
+- Do NOT remove citations (doc_id brackets). Do NOT add new factual claims.
+- Preserve the order of paragraphs within each section.
+
+TEXT (with markers):
+{essay}
+
+Return ONLY JSON:
+{{
+  "essay": "..."
+}}
+"""
+
 
 ESSAY_PROMPT = """You are a historian writing a long-form essay from theme summaries.
 
@@ -162,6 +312,31 @@ Return ONLY JSON:
 {{
   "essay": "...",
   "sections": ["...", "..."]
+}}
+"""
+
+ESSAY_REVISION_PROMPT = """You are a historian-editor revising a draft essay into a strong historical essay.
+
+RULES:
+- Use ONLY information already in the draft. Do NOT add new facts.
+- Preserve and include citations like [doc_id]. All body paragraphs (everything except the first and last) must contain at least one citation.
+- If a sentence lacks evidence, rewrite it as a cautious inference ("the evidence suggests", "the record implies").
+- Remove repetitive boilerplate. Keep ONE concise limitations paragraph near the end.
+- Ensure each paragraph starts with a topic sentence.
+- Use ONLY the section headers provided below (do not invent new section names).
+- Keep the essay organized into those sections.
+- Maintain a coherent thesis introduced in the opening paragraph and revisited in the conclusion.
+- Aim for a polished, readable essay (not a report).
+
+DRAFT SECTIONS (use these headers exactly):
+{sections}
+
+DRAFT ESSAY:
+{essay}
+
+Return ONLY JSON:
+{{
+  "essay": "..."
 }}
 """
 
@@ -219,6 +394,12 @@ class RecursiveSynthesizer:
         self.llm = LLMClient()
         self.leaf_profile = APP_CONFIG.tier0.recursive_leaf_profile
         self.writer_profile = APP_CONFIG.tier0.recursive_writer_profile
+        self.editor_profile = (
+            APP_CONFIG.tier0.essay_revision_profile
+            if APP_CONFIG.tier0.essay_revision_profile in APP_CONFIG.llm_profiles
+            else self.writer_profile
+        )
+        self.editor_passes = max(1, APP_CONFIG.tier0.essay_revision_passes)
         self.doc_store = DocumentStore()
         self._mongo = MongoDBConnection()
         self._leaf_coll = self._mongo.get_collection(APP_CONFIG.tier0.leaf_answers_collection)
@@ -226,6 +407,29 @@ class RecursiveSynthesizer:
 
     def _normalize_question(self, text: str) -> str:
         return " ".join((text or "").strip().lower().split())
+
+    def _build_theme_question_map(self, themes_out: List[Dict[str, Any]]) -> Dict[str, str]:
+        theme_map: Dict[str, str] = {}
+        for theme in themes_out or []:
+            theme_name = theme.get("theme") or theme.get("theme_key") or "Theme"
+
+            overview = theme.get("overview_question") or {}
+            if isinstance(overview, dict):
+                q = overview.get("question")
+                if q:
+                    theme_map[self._normalize_question(str(q))] = theme_name
+
+            for sub in theme.get("sub_questions") or []:
+                if isinstance(sub, dict) and sub.get("question"):
+                    theme_map[self._normalize_question(str(sub.get("question")))] = theme_name
+
+            for cluster in theme.get("question_clusters") or []:
+                if not isinstance(cluster, dict):
+                    continue
+                for q in cluster.get("questions") or []:
+                    if isinstance(q, dict) and q.get("question"):
+                        theme_map[self._normalize_question(str(q.get("question")))] = theme_name
+        return theme_map
 
     def _ensure_indexes(self) -> None:
         try:
@@ -242,6 +446,7 @@ class RecursiveSynthesizer:
         grand_narrative: Optional[Dict[str, Any]] = None,
         group_comparisons: Optional[List[Dict[str, Any]]] = None,
         contradiction_questions: Optional[List[Dict[str, Any]]] = None,
+        notebook_synthesis: Optional[Dict[str, Any]] = None,
         run_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         if not APP_CONFIG.tier0.recursive_enabled:
@@ -249,6 +454,7 @@ class RecursiveSynthesizer:
 
         run_id = run_id or datetime.utcnow().strftime("recursive_%Y%m%d_%H%M%S")
         question_map = {self._normalize_question(q.question_text): q for q in questions}
+        theme_question_map = self._build_theme_question_map(themes_out)
 
         theme_trees: List[Dict[str, Any]] = []
         leaf_answers: List[Dict[str, Any]] = []
@@ -364,15 +570,34 @@ class RecursiveSynthesizer:
                 "summary": summary,
             })
 
-        essay = self._synthesize_essay(theme_summaries, grand_narrative)
+        paragraphs, paragraph_gaps = self._build_paragraphs_from_leafs(
+            leaf_answers,
+            theme_question_map,
+        )
+        groups = self._group_paragraphs(paragraphs)
+        group_summaries = self._synthesize_groups(groups, paragraphs)
+        essay = self._stitch_groups(
+            group_summaries,
+            paragraphs,
+            grand_narrative,
+            notebook_synthesis,
+            paragraph_gaps,
+        )
+        if not essay:
+            essay = self._synthesize_essay(theme_summaries, grand_narrative)
 
         return _json_safe({
             "run_id": run_id,
             "theme_trees": theme_trees,
             "leaf_answers": leaf_answers,
             "theme_summaries": theme_summaries,
+            "paragraphs": paragraphs,
+            "paragraph_gaps": paragraph_gaps,
+            "groups": groups,
+            "group_summaries": group_summaries,
             "grand_narrative": grand_narrative or {},
             "essay": essay,
+            "notebook_synthesis": notebook_synthesis or {},
         })
 
     def _build_node(
@@ -542,6 +767,7 @@ class RecursiveSynthesizer:
         return cleaned
 
     def _answer_leaf(self, node: QuestionNode, run_id: str) -> Optional[Dict[str, Any]]:
+        debug_print(f"[leaf] q={node.question_text} docs={len(node.evidence.doc_ids)} level={node.level}")
         if not node.evidence.doc_ids:
             payload = {
                 "run_id": run_id,
@@ -584,6 +810,10 @@ class RecursiveSynthesizer:
             profile=self.leaf_profile,
             temperature=0.1,
             timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        debug_print(
+            f"[leaf] done q={node.question_text} success={response.success} "
+            f"latency={response.latency:.2f}s model={response.model_name}"
         )
 
         data = parse_llm_json(response.content, default={}) if response.success else {}
@@ -910,6 +1140,276 @@ class RecursiveSynthesizer:
             "gaps": gaps,
         }
 
+    def _build_paragraphs_from_leafs(self, leaf_answers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        paragraphs: List[Dict[str, Any]] = []
+        min_docs = APP_CONFIG.tier0.recursive_paragraph_min_docs
+        for idx, item in enumerate(leaf_answers, 1):
+            evidence = item.get("evidence") or []
+            doc_ids = [ev.get("doc_id") for ev in evidence if ev.get("doc_id")]
+            doc_ids = list(dict.fromkeys(doc_ids))
+            evidence_doc_ids = item.get("evidence_doc_ids") or []
+            if isinstance(evidence_doc_ids, str):
+                evidence_doc_ids = [d.strip() for d in evidence_doc_ids.split(",") if d.strip()]
+            if isinstance(evidence_doc_ids, list) and evidence_doc_ids:
+                if len(doc_ids) < min_docs:
+                    for doc_id in evidence_doc_ids:
+                        if doc_id not in doc_ids:
+                            doc_ids.append(doc_id)
+            if not doc_ids:
+                fallback_ids = item.get("evidence_doc_ids") or item.get("doc_ids") or []
+                if isinstance(fallback_ids, str):
+                    fallback_ids = [d.strip() for d in fallback_ids.split(",") if d.strip()]
+                if isinstance(fallback_ids, list):
+                    doc_ids = list(dict.fromkeys([str(d) for d in fallback_ids if d]))
+            if not doc_ids:
+                debug_print(
+                    f"Skipping paragraph: {item.get('question_text')} "
+                    f"doc_ids=0 min_docs={min_docs}"
+                )
+                continue
+            is_tentative = len(doc_ids) < min_docs
+            if is_tentative:
+                debug_print(
+                    f"Tentative paragraph: {item.get('question_text')} "
+                    f"doc_ids={len(doc_ids)} min_docs={min_docs}"
+                )
+            evidence_lines = []
+            for ev in evidence[:3]:
+                quote = (ev.get("quote") or "").strip().replace("\n", " ")
+                doc_id = ev.get("doc_id") or ""
+                reason = (ev.get("reason") or "").strip()
+                if quote:
+                    evidence_lines.append(f"{quote} [{doc_id}]")
+                elif reason:
+                    evidence_lines.append(f"{reason} [{doc_id}]")
+            if not evidence_lines:
+                for doc_id in doc_ids[:3]:
+                    evidence_lines.append(f"Document evidence [{doc_id}]")
+            elif len(evidence_lines) < 2:
+                for doc_id in doc_ids:
+                    if len(evidence_lines) >= 2:
+                        break
+                    if f"[{doc_id}]" in " ".join(evidence_lines):
+                        continue
+                    evidence_lines.append(f"Document evidence [{doc_id}]")
+            evidence_block = "\n".join(evidence_lines) if evidence_lines else "(no evidence)"
+
+            topic_sentence = item.get("topic_sentence")
+            if is_tentative and isinstance(topic_sentence, str) and topic_sentence.strip():
+                topic_sentence = f"Tentatively, {topic_sentence.strip()}"
+
+            prompt = PARAGRAPH_PROMPT.format(
+                question=item.get("question_text"),
+                topic_sentence=topic_sentence,
+                evidence=evidence_block,
+            )
+            response = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You draft evidence-anchored historical paragraphs."},
+                    {"role": "user", "content": prompt},
+                ],
+                profile=self.writer_profile,
+                temperature=0.2,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            data = parse_llm_json(response.content, default={}) if response.success else {}
+            paragraph = data.get("paragraph") if isinstance(data, dict) else None
+            claim_type = data.get("claim_type") if isinstance(data, dict) else None
+            if not paragraph and response.success:
+                recovered = self._recover_paragraph_text(response.content)
+                if recovered:
+                    paragraph = recovered
+            if not paragraph:
+                # fallback deterministic paragraph
+                topic = (topic_sentence or item.get("topic_sentence") or "").strip().rstrip(".") + "."
+                analysis = (item.get("analysis") or "").strip()
+                answer_text = (item.get("answer") or item.get("answer_text") or "").strip()
+                paragraph = " ".join([topic, evidence_block, analysis or answer_text]).strip()
+                claim_type = claim_type or "institutional_practice"
+                debug_print(f"Paragraph fallback used for: {item.get('question_text')}")
+
+            if paragraph and "[" not in paragraph and doc_ids:
+                paragraph = f"{paragraph.strip()} [{doc_ids[0]}]"
+            if paragraph:
+                paragraph = self._clean_paragraph_text(paragraph)
+
+            paragraphs.append({
+                "id": f"p{idx}",
+                "question_text": item.get("question_text"),
+                "paragraph": paragraph,
+                "doc_ids": doc_ids,
+                "claim_type": claim_type or "institutional_practice",
+                "evidence_years": item.get("evidence_years") or [],
+            })
+
+        debug_print(f"[paragraphs] built={len(paragraphs)} from leafs={len(leaf_answers)}")
+        return paragraphs
+
+    def _clean_paragraph_text(self, paragraph: str) -> str:
+        cleaned = paragraph.strip()
+        cleaned = re.sub(r'^[\"\\s:]+', '', cleaned)
+        cleaned = re.sub(r'\\s+$', '', cleaned)
+        return cleaned
+
+    def _recover_paragraph_text(self, raw: str) -> Optional[str]:
+        if not raw:
+            return None
+        match = re.search(r'\"paragraph\"\\s*:\\s*\"(.*?)\"', raw, re.S)
+        if match:
+            return match.group(1).replace("\\n", " ").strip()
+        lowered = raw.lower()
+        for label in ("paragraph:", "paragraph -", "paragraph"):
+            idx = lowered.find(label)
+            if idx != -1:
+                snippet = raw[idx + len(label):].strip()
+                return snippet.split("\n")[0].strip()
+        # As a last resort, take first 2 sentences
+        sentences = [s.strip() for s in re.split(r"(?<=\\.)\\s+", raw) if s.strip()]
+        if sentences:
+            return " ".join(sentences[:2]).strip()
+        return None
+
+    def _group_paragraphs(self, paragraphs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        if not paragraphs:
+            return []
+        target = min(APP_CONFIG.tier0.recursive_group_target, len(paragraphs))
+        target = max(target, 1)
+        debug_print(f"[groups] paragraphs={len(paragraphs)} target={target}")
+        summaries = []
+        for p in paragraphs:
+            preview = (p.get("paragraph") or "").split(".")[0]
+            summaries.append(f"{p['id']}: {preview} (claim={p.get('claim_type')})")
+        prompt = GROUPING_PROMPT.format(
+            paragraphs="\n".join(summaries),
+            target_groups=target,
+        )
+        response = self.llm.generate(
+            messages=[
+                {"role": "system", "content": "You group paragraphs into historian themes."},
+                {"role": "user", "content": prompt},
+            ],
+            profile=self.writer_profile,
+            temperature=0.2,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        data = parse_llm_json(response.content, default=[]) if response.success else []
+        if isinstance(data, list) and data:
+            if len(data) < target:
+                return self._force_group_count(data, paragraphs, target)
+            return data
+
+        # fallback: group by claim_type
+        groups = self._group_by_claim_type(paragraphs)
+        if len(groups) < target:
+            return self._group_round_robin(paragraphs, target)
+        return groups
+
+    def _group_by_claim_type(self, paragraphs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        groups: Dict[str, List[str]] = {}
+        for p in paragraphs:
+            key = p.get("claim_type") or "theme"
+            groups.setdefault(key, []).append(p["id"])
+        if not groups:
+            return [{"group": "Theme", "paragraph_ids": [p["id"] for p in paragraphs]}]
+        return [{"group": k, "paragraph_ids": v} for k, v in groups.items()]
+
+    def _group_round_robin(self, paragraphs: List[Dict[str, Any]], target: int) -> List[Dict[str, Any]]:
+        groups: List[List[str]] = [[] for _ in range(target)]
+        for idx, p in enumerate(paragraphs):
+            groups[idx % target].append(p["id"])
+        return [
+            {"group": f"Theme {idx + 1}", "paragraph_ids": ids}
+            for idx, ids in enumerate(groups) if ids
+        ]
+
+    def _force_group_count(
+        self,
+        groups: List[Dict[str, Any]],
+        paragraphs: List[Dict[str, Any]],
+        target: int,
+    ) -> List[Dict[str, Any]]:
+        if len(groups) >= target:
+            return groups
+        # If too few groups, fall back to deterministic grouping for diversity.
+        grouped = self._group_by_claim_type(paragraphs)
+        if len(grouped) >= target:
+            return grouped
+        return self._group_round_robin(paragraphs, target)
+
+    def _synthesize_groups(
+        self,
+        groups: List[Dict[str, Any]],
+        paragraphs: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        if not groups:
+            return []
+        debug_print(f"[group_summaries] groups={len(groups)} paragraphs={len(paragraphs)}")
+        lookup = {p["id"]: p for p in paragraphs}
+        summaries: List[Dict[str, Any]] = []
+        for group in groups:
+            ids = group.get("paragraph_ids") or []
+            # Deduplicate paragraph ids while preserving order
+            seen_ids = set()
+            ordered_ids = []
+            for pid in ids:
+                if pid in seen_ids:
+                    continue
+                seen_ids.add(pid)
+                ordered_ids.append(pid)
+            group_name = group.get("group") or "Theme"
+            paras = []
+            for pid in ordered_ids:
+                para = lookup.get(pid)
+                if para:
+                    paras.append(f"{pid}: {para.get('paragraph')}")
+            if not paras:
+                continue
+            prompt = GROUP_SYNTHESIS_PROMPT.format(
+                group_name=group_name,
+                paragraphs="\n".join(paras),
+            )
+            response = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You synthesize thematic arguments."},
+                    {"role": "user", "content": prompt},
+                ],
+                profile=self.writer_profile,
+                temperature=0.2,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            data = parse_llm_json(response.content, default={}) if response.success else {}
+            if isinstance(data, dict) and data.get("ordered_paragraphs"):
+                data["ordered_paragraphs"] = ordered_ids
+                summaries.append(data)
+            else:
+                summaries.append({
+                    "group": group_name,
+                    "thematic_claim": f"{group_name} patterns emerge from the archive.",
+                    "ordered_paragraphs": ordered_ids,
+                    "closing_sentence": "This theme signals a consistent administrative logic in the records.",
+                })
+        return summaries
+
+    def _stitch_groups(
+        self,
+        group_summaries: List[Dict[str, Any]],
+        paragraphs: List[Dict[str, Any]],
+        grand_narrative: Optional[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        if not group_summaries:
+            return {}
+        debug_print(f"[essay] group_summaries={len(group_summaries)} paragraphs={len(paragraphs)}")
+        paragraph_map = {p["id"]: p for p in paragraphs}
+        base_essay, sections = self._assemble_group_essay(group_summaries, paragraph_map, grand_narrative)
+        cohesion = self._apply_cohesion_pass(base_essay)
+        essay_text = cohesion or base_essay
+        essay_text = self._strip_paragraph_markers(essay_text)
+        if APP_CONFIG.tier0.essay_revision_enabled:
+            revised = self._apply_revision_pass(essay_text, sections)
+            if revised:
+                return {"essay": revised, "sections": sections}
+        return {"essay": essay_text, "sections": sections}
+
     def _synthesize_essay(
         self,
         theme_summaries: List[Dict[str, Any]],
@@ -953,6 +1453,116 @@ class RecursiveSynthesizer:
         sections, body_parts = self._assemble_essay(theme_summaries, grand_narrative)
         essay_text = "\n".join(body_parts).strip()
         return {"essay": essay_text, "sections": sections}
+
+    def _assemble_group_essay(
+        self,
+        group_summaries: List[Dict[str, Any]],
+        paragraph_map: Dict[str, Dict[str, Any]],
+        grand_narrative: Optional[Dict[str, Any]],
+    ) -> Tuple[str, List[str]]:
+        sections: List[str] = []
+        parts = [self._build_intro(grand_narrative, [{"theme": g.get("group")} for g in group_summaries])]
+        for group in group_summaries:
+            name = group.get("group", "Theme")
+            sections.append(name)
+            parts.append(f"\n{name}\n")
+            thematic_claim = self._generate_group_intro(group, paragraph_map)
+            if thematic_claim:
+                parts.append(f"{thematic_claim}")
+                parts.append("The paragraphs below develop this claim using evidence from the archive.")
+            for pid in group.get("ordered_paragraphs", []):
+                para = paragraph_map.get(pid)
+                if para and para.get("paragraph"):
+                    parts.append(f"[PARA {pid}] {para.get('paragraph')}")
+            closing = group.get("closing_sentence")
+            if closing:
+                parts.append(closing)
+        parts.append(self._build_counterargument([]))
+        parts.append(self._build_gaps([]))
+        parts.append(self._build_conclusion([]))
+        essay = "\n\n".join([p for p in parts if p]).strip()
+        return essay, sections
+
+    def _generate_group_intro(
+        self,
+        group: Dict[str, Any],
+        paragraph_map: Dict[str, Dict[str, Any]],
+    ) -> str:
+        thematic_claim = group.get("thematic_claim") or ""
+        ids = group.get("ordered_paragraphs") or []
+        paras = []
+        for pid in ids[:6]:
+            para = paragraph_map.get(pid)
+            if para and para.get("paragraph"):
+                paras.append(f"{pid}: {para.get('paragraph')}")
+        if not paras:
+            return thematic_claim
+        prompt = GROUP_INTRO_PROMPT.format(paragraphs="\n".join(paras))
+        response = self.llm.generate(
+            messages=[
+                {"role": "system", "content": "You craft concise topic sentences."},
+                {"role": "user", "content": prompt},
+            ],
+            profile=self.writer_profile,
+            temperature=0.2,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        data = parse_llm_json(response.content, default={}) if response.success else {}
+        if isinstance(data, dict) and data.get("claim"):
+            return data.get("claim")
+        return thematic_claim
+
+    def _apply_cohesion_pass(self, essay: str) -> Optional[str]:
+        if not essay:
+            return None
+        markers = re.findall(r"\\[PARA\\s+p\\d+\\]", essay)
+        if not markers:
+            return None
+        prompt = COHESION_PROMPT.format(essay=essay)
+        response = self.llm.generate(
+            messages=[
+                {"role": "system", "content": "You are a careful historian-editor."},
+                {"role": "user", "content": prompt},
+            ],
+            profile=self.writer_profile,
+            temperature=0.2,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        data = parse_llm_json(response.content, default={}) if response.success else {}
+        if not isinstance(data, dict) or not data.get("essay"):
+            return None
+        text = data.get("essay", "")
+        for marker in markers:
+            if marker not in text:
+                debug_print("[essay] cohesion pass dropped markers; using base essay")
+                return None
+        return self._strip_paragraph_markers(text)
+
+    def _apply_revision_pass(self, essay: str, sections: Optional[List[str]]) -> Optional[str]:
+        if not essay:
+            return None
+        prompt = ESSAY_REVISION_PROMPT.format(
+            essay=essay,
+            sections=json.dumps(sections or [], ensure_ascii=True),
+        )
+        response = self.llm.generate(
+            messages=[
+                {"role": "system", "content": "You revise historical essays for clarity and evidence alignment."},
+                {"role": "user", "content": prompt},
+            ],
+            profile=self.writer_profile,
+            temperature=0.2,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        data = parse_llm_json(response.content, default={}) if response.success else {}
+        if isinstance(data, dict) and data.get("essay"):
+            revised = data.get("essay", "")
+            if self._validate_essay(revised):
+                return revised
+        return None
+
+    def _strip_paragraph_markers(self, essay: str) -> str:
+        return re.sub(r"\\[PARA\\s+p\\d+\\]\\s*", "", essay)
 
     def _validate_essay(self, essay: str) -> bool:
         if not essay:
@@ -1038,15 +1648,16 @@ class RecursiveSynthesizer:
         if roadmap:
             intro_bits.append(f"This essay follows evidence on {roadmap}.")
         intro_bits.append(
-            "Scope and evidence base: the archive is fragmentary, so the argument relies on the surviving records and treats silence as meaningful."
+            "Scope and evidence base: the archive is fragmentary, so the argument relies on surviving records, treats silence as meaningful, and interprets sources in context rather than letting evidence speak on its own."
         )
         intro = " ".join(intro_bits).strip()
-        return self._ensure_length(intro, APP_CONFIG.tier0.essay_intro_min_words)
+        return self._ensure_length(intro, APP_CONFIG.tier0.essay_intro_min_words, section="intro")
 
     def _build_counterargument(self, theme_summaries: List[Dict[str, Any]]) -> str:
         return self._ensure_length(
-            "Counterargument and limits: Some interpretations could be read as routine administrative practice rather than deliberate labor control. Where the evidence consists mainly of standardized forms or single-source claims, the analysis remains tentative and the archive does not resolve alternative explanations.",
+            "Counterargument and limits: Some interpretations could be read as routine administrative practice rather than deliberate labor control. Sources are partial and carry institutional viewpoints; where evidence is limited to standardized forms or single-source claims, the analysis remains tentative and alternative explanations remain plausible.",
             APP_CONFIG.tier0.essay_paragraph_min_words,
+            section="counterargument",
         )
 
     def _build_gaps(self, theme_summaries: List[Dict[str, Any]]) -> str:
@@ -1061,7 +1672,7 @@ class RecursiveSynthesizer:
             gap_line = "Gaps and next questions: " + "; ".join(list(dict.fromkeys(gaps))[:6])
         else:
             gap_line = "Gaps and next questions: The archive is thin on demographic variation and comparative context, so these lines of inquiry remain open."
-        return self._ensure_length(gap_line, APP_CONFIG.tier0.essay_paragraph_min_words)
+        return self._ensure_length(gap_line, APP_CONFIG.tier0.essay_paragraph_min_words, section="gaps")
 
     def _to_purpose_clause(self, thesis: str) -> str:
         if not thesis:
@@ -1112,6 +1723,7 @@ class RecursiveSynthesizer:
         return self._ensure_length(
             "Conclusion: Taken together, the themes suggest a relief system that recorded health, eligibility, and employment decisions in ways that shaped worker experience while leaving important silences. The evidence does not resolve every contradiction, but it does delineate the institutional logic that can be investigated further through deeper archival work.",
             APP_CONFIG.tier0.essay_conclusion_min_words,
+            section="conclusion",
         )
 
     def _build_methods_note(self) -> str:
@@ -1183,20 +1795,52 @@ class RecursiveSynthesizer:
             return text
         return " ".join(words[:max_words]).rstrip() + "..."
 
-    def _ensure_length(self, text: str, min_words: int) -> str:
+    def _ensure_length(self, text: str, min_words: int, section: str = "section") -> str:
         words = text.split()
         if len(words) >= min_words:
             return text
+        expanded = self._expand_section(text, min_words=min_words, section=section)
+        if expanded and len(expanded.split()) >= min_words:
+            return expanded
+        # conservative fallback: varied but non-repetitive fillers
         fillers = [
-            " The surviving records are incomplete; where the evidence is thin, the analysis remains cautious and provisional.",
-            " The evidence base favors administrative documentation, which requires careful interpretation rather than assumption.",
-            " Archival silence here should be treated as a gap to investigate, not as a basis for inference.",
+            " The surviving records are incomplete; where evidence is thin, the analysis remains provisional.",
+            " The evidence base leans toward administrative documents that require careful interpretation.",
+            " Archival silence should be treated as a question to investigate, not as proof.",
+            " These records capture institutional procedure more clearly than lived experience.",
+            " Caution is necessary because the archive records decisions more than their effects.",
+            " The argument remains bounded by what the surviving documents can actually show.",
         ]
         idx = 0
-        while len(text.split()) < min_words:
-            text += fillers[idx % len(fillers)]
+        while len(text.split()) < min_words and idx < len(fillers):
+            text += fillers[idx]
             idx += 1
         return text
+
+    def _expand_section(self, text: str, min_words: int, section: str) -> Optional[str]:
+        prompt = (
+            "You are expanding a historical essay section. "
+            "Do NOT add new facts beyond what is already in the text. "
+            "You may clarify implications, add careful qualifiers, or strengthen transitions. "
+            "Do NOT repeat sentences. Keep the tone scholarly.\n\n"
+            f"SECTION TYPE: {section}\n"
+            f"TARGET MIN WORDS: {min_words}\n\n"
+            f"TEXT:\n{text}\n\n"
+            "Return ONLY JSON:\n{ \"expanded\": \"...\" }"
+        )
+        response = self.llm.generate(
+            messages=[
+                {"role": "system", "content": "You expand text without adding facts."},
+                {"role": "user", "content": prompt},
+            ],
+            profile=self.writer_profile,
+            temperature=0.2,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        data = parse_llm_json(response.content, default={}) if response.success else {}
+        if isinstance(data, dict) and data.get("expanded"):
+            return data.get("expanded")
+        return None
 
     def _node_to_dict(self, node: QuestionNode) -> Dict[str, Any]:
         return {

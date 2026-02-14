@@ -40,6 +40,30 @@ GENERAL WORKFLOW RULES
    - Always read README.md before beginning work.
    - Understand the file structure and the purpose of each major module before making changes.
 
+8. Overnight Runs
+   - When the user asks for an overnight run, complete any required fixes first, then launch a stable run and keep it running unless explicitly told to stop. <!-- Added to ensure overnight time is actually used once fixes land. -->
+
+9. Long-Run Discipline
+   - For runs expected to take >30 minutes, write to a dedicated log file, tail it periodically, and report progress at regular intervals. <!-- Added to prevent silent long runs. -->
+
+10. Evidence-First Principle
+    - If evidence is missing, label output as a gap; do not infer or fabricate. <!-- Added to enforce historian standards. -->
+
+11. False-Positive Bias
+    - Prefer false negatives over false positives; if unclear, exclude the claim from synthesis. <!-- Added to align with historian expectations. -->
+
+12. Model Comparison Protocol
+    - When comparing models, keep inputs identical and report a small rubric (length, evidence density, coherence). <!-- Added for repeatable evals. -->
+
+13. Output Artifacts
+    - Always write outputs to a timestamped path and report that path in the response. <!-- Added for traceability. -->
+
+14. Commit Cadence
+    - For iterative experiments, commit after each material improvement (not every small tweak). <!-- Added to balance traceability and noise. -->
+
+15. “Don’t Stall” Rule
+    - If a run fails twice, add logging and reduce scope to isolate the failing stage before retrying. <!-- Added to keep progress moving. -->
+
 ------------------------------------------------------------
 ENVIRONMENT & DOCKER VARIABLE GUIDELINES
 ------------------------------------------------------------

@@ -15,9 +15,9 @@ from pathlib import Path
 from rag_base import debug_print
 from config import APP_CONFIG
 from llm_abstraction import LLMClient, LLMResponse
-from tier0_utils import parse_llm_json, CheckpointManager
-from question_models import Question
-from research_notebook import ResearchNotebook, Pattern
+from historian_agent.tier0_utils import parse_llm_json, CheckpointManager
+from historian_agent.question_models import Question
+from historian_agent.research_notebook import ResearchNotebook, Pattern
 from historian_agent.embeddings import EmbeddingService
 from historian_agent.recursive_synthesis import RecursiveSynthesizer
 
@@ -153,6 +153,64 @@ TASK:
 - If no valid themes exist, return [].
 
 Return ONLY JSON.
+"""
+
+NOTEBOOK_MACRO_PROMPT = """You are a historian writing a theme-level synthesis paragraph from notebook evidence.
+
+CLOSED-WORLD RULES:
+- Use ONLY the evidence provided below.
+- Do NOT introduce outside context.
+- Prefer false negatives to false positives.
+- Cite sources in [doc_id] format.
+
+THEME:
+{theme_name}
+
+TIME RANGE (if known):
+{time_range}
+
+KEY ENTITIES (if known):
+{entities}
+
+PATTERNS (with citations):
+{patterns}
+
+CONTRADICTIONS (with citations):
+{contradictions}
+
+TASK:
+Write one macro paragraph (4-6 sentences) that synthesizes the theme.
+Every sentence must include at least one citation.
+
+Return ONLY JSON:
+{{
+  "macro_paragraph": "..."
+}}
+"""
+
+THEME_ASSIGNMENT_PROMPT = """You are a historian assigning research questions to themes.
+
+CLOSED-WORLD RULES:
+- Use ONLY the themes and questions provided below.
+- Do NOT introduce new themes.
+- If a question does not clearly fit, assign "other".
+- Prefer false negatives over false positives (be conservative).
+
+THEMES (keys are authoritative):
+{themes}
+
+QUESTIONS (indexed):
+{questions}
+
+TASK:
+Return ONLY JSON array of assignments:
+[
+  {{
+    "question_index": 1,
+    "theme_key": "institutional_welfare" | "medical_certification" | "..." | "other",
+    "confidence": "high" | "medium" | "low"
+  }}
+]
 """
 
 INDUCTIVE_LOGIC_PROMPT = """You are a historian performing inductive reasoning.
@@ -519,6 +577,10 @@ class QuestionSynthesizer:
             "gaps": gaps,
         }
 
+        notebook_synthesis = self._build_notebook_synthesis(notebook, themes, themes_out)
+        if notebook_synthesis:
+            agenda["notebook_synthesis"] = notebook_synthesis
+
         self._checkpoint.save("synthesis", agenda, checksum)
         if APP_CONFIG.tier0.recursive_enabled:
             recursive = RecursiveSynthesizer()
@@ -529,8 +591,130 @@ class QuestionSynthesizer:
                 grand_narrative=grand_question,
                 group_comparisons=group_difference_questions,
                 contradiction_questions=contradiction_questions,
+                notebook_synthesis=notebook_synthesis,
             )
         return agenda
+
+    def _build_notebook_synthesis(
+        self,
+        notebook: ResearchNotebook,
+        theme_defs: List[ThemeDefinition],
+        themes_out: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        if not APP_CONFIG.tier0.notebook_synthesis_enabled:
+            return {}
+
+        theme_map = {t.key: t for t in theme_defs}
+        pattern_limit = APP_CONFIG.tier0.pattern_citation_count
+
+        theme_macros: List[Dict[str, Any]] = []
+        evidence_briefs: List[Dict[str, Any]] = []
+
+        # Precompute top entities overall (fallback)
+        top_entities = sorted(
+            notebook.entities.values(),
+            key=lambda e: e.document_count,
+            reverse=True,
+        )[:8]
+        top_entity_names = [e.name for e in top_entities]
+
+        for theme in themes_out:
+            theme_key = theme.get("theme_key")
+            theme_name = theme.get("theme")
+            theme_def = theme_map.get(theme_key) if theme_key else None
+            if not theme_def or not theme_name:
+                continue
+
+            patterns = self._patterns_for_theme(notebook, theme_def)
+            contradictions = self._contradictions_for_theme(notebook, theme_def)
+
+            patterns = sorted(
+                patterns,
+                key=lambda p: len(p.evidence_doc_ids),
+                reverse=True,
+            )[:6]
+
+            pattern_lines = []
+            pattern_briefs = []
+            for pattern in patterns:
+                doc_ids = list(pattern.evidence_doc_ids or [])[:pattern_limit]
+                if not doc_ids:
+                    continue
+                pattern_lines.append(
+                    f"- {pattern.pattern_text} (docs: {', '.join(doc_ids)})"
+                )
+                pattern_briefs.append({
+                    "pattern": pattern.pattern_text,
+                    "doc_ids": doc_ids,
+                    "confidence": pattern.confidence,
+                    "time_range": pattern.time_range,
+                })
+
+            contradiction_lines = []
+            contradiction_briefs = []
+            for contra in contradictions[:6]:
+                doc_ids = [contra.source_a, contra.source_b]
+                contradiction_lines.append(
+                    f"- {contra.claim_a} vs {contra.claim_b} (docs: {', '.join(doc_ids)})"
+                )
+                contradiction_briefs.append({
+                    "claim_a": contra.claim_a,
+                    "claim_b": contra.claim_b,
+                    "doc_ids": doc_ids,
+                    "type": contra.contradiction_type,
+                    "confidence": contra.confidence,
+                })
+
+            time_range = theme.get("theme_scope", {}).get("time") or notebook.corpus_map.get("time_coverage", {})
+            entities = top_entity_names
+
+            macro = ""
+            if pattern_lines or contradiction_lines:
+                prompt = NOTEBOOK_MACRO_PROMPT.format(
+                    theme_name=theme_name,
+                    time_range=time_range or "unknown",
+                    entities=", ".join(entities[:6]) if entities else "unknown",
+                    patterns="\n".join(pattern_lines) if pattern_lines else "- (none)",
+                    contradictions="\n".join(contradiction_lines) if contradiction_lines else "- (none)",
+                )
+                response = self._generate_cached(
+                    messages=[{"role": "user", "content": prompt}],
+                    profile="quality",
+                    temperature=0.2,
+                    timeout=APP_CONFIG.tier0.llm_timeout,
+                )
+                if response.success:
+                    data = parse_llm_json(response.content, default={})
+                    if isinstance(data, dict):
+                        macro = data.get("macro_paragraph", "") or ""
+
+            if not macro and pattern_lines:
+                # deterministic fallback macro
+                fallback = pattern_lines[0].replace("- ", "")
+                macro = f"The archive records {fallback}."
+
+            theme_macros.append({
+                "theme": theme_name,
+                "theme_key": theme_key,
+                "macro_paragraph": macro,
+                "patterns": pattern_briefs,
+                "contradictions": contradiction_briefs,
+                "entities": entities[:6],
+                "time_range": time_range,
+            })
+
+            evidence_briefs.append({
+                "theme": theme_name,
+                "patterns": pattern_briefs,
+                "contradictions": contradiction_briefs,
+                "entities": entities[:6],
+                "time_range": time_range,
+            })
+
+        return {
+            "theme_macros": theme_macros,
+            "evidence_briefs": evidence_briefs,
+        }
 
     def _ensure_theme_diversity(
         self,
@@ -1536,7 +1720,7 @@ class QuestionSynthesizer:
 
         embeddings = self._get_embeddings_for_assignment(questions, themes)
         if embeddings is None:
-            return None
+            return self._bucket_questions_llm(questions, themes)
 
         question_vectors, theme_vectors = embeddings
         if question_vectors is None or theme_vectors is None:
@@ -1555,6 +1739,79 @@ class QuestionSynthesizer:
                 buckets["other"].append(question)
                 continue
             buckets[themes[best_idx].key].append(question)
+
+        return buckets
+
+    def _bucket_questions_llm(
+        self,
+        questions: List[Question],
+        themes: List[ThemeDefinition],
+    ) -> Optional[Dict[str, List[Question]]]:
+        if not questions or not themes:
+            return None
+
+        theme_lines = []
+        for theme in themes:
+            theme_lines.append({
+                "key": theme.key,
+                "name": theme.name,
+                "description": theme.description,
+                "keywords": theme.keywords,
+                "scope": theme.scope,
+            })
+
+        question_lines = []
+        for idx, question in enumerate(questions, start=1):
+            question_lines.append({
+                "index": idx,
+                "question": question.question_text,
+                "why_interesting": question.why_interesting,
+                "pattern_source": question.pattern_source,
+                "contradiction_source": question.contradiction_source,
+            })
+
+        prompt = THEME_ASSIGNMENT_PROMPT.format(
+            themes=json.dumps(theme_lines, ensure_ascii=True, indent=2),
+            questions=json.dumps(question_lines, ensure_ascii=True, indent=2),
+        )
+
+        response = self._generate_cached(
+            messages=[{"role": "user", "content": prompt}],
+            profile="quality",
+            temperature=0.1,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        if not response.success:
+            return None
+
+        assignments = parse_llm_json(response.content, default=[])
+        if not isinstance(assignments, list):
+            return None
+
+        buckets: Dict[str, List[Question]] = {t.key: [] for t in themes}
+        buckets["other"] = []
+        by_index = {idx + 1: q for idx, q in enumerate(questions)}
+        valid_keys = {t.key for t in themes}
+
+        for item in assignments:
+            if not isinstance(item, dict):
+                continue
+            q_idx = item.get("question_index")
+            if not isinstance(q_idx, int) or q_idx not in by_index:
+                continue
+            theme_key = str(item.get("theme_key", "other")).strip()
+            confidence = str(item.get("confidence", "")).strip().lower()
+            if theme_key not in valid_keys:
+                theme_key = "other"
+            if confidence in {"low", "medium"} and theme_key != "other":
+                theme_key = "other"
+            buckets[theme_key].append(by_index[q_idx])
+
+        # Ensure all questions accounted for (conservative fallback to other).
+        assigned = {q for bucket in buckets.values() for q in bucket}
+        for q in questions:
+            if q not in assigned:
+                buckets["other"].append(q)
 
         return buckets
 

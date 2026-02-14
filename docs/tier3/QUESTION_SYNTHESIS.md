@@ -123,14 +123,13 @@ in the text, with minimum evidence thresholds. This favors **false negatives** o
 false positives.
 
 ## Recursive Essay Synthesis (History Essay Method)
-Based on `docs/historypdf.pdf`, recursive synthesis:
-- Breaks each theme into sub‑questions until answerable.
-- Answers each sub‑question with a **topic sentence** and **evidence excerpts**.
-- Assembles theme paragraphs from topic sentences + evidence.
-- Writes a long‑form essay in past tense with specific, evidence‑grounded claims.
-- Opens with a thesis and a Cronon‑style purpose statement.
-- Uses topic sentence → evidence → analysis in each paragraph.
-- Includes counterargument/limits and explicit archival gaps.
+Based on `docs/historypdf.pdf`, recursive synthesis uses **multi‑step inductive writing**:
+1. Draft one paragraph per leaf answer (topic → evidence → analysis).
+2. Group paragraphs into themes.
+3. Synthesize higher‑level findings per group.
+4. Stitch all groups into the full essay.
+
+This yields an additive, historian‑style essay rather than a stitched list of leaf answers.
 
 ## Configuration
 Controlled by:
@@ -172,4 +171,6 @@ TIER0_ESSAY_CONCLUSION_MIN_WORDS=140
 TIER0_ESSAY_PARAGRAPH_MIN_WORDS=110
 TIER0_ESSAY_PARAGRAPH_MAX_WORDS=180
 TIER0_RECURSIVE_SUBQUESTION_MIN_DOCS=1
+TIER0_RECURSIVE_PARAGRAPH_MIN_DOCS=2
+TIER0_RECURSIVE_GROUP_TARGET=5
 ```

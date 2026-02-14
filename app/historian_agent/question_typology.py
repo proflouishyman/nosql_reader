@@ -16,8 +16,8 @@ from rag_base import debug_print
 from llm_abstraction import LLMClient
 from config import APP_CONFIG
 
-from question_models import Question, QuestionType, parse_llm_question_response
-from research_notebook import ResearchNotebook, Pattern, Contradiction, Entity
+from historian_agent.question_models import Question, QuestionType, parse_llm_question_response
+from historian_agent.research_notebook import ResearchNotebook, Pattern, Contradiction, Entity
 
 
 # ============================================================================
