@@ -36,6 +36,10 @@ _FACTOID_PREFIXES = [
     "what is the address of",
     "what is the salary of",
     "what is the wage of",
+    # Added past-tense variants so legacy-style factoids are filtered too.
+    "what was the date of birth",
+    "what was the occupation of",
+    "what was the nature of",
     "who is ",
     "who was ",
     "when was ",

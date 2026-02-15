@@ -89,6 +89,10 @@ class QuestionGenerationPipeline:
 
         filtered = self._filter_by_evidence(filtered)
         debug_print(f"Evidence filter kept {len(filtered)}")
+        if not filtered:
+            # Added fallback so strict gates do not collapse the run to zero essay-driving questions.
+            filtered = self._fallback_candidates(validated)
+            debug_print(f"Fallback selected {len(filtered)} evidence-backed candidates")
 
         sanitized = [self._sanitize_time_window(q, notebook) for q in filtered]
 
@@ -266,6 +270,27 @@ class QuestionGenerationPipeline:
             if result.status == "ok":
                 checked.append(q)
         return checked or questions
+
+    def _fallback_candidates(self, questions: List[Question]) -> List[Question]:
+        """
+        Keep a small evidence-backed fallback set when score/evidence gates remove everything.
+        """
+        candidates: List[Question] = []
+        for q in questions:
+            if q.evidence_doc_ids:
+                candidates.append(q)
+                continue
+            if q.answerability_sample:
+                q.evidence_doc_ids = list(q.answerability_sample)
+                candidates.append(q)
+
+        ranked = sorted(
+            candidates,
+            key=lambda q: (q.validation_score or 0, len(q.evidence_doc_ids)),
+            reverse=True,
+        )
+        fallback_n = max(1, self.config.min_questions)
+        return ranked[:fallback_n]
 
     def _sanitize_time_window(self, question: Question, notebook: ResearchNotebook) -> Question:
         if not question.time_window:

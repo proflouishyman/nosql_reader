@@ -36,6 +36,7 @@ from historian_agent.question_synthesis import QuestionSynthesizer
 # Prompts
 # ============================================================================
 
+# Tightened prompt instructions to prioritize cross-document inductive outputs over factoids.
 BATCH_ANALYSIS_PROMPT = """You are a historian systematically reading archival documents.
 
 CLOSED-WORLD RULES:
@@ -73,15 +74,34 @@ Return ONLY valid JSON with this schema:
   "temporal_events": {{"year": [str]}}
 }}
 
-QUESTION RULES (CRITICAL — read carefully):
+PATTERN RULES:
+A "pattern" is an ANALYTICAL OBSERVATION about what the documents reveal, not repeated text.
+Do NOT record form headings, standard questions, or boilerplate text as patterns.
+- BAD: "Have you ever been disabled through any other illness?" (form question)
+- BAD: "striking by engine no 2056" (single event detail)
+- BAD: "I desire to retain my membership for natural death benefits" (boilerplate)
+- GOOD: "Multiple employees in the Maintenance of Way department report eye injuries from foreign matter, suggesting systematic lack of eye protection."
+- GOOD: "Medical examiner reports consistently describe injuries in passive voice, avoiding attribution of fault to the company."
+- GOOD: "Disability claims from the Cumberland Division show longer processing times than other divisions."
+
+CONTRADICTION RULES:
+A contradiction is when TWO SOURCES MAKE CONFLICTING FACTUAL CLAIMS about the same event, person, or situation.
+Two different document types about different events are NOT contradictions.
+- BAD: "Doc A is an injury report, Doc B is a death benefit application." (different forms)
+- BAD: "Duval was sick Dec 1906; Duvall returned to duty Sept 1918." (12 years apart, not conflicting)
+- GOOD: "Doc A says employee was injured on June 5, Doc B says June 12." (same event, conflicting dates)
+- GOOD: "Surgeon reports employee fully recovered, but subsequent letter from employee states ongoing disability."
+If uncertain, DO NOT include it. Prefer false negatives.
+
+QUESTION RULES (CRITICAL):
 Questions must reflect INDUCTIVE REASONING across multiple documents.
 You are a social historian looking for PATTERNS, SYSTEMS, and STRUCTURES.
 
 NEVER generate questions about a single individual's attributes.
 NEVER generate "What is [person]'s [attribute]?" questions.
-NEVER generate lookup/retrieval questions that can be answered from one document.
+NEVER generate lookup/retrieval questions answerable from one document.
 
-GOOD questions require evidence from MULTIPLE documents to answer:
+GOOD questions require evidence from MULTIPLE documents:
 - "What types of injuries were most common among track laborers in this period?"
 - "How did the Relief Department's benefit approval process vary by occupation?"
 - "Were certain divisions disproportionately represented in disability claims?"
@@ -94,12 +114,11 @@ BAD questions (DO NOT GENERATE):
 - "What is the occupation of James Duval?" (single entity attribute)
 - "Who is W. J. Dudley?" (entity identification, not research)
 
-If this batch does not reveal any cross-document patterns worth questioning,
-return an EMPTY questions array: [].
-It is better to return NO questions than to return individual-level factoid questions.
+If this batch reveals no cross-document patterns worth questioning, return EMPTY questions array: []
+Better to return NO questions than individual-level factoid questions.
 
 Evidence must reference ONLY valid block_id values from DOCUMENTS.
-Focus on discoveries: new patterns, contradictions, and questions.
+Focus on discoveries: new patterns, contradictions, and cross-document questions.
 """
 
 INDUCTIVE_SYSTEM_MESSAGE = (

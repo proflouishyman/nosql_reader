@@ -36,6 +36,8 @@ Evaluate on four criteria (0-25 each):
 3. Specificity: Is it well-defined (time, entities, scope)?
 4. Evidence-Based: Is it grounded in observed patterns or contradictions?
 
+{scoring_calibration}
+
 Return JSON:
 {{
   "score": 0-100,
@@ -46,6 +48,27 @@ Return JSON:
   "critique": "...",
   "suggestions": ["..."]
 }}
+"""
+
+# Added fixed scoring anchors so validator outputs spread beyond uniform mid-range scores.
+SCORING_CALIBRATION = """
+CALIBRATION EXAMPLES (use these as anchors):
+
+Score 85-95 (excellent):
+"Why did injury rates among railroad firemen spike during 1923-1925?"
+- Specific time window, specific occupation, causal mechanism, answerable from multiple docs.
+
+Score 60-75 (acceptable):
+"What types of injuries were most common?"
+- Pattern-level, but no time window, no entity specificity, vague.
+
+Score 30-45 (needs refinement):
+"How did the Relief Department operate?"
+- Too broad, not specific enough, could mean anything.
+
+Score 0-20 (reject):
+"What is Thomas Freeland's disability?"
+- Single-person factoid, no research value, not inductive.
 """
 
 REFINE_PROMPT = """You are refining a research question.
@@ -123,11 +146,33 @@ class QuestionValidator:
     def __init__(self) -> None:
         self.llm = LLMClient()
 
+    def _build_validator_context(self, notebook: ResearchNotebook) -> str:
+        """Build abbreviated corpus context for scoring consistency and lower prompt noise."""
+        top_patterns = sorted(
+            notebook.patterns.values(),
+            key=lambda pattern: len(pattern.evidence_doc_ids),
+            reverse=True,
+        )[:10]
+        pattern_text = "\n".join(
+            f"- {pattern.pattern_text} ({len(pattern.evidence_doc_ids)} docs)"
+            for pattern in top_patterns
+        )
+        if not pattern_text:
+            pattern_text = "- (no patterns captured yet)"
+
+        docs_read = notebook.corpus_map.get("total_documents_read", 0)
+        return (
+            "CORPUS KNOWLEDGE (abbreviated):\n"
+            f"Documents read: {docs_read}\n"
+            f"Top patterns:\n{pattern_text}\n"
+        )
+
     def validate(self, question: Question, notebook: ResearchNotebook) -> QuestionValidation:
-        summary = notebook.get_summary()
+        summary = self._build_validator_context(notebook)
         prompt = VALIDATION_PROMPT.format(
             question=question.question_text,
             notebook_summary=summary,
+            scoring_calibration=SCORING_CALIBRATION,
         )
 
         response = self.llm.generate(
@@ -169,7 +214,7 @@ class QuestionValidator:
         return validation
 
     def refine(self, question: Question, notebook: ResearchNotebook) -> Question:
-        summary = notebook.get_summary()
+        summary = self._build_validator_context(notebook)
         prompt = REFINE_PROMPT.format(
             question=question.question_text,
             critique=question.critique or "",
@@ -221,7 +266,7 @@ class QuestionValidator:
 
     def refine_with_critique(self, question: Question, notebook: ResearchNotebook, critique: str) -> Question:
         """Refine using an explicit critique (overrides stored critique)."""
-        summary = notebook.get_summary()
+        summary = self._build_validator_context(notebook)
         prompt = REFINE_PROMPT.format(
             question=question.question_text,
             critique=critique,

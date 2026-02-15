@@ -17,6 +17,7 @@ from config import APP_CONFIG
 from historian_agent.tier0_utils import parse_llm_json
 from historian_agent.question_models import Question
 from historian_agent.research_notebook import ResearchNotebook, Pattern, Contradiction
+from historian_agent.evidence_cluster import EvidenceClusterBuilder
 
 
 SUBQUESTION_PROMPT = """You are a historian refining a research question into smaller, more specific sub-questions.
@@ -446,6 +447,37 @@ def _extract_years(text: str) -> List[int]:
     return sorted(years)
 
 
+def remove_duplicate_paragraphs(essay_text: str) -> str:
+    """
+    Remove duplicate or near-duplicate paragraph content while preserving citations.
+    """
+    paragraphs = [p.strip() for p in str(essay_text or "").split("\n\n")]
+    if not paragraphs:
+        return ""
+
+    seen_sentences = set()
+    cleaned_paragraphs: List[str] = []
+
+    for para in paragraphs:
+        if not para:
+            continue
+        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", para) if s.strip()]
+        if not sentences:
+            continue
+
+        new_sentences = []
+        for sentence in sentences:
+            normalized = sentence.lower().strip()
+            if normalized not in seen_sentences:
+                seen_sentences.add(normalized)
+                new_sentences.append(sentence)
+
+        if len(new_sentences) >= max(1, len(sentences) // 2):
+            cleaned_paragraphs.append(" ".join(new_sentences))
+
+    return "\n\n".join(cleaned_paragraphs)
+
+
 class RecursiveSynthesizer:
     def __init__(self) -> None:
         self.llm = LLMClient()
@@ -458,6 +490,8 @@ class RecursiveSynthesizer:
         )
         self.editor_passes = max(1, APP_CONFIG.tier0.essay_revision_passes)
         self.doc_store = DocumentStore()
+        # Added evidence clustering to expand beyond seed doc IDs before leaf answer generation.
+        self.evidence_cluster_builder = EvidenceClusterBuilder(self.doc_store)
         self._mongo = MongoDBConnection()
         self._leaf_coll = self._mongo.get_collection(APP_CONFIG.tier0.leaf_answers_collection)
         self._ensure_indexes()
@@ -848,7 +882,8 @@ class RecursiveSynthesizer:
                 debug_print(f"Leaf answer insert failed: {exc}")
             return payload
 
-        sources_text, sources_index = self._build_evidence_snippets(node.question_text, node.evidence.doc_ids)
+        expanded_doc_ids = self._expand_evidence_doc_ids(node.question_text, node.evidence.doc_ids)
+        sources_text, sources_index = self._build_evidence_snippets(node.question_text, expanded_doc_ids)
         if not sources_text:
             return None
 
@@ -967,7 +1002,8 @@ class RecursiveSynthesizer:
             "question_id": node.node_id,
             "question_text": node.question_text,
             "level": node.level,
-            "evidence_doc_ids": node.evidence.doc_ids,
+            "evidence_doc_ids": expanded_doc_ids,
+            "seed_evidence_doc_ids": node.evidence.doc_ids,
             "evidence_block_ids": node.evidence.block_ids,
             "topic_sentence": topic_sentence,
             "evidence": normalized_evidence,
@@ -987,6 +1023,43 @@ class RecursiveSynthesizer:
             debug_print(f"Leaf answer insert failed: {exc}")
 
         return payload
+
+    def _expand_evidence_doc_ids(self, question_text: str, seed_doc_ids: List[str]) -> List[str]:
+        """
+        Expand seed evidence docs with retrieval so leaf answers can cite broader support.
+        """
+        normalized_seed = [
+            str(doc_id).split("::")[0]
+            for doc_id in (seed_doc_ids or [])
+            if doc_id
+        ]
+        normalized_seed = list(dict.fromkeys(normalized_seed))
+        if not normalized_seed:
+            return []
+
+        try:
+            cluster = self.evidence_cluster_builder.build_cluster(
+                question_text=question_text,
+                seed_doc_ids=normalized_seed,
+                max_seed=5,
+                retrieval_top_k=10,
+                max_total=12,
+            )
+        except Exception as exc:
+            debug_print(f"Evidence cluster expansion failed for '{question_text}': {exc}")
+            return normalized_seed
+
+        expanded = list(normalized_seed)
+        for item in cluster:
+            doc_id = str(item.get("doc_id") or "").strip()
+            if not doc_id:
+                continue
+            doc_id = doc_id.split("::")[0]
+            if doc_id not in expanded:
+                expanded.append(doc_id)
+
+        max_docs = max(1, APP_CONFIG.tier0.recursive_max_docs)
+        return expanded[:max_docs]
 
     def _build_evidence_snippets(self, question_text: str, doc_ids: List[str]) -> Tuple[str, Dict[str, Any]]:
         if not doc_ids:
@@ -1529,6 +1602,8 @@ class RecursiveSynthesizer:
         cohesion = self._apply_cohesion_pass(base_essay)
         essay_text = cohesion or base_essay
         essay_text = self._strip_paragraph_markers(essay_text)
+        # Added deterministic dedup pass to remove repeated boilerplate across sections.
+        essay_text = remove_duplicate_paragraphs(essay_text)
         if APP_CONFIG.tier0.essay_revision_enabled:
             revised = self._apply_revision_passes(
                 essay_text,
@@ -1575,12 +1650,14 @@ class RecursiveSynthesizer:
         )
         data = parse_llm_json(response.content, default={}) if response.success else {}
         if isinstance(data, dict) and data.get("essay"):
-            if self._validate_essay(data.get("essay", "")):
+            candidate = remove_duplicate_paragraphs(data.get("essay", ""))
+            if self._validate_essay(candidate):
+                data["essay"] = candidate
                 return data
 
         # Fallback: assemble essay directly from theme paragraphs
         sections, body_parts = self._assemble_essay(theme_summaries, grand_narrative)
-        essay_text = "\n".join(body_parts).strip()
+        essay_text = remove_duplicate_paragraphs("\n".join(body_parts).strip())
         return {"essay": essay_text, "sections": sections}
 
     def _assemble_group_essay(
@@ -1654,7 +1731,8 @@ class RecursiveSynthesizer:
     def _apply_cohesion_pass(self, essay: str) -> Optional[str]:
         if not essay:
             return None
-        markers = re.findall(r"\\[PARA\\s+p\\d+\\]", essay)
+        # Fix marker regex escaping so [PARA pX] tags are detected for cohesion validation.
+        markers = re.findall(r"\[PARA\s+p\d+\]", essay)
         if not markers:
             return None
         prompt = COHESION_PROMPT.format(essay=essay)
@@ -1711,13 +1789,16 @@ class RecursiveSynthesizer:
             )
             data = parse_llm_json(response.content, default={}) if response.success else {}
             if isinstance(data, dict) and data.get("essay"):
-                current = data.get("essay", "")
+                # Added dedup after every editor pass to suppress recurring boilerplate clauses.
+                current = remove_duplicate_paragraphs(data.get("essay", ""))
+        current = remove_duplicate_paragraphs(current)
         if self._validate_essay(current) and self._validate_body_citations(current):
             return current
         return None
 
     def _strip_paragraph_markers(self, essay: str) -> str:
-        return re.sub(r"\\[PARA\\s+p\\d+\\]\\s*", "", essay)
+        # Fix marker regex escaping so synthetic paragraph tags are removed from final essays.
+        return re.sub(r"\[PARA\s+p\d+\]\s*", "", essay)
 
     def _validate_essay(self, essay: str) -> bool:
         if not essay:
