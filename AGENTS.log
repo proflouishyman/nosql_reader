@@ -23,3 +23,7 @@
 [2026-02-12 20:55] app/historian_agent/recursive_synthesis.py edited — expand doc_ids with evidence_doc_ids, add paragraph cleaning, enforce minimum theme group count with deterministic fallbacks.
 [2026-02-12 22:36] app/config.py, app/historian_agent/recursive_synthesis.py edited — add essay revision pass with LLM editor and config flag.
 [2026-02-13 11:40] app/historian_agent/recursive_synthesis.py edited — tighten essay revision to use provided section headers and require citations in body paragraphs.
+[2026-02-13 12:10] app/config.py, app/historian_agent/question_synthesis.py, app/historian_agent/recursive_synthesis.py edited — add notebook synthesis macros/briefs, evidence density enforcement, multi-pass editor with llama3.3 profile, and new config toggles.
+[2026-02-14 14:35] app/historian_agent/corpus_explorer.py, app/historian_agent/research_notebook.py edited — enforce inductive batch questions (prompt + system message) and filter/dedup factoid questions before notebook insertion.
+[2026-02-15 09:28] app/historian_agent/recursive_synthesis.py edited — Fixed citation regex escaping to prevent recursive synthesis crash in overnight Tier0 runs.
+[2026-02-15 09:50] docs/tier3/TIER0_IMPLEMENTATION_SUMMARY.md, docs/tier3/TIER0_INTEGRATION.md, docs/tier3/TIER0_STATUS_AND_LIMITATIONS.md edited — document notebook synthesis, evidence density, editor passes, cache refresh, and limitations/expectations.

@@ -340,6 +340,63 @@ Return ONLY JSON:
 }}
 """
 
+STRUCTURE_REVISION_PROMPT = """You are a historian-editor revising for structure and argument.
+
+RULES:
+- Use ONLY information already in the draft.
+- Use the section headers exactly as provided below.
+- Ensure a thesis and roadmap appear in the introduction.
+- Each paragraph must begin with a topic sentence.
+
+SECTIONS:
+{sections}
+
+DRAFT ESSAY:
+{essay}
+
+Return ONLY JSON:
+{{
+  "essay": "..."
+}}
+"""
+
+EVIDENCE_REVISION_PROMPT = """You are a historian-editor revising for evidence alignment.
+
+RULES:
+- Use ONLY information already in the draft or the evidence briefs below.
+- Every body paragraph must include at least {min_citations} citations like [doc_id].
+- If a claim lacks evidence, rewrite it as a cautious inference ("the record suggests").
+- Do NOT invent new facts.
+
+EVIDENCE BRIEFS:
+{evidence_briefs}
+
+DRAFT ESSAY:
+{essay}
+
+Return ONLY JSON:
+{{
+  "essay": "..."
+}}
+"""
+
+STYLE_REVISION_PROMPT = """You are a historian-editor polishing style and flow.
+
+RULES:
+- Preserve citations and section headers.
+- Reduce repetition and boilerplate.
+- Improve transitions and historical tone.
+- Do NOT add new facts.
+
+DRAFT ESSAY:
+{essay}
+
+Return ONLY JSON:
+{{
+  "essay": "..."
+}}
+"""
+
 
 @dataclass
 class EvidencePack:
@@ -1059,6 +1116,10 @@ class RecursiveSynthesizer:
             "label_to_id": label_to_id,
             "label_to_year": label_to_year,
             "doc_id_to_year": doc_id_to_year,
+            "snippets": [
+                {"label": label, "doc_id": doc_id, "text": snippet, "meta": meta}
+                for label, doc_id, snippet, meta in snippets
+            ],
         }
 
     def _synthesize_theme(self, theme: str, leaf_answers: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -1140,9 +1201,15 @@ class RecursiveSynthesizer:
             "gaps": gaps,
         }
 
-    def _build_paragraphs_from_leafs(self, leaf_answers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _build_paragraphs_from_leafs(
+        self,
+        leaf_answers: List[Dict[str, Any]],
+        theme_question_map: Optional[Dict[str, str]] = None,
+    ) -> Tuple[List[Dict[str, Any]], List[str]]:
         paragraphs: List[Dict[str, Any]] = []
+        paragraph_gaps: List[str] = []
         min_docs = APP_CONFIG.tier0.recursive_paragraph_min_docs
+        min_citations = APP_CONFIG.tier0.paragraph_min_evidence
         for idx, item in enumerate(leaf_answers, 1):
             evidence = item.get("evidence") or []
             doc_ids = [ev.get("doc_id") for ev in evidence if ev.get("doc_id")]
@@ -1166,6 +1233,7 @@ class RecursiveSynthesizer:
                     f"Skipping paragraph: {item.get('question_text')} "
                     f"doc_ids=0 min_docs={min_docs}"
                 )
+                paragraph_gaps.append(item.get("question_text") or "missing evidence")
                 continue
             is_tentative = len(doc_ids) < min_docs
             if is_tentative:
@@ -1192,6 +1260,42 @@ class RecursiveSynthesizer:
                     if f"[{doc_id}]" in " ".join(evidence_lines):
                         continue
                     evidence_lines.append(f"Document evidence [{doc_id}]")
+
+            citation_pattern = r"\[([^\]]+)\]"  # Parse [doc_id] citations; avoids the invalid double-escaped pattern.
+
+            # Backfill evidence lines with snippets if we still lack citations.
+            if len({d for d in doc_ids if d}) >= min_citations and len(evidence_lines) < min_citations:
+                sources_text, sources_index = self._build_evidence_snippets(
+                    item.get("question_text") or "",
+                    doc_ids,
+                )
+                snippets = sources_index.get("snippets") or []
+                used = set()
+                for line in evidence_lines:
+                    used.update(re.findall(citation_pattern, line))
+                for snippet in snippets:
+                    doc_id = snippet.get("doc_id")
+                    if not doc_id or doc_id in used:
+                        continue
+                    text = (snippet.get("text") or "").strip().replace("\n", " ")
+                    if not text:
+                        continue
+                    evidence_lines.append(f"{text[:260]} [{doc_id}]")
+                    used.add(doc_id)
+                    if len(evidence_lines) >= min_citations:
+                        break
+
+            # Enforce minimum distinct citations per paragraph (body paragraphs).
+            cited = set()
+            for line in evidence_lines:
+                cited.update(re.findall(citation_pattern, line))
+            if len({c for c in cited if c}) < min_citations:
+                debug_print(
+                    f"Skipping paragraph (insufficient citations): {item.get('question_text')} "
+                    f"citations={len(cited)} min={min_citations}"
+                )
+                paragraph_gaps.append(item.get("question_text") or "insufficient evidence")
+                continue
             evidence_block = "\n".join(evidence_lines) if evidence_lines else "(no evidence)"
 
             topic_sentence = item.get("topic_sentence")
@@ -1240,16 +1344,23 @@ class RecursiveSynthesizer:
                 "doc_ids": doc_ids,
                 "claim_type": claim_type or "institutional_practice",
                 "evidence_years": item.get("evidence_years") or [],
+                "theme_name": self._infer_theme_name(item.get("question_text"), theme_question_map),
             })
 
         debug_print(f"[paragraphs] built={len(paragraphs)} from leafs={len(leaf_answers)}")
-        return paragraphs
+        return paragraphs, paragraph_gaps
 
     def _clean_paragraph_text(self, paragraph: str) -> str:
         cleaned = paragraph.strip()
         cleaned = re.sub(r'^[\"\\s:]+', '', cleaned)
         cleaned = re.sub(r'\\s+$', '', cleaned)
         return cleaned
+
+    def _infer_theme_name(self, question_text: Optional[str], theme_question_map: Optional[Dict[str, str]]) -> str:
+        if not question_text or not theme_question_map:
+            return ""
+        normalized = self._normalize_question(question_text)
+        return theme_question_map.get(normalized, "")
 
     def _recover_paragraph_text(self, raw: str) -> Optional[str]:
         if not raw:
@@ -1272,6 +1383,12 @@ class RecursiveSynthesizer:
     def _group_paragraphs(self, paragraphs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         if not paragraphs:
             return []
+        if APP_CONFIG.tier0.notebook_synthesis_enabled:
+            grouped: Dict[str, List[str]] = {}
+            for p in paragraphs:
+                theme_name = p.get("theme_name") or "Other"
+                grouped.setdefault(theme_name, []).append(p["id"])
+            return [{"group": k, "paragraph_ids": v} for k, v in grouped.items()]
         target = min(APP_CONFIG.tier0.recursive_group_target, len(paragraphs))
         target = max(target, 1)
         debug_print(f"[groups] paragraphs={len(paragraphs)} target={target}")
@@ -1395,17 +1512,29 @@ class RecursiveSynthesizer:
         group_summaries: List[Dict[str, Any]],
         paragraphs: List[Dict[str, Any]],
         grand_narrative: Optional[Dict[str, Any]],
+        notebook_synthesis: Optional[Dict[str, Any]] = None,
+        paragraph_gaps: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         if not group_summaries:
             return {}
         debug_print(f"[essay] group_summaries={len(group_summaries)} paragraphs={len(paragraphs)}")
         paragraph_map = {p["id"]: p for p in paragraphs}
-        base_essay, sections = self._assemble_group_essay(group_summaries, paragraph_map, grand_narrative)
+        base_essay, sections = self._assemble_group_essay(
+            group_summaries,
+            paragraph_map,
+            grand_narrative,
+            notebook_synthesis,
+            paragraph_gaps,
+        )
         cohesion = self._apply_cohesion_pass(base_essay)
         essay_text = cohesion or base_essay
         essay_text = self._strip_paragraph_markers(essay_text)
         if APP_CONFIG.tier0.essay_revision_enabled:
-            revised = self._apply_revision_pass(essay_text, sections)
+            revised = self._apply_revision_passes(
+                essay_text,
+                sections,
+                notebook_synthesis or {},
+            )
             if revised:
                 return {"essay": revised, "sections": sections}
         return {"essay": essay_text, "sections": sections}
@@ -1459,13 +1588,23 @@ class RecursiveSynthesizer:
         group_summaries: List[Dict[str, Any]],
         paragraph_map: Dict[str, Dict[str, Any]],
         grand_narrative: Optional[Dict[str, Any]],
+        notebook_synthesis: Optional[Dict[str, Any]] = None,
+        paragraph_gaps: Optional[List[str]] = None,
     ) -> Tuple[str, List[str]]:
         sections: List[str] = []
+        macro_map = {
+            item.get("theme"): item.get("macro_paragraph")
+            for item in (notebook_synthesis or {}).get("theme_macros", [])
+            if item.get("theme") and item.get("macro_paragraph")
+        }
         parts = [self._build_intro(grand_narrative, [{"theme": g.get("group")} for g in group_summaries])]
         for group in group_summaries:
             name = group.get("group", "Theme")
             sections.append(name)
             parts.append(f"\n{name}\n")
+            macro = macro_map.get(name)
+            if macro:
+                parts.append(macro)
             thematic_claim = self._generate_group_intro(group, paragraph_map)
             if thematic_claim:
                 parts.append(f"{thematic_claim}")
@@ -1478,7 +1617,7 @@ class RecursiveSynthesizer:
             if closing:
                 parts.append(closing)
         parts.append(self._build_counterargument([]))
-        parts.append(self._build_gaps([]))
+        parts.append(self._build_gaps([], paragraph_gaps))
         parts.append(self._build_conclusion([]))
         essay = "\n\n".join([p for p in parts if p]).strip()
         return essay, sections
@@ -1538,27 +1677,43 @@ class RecursiveSynthesizer:
                 return None
         return self._strip_paragraph_markers(text)
 
-    def _apply_revision_pass(self, essay: str, sections: Optional[List[str]]) -> Optional[str]:
+    def _apply_revision_passes(
+        self,
+        essay: str,
+        sections: Optional[List[str]],
+        notebook_synthesis: Dict[str, Any],
+    ) -> Optional[str]:
         if not essay:
             return None
-        prompt = ESSAY_REVISION_PROMPT.format(
-            essay=essay,
-            sections=json.dumps(sections or [], ensure_ascii=True),
-        )
-        response = self.llm.generate(
-            messages=[
-                {"role": "system", "content": "You revise historical essays for clarity and evidence alignment."},
-                {"role": "user", "content": prompt},
-            ],
-            profile=self.writer_profile,
-            temperature=0.2,
-            timeout=APP_CONFIG.tier0.llm_timeout,
-        )
-        data = parse_llm_json(response.content, default={}) if response.success else {}
-        if isinstance(data, dict) and data.get("essay"):
-            revised = data.get("essay", "")
-            if self._validate_essay(revised):
-                return revised
+        passes = min(self.editor_passes, 3)
+        prompts = [
+            STRUCTURE_REVISION_PROMPT,
+            EVIDENCE_REVISION_PROMPT,
+            STYLE_REVISION_PROMPT,
+        ]
+        evidence_briefs = notebook_synthesis.get("evidence_briefs", [])
+        current = essay
+        for idx in range(passes):
+            prompt = prompts[idx].format(
+                essay=current,
+                sections=json.dumps(sections or [], ensure_ascii=True),
+                evidence_briefs=json.dumps(evidence_briefs, ensure_ascii=True),
+                min_citations=APP_CONFIG.tier0.paragraph_min_evidence,
+            )
+            response = self.llm.generate(
+                messages=[
+                    {"role": "system", "content": "You revise historical essays for clarity and evidence alignment."},
+                    {"role": "user", "content": prompt},
+                ],
+                profile=self.editor_profile,
+                temperature=0.2,
+                timeout=APP_CONFIG.tier0.llm_timeout,
+            )
+            data = parse_llm_json(response.content, default={}) if response.success else {}
+            if isinstance(data, dict) and data.get("essay"):
+                current = data.get("essay", "")
+        if self._validate_essay(current) and self._validate_body_citations(current):
+            return current
         return None
 
     def _strip_paragraph_markers(self, essay: str) -> str:
@@ -1573,6 +1728,21 @@ class RecursiveSynthesizer:
         citations = re.findall(r"\[[^\]]+\]", essay)
         if len(citations) < max(3, len(essay.split()) // 300):
             return False
+        return True
+
+    def _validate_body_citations(self, essay: str) -> bool:
+        paras = [p.strip() for p in str(essay).split("\n\n") if p.strip()]
+        if len(paras) <= 2:
+            return True
+        min_citations = APP_CONFIG.tier0.paragraph_min_evidence
+        body = paras[1:-1]
+        for para in body:
+            # Skip section headers
+            if len(para.split()) <= 6 and "." not in para:
+                continue
+            citations = re.findall(r"\[[^\]]+\]", para)
+            if len(citations) < min_citations:
+                return False
         return True
 
     def _assemble_essay(
@@ -1660,8 +1830,15 @@ class RecursiveSynthesizer:
             section="counterargument",
         )
 
-    def _build_gaps(self, theme_summaries: List[Dict[str, Any]]) -> str:
+    def _build_gaps(
+        self,
+        theme_summaries: List[Dict[str, Any]],
+        paragraph_gaps: Optional[List[str]] = None,
+    ) -> str:
         gaps = []
+        for gap in paragraph_gaps or []:
+            if gap:
+                gaps.append(gap)
         for theme in theme_summaries:
             summary = theme.get("summary", {})
             missing = summary.get("gaps") or []

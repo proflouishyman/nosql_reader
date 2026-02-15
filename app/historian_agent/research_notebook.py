@@ -22,6 +22,100 @@ from collections import defaultdict
 from config import APP_CONFIG
 
 # ============================================================================
+# Question quality filters (inductive questions only)
+# ============================================================================
+
+_FACTOID_PREFIXES = [
+    "what is the date of birth",
+    "what is the occupation of",
+    "what is the nature of",
+    "what is the name of",
+    "what is the disability of",
+    "what is the cause of death",
+    "what is the age of",
+    "what is the address of",
+    "what is the salary of",
+    "what is the wage of",
+    "who is ",
+    "who was ",
+    "when was ",
+    "where was ",
+    "where does ",
+    "where did ",
+]
+
+_POSSESSIVE_INDIVIDUAL_RE = re.compile(
+    r"^(what|who|when|where|how)\b.{0,40}\b[A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+(?:'s|s')\s+\w+",
+    re.IGNORECASE,
+)
+
+_WHAT_IS_PERSONS_RE = re.compile(
+    r"^what\s+(?:is|was|are|were)\s+(?:the\s+)?(?:\w+\s+){0,2}(?:of\s+)?[A-Z]",
+    re.IGNORECASE,
+)
+
+
+def is_individual_factoid(question_text: str) -> bool:
+    """Return True if the question is a low-quality individual factoid."""
+    q = (question_text or "").lower().strip()
+    if not q:
+        return True
+    for prefix in _FACTOID_PREFIXES:
+        if q.startswith(prefix):
+            return True
+    if _POSSESSIVE_INDIVIDUAL_RE.match(question_text or ""):
+        return True
+    if _WHAT_IS_PERSONS_RE.match(question_text or ""):
+        words = question_text.split()
+        common_caps = {
+            "what", "who", "when", "where", "how", "why", "the", "a", "an",
+            "is", "was", "are", "were", "of", "in", "at", "by", "for", "to",
+            "relief", "department", "railroad", "baltimore", "ohio", "company",
+        }
+        proper_nouns = [
+            w for i, w in enumerate(words)
+            if i > 0
+            and w[0].isupper()
+            and w.lower().rstrip("?.,;:'\"") not in common_caps
+            and len(w) > 1
+        ]
+        if proper_nouns and len(words) < 15:
+            return True
+    return False
+
+
+def filter_batch_questions(questions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Filter out individual-level factoid questions from a batch."""
+    kept = []
+    for q in questions:
+        text = q.get("question", "") if isinstance(q, dict) else ""
+        if not text or is_individual_factoid(text):
+            continue
+        kept.append(q)
+    return kept
+
+
+def is_duplicate_question(new_question: str, existing_questions: List[Any], threshold: float = 0.85) -> bool:
+    """Return True if a question is near-duplicate of an existing one."""
+    new_words = set((new_question or "").lower().split())
+    if not new_words:
+        return True
+    for existing in existing_questions:
+        existing_text = ""
+        if hasattr(existing, "question"):
+            existing_text = existing.question
+        elif isinstance(existing, dict):
+            existing_text = existing.get("question", "")
+        existing_words = set((existing_text or "").lower().split())
+        if not existing_words:
+            continue
+        overlap = len(new_words & existing_words)
+        union = len(new_words | existing_words)
+        if union > 0 and (overlap / union) >= threshold:
+            return True
+    return False
+
+# ============================================================================
 # Data Classes
 # ============================================================================
 
@@ -169,9 +263,20 @@ class ResearchNotebook:
         for indicator_dict in findings.get("group_indicators", []):
             self._add_group_indicator(indicator_dict, batch_label)
 
-        for question_dict in findings.get("questions", []):
+        raw_questions = findings.get("questions", [])
+        filtered_questions = filter_batch_questions(raw_questions)
+        added_questions = 0
+        for question_dict in filtered_questions:
+            if not isinstance(question_dict, dict):
+                continue
             question_dict["noticed_in_batch"] = batch_label
+            question_text = question_dict.get("question", "")
+            if not question_text:
+                continue
+            if is_duplicate_question(question_text, self.questions):
+                continue
             self.questions.append(ResearchQuestion(**question_dict))
+            added_questions += 1
 
         for year, events in findings.get("temporal_events", {}).items():
             self.temporal_map[year].extend(events)
@@ -183,7 +288,7 @@ class ResearchNotebook:
             "processed_at": datetime.now().isoformat(),
             "entities_added": len(findings.get("entities", [])),
             "patterns_added": len(findings.get("patterns", [])),
-            "questions_added": len(findings.get("questions", [])),
+            "questions_added": added_questions,
         })
 
         self.corpus_map["batches_processed"] += 1

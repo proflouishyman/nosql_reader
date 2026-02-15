@@ -64,6 +64,7 @@ The endpoint returns:
 - `corpus_map` (stats + archive notes)
 - `questions` (typed + validated)
 - `question_synthesis` (hierarchy + gaps)
+- `notebook_synthesis` (theme macros + evidence briefs)
 - `patterns`, `entities`, `contradictions`, `group_indicators`
 - `notebook_path` (if auto‑save enabled)
 
@@ -74,6 +75,7 @@ The endpoint returns:
 - Contradictions include a lightweight type classification (name variant, ID conflict, date conflict, etc.).
 - Group indicators are extracted only when explicitly stated; the system prefers false negatives over false positives.
 - Cronon‑style synthesis adds purpose statements and why‑then/why‑there framing.
+- Notebook synthesis adds theme macro paragraphs and evidence briefs for the editor.
 - Repair loops are skipped on very small batches (`TIER0_REPAIR_MIN_DOCS`).
 - Question generation and validation include JSON‑repair passes (format‑only, no new facts).
 - Pattern merging uses a conservative similarity threshold (`TIER0_PATTERN_MERGE_THRESHOLD`) to accumulate evidence without over‑merging.

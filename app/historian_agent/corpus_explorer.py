@@ -68,14 +68,47 @@ Return ONLY valid JSON with this schema:
     {{"group_type": "race|gender|class|ethnicity|national_origin|occupation", "label": str, "evidence_blocks": ["block_id"], "confidence": "low|medium|high"}}
   ],
   "questions": [
-    {{"question": str, "why_interesting": str, "evidence_needed": str, "time_window": str}}
+    {{"question": str, "why_interesting": str, "evidence_needed": str, "related_entities": [], "time_window": str}}
   ],
   "temporal_events": {{"year": [str]}}
 }}
 
+QUESTION RULES (CRITICAL — read carefully):
+Questions must reflect INDUCTIVE REASONING across multiple documents.
+You are a social historian looking for PATTERNS, SYSTEMS, and STRUCTURES.
+
+NEVER generate questions about a single individual's attributes.
+NEVER generate "What is [person]'s [attribute]?" questions.
+NEVER generate lookup/retrieval questions that can be answered from one document.
+
+GOOD questions require evidence from MULTIPLE documents to answer:
+- "What types of injuries were most common among track laborers in this period?"
+- "How did the Relief Department's benefit approval process vary by occupation?"
+- "Were certain divisions disproportionately represented in disability claims?"
+- "How did medical examiner reporting practices change over time?"
+- "What role did the superintendent play in adjudicating contested claims?"
+
+BAD questions (DO NOT GENERATE):
+- "What is Thomas Freeland's disability?" (single person, single fact)
+- "What is the date of birth of Edward Collins?" (lookup)
+- "What is the occupation of James Duval?" (single entity attribute)
+- "Who is W. J. Dudley?" (entity identification, not research)
+
+If this batch does not reveal any cross-document patterns worth questioning,
+return an EMPTY questions array: [].
+It is better to return NO questions than to return individual-level factoid questions.
+
 Evidence must reference ONLY valid block_id values from DOCUMENTS.
 Focus on discoveries: new patterns, contradictions, and questions.
 """
+
+INDUCTIVE_SYSTEM_MESSAGE = (
+    "You are a social historian performing INDUCTIVE analysis of archival documents. "
+    "Your job is to find patterns ACROSS documents, not to catalog facts about individuals. "
+    "Think structurally: what do these documents reveal about SYSTEMS, INSTITUTIONS, and GROUP EXPERIENCES? "
+    "Never generate questions about a single person's attributes — "
+    "always reason at the level of occupations, departments, time periods, or policies."
+)
 
 BATCH_REPAIR_PROMPT = """You are auditing a batch analysis for evidence alignment.
 
@@ -402,7 +435,7 @@ class CorpusExplorer:
         with Heartbeat(self.logger, "llm", heartbeat_detail, APP_CONFIG.tier0.heartbeat_seconds):
             response = self.llm.generate(
                 messages=[
-                    {"role": "system", "content": "You are a careful historian."},
+                    {"role": "system", "content": INDUCTIVE_SYSTEM_MESSAGE},
                     {"role": "user", "content": prompt},
                 ],
                 profile=APP_CONFIG.tier0.batch_profile,
