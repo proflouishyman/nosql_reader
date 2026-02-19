@@ -558,6 +558,11 @@ const NetworkExplorer = {
             resetBtn.addEventListener("click", () => this.resetControls(container));
         }
 
+        const openViewerBtn = document.getElementById("open-network-viewer");
+        if (openViewerBtn) {
+            openViewerBtn.addEventListener("click", () => this.openDocumentViewer(openViewerBtn));
+        }
+
         await this.reloadCurrentView(container);
     },
 
@@ -682,6 +687,29 @@ const NetworkExplorer = {
 
         this.selectEntity(data.entity);
         this.renderLegend();
+    },
+
+    openDocumentViewer(buttonEl = null) {
+        const launchUrl = new URL("/network/viewer-launch", window.location.origin);
+        const filters = this.getFilterValues();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== "") {
+                launchUrl.searchParams.set(key, value);
+            }
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const entityId = params.get("entity");
+        if (entityId) {
+            launchUrl.searchParams.set("entity", entityId);
+        }
+
+        if (buttonEl) {
+            buttonEl.disabled = true;
+            buttonEl.textContent = "Opening...";
+        }
+
+        window.location.href = launchUrl.toString();
     },
 
     selectEntity(entityData) {

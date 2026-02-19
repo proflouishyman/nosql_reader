@@ -2179,3 +2179,51 @@ input[type="range"] {
     font-size: 0.8em;
     color: #64748b;
 }
+
+.network-document-list-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.network-document-list__header p {
+    margin: 0.4rem 0;
+    color: #4a4a4a;
+}
+
+.network-document-list__warning {
+    color: #8a6d3b;
+}
+
+.network-document-list__actions {
+    margin: 0.75rem 0 1rem;
+}
+
+.network-document-list__table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.network-document-list__table th,
+.network-document-list__table td {
+    border: 1px solid #e4e4e4;
+    padding: 0.5rem 0.6rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.network-document-list__table th {
+    background: #f6f7f9;
+    font-weight: 600;
+}
+
+.network-document-list__pagination {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.network-document-list__empty {
+    color: #666;
+}

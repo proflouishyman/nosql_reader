@@ -7,10 +7,10 @@
     <div class="info-panel">
       <!-- Navigation -->
       <div class="navigation">
-        <a href="{{ url_for('search_database') }}?return_to_search=true" class="button button--secondary nav-button" title="Return to Search Results">
-          <span>Search</span>
+        <a href="{{ back_to_list_url }}" class="button button--secondary nav-button" title="Return to document list">
+          <span>{{ back_to_list_label }}</span>
         </a>
-        <a href="{{ prev_id and url_for('document_detail', doc_id=prev_id, search_id=search_id) or '#' }}"
+        <a href="{{ prev_url }}"
            class="button button--secondary nav-button {{ 'disabled' if not prev_id else '' }}"
            title="Previous Result"
            {% if not prev_id %}aria-disabled="true" tabindex="-1"{% endif %}>
@@ -19,7 +19,7 @@
         <a href="{{ url_for('index') }}" class="button button--secondary nav-button" title="Home">
           <span>Home</span>
         </a>
-        <a href="{{ next_id and url_for('document_detail', doc_id=next_id, search_id=search_id) or '#' }}"
+        <a href="{{ next_url }}"
            class="button button--secondary nav-button {{ 'disabled' if not next_id else '' }}"
            title="Next Result"
            {% if not next_id %}aria-disabled="true" tabindex="-1"{% endif %}>

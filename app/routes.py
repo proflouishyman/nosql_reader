@@ -57,6 +57,8 @@ from historian_agent import (
 import image_ingestion
 from util.mounts import get_mounted_paths, short_tree  # Added to support read-only ingestion mounts view.
 from network import init_app as init_network
+from network.config import NetworkConfig
+from network.network_utils import get_network_documents_for_viewer
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -1633,6 +1635,173 @@ def network_analysis_page():
     return render_template('network-analysis.html')
 
 
+NETWORK_VIEWER_CONTEXT_TIMEOUT = 3600
+NETWORK_VIEWER_MAX_DOCUMENTS = 2000
+NETWORK_VIEWER_MAX_DOCS_PER_EDGE = 250
+
+
+def _parse_network_type_filter(raw_value: str) -> List[str]:
+    if not raw_value:
+        return []
+    return [value.strip() for value in raw_value.split(",") if value.strip()]
+
+
+def _parse_network_int_arg(name: str, default: int, minimum: int = 1, maximum: Optional[int] = None) -> int:
+    raw_value = request.args.get(name, default)
+    try:
+        parsed_value = int(raw_value)
+    except (TypeError, ValueError):
+        parsed_value = default
+    parsed_value = max(minimum, parsed_value)
+    if maximum is not None:
+        parsed_value = min(parsed_value, maximum)
+    return parsed_value
+
+
+def _parse_network_bool_arg(name: str, default: bool) -> bool:
+    raw_value = request.args.get(name)
+    if raw_value is None:
+        return default
+    return str(raw_value).strip().lower() in ("1", "true", "yes", "y", "on")
+
+
+def _build_network_viewer_context() -> Dict[str, Any]:
+    config = NetworkConfig.from_env()
+    entity_id = request.args.get("entity", "").strip() or None
+    type_filter = _parse_network_type_filter(request.args.get("type_filter", "").strip())
+    min_weight = _parse_network_int_arg("min_weight", config.default_min_weight, minimum=1, maximum=9999)
+    edge_limit = _parse_network_int_arg("limit", config.default_limit, minimum=1, maximum=5000)
+    strict_type_filter = _parse_network_bool_arg("strict_type_filter", True)
+
+    context = get_network_documents_for_viewer(
+        db,
+        entity_id=entity_id,
+        type_filter=type_filter or None,
+        min_weight=min_weight,
+        limit=edge_limit,
+        strict_type_filter=strict_type_filter,
+        max_documents=NETWORK_VIEWER_MAX_DOCUMENTS,
+        max_docs_per_edge=NETWORK_VIEWER_MAX_DOCS_PER_EDGE,
+    )
+
+    network_query = request.query_string.decode("utf-8")
+    analysis_url = url_for("network_analysis_page")
+    if network_query:
+        analysis_url = f"{analysis_url}?{network_query}"
+
+    context["filters"] = {
+        "entity": entity_id,
+        "type_filter": type_filter,
+        "min_weight": min_weight,
+        "limit": edge_limit,
+        "strict_type_filter": strict_type_filter,
+    }
+    context["analysis_url"] = analysis_url
+    context["generated_at"] = datetime.utcnow().isoformat()
+    return context
+
+
+def _hydrate_network_documents_from_ids(ordered_ids: List[str]) -> List[Dict[str, Any]]:
+    if not ordered_ids:
+        return []
+
+    valid_object_ids = [ObjectId(doc_id) for doc_id in ordered_ids if ObjectId.is_valid(doc_id)]
+    filename_by_id: Dict[str, str] = {}
+    if valid_object_ids:
+        for doc in documents.find({"_id": {"$in": valid_object_ids}}, {"filename": 1}):
+            filename_by_id[str(doc["_id"])] = doc.get("filename", "Unknown")
+
+    rows = []
+    for doc_id in ordered_ids:
+        rows.append(
+            {
+                "document_id": doc_id,
+                "filename": filename_by_id.get(doc_id, "Unknown"),
+                "matched_entity_count": None,
+                "matched_edge_count": None,
+                "network_score": None,
+            }
+        )
+    return rows
+
+
+@app.route('/network/viewer-launch')
+def network_viewer_launch():
+    """
+    Build a network-derived document list and launch list-driven document viewer.
+
+    The resulting list is cached using the same `search_<id>` key contract as
+    Search Database so document detail prev/next navigation works unchanged.
+    """
+    config = NetworkConfig.from_env()
+    if not config.enabled:
+        flash("Network analysis is disabled.", "warning")
+        return redirect(url_for("network_analysis_page"))
+
+    context = _build_network_viewer_context()
+    documents_for_viewer = context.get("documents", [])
+
+    search_id = str(uuid.uuid4())
+    ordered_ids = [entry["document_id"] for entry in documents_for_viewer if entry.get("document_id")]
+    cache.set(f"search_{search_id}", ordered_ids, timeout=NETWORK_VIEWER_CONTEXT_TIMEOUT)
+    cache.set(f"network_search_{search_id}", context, timeout=NETWORK_VIEWER_CONTEXT_TIMEOUT)
+
+    if not ordered_ids:
+        flash("No documents matched the current network filters.", "info")
+
+    return redirect(url_for("network_viewer_results", search_id=search_id))
+
+
+@app.route('/network/viewer-results')
+def network_viewer_results():
+    """Render network-generated document list for next/previous document navigation."""
+    search_id = request.args.get("search_id", "").strip()
+    if not search_id:
+        flash("Missing network viewer context.", "warning")
+        return redirect(url_for("network_analysis_page"))
+
+    context = cache.get(f"network_search_{search_id}") or {}
+    documents_list = context.get("documents", [])
+
+    if not documents_list:
+        ordered_ids = cache.get(f"search_{search_id}") or []
+        if ordered_ids:
+            documents_list = _hydrate_network_documents_from_ids(ordered_ids)
+
+    page = _parse_network_int_arg("page", 1, minimum=1, maximum=100000)
+    per_page = _parse_network_int_arg("per_page", 50, minimum=10, maximum=200)
+
+    total_count = len(documents_list)
+    total_pages = max(1, math.ceil(total_count / per_page)) if per_page else 1
+    if page > total_pages:
+        page = total_pages
+
+    start_idx = (page - 1) * per_page
+    end_idx = start_idx + per_page
+    page_documents = documents_list[start_idx:end_idx]
+
+    viewer_meta = {
+        "mode": context.get("mode", "global"),
+        "entity": context.get("entity"),
+        "filters": context.get("filters", {}),
+        "analysis_url": context.get("analysis_url", url_for("network_analysis_page")),
+        "generated_at": context.get("generated_at"),
+        "stats": context.get("stats", {}),
+        "expired": not bool(context),
+    }
+
+    return render_template(
+        "network-document-list.html",
+        search_id=search_id,
+        documents=page_documents,
+        total_count=total_count,
+        current_page=page,
+        total_pages=total_pages,
+        per_page=per_page,
+        viewer_meta=viewer_meta,
+    )
+
+
 @app.route('/document/<string:doc_id>')
 # @login_required
 def document_detail(doc_id):
@@ -1663,6 +1832,7 @@ def document_detail(doc_id):
     
     
     search_id = request.args.get('search_id', '')
+    origin = request.args.get('origin', '').strip().lower()
 
     try:
         # Fetch the document by ID
@@ -1711,6 +1881,30 @@ def document_detail(doc_id):
             prev_id = None
             next_id = None
 
+        if origin == "network":
+            if search_id:
+                back_to_list_url = url_for("network_viewer_results", search_id=search_id)
+                back_to_list_label = "Network Results"
+            else:
+                back_to_list_url = url_for("network_analysis_page")
+                back_to_list_label = "Network"
+        else:
+            back_to_list_url = f"{url_for('search_database')}?return_to_search=true"
+            back_to_list_label = "Search"
+
+        prev_url = "#"
+        next_url = "#"
+        if prev_id:
+            prev_params = {"doc_id": prev_id, "search_id": search_id}
+            if origin:
+                prev_params["origin"] = origin
+            prev_url = url_for("document_detail", **prev_params)
+        if next_id:
+            next_params = {"doc_id": next_id, "search_id": search_id}
+            if origin:
+                next_params["origin"] = origin
+            next_url = url_for("document_detail", **next_params)
+
         # Get the relative path from the document
         relative_path = document.get('relative_path')  # This should contain the relative path to the JSON file
 
@@ -1741,7 +1935,12 @@ def document_detail(doc_id):
             display_filename=display_filename,
             prev_id=prev_id,
             next_id=next_id,
+            prev_url=prev_url,
+            next_url=next_url,
             search_id=search_id,
+            origin=origin,
+            back_to_list_url=back_to_list_url,
+            back_to_list_label=back_to_list_label,
             image_path=image_path,  # Pass the constructed image path
             image_exists=image_exists,  # Pass the flag indicating if the image exists
             ner_groups=ner_groups

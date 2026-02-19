@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Network Document Viewer · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container network-document-list-page">
+  <header class="network-document-list__header">
+    <h1>Network Document Viewer</h1>
+    <p>
+      {{ total_count }} document{{ "" if total_count == 1 else "s" }} in this network-derived list.
+      Opening a document preserves this list for Previous/Next navigation.
+    </p>
+    {% if viewer_meta.entity and viewer_meta.mode == "entity" %}
+      <p>
+        Scope: {{ viewer_meta.entity.name }} ({{ viewer_meta.entity.type }}) ego network.
+      </p>
+    {% else %}
+      <p>Scope: global network filters.</p>
+    {% endif %}
+    {% if viewer_meta.expired %}
+      <p class="network-document-list__warning">
+        This viewer context expired from cache. Showing limited fallback metadata.
+      </p>
+    {% endif %}
+  </header>
+
+  <div class="network-document-list__actions">
+    <a href="{{ viewer_meta.analysis_url }}" class="button button--secondary">Back to Network Analysis</a>
+  </div>
+
+  {% if documents %}
+    <table class="network-document-list__table">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Matched entities</th>
+          <th>Matched edges</th>
+          <th>Network score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for document in documents %}
+          <tr>
+            <td>
+              <a href="{{ url_for('document_detail', doc_id=document.document_id, search_id=search_id, origin='network') }}">
+                {{ document.filename }}
+              </a>
+            </td>
+            <td>{{ document.matched_entity_count if document.matched_entity_count is not none else "—" }}</td>
+            <td>{{ document.matched_edge_count if document.matched_edge_count is not none else "—" }}</td>
+            <td>{{ document.network_score if document.network_score is not none else "—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="network-document-list__empty">
+      No documents matched this network view.
+    </p>
+  {% endif %}
+
+  {% if total_pages > 1 %}
+    <nav class="network-document-list__pagination" aria-label="Network viewer pagination">
+      <span>Page {{ current_page }} of {{ total_pages }}</span>
+      {% if current_page > 1 %}
+        <a href="{{ url_for('network_viewer_results', search_id=search_id, page=current_page - 1, per_page=per_page) }}">Previous page</a>
+      {% endif %}
+      {% if current_page < total_pages %}
+        <a href="{{ url_for('network_viewer_results', search_id=search_id, page=current_page + 1, per_page=per_page) }}">Next page</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

@@ -380,6 +380,213 @@ def get_global_network(
     }
 
 
+def get_network_documents_for_viewer(
+    db,
+    entity_id: Optional[str] = None,
+    type_filter: Optional[List[str]] = None,
+    min_weight: int = 3,
+    limit: int = 500,
+    strict_type_filter: bool = True,
+    max_documents: int = 2000,
+    max_docs_per_edge: int = 250,
+) -> Dict[str, Any]:
+    """
+    Build a deterministic document list from the current network scope.
+
+    The returned document ordering is designed for document viewer navigation
+    (prev/next), not just display:
+      1) matched_entity_count DESC
+      2) network_score DESC
+      3) matched_edge_count DESC
+      4) filename ASC
+      5) document_id ASC
+
+    Parameters
+    ----------
+    entity_id : str, optional
+        If provided, build from that entity's ego network.
+        If omitted, build from filtered global network edges.
+    type_filter : list[str], optional
+        Entity type filter.
+    min_weight : int
+        Minimum edge weight.
+    limit : int
+        Max edges to scan.
+    strict_type_filter : bool
+        Global mode only:
+          - True: both endpoints must match type_filter
+          - False: either endpoint may match type_filter
+    max_documents : int
+        Safety cap for unique documents returned.
+    max_docs_per_edge : int
+        Safety cap for document_ids consumed per edge.
+    """
+    edges_coll = _get_network_edges(db)
+    if edges_coll is None:
+        return {
+            "mode": "entity" if entity_id else "global",
+            "entity": None,
+            "documents": [],
+            "stats": {
+                "edges_scanned": 0,
+                "documents_returned": 0,
+                "strict_type_filter": strict_type_filter,
+            },
+        }
+
+    safe_limit = max(1, int(limit))
+    safe_max_documents = max(1, int(max_documents))
+    safe_docs_per_edge = max(1, int(max_docs_per_edge))
+    normalized_types = [t for t in (type_filter or []) if t]
+
+    entity_info = None
+    mode = "entity" if entity_id else "global"
+    if entity_id:
+        entity_info = get_entity_info(db, entity_id)
+        if entity_info is None:
+            return {
+                "mode": "entity",
+                "entity": None,
+                "documents": [],
+                "stats": {
+                    "edges_scanned": 0,
+                    "documents_returned": 0,
+                    "strict_type_filter": strict_type_filter,
+                    "entity_not_found": True,
+                },
+            }
+
+    projection = {
+        "source_id": 1,
+        "target_id": 1,
+        "source_type": 1,
+        "target_type": 1,
+        "weight": 1,
+        "document_ids": 1,
+    }
+
+    if entity_id:
+        query: Dict[str, Any] = {
+            "$or": [{"source_id": entity_id}, {"target_id": entity_id}],
+            "weight": {"$gte": min_weight},
+        }
+    else:
+        query = {"weight": {"$gte": min_weight}}
+        if normalized_types:
+            if strict_type_filter:
+                query["source_type"] = {"$in": normalized_types}
+                query["target_type"] = {"$in": normalized_types}
+            else:
+                query["$or"] = [
+                    {"source_type": {"$in": normalized_types}},
+                    {"target_type": {"$in": normalized_types}},
+                ]
+
+    cursor = edges_coll.find(query, projection).sort("weight", -1).limit(safe_limit)
+
+    doc_scores: Counter = Counter()
+    doc_edge_counts: Counter = Counter()
+    doc_entities: Dict[str, Set[str]] = defaultdict(set)
+    edges_scanned = 0
+
+    for edge in cursor:
+        edges_scanned += 1
+
+        if entity_id and normalized_types:
+            if edge.get("source_id") == entity_id:
+                other_type = edge.get("target_type")
+            else:
+                other_type = edge.get("source_type")
+            if other_type not in normalized_types:
+                continue
+
+        edge_weight = int(edge.get("weight", 0) or 0)
+        edge_docs = edge.get("document_ids", [])
+        if not isinstance(edge_docs, list) or not edge_docs:
+            continue
+
+        source_id = str(edge.get("source_id", ""))
+        target_id = str(edge.get("target_id", ""))
+
+        for raw_doc_id in edge_docs[:safe_docs_per_edge]:
+            doc_id = str(raw_doc_id)
+            if doc_id not in doc_scores and len(doc_scores) >= safe_max_documents:
+                continue
+
+            doc_scores[doc_id] += edge_weight
+            doc_edge_counts[doc_id] += 1
+            if source_id:
+                doc_entities[doc_id].add(source_id)
+            if target_id:
+                doc_entities[doc_id].add(target_id)
+
+    if not doc_scores:
+        return {
+            "mode": mode,
+            "entity": entity_info,
+            "documents": [],
+            "stats": {
+                "edges_scanned": edges_scanned,
+                "documents_returned": 0,
+                "strict_type_filter": strict_type_filter,
+            },
+        }
+
+    doc_meta: Dict[str, Dict[str, Any]] = {}
+    valid_oids = []
+    for doc_id in doc_scores.keys():
+        if ObjectId.is_valid(doc_id):
+            valid_oids.append(ObjectId(doc_id))
+
+    if valid_oids:
+        for doc in db["documents"].find(
+            {"_id": {"$in": valid_oids}},
+            {"filename": 1},
+        ):
+            doc_meta[str(doc["_id"])] = {
+                "filename": doc.get("filename", "Unknown"),
+            }
+
+    def _sort_key(doc_id: str):
+        filename = doc_meta.get(doc_id, {}).get("filename", "Unknown")
+        return (
+            -len(doc_entities.get(doc_id, set())),
+            -doc_scores[doc_id],
+            -doc_edge_counts[doc_id],
+            str(filename).casefold(),
+            doc_id,
+        )
+
+    ordered_doc_ids = sorted(doc_scores.keys(), key=_sort_key)
+
+    documents_payload = []
+    for doc_id in ordered_doc_ids:
+        documents_payload.append(
+            {
+                "document_id": doc_id,
+                "filename": doc_meta.get(doc_id, {}).get("filename", "Unknown"),
+                "matched_entity_count": len(doc_entities.get(doc_id, set())),
+                "matched_edge_count": int(doc_edge_counts[doc_id]),
+                "network_score": int(doc_scores[doc_id]),
+            }
+        )
+
+    return {
+        "mode": mode,
+        "entity": entity_info,
+        "documents": documents_payload,
+        "stats": {
+            "edges_scanned": edges_scanned,
+            "documents_returned": len(documents_payload),
+            "strict_type_filter": strict_type_filter,
+            "min_weight": min_weight,
+            "limit": safe_limit,
+            "type_filter": normalized_types,
+            "max_documents": safe_max_documents,
+        },
+    }
+
+
 # ===========================================================================
 # Entity metrics
 # ===========================================================================
