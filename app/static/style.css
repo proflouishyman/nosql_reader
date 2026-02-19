@@ -2089,3 +2089,93 @@ input[type="range"] {
 .agent-message__bubble p {
     margin: 8px 0;
 }
+
+/* ============================================
+   Network Analysis
+   ============================================ */
+
+.entity-item[data-entity-id] {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.entity-item[data-entity-id]:hover {
+    background-color: rgba(46, 117, 182, 0.1);
+}
+
+.entity-popup {
+    position: absolute;
+    z-index: 1000;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 320px;
+    font-size: 0.9em;
+}
+
+.entity-popup h4 {
+    margin: 0 0 8px 0;
+    font-size: 1em;
+}
+
+.entity-popup .entity-type-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.entity-popup .connections-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+}
+
+.entity-popup .connections-list li {
+    padding: 3px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.entity-popup .view-network-link {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    color: #2e75b6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.entity-popup .view-network-link:hover {
+    text-decoration: underline;
+}
+
+.related-docs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.related-docs-list li {
+    border-bottom: 1px solid #eee;
+    padding: 8px 0;
+}
+
+.related-docs-list .shared-count {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 0.85em;
+    color: #475569;
+}
+
+.related-docs-list .shared-names {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.8em;
+    color: #64748b;
+}

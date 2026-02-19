@@ -1,0 +1,42 @@
+{# app/templates/partials/network_context.html #}
+{#
+  Includable network context panel for document-detail.html.
+
+  Requirements:
+    - D3.js v7 loaded in the page
+    - network.js loaded in the page
+    - Pass the document's _id as a string
+
+  Usage in document-detail.html:
+    {% include 'partials/network_context.html' %}
+
+  The panel auto-hides if the API returns no edges (no error shown to user).
+#}
+
+{# Network Context Panel — shows entity relationships across the corpus #}
+{% if document.entity_refs %}
+<div class="info-section network-context-section" id="network-context-section">
+  <h2>Network Context</h2>
+  <p class="section-description">
+    Connections between entities in this document and across the corpus.
+  </p>
+  <div id="network-context-graph"
+       data-doc-id="{{ document._id }}"
+       style="width: 100%; height: 350px; position: relative; overflow: hidden; border: 1px solid #eee; border-radius: 6px; background: #fafafa;">
+    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
+      Loading network…
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# Related Documents via Network — cross-folder discovery #}
+{% if document.entity_refs %}
+<div class="info-section related-docs-section" id="related-docs-section">
+  <h2>Related Documents via Network</h2>
+  <div id="network-related-docs"
+       data-doc-id="{{ document._id }}">
+    <div style="color: #999; padding: 8px 0;">Finding related documents…</div>
+  </div>
+</div>
+{% endif %}

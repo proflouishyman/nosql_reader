@@ -1,0 +1,252 @@
+{# app/templates/network-analysis.html #}
+{#
+  Standalone network explorer page.
+
+  Shows a D3.js force-directed graph with filter controls and
+  an entity detail sidebar. Supports both global and ego-network modes.
+
+  URL patterns:
+    /network-analysis                          — global network
+    /network-analysis?entity=<entity_id>       — ego network for one entity
+    /network-analysis?types=PERSON,GPE         — type-filtered global
+    /network-analysis?min_weight=5             — weight-filtered global
+
+  Domain-agnostic: entity types, colors, and labels are all derived from
+  the data itself via the /api/network/types endpoint.
+#}
+{% extends "base.html" %}
+
+{% block title %}Network Analysis · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container network-analysis-page">
+
+  {# Header #}
+  <header class="network-header">
+    <h1>Network Analysis</h1>
+    <div id="network-stats" class="network-stats-bar"></div>
+  </header>
+
+  {# Controls #}
+  <div class="network-controls">
+    <div class="control-group">
+      <label>Entity types:</label>
+      <div id="type-filters" class="type-filters">
+        <span style="color: #999;">Loading types…</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="min-weight-slider">Min. edge weight:</label>
+      <input type="range" id="min-weight-slider" min="1" max="50" value="3" step="1">
+      <span id="min-weight-display">3</span>
+    </div>
+
+    <div class="control-group">
+      <label for="max-nodes-slider">Max edges:</label>
+      <input type="range" id="max-nodes-slider" min="50" max="1000" value="500" step="50">
+      <span id="max-nodes-display">500</span>
+    </div>
+
+    <div class="control-group">
+      <label for="entity-search">Search entity:</label>
+      <input type="text" id="entity-search" placeholder="Type a name…" autocomplete="off">
+    </div>
+  </div>
+
+  {# Main layout: graph + sidebar #}
+  <div class="network-layout">
+    <div class="network-graph-container">
+      <div id="network-graph" style="width: 100%; height: 600px; border: 1px solid #eee; border-radius: 6px; background: #fafafa; position: relative;">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
+          Loading network…
+        </div>
+      </div>
+      <div id="network-legend" class="network-legend"></div>
+    </div>
+
+    <div class="network-sidebar" id="entity-detail-sidebar">
+      <div style="color: #999; padding: 16px;">
+        Click a node to see entity details.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  .network-analysis-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .network-header {
+    margin-bottom: 16px;
+  }
+
+  .network-header h1 {
+    margin: 0 0 8px 0;
+  }
+
+  .network-stats-bar {
+    font-size: 0.85em;
+    color: #666;
+  }
+
+  .network-stats-bar .stat-badge {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 2px 8px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  .network-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .network-controls .control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .network-controls label {
+    font-weight: 500;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+
+  .network-controls input[type="range"] {
+    width: 120px;
+  }
+
+  .network-controls input[type="text"] {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+    width: 180px;
+  }
+
+  .type-filters label {
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+
+  .network-layout {
+    display: flex;
+    gap: 16px;
+  }
+
+  .network-graph-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .network-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 12px;
+    background: #fafafa;
+    max-height: 650px;
+    overflow-y: auto;
+  }
+
+  .network-sidebar h3 {
+    margin: 0 0 8px 0;
+  }
+
+  .network-sidebar h4 {
+    margin: 12px 0 6px 0;
+    font-size: 0.95em;
+  }
+
+  .network-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .network-sidebar ul li {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+  }
+
+  .network-sidebar a {
+    color: #2E75B6;
+    text-decoration: none;
+  }
+
+  .network-sidebar a:hover {
+    text-decoration: underline;
+  }
+
+  .network-legend {
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: #555;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .network-layout {
+      flex-direction: column;
+    }
+    .network-sidebar {
+      width: 100%;
+      max-height: 300px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"
+        integrity="sha512-vc58qvTBrKR0J70W2WFfTJHibIA5FBLlFB7u+wmF7YsFEUlUWB4VIPweuaBAalYqAT3JLP0Vqv4bul8CF7EDQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{ url_for('static', filename='js/network.js') }}"></script>
+<script>
+  // Slider display values
+  document.getElementById("min-weight-slider")?.addEventListener("input", function () {
+    document.getElementById("min-weight-display").textContent = this.value;
+  });
+  document.getElementById("max-nodes-slider")?.addEventListener("input", function () {
+    document.getElementById("max-nodes-display").textContent = this.value;
+  });
+
+  // Slider change triggers reload
+  document.getElementById("min-weight-slider")?.addEventListener("change", () => {
+    const container = document.getElementById("network-graph");
+    const params = new URLSearchParams(window.location.search);
+    const entityId = params.get("entity");
+    if (entityId) {
+      NetworkExplorer.loadEgoNetwork(container, entityId);
+    } else {
+      NetworkExplorer.loadGlobalNetwork(container);
+    }
+  });
+  document.getElementById("max-nodes-slider")?.addEventListener("change", () => {
+    const container = document.getElementById("network-graph");
+    const params = new URLSearchParams(window.location.search);
+    const entityId = params.get("entity");
+    if (entityId) {
+      NetworkExplorer.loadEgoNetwork(container, entityId);
+    } else {
+      NetworkExplorer.loadGlobalNetwork(container);
+    }
+  });
+</script>
+{% endblock %}

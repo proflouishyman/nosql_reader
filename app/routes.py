@@ -56,6 +56,7 @@ from historian_agent import (
 
 import image_ingestion
 from util.mounts import get_mounted_paths, short_tree  # Added to support read-only ingestion mounts view.
+from network import init_app as init_network
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -81,6 +82,7 @@ logger.addHandler(file_handler)
 client = get_client()
 db = get_db(client)
 documents, unique_terms_collection, field_structure_collection = get_collections(db)
+init_network(app)
 
 # Hashed password (generate this using generate_password_hash('your_actual_password'))
 ADMIN_PASSWORD_HASH = 'pbkdf2:sha256:260000$uxZ1Fkjt9WQCHwuN$ca37dfb41ebc26b19daf24885ebcd09f607cab85f92dcab13625627fd9ee902a'
@@ -1429,16 +1431,21 @@ def _extract_entity_text(raw_value: Any) -> Optional[str]:
     return None
 
 
-def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[str]]]:
+def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[Dict[str, Any]]]]:
     """
     Build categorized NER groups for document detail display.
     Supports both legacy extracted_entities payloads and newer entities/entity_refs fields.
     """
-    entities_by_type: Dict[str, List[str]] = {}
-    seen_by_type: Dict[str, set] = {}
+    entities_by_type: Dict[str, List[Dict[str, Any]]] = {}
+    seen_by_type: Dict[str, Dict[str, int]] = {}
     empty_tokens = {"", "N/A", "NONE", "NULL"}
 
-    def add_entity(raw_type: Any, raw_value: Any) -> None:
+    def add_entity(
+        raw_type: Any,
+        raw_value: Any,
+        entity_id: Optional[str] = None,
+        canonical_name: Optional[str] = None,
+    ) -> None:
         entity_type = _normalize_entity_type(raw_type)
         entity_text = _extract_entity_text(raw_value)
         if not entity_text:
@@ -1449,14 +1456,27 @@ def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[
 
         if entity_type not in entities_by_type:
             entities_by_type[entity_type] = []
-            seen_by_type[entity_type] = set()
+            seen_by_type[entity_type] = {}
 
         key = entity_text.casefold()
         if key in seen_by_type[entity_type]:
+            # Prefer resolved records with entity_id over unresolved duplicates.
+            existing_idx = seen_by_type[entity_type][key]
+            existing = entities_by_type[entity_type][existing_idx]
+            if entity_id and not existing.get("entity_id"):
+                existing["entity_id"] = entity_id
+                existing["canonical_name"] = canonical_name or entity_text
             return
 
-        seen_by_type[entity_type].add(key)
-        entities_by_type[entity_type].append(entity_text)
+        entities_by_type[entity_type].append(
+            {
+                "text": entity_text,
+                "entity_id": entity_id,
+                "canonical_name": canonical_name or entity_text,
+                "type": entity_type,
+            }
+        )
+        seen_by_type[entity_type][key] = len(entities_by_type[entity_type]) - 1
 
     def collect_named_entities(node: Any) -> None:
         """Recursively collect embedded named_entities payloads from section-linked metadata."""
@@ -1544,28 +1564,44 @@ def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[
                         or linked_doc.get("label")
                         or "UNKNOWN"
                     )
-                    add_entity(
-                        entity_type,
+                    linked_entity_id = str(linked_doc["_id"])
+                    canonical_name = (
                         linked_doc.get("canonical_name")
                         or linked_doc.get("term")
                         or linked_doc.get("text")
-                        or linked_doc.get("name"),
+                        or linked_doc.get("name")
+                    )
+                    add_entity(
+                        entity_type,
+                        canonical_name,
+                        entity_id=linked_entity_id,
+                        canonical_name=canonical_name,
                     )
 
                     aliases = linked_doc.get("aliases")
                     if isinstance(aliases, list):
                         for alias in aliases:
-                            add_entity(entity_type, alias)
+                            add_entity(
+                                entity_type,
+                                alias,
+                                entity_id=linked_entity_id,
+                                canonical_name=canonical_name,
+                            )
 
                     variants = linked_doc.get("variants")
                     if isinstance(variants, list):
                         for variant in variants:
-                            add_entity(entity_type, variant)
+                            add_entity(
+                                entity_type,
+                                variant,
+                                entity_id=linked_entity_id,
+                                canonical_name=canonical_name,
+                            )
             except Exception:
                 logger.exception("Failed to load linked entity_refs for document detail view.")
 
     for entity_values in entities_by_type.values():
-        entity_values.sort(key=lambda value: value.casefold())
+        entity_values.sort(key=lambda value: value["text"].casefold())
 
     if not entities_by_type:
         return []
@@ -1589,6 +1625,12 @@ def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[
         (entity_type.replace("_", " ").title(), entities_by_type[entity_type])
         for entity_type in ordered_types
     ]
+
+
+@app.route('/network-analysis')
+def network_analysis_page():
+    """Standalone network explorer page."""
+    return render_template('network-analysis.html')
 
 
 @app.route('/document/<string:doc_id>')

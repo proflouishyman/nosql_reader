@@ -76,14 +76,22 @@
               <div class="entity-group">
                 <h3>{{ entity_type }}</h3>
                 <ul>
-                  {% for entity_value in entity_values %}
-                    <li>{{ entity_value }}</li>
+                  {% for entity in entity_values %}
+                    <li class="entity-item"
+                        {% if entity.entity_id %}
+                        data-entity-id="{{ entity.entity_id }}"
+                        data-entity-type="{{ entity.type }}"
+                        {% endif %}>
+                      {{ entity.text }}
+                    </li>
                   {% endfor %}
                 </ul>
               </div>
             {% endfor %}
           </div>
         {% endif %}
+
+        {% include 'partials/network_context.html' %}
 
         {% if document.person_synthesis %}
           <!-- Render person synthesis with nested formatting so it matches the other structured JSON blocks -->
@@ -204,6 +212,8 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/d3.v7.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/network.js') }}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     // Image Manipulation Code
