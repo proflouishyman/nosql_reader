@@ -57,6 +57,10 @@
       <label for="entity-search">Search entity:</label>
       <input type="text" id="entity-search" placeholder="Type a name…" autocomplete="off">
     </div>
+
+    <div class="control-group">
+      <button type="button" id="reset-network-controls" class="reset-network-btn">Reset</button>
+    </div>
   </div>
 
   {# Main layout: graph + sidebar #}
@@ -141,6 +145,23 @@
     border-radius: 4px;
     font-size: 0.9em;
     width: 180px;
+  }
+
+  .network-controls .reset-network-btn {
+    padding: 6px 10px;
+    border: 1px solid #c8ced6;
+    border-radius: 4px;
+    background: #fff;
+    color: #1f2937;
+    font-weight: 600;
+    line-height: 1.2;
+    box-shadow: none;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+
+  .network-controls .reset-network-btn:hover {
+    background: #eef2f6;
   }
 
   .type-filters label {

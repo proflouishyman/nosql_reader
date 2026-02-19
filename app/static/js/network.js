@@ -549,25 +549,76 @@ const NetworkExplorer = {
         const strictToggle = document.getElementById("strict-type-filter");
         if (strictToggle) {
             strictToggle.addEventListener("change", () => {
-                const params = new URLSearchParams(window.location.search);
-                const entityId = params.get("entity");
-                if (entityId) {
-                    this.loadEgoNetwork(container, entityId);
-                } else {
-                    this.loadGlobalNetwork(container);
-                }
+                this.reloadCurrentView(container);
             });
         }
 
-        // Check URL for initial entity (ego mode)
+        const resetBtn = document.getElementById("reset-network-controls");
+        if (resetBtn) {
+            resetBtn.addEventListener("click", () => this.resetControls(container));
+        }
+
+        await this.reloadCurrentView(container);
+    },
+
+    async reloadCurrentView(container) {
         const params = new URLSearchParams(window.location.search);
         const entityId = params.get("entity");
-
         if (entityId) {
             await this.loadEgoNetwork(container, entityId);
         } else {
             await this.loadGlobalNetwork(container);
         }
+    },
+
+    async resetControls(container) {
+        const graphContainer = container || document.querySelector("#network-graph");
+        if (!graphContainer) return;
+
+        const minWeight = document.getElementById("min-weight-slider");
+        const minWeightDisplay = document.getElementById("min-weight-display");
+        if (minWeight) {
+            minWeight.value = minWeight.defaultValue || "3";
+            if (minWeightDisplay) minWeightDisplay.textContent = minWeight.value;
+        }
+
+        const maxEdges = document.getElementById("max-nodes-slider");
+        const maxEdgesDisplay = document.getElementById("max-nodes-display");
+        if (maxEdges) {
+            maxEdges.value = maxEdges.defaultValue || "500";
+            if (maxEdgesDisplay) maxEdgesDisplay.textContent = maxEdges.value;
+        }
+
+        const strictToggle = document.getElementById("strict-type-filter");
+        if (strictToggle) {
+            strictToggle.checked = strictToggle.defaultChecked;
+        }
+
+        const searchBox = document.getElementById("entity-search");
+        if (searchBox) {
+            searchBox.value = "";
+        }
+
+        document.querySelectorAll(".type-filter-checkbox").forEach((cb) => {
+            cb.checked = true;
+        });
+
+        // Reset to canonical global view: clear URL params like ?entity=...
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.search = "";
+        window.history.replaceState({}, "", cleanUrl.pathname);
+
+        // Restore sidebar default prompt.
+        const sidebar = document.getElementById("entity-detail-sidebar");
+        if (sidebar) {
+            sidebar.innerHTML = `
+                <div style="color: #999; padding: 16px;">
+                    Click a node to see entity details.
+                </div>
+            `;
+        }
+
+        await this.loadGlobalNetwork(graphContainer);
     },
 
     async loadGlobalNetwork(container) {
@@ -715,13 +766,7 @@ const NetworkExplorer = {
         container.addEventListener("change", () => {
             const graphContainer = document.querySelector("#network-graph");
             if (graphContainer) {
-                const params = new URLSearchParams(window.location.search);
-                const entityId = params.get("entity");
-                if (entityId) {
-                    this.loadEgoNetwork(graphContainer, entityId);
-                } else {
-                    this.loadGlobalNetwork(graphContainer);
-                }
+                this.reloadCurrentView(graphContainer);
             }
         });
     },
