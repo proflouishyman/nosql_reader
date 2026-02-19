@@ -112,6 +112,7 @@ Set values in `.env` and restart containers after changes.
 
 - Open **Historian Agent** in the nav bar.
 - Choose a query method (Good, Better, Best, or Tier 0 corpus exploration).
+- For **Tier 0**, optionally fill the **Research Lens** field (comma-separated priorities such as `ethnicity`, `gender`, `occupation`, `claims process`, `adjudication`) to bias corpus reading and question generation toward those intersections when evidence exists while still retaining non-lens questions when the archive pushes in other directions. <!-- Added process-oriented examples and clarified the archive-pushback behavior. -->
 - Use the configuration panel to change provider, model, temperature, context size, and retrieval fields without restarting the app.
 - Session history is retained for the current browser session (timeouts are enforced server-side).
 <!-- Updated to match the actual query methods and settings panel behavior. -->

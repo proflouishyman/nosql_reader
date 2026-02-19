@@ -264,6 +264,7 @@ def _format_tier0_summary(report: Dict[str, Any], focus_note: str) -> str:
     documents_read = metadata.get("documents_read", 0)
     batches_processed = metadata.get("batches_processed", 0)
     duration_seconds = metadata.get("duration_seconds", 0) or 0
+    research_lens = metadata.get("research_lens") or []
     notebook_path = report.get("notebook_path")
     questions = report.get("questions") or []
 
@@ -273,6 +274,8 @@ def _format_tier0_summary(report: Dict[str, Any], focus_note: str) -> str:
     ]
     if focus_note:
         summary_lines.append(f"Focus note: {focus_note}")
+    if research_lens:
+        summary_lines.append(f"Research lens: {', '.join([str(item) for item in research_lens])}")  # Added to confirm historian-specified priorities were applied to the run.
     if questions:
         summary_lines.append("Top research questions:")
         for item in questions[:5]:
@@ -430,6 +433,7 @@ def historian_agent_query_tier0():
         total_budget = payload.get('total_budget')
         year_range = payload.get('year_range')
         save_notebook = payload.get('save_notebook')
+        research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases so callers can bias Tier 0 toward historian-defined intersections.
 
         if isinstance(year_range, list) and len(year_range) == 2:
             try:
@@ -445,6 +449,7 @@ def historian_agent_query_tier0():
             total_budget=total_budget,
             year_range=year_range,
             save_notebook=save_notebook,
+            research_lens=research_lens,
         )
 
         global _last_exploration_report
@@ -520,6 +525,7 @@ def explore_corpus_endpoint():
     total_budget = payload.get('total_budget')
     year_range = payload.get('year_range')
     save_notebook = payload.get('save_notebook')
+    research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases for API clients that prepopulate historian interests.
 
     if isinstance(year_range, list) and len(year_range) == 2:
         try:
@@ -535,6 +541,7 @@ def explore_corpus_endpoint():
         total_budget=total_budget,
         year_range=year_range,
         save_notebook=save_notebook,
+        research_lens=research_lens,
     )
 
     global _last_exploration_report

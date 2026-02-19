@@ -32,6 +32,9 @@ COMPARATIVE_MARKERS = ("between", "compare", "difference", "differ", "versus", "
 DISTRIBUTIONAL_MARKERS = ("who", "which group", "differ", "difference", "distribution", "disproportion")
 INSTITUTIONAL_MARKERS = ("criteria", "rule", "policy", "procedure", "eligibility", "requirement", "standard")
 SCOPE_MARKERS = ("where", "when", "under what conditions", "scope", "limits", "apply")
+INJURY_KEYWORDS = ("injury", "injuries", "accident", "disablement", "disabled", "wound")
+JOB_KEYWORDS = ("job", "occupation", "department", "laborer", "brakeman", "conductor", "worker", "track")
+PROCESS_KEYWORDS = ("process", "procedure", "workflow", "review", "approval", "adjudication", "paperwork", "timeline", "delay", "administrative", "record", "filing", "certification")  # Added process-family aliases so workflow-focused lenses can influence ranking.
 
 @dataclass
 class PipelineConfig:
@@ -68,8 +71,9 @@ class QuestionGenerationPipeline:
         self.validator = QuestionValidator()
         self.answerability = AnswerabilityChecker()
 
-    def generate(self, notebook: ResearchNotebook) -> QuestionBatch:
+    def generate(self, notebook: ResearchNotebook, research_lens: List[str] | None = None) -> QuestionBatch:
         debug_print("Starting question generation pipeline")
+        lens_terms = self._normalize_lens_terms(research_lens)  # Added lens normalization so ranking can prioritize user-selected historian themes.
 
         candidates = self._generate_candidates(notebook)
         debug_print(f"Generated {len(candidates)} candidates")
@@ -91,10 +95,11 @@ class QuestionGenerationPipeline:
         debug_print(f"Evidence filter kept {len(filtered)}")
         if not filtered:
             # Added fallback so strict gates do not collapse the run to zero essay-driving questions.
-            filtered = self._fallback_candidates(validated)
+            filtered = self._fallback_candidates(validated, lens_terms)
             debug_print(f"Fallback selected {len(filtered)} evidence-backed candidates")
 
         sanitized = [self._sanitize_time_window(q, notebook) for q in filtered]
+        sanitized = self._inject_lens_seed_questions(sanitized, notebook, lens_terms)  # Added unified seeding so the active lens can add one targeted structural question without overriding archive-driven variation.
 
         deduped = self._deduplicate(sanitized)
         debug_print(f"Deduplicated to {len(deduped)}")
@@ -104,7 +109,7 @@ class QuestionGenerationPipeline:
         else:
             diverse = deduped
 
-        final = self._rank_and_select(diverse)
+        final = self._rank_and_select(diverse, lens_terms)
         debug_print(f"Selected {len(final)} final questions")
 
         return QuestionBatch(
@@ -271,7 +276,7 @@ class QuestionGenerationPipeline:
                 checked.append(q)
         return checked or questions
 
-    def _fallback_candidates(self, questions: List[Question]) -> List[Question]:
+    def _fallback_candidates(self, questions: List[Question], lens_terms: List[str]) -> List[Question]:
         """
         Keep a small evidence-backed fallback set when score/evidence gates remove everything.
         """
@@ -286,11 +291,178 @@ class QuestionGenerationPipeline:
 
         ranked = sorted(
             candidates,
-            key=lambda q: (q.validation_score or 0, len(q.evidence_doc_ids)),
+            key=lambda q: (
+                self._question_lens_score(q, lens_terms),  # Added lens-first sorting so fallback questions reflect user-defined interests.
+                q.validation_score or 0,
+                len(q.evidence_doc_ids),
+            ),
             reverse=True,
         )
         fallback_n = max(1, self.config.min_questions)
         return ranked[:fallback_n]
+
+    def _normalize_lens_terms(self, research_lens: List[str] | None) -> List[str]:
+        """Normalize lens terms to lowercase deduplicated phrases."""
+        if not research_lens:
+            return []
+        terms: List[str] = []
+        seen = set()
+        for raw in research_lens:
+            term = str(raw or "").strip().lower()
+            if not term or term in seen:
+                continue
+            seen.add(term)
+            terms.append(term)
+        # Added alias expansion so domain-equivalent words (injury/accident, job/occupation) influence ranking consistently.
+        if any(any(k in term for k in INJURY_KEYWORDS) for term in terms):
+            for alias in INJURY_KEYWORDS:
+                if alias not in seen:
+                    seen.add(alias)
+                    terms.append(alias)
+        if any(any(k in term for k in JOB_KEYWORDS) for term in terms):
+            for alias in JOB_KEYWORDS:
+                if alias not in seen:
+                    seen.add(alias)
+                    terms.append(alias)
+        if any(any(k in term for k in PROCESS_KEYWORDS) for term in terms):
+            for alias in PROCESS_KEYWORDS:
+                if alias not in seen:
+                    seen.add(alias)
+                    terms.append(alias)  # Added process alias expansion so varied user phrasing still maps to the same process focus.
+        return terms[:20]
+
+    def _question_lens_score(self, question: Question, lens_terms: List[str]) -> int:
+        """Score question text alignment to active lens terms."""
+        if not lens_terms:
+            return 0
+        text = (question.question_text or "").lower()
+        score = 0
+        for term in lens_terms:
+            if term in text:
+                score += 3
+            else:
+                # Added token fallback so multi-word lens phrases still influence scoring.
+                for token in [t for t in term.split() if len(t) >= 4]:
+                    if token in text:
+                        score += 1
+        return score
+
+    def _lens_requests_injury_and_job(self, lens_terms: List[str]) -> bool:
+        """Return True when lens terms ask for both injury and job/occupation analysis."""
+        if not lens_terms:
+            return False
+        has_injury = any(any(k in term for k in INJURY_KEYWORDS) for term in lens_terms)
+        has_job = any(any(k in term for k in JOB_KEYWORDS) for term in lens_terms)
+        return has_injury and has_job
+
+    def _lens_requests_process(self, lens_terms: List[str]) -> bool:
+        """Return True when lens terms ask for administrative process or workflow analysis."""
+        if not lens_terms:
+            return False
+        return any(any(k in term for k in PROCESS_KEYWORDS) for term in lens_terms)
+
+    def _inject_lens_seed_questions(
+        self,
+        questions: List[Question],
+        notebook: ResearchNotebook,
+        lens_terms: List[str],
+    ) -> List[Question]:
+        """Inject at most one targeted seed per supported lens family."""
+        seeded = self._inject_injury_job_lens_question(questions, notebook, lens_terms)
+        return self._inject_process_lens_question(seeded, notebook, lens_terms)
+
+    def _inject_injury_job_lens_question(
+        self,
+        questions: List[Question],
+        notebook: ResearchNotebook,
+        lens_terms: List[str],
+    ) -> List[Question]:
+        """Inject one comparative injury-by-occupation question when lens requests it and none exists."""
+        if not self._lens_requests_injury_and_job(lens_terms):
+            return questions
+
+        for q in questions:
+            text = (q.question_text or "").lower()
+            if any(k in text for k in INJURY_KEYWORDS) and any(k in text for k in JOB_KEYWORDS):
+                return questions
+
+        evidence_doc_ids: List[str] = []
+        for q in questions:
+            evidence_doc_ids.extend(q.evidence_doc_ids)
+
+        for pattern in notebook.patterns.values():
+            text = (pattern.pattern_text or "").lower()
+            if any(k in text for k in INJURY_KEYWORDS):
+                evidence_doc_ids.extend(pattern.evidence_doc_ids)
+
+        for indicator in notebook.group_indicators.values():
+            group_type = (indicator.group_type or "").lower()
+            label = (indicator.label or "").lower()
+            if group_type in {"occupation", "class"} or any(k in label for k in JOB_KEYWORDS):
+                evidence_doc_ids.extend(indicator.evidence_doc_ids)
+
+        deduped_ids: List[str] = []
+        seen = set()
+        for doc_id in evidence_doc_ids:
+            if not doc_id or doc_id in seen:
+                continue
+            seen.add(doc_id)
+            deduped_ids.append(doc_id)
+
+        seeded = Question(
+            question_text="How did kinds of injuries differ across occupations and departments, and which job types appeared most often in disablement records?",
+            question_type=QuestionType.COMPARATIVE,
+            why_interesting="This directly tests whether risk and recorded injury burden were patterned by work role rather than evenly distributed.",
+            evidence_doc_ids=deduped_ids[:12],
+            generation_method="lens_seeded",
+            validation_score=max(self.config.min_score_accept + 15, 65),
+        )
+        return questions + [seeded]
+
+    def _inject_process_lens_question(
+        self,
+        questions: List[Question],
+        notebook: ResearchNotebook,
+        lens_terms: List[str],
+    ) -> List[Question]:
+        """Inject one process-oriented question when the lens requests workflow/process analysis."""
+        if not self._lens_requests_process(lens_terms):
+            return questions
+
+        for q in questions:
+            text = (q.question_text or "").lower()
+            if any(k in text for k in PROCESS_KEYWORDS):
+                return questions
+
+        evidence_doc_ids: List[str] = []
+        for q in questions:
+            evidence_doc_ids.extend(q.evidence_doc_ids)
+
+        for pattern in notebook.patterns.values():
+            text = (pattern.pattern_text or "").lower()
+            if any(k in text for k in PROCESS_KEYWORDS):
+                evidence_doc_ids.extend(pattern.evidence_doc_ids)
+
+        for contra in notebook.contradictions:
+            evidence_doc_ids.extend([contra.source_a, contra.source_b])
+
+        deduped_ids: List[str] = []
+        seen = set()
+        for doc_id in evidence_doc_ids:
+            if not doc_id or doc_id in seen:
+                continue
+            seen.add(doc_id)
+            deduped_ids.append(doc_id)
+
+        seeded = Question(
+            question_text="How did claim-processing procedures (medical certification, superintendent review, and return-to-duty approval) vary across divisions and over time?",
+            question_type=QuestionType.INSTITUTIONAL,
+            why_interesting="This centers institutional workflow while testing whether administrative practice was consistent or uneven across the system.",
+            evidence_doc_ids=deduped_ids[:12],
+            generation_method="lens_seeded_process",
+            validation_score=max(self.config.min_score_accept + 12, 62),
+        )
+        return questions + [seeded]
 
     def _sanitize_time_window(self, question: Question, notebook: ResearchNotebook) -> Question:
         if not question.time_window:
@@ -353,19 +525,56 @@ class QuestionGenerationPipeline:
 
         return diversified
 
-    def _rank_and_select(self, questions: List[Question]) -> List[Question]:
+    def _rank_and_select(self, questions: List[Question], lens_terms: List[str]) -> List[Question]:
         sorted_questions = sorted(
             questions,
-            key=lambda q: q.validation_score or 0,
+            key=lambda q: (
+                self._question_lens_score(q, lens_terms),  # Added lens-aware rank boost for final question selection.
+                q.validation_score or 0,
+                len(q.evidence_doc_ids),
+            ),
             reverse=True,
         )
-        if len(sorted_questions) >= self.config.target_questions:
-            return sorted_questions[: self.config.target_questions]
-        return sorted_questions[: max(self.config.min_questions, len(sorted_questions))]
+        target_n = (
+            self.config.target_questions
+            if len(sorted_questions) >= self.config.target_questions
+            else max(self.config.min_questions, len(sorted_questions))
+        )
+        if not lens_terms:
+            return sorted_questions[:target_n]
+
+        lens_cap = max(1, int(target_n * 0.7))  # Cap lens-dominant slots so archive-driven counterevidence still surfaces in the final set.
+        selected: List[Question] = []
+        selected_keys = set()
+        lens_selected = 0
+        for q in sorted_questions:
+            key = q.question_text.strip().lower()
+            if key in selected_keys:
+                continue
+            aligned = self._question_lens_score(q, lens_terms) > 0
+            if aligned and lens_selected >= lens_cap:
+                continue
+            selected.append(q)
+            selected_keys.add(key)
+            if aligned:
+                lens_selected += 1
+            if len(selected) >= target_n:
+                break
+
+        for q in sorted_questions:
+            if len(selected) >= target_n:
+                break
+            key = q.question_text.strip().lower()
+            if key in selected_keys:
+                continue
+            selected.append(q)
+            selected_keys.add(key)
+
+        return selected
 
 
 # Convenience helper
 
-def generate_questions(notebook: ResearchNotebook) -> QuestionBatch:
+def generate_questions(notebook: ResearchNotebook, research_lens: List[str] | None = None) -> QuestionBatch:
     pipeline = QuestionGenerationPipeline()
-    return pipeline.generate(notebook)
+    return pipeline.generate(notebook, research_lens=research_lens)

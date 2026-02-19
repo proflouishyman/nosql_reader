@@ -27,6 +27,8 @@
         // Method selector elements
         const methodSelect = document.getElementById('agentMethod');
         const methodHint = document.getElementById('agentMethodHint');
+        const tier0ResearchLensContainer = document.getElementById('tier0ResearchLensContainer');
+        const tier0ResearchLensInput = document.getElementById('tier0ResearchLens');
         
         // Debug console elements
         const debugConsole = document.getElementById('agentDebugConsole');
@@ -47,11 +49,28 @@
             'tier0': 'Corpus exploration and question generation (budget-driven, may take a few minutes)' // Added Tier 0 hint for corpus exploration.
         };
 
+        function updateTier0ControlsVisibility() {
+            // Added method-based toggle so research-lens input only appears for Tier 0 runs.
+            if (!tier0ResearchLensContainer || !methodSelect) return;
+            tier0ResearchLensContainer.hidden = methodSelect.value !== 'tier0';
+        }
+
+        function parseTier0ResearchLens(rawValue) {
+            // Added lightweight parser so UI input maps to API-ready lens items.
+            if (!rawValue) return [];
+            return rawValue
+                .split(',')
+                .map(item => item.trim())
+                .filter(Boolean);
+        }
+
         if (methodSelect && methodHint) {
             methodSelect.addEventListener('change', function() {
                 methodHint.textContent = METHOD_HINTS[methodSelect.value] || '';
+                updateTier0ControlsVisibility();
             });
         }
+        updateTier0ControlsVisibility();
 
         function debugLog(message, type = 'info') {
             if (!debugOutput) return;
@@ -219,10 +238,19 @@
 
             const method = methodSelect ? methodSelect.value : 'tiered';
             const endpoint = `/historian-agent/query-${method}`;
+            if (method === 'tier0' && tier0ResearchLensInput) {
+                const parsedLens = parseTier0ResearchLens(tier0ResearchLensInput.value);
+                if (parsedLens.length) {
+                    payload.research_lens = parsedLens; // Added Tier 0 payload wiring so corpus exploration can prioritize historian-selected intersections.
+                }
+            }
             
             debugLog(`=== Starting ${method.toUpperCase()} query ===`, 'primary');
             debugLog(`Endpoint: ${endpoint}`, 'info');
             debugLog(`Question: ${payload.question.substring(0, 100)}...`, 'info');
+            if (method === 'tier0' && payload.research_lens) {
+                debugLog(`Research lens: ${payload.research_lens.join(', ')}`, 'info'); // Added visibility for lens values in the debug console.
+            }
             
             setChatSubmitting(true, `Processing with ${method} method...`);
             

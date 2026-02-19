@@ -26,6 +26,17 @@
             </span>
         </div>
 
+        <div class="agent-tier0-lens" id="tier0ResearchLensContainer" hidden>
+            <label for="tier0ResearchLens">Tier 0 Research Lens (optional):</label>
+            <input
+                id="tier0ResearchLens"
+                name="tier0_research_lens"
+                type="text"
+                placeholder="e.g., ethnicity, gender, occupation, disability by department"
+            >
+            <small>Comma-separated priorities; Tier 0 will focus on these when evidence exists.</small> <!-- Added explicit guidance so users can prepopulate historian interests before corpus exploration. -->
+        </div>
+
         <!-- NEW: Terminal-style debug console -->
         <div class="agent-debug-console" id="agentDebugConsole">
             <div class="agent-debug-header">

@@ -45,9 +45,13 @@ CLOSED-WORLD RULES:
 - If a fact is not in the documents, do not include it.
 - You may compare with PRIOR KNOWLEDGE to spot contradictions, but do NOT add facts that are not in the new documents.
 - Historians prefer false negatives to false positives: only record group indicators when explicitly stated.
+- Prioritize USER RESEARCH LENS topics when evidence exists, but do NOT infer missing groups or identities.
 
 PRIOR KNOWLEDGE (summary from previous batches):
 {prior_knowledge}
+
+USER RESEARCH LENS (prioritized topics for this run):
+{research_lens}
 
 DOCUMENTS (closed-world JSON objects):
 {documents_json}
@@ -167,6 +171,9 @@ QUESTION_GENERATION_PROMPT = """You are a historian who has systematically read 
 FINDINGS:
 {notebook_summary}
 
+USER RESEARCH LENS (prioritized topics for question generation):
+{research_lens}
+
 TASK: Generate research questions based on patterns and contradictions.
 Return a JSON array of questions, each with:
 - question
@@ -195,6 +202,7 @@ class CorpusExplorer:
         self.question_pipeline = QuestionGenerationPipeline()
         self.question_synthesizer = QuestionSynthesizer()
         self._last_question_batch = None
+        self._research_lens: List[str] = []  # Added run-scoped lens so prompts can prioritize historian-defined interests.
         self._doc_cache_indexed = False
         self._ensure_doc_cache_indexes()
 
@@ -204,6 +212,7 @@ class CorpusExplorer:
         total_budget: Optional[int] = None,
         year_range: Optional[Tuple[int, int]] = None,
         save_notebook: Optional[bool] = None,
+        research_lens: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """Execute systematic corpus exploration."""
         start_time = time.time()
@@ -212,8 +221,11 @@ class CorpusExplorer:
         strategy = strategy or config.exploration_strategy
         total_budget = total_budget or config.exploration_budget
         save_notebook = config.notebook_auto_save if save_notebook is None else save_notebook
+        self._research_lens = self._normalize_research_lens(research_lens)  # Added normalization to keep lens input predictable across API/UI variants.
 
         self.logger.log("start", f"strategy={strategy} budget={total_budget}")
+        if self._research_lens:
+            self.logger.log("lens", "; ".join(self._research_lens))
 
         strata = self._build_strata(strategy, total_budget, year_range)
         self.logger.log("stratification", f"{len(strata)} batches")
@@ -247,6 +259,7 @@ class CorpusExplorer:
                 "batches_processed": self.notebook.corpus_map["batches_processed"],
                 "duration_seconds": time.time() - start_time,
                 "timestamp": datetime.now().isoformat(),
+                "research_lens": list(self._research_lens),  # Added to make lens usage explicit in persisted run metadata.
             },
         }
 
@@ -328,6 +341,35 @@ class CorpusExplorer:
             total_budget=total_budget,
             strategy=strategy,
         )
+
+    def _normalize_research_lens(self, research_lens: Optional[Any]) -> List[str]:
+        """Normalize optional lens input into a short deduplicated list of textual priorities."""
+        if research_lens is None:
+            return []
+        if isinstance(research_lens, str):
+            candidates = [p.strip() for p in research_lens.replace("\n", ",").split(",")]
+        elif isinstance(research_lens, (list, tuple, set)):
+            candidates = [str(item).strip() for item in research_lens]
+        else:
+            candidates = [str(research_lens).strip()]
+
+        cleaned: List[str] = []
+        seen = set()
+        for candidate in candidates:
+            if not candidate:
+                continue
+            lowered = candidate.lower()
+            if lowered in seen:
+                continue
+            seen.add(lowered)
+            cleaned.append(candidate)
+        return cleaned[:10]
+
+    def _format_research_lens_for_prompt(self) -> str:
+        """Return lens priorities in prompt-ready bullet form."""
+        if not self._research_lens:
+            return "- (none)"
+        return "\n".join(f"- {item}" for item in self._research_lens)
 
     def _process_stratum(self, stratum: Stratum) -> None:
         sub_batch_size = max(1, APP_CONFIG.tier0.sub_batch_docs)
@@ -445,6 +487,7 @@ class CorpusExplorer:
 
         prompt = BATCH_ANALYSIS_PROMPT.format(
             prior_knowledge=prior_knowledge,
+            research_lens=self._format_research_lens_for_prompt(),
             documents_json=documents_json,
         )
 
@@ -664,7 +707,10 @@ class CorpusExplorer:
         model = APP_CONFIG.llm_profiles.get(profile, {}).get("model", "unknown")
         chunk_cfg = f"{int(cfg.semantic_chunking)}:{cfg.block_max_chars}:{cfg.max_blocks_per_doc}"
         prompt_version = cfg.doc_cache_prompt_version
+        lens_scope = ",".join(sorted(str(item).strip().lower() for item in self._research_lens if str(item).strip()))  # Added lens scope so cache reuse stays valid per research focus and avoids cross-lens contamination.
         raw = f"{profile}:{model}:{prompt_version}:{chunk_cfg}"
+        if lens_scope:
+            raw = f"{raw}:lens={lens_scope}"  # Preserve legacy no-lens cache keys while isolating focused-lens cache entries.
         return hashlib.sha256(raw.encode()).hexdigest()
 
     def _fetch_doc_cache(self, doc_ids: List[str], cache_key: str) -> Dict[str, Dict[str, Any]]:
@@ -854,7 +900,10 @@ class CorpusExplorer:
 
     def _generate_research_questions(self) -> List[Dict[str, Any]]:
         try:
-            batch = self.question_pipeline.generate(self.notebook)
+            batch = self.question_pipeline.generate(
+                self.notebook,
+                research_lens=self._research_lens,
+            )  # Added lens pass-through so pipeline ranking can prioritize user-selected historian themes.
             self._last_question_batch = batch
             return batch.to_list()
         except Exception as exc:
@@ -866,6 +915,7 @@ class CorpusExplorer:
         prompt = QUESTION_GENERATION_PROMPT.format(
             docs_read=docs_read,
             notebook_summary=notebook_summary,
+            research_lens=self._format_research_lens_for_prompt(),
         )
 
         response = self.llm.generate(
@@ -970,6 +1020,7 @@ def explore_corpus(
     strategy: Optional[str] = None,
     total_budget: Optional[int] = None,
     year_range: Optional[Tuple[int, int]] = None,
+    research_lens: Optional[Any] = None,
 ) -> Dict[str, Any]:
     explorer = CorpusExplorer()
     return explorer.explore(
@@ -977,4 +1028,5 @@ def explore_corpus(
         total_budget=total_budget,
         year_range=year_range,
         save_notebook=True,
+        research_lens=research_lens,
     )
