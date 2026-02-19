@@ -11,7 +11,7 @@ Layer 4: Pipeline orchestration.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict, Any
 from collections import defaultdict
 
 from rag_base import debug_print
@@ -19,11 +19,12 @@ from config import APP_CONFIG
 
 import re
 
-from historian_agent.question_models import Question, QuestionBatch, QuestionType
+from historian_agent.question_models import Question, QuestionBatch, QuestionType, ValidationStatus
 from historian_agent.question_typology import TypedQuestionGenerator
 from historian_agent.question_validator import QuestionValidator
 from historian_agent.question_answerability import AnswerabilityChecker
 from historian_agent.research_notebook import ResearchNotebook
+from historian_agent.tier0_utils import parse_llm_json
 
 PLACEHOLDER_RE = re.compile(r"\[[^\\]]+\\]|\\{[^\\}]+\\}")
 
@@ -35,6 +36,37 @@ SCOPE_MARKERS = ("where", "when", "under what conditions", "scope", "limits", "a
 INJURY_KEYWORDS = ("injury", "injuries", "accident", "disablement", "disabled", "wound")
 JOB_KEYWORDS = ("job", "occupation", "department", "laborer", "brakeman", "conductor", "worker", "track")
 PROCESS_KEYWORDS = ("process", "procedure", "workflow", "review", "approval", "adjudication", "paperwork", "timeline", "delay", "administrative", "record", "filing", "certification")  # Added process-family aliases so workflow-focused lenses can influence ranking.
+MEANINGFULNESS_GATE_PROMPT = """You are auditing whether a generated question set is meaningful enough for historical synthesis.
+
+CLOSED-WORLD RULES:
+- Use ONLY the run context and questions below.
+- Do NOT introduce outside context.
+- Prefer false negatives to false positives.
+
+RUN CONTEXT:
+- Research lens: {lens_terms}
+- Documents read: {documents_read}
+- Pattern count: {pattern_count}
+- Contradiction count: {contradiction_count}
+- Entity count: {entity_count}
+
+QUESTIONS:
+{question_summaries}
+
+DECISION RULES:
+- ACTION=stop if most questions are rejected, off-domain, or too vague.
+- ACTION=stop if only one credible question remains and it is a synthetic seed question.
+- ACTION=stop if notebook signal is thin (no patterns and no contradictions) and fewer than 2 credible questions remain.
+- ACTION=proceed_with_caution only when at least one credible question exists but risk is still notable.
+
+Return ONLY JSON:
+{{
+  "action": "proceed|proceed_with_caution|stop",
+  "reason": "short explanation",
+  "issues": ["..."],
+  "confidence": "low|medium|high"
+}}
+"""  # Added LLM-based quality gate prompt so the pipeline can explicitly halt weak question sets before essay synthesis.
 
 @dataclass
 class PipelineConfig:
@@ -87,6 +119,8 @@ class QuestionGenerationPipeline:
 
         filtered = self._apply_answerability_precheck(validated)
         debug_print(f"Answerability precheck kept {len(filtered)} candidates")
+        filtered = self._filter_rejected(filtered)
+        debug_print(f"Rejected-status filter kept {len(filtered)} candidates")
 
         filtered = self._filter_by_score(filtered)
         debug_print(f"Filtered to {len(filtered)} (score >= {self.config.min_score_accept})")
@@ -111,6 +145,8 @@ class QuestionGenerationPipeline:
 
         final = self._rank_and_select(diverse, lens_terms)
         debug_print(f"Selected {len(final)} final questions")
+        quality_gate = self._assess_meaningfulness(final, notebook, lens_terms)
+        debug_print(f"Meaningfulness gate action={quality_gate.get('action')} confidence={quality_gate.get('confidence')}")
 
         return QuestionBatch(
             questions=final,
@@ -118,6 +154,7 @@ class QuestionGenerationPipeline:
             total_candidates=len(candidates),
             total_validated=len(validated),
             total_accepted=len(filtered),
+            quality_gate=quality_gate,
         )
 
     def _improve_quality(self, questions: List[Question], notebook: ResearchNotebook) -> List[Question]:
@@ -282,6 +319,10 @@ class QuestionGenerationPipeline:
         """
         candidates: List[Question] = []
         for q in questions:
+            if q.validation_status == ValidationStatus.REJECTED:
+                continue  # Added hard rejection guard so failed questions cannot re-enter via fallback.
+            if q.validation_score is not None and q.validation_score < self.config.min_score_refine:
+                continue  # Added minimum score guard so fallback keeps only minimally viable questions.
             if q.evidence_doc_ids:
                 candidates.append(q)
                 continue
@@ -300,6 +341,11 @@ class QuestionGenerationPipeline:
         )
         fallback_n = max(1, self.config.min_questions)
         return ranked[:fallback_n]
+
+    def _filter_rejected(self, questions: List[Question]) -> List[Question]:
+        """Drop explicitly rejected questions before final score/evidence filtering."""
+        filtered = [q for q in questions if q.validation_status != ValidationStatus.REJECTED]
+        return filtered or questions  # Preserve backward compatibility when status metadata is missing.
 
     def _normalize_lens_terms(self, research_lens: List[str] | None) -> List[str]:
         """Normalize lens terms to lowercase deduplicated phrases."""
@@ -487,6 +533,148 @@ class QuestionGenerationPipeline:
         if question_years and not question_years.issubset(allowable_years):
             question.time_window = None
         return question
+
+    def _assess_meaningfulness(
+        self,
+        questions: List[Question],
+        notebook: ResearchNotebook,
+        lens_terms: List[str],
+    ) -> Dict[str, Any]:
+        """Decide whether downstream synthesis should proceed based on question quality."""
+        heuristic = self._heuristic_meaningfulness(questions, notebook)
+        llm_gate = self._llm_meaningfulness(questions, notebook, lens_terms)
+        if heuristic.get("action") == "stop":
+            # Heuristic stop takes precedence because it guards known failure modes deterministically.
+            if llm_gate:
+                heuristic.setdefault("issues", []).extend(llm_gate.get("issues", []))
+            return heuristic
+        if llm_gate and llm_gate.get("action") == "stop":
+            return llm_gate  # Added LLM veto so weak-but-plausible sets can still be halted before synthesis.
+        if llm_gate and llm_gate.get("action") == "proceed_with_caution":
+            heuristic["action"] = "proceed_with_caution"
+            heuristic.setdefault("issues", []).extend(llm_gate.get("issues", []))
+            heuristic["reason"] = llm_gate.get("reason") or heuristic.get("reason")
+        return heuristic
+
+    def _heuristic_meaningfulness(self, questions: List[Question], notebook: ResearchNotebook) -> Dict[str, Any]:
+        """Deterministic safety checks for degenerate question sets."""
+        min_docs = APP_CONFIG.tier0.question_min_evidence_docs
+        credible = [
+            q for q in questions
+            if q.validation_status != ValidationStatus.REJECTED
+            and (q.validation_score is None or q.validation_score >= self.config.min_score_refine)
+            and len(q.evidence_doc_ids) >= min_docs
+        ]
+        seeded_only = bool(credible) and all((q.generation_method or "").startswith("lens_seeded") for q in credible)
+        pattern_count = len(notebook.patterns)
+        contradiction_count = len(notebook.contradictions)
+
+        if not credible:
+            return {
+                "action": "stop",
+                "reason": "No credible questions remained after validation and evidence checks.",
+                "issues": ["all_questions_rejected_or_weak"],
+                "confidence": "high",
+            }
+        if pattern_count == 0 and contradiction_count == 0 and len(credible) < 2:
+            return {
+                "action": "stop",
+                "reason": "Notebook signal is too thin (no patterns/contradictions) to support synthesis.",
+                "issues": ["thin_notebook_signal", "too_few_credible_questions"],
+                "confidence": "high",
+            }
+        if len(credible) == 1 and seeded_only:
+            return {
+                "action": "stop",
+                "reason": "Only one seed question remained; synthesis would overfit to injected guidance.",
+                "issues": ["single_seeded_question"],
+                "confidence": "high",
+            }
+        if len(credible) < 2:
+            return {
+                "action": "proceed_with_caution",
+                "reason": "Question set is narrowly supported; synthesis quality may be unstable.",
+                "issues": ["low_question_count"],
+                "confidence": "medium",
+            }
+        return {
+            "action": "proceed",
+            "reason": "Question set passed deterministic quality checks.",
+            "issues": [],
+            "confidence": "medium",
+        }
+
+    def _llm_meaningfulness(
+        self,
+        questions: List[Question],
+        notebook: ResearchNotebook,
+        lens_terms: List[str],
+    ) -> Dict[str, Any]:
+        """Run an LLM audit that can flag semantically incoherent question sets."""
+        if not questions:
+            return {
+                "action": "stop",
+                "reason": "No questions were produced.",
+                "issues": ["empty_question_set"],
+                "confidence": "high",
+            }
+
+        summaries = self._question_gate_summaries(questions)
+        prompt = MEANINGFULNESS_GATE_PROMPT.format(
+            lens_terms=", ".join(lens_terms) if lens_terms else "(none)",
+            documents_read=notebook.corpus_map.get("total_documents_read", 0),
+            pattern_count=len(notebook.patterns),
+            contradiction_count=len(notebook.contradictions),
+            entity_count=len(notebook.entities),
+            question_summaries=summaries,
+        )
+
+        response = self.validator.llm.generate(
+            messages=[
+                {"role": "system", "content": "You are a strict historical research quality auditor."},
+                {"role": "user", "content": prompt},
+            ],
+            profile="verifier",
+            temperature=0.0,
+            timeout=APP_CONFIG.tier0.llm_timeout,
+        )
+        if not response.success:
+            return {}
+
+        parsed = parse_llm_json(response.content, default={})
+        if not isinstance(parsed, dict):
+            return {}
+
+        action = str(parsed.get("action", "")).strip().lower()
+        if action not in {"proceed", "proceed_with_caution", "stop"}:
+            return {}
+
+        reason = str(parsed.get("reason", "")).strip()
+        issues = parsed.get("issues", [])
+        if not isinstance(issues, list):
+            issues = [str(issues)]
+        confidence = str(parsed.get("confidence", "low")).strip().lower()
+        if confidence not in {"low", "medium", "high"}:
+            confidence = "low"
+        return {
+            "action": action,
+            "reason": reason or "LLM quality gate decision.",
+            "issues": [str(issue) for issue in issues if str(issue).strip()],
+            "confidence": confidence,
+        }
+
+    def _question_gate_summaries(self, questions: List[Question], limit: int = 8) -> str:
+        """Render compact question summaries for the meaningfulness gate prompt."""
+        lines: List[str] = []
+        for idx, question in enumerate(questions[:limit], start=1):
+            status = question.validation_status.value if question.validation_status else "unknown"
+            line = (
+                f"{idx}. score={question.validation_score} status={status} "
+                f"method={question.generation_method} evidence={len(question.evidence_doc_ids)} "
+                f"question={question.question_text}"
+            )
+            lines.append(line)
+        return "\n".join(lines)
 
     def _deduplicate(self, questions: List[Question]) -> List[Question]:
         seen = set()

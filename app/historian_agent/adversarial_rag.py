@@ -18,6 +18,7 @@ sys.path.insert(0, '/app/historian_agent')
 import os
 import time
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional
@@ -197,7 +198,18 @@ TASK: Verify each factual claim. Report citation_score as percentage with direct
                 raise Exception(str(response.error))
             
             # Parse JSON response
-            verdict = json.loads(response.content)
+            content = (response.content or "").strip()
+            if content.startswith("```"):
+                # Added fence stripping so verifier accepts markdown-wrapped JSON responses.
+                content = re.sub(r"^```(?:json)?\s*", "", content, flags=re.IGNORECASE)
+                content = re.sub(r"\s*```$", "", content)
+            start = content.find("{")
+            end = content.rfind("}")
+            if start != -1 and end != -1 and end > start:
+                # Added object extraction so leading prose doesn't break JSON parsing.
+                content = content[start:end + 1]
+
+            verdict = json.loads(content)
             
             # Validate and clamp score
             verdict["citation_score"] = max(0, min(100, int(verdict.get("citation_score", 0))))

@@ -14,16 +14,15 @@ CHANGES FROM ORIGINAL:
 """
 
 import sys
-import os
 import time
 import json
-from typing import Dict, List, Tuple, Any, Optional
+from typing import Dict, List, Tuple, Any
 from dotenv import load_dotenv
 
 # FIXED: Ensure proper path setup
 sys.path.insert(0, '/app')
 
-from rag_query_handler import RAGQueryHandler, count_tokens, debug_print
+from rag_query_handler import RAGQueryHandler
 from adversarial_rag import AdversarialRAGHandler
 from llm_abstraction import LLMClient
 from config import APP_CONFIG
@@ -56,22 +55,6 @@ def debug_event(category: str, msg: str, icon: str = "⚙️", level: str = "INF
         sys.stderr.write(f"{icon} [{timestamp}] [{category.upper()}] {msg}\n")
 
 
-def strip_extensions(filename: str) -> str:
-    """Strip common file extensions from filename for display."""
-    extensions = ['.json', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.pdf']
-    display = filename
-    while True:
-        stripped = False
-        for ext in extensions:
-            if display.lower().endswith(ext):
-                display = display[:-len(ext)]
-                stripped = True
-                break
-        if not stripped:
-            break
-    return display
-
-
 class TieredHistorianAgent:
     """
     Multi-tier investigation agent with adversarial verification.
@@ -96,6 +79,55 @@ class TieredHistorianAgent:
             "Initialized tiered agent with adversarial verification",
             icon="🤖"
         )
+
+    def _normalize_sources(self, raw_sources: Any) -> List[Dict[str, str]]:
+        """Normalize source payloads from old/new handlers into the API list shape."""
+        # Added source normalization because tiered flow now receives mixed source schemas.
+        if isinstance(raw_sources, dict):
+            candidates = list(raw_sources.values())
+        elif isinstance(raw_sources, list):
+            candidates = raw_sources
+        else:
+            candidates = []
+
+        normalized: List[Dict[str, str]] = []
+        for idx, item in enumerate(candidates, 1):
+            if not isinstance(item, dict):
+                continue
+            md = item.get("metadata", {}) if isinstance(item.get("metadata", {}), dict) else {}
+
+            doc_id = md.get("document_id") or item.get("document_id") or item.get("id")
+            if not doc_id:
+                continue
+            doc_id = str(doc_id)
+
+            filename = (
+                item.get("filename")
+                or md.get("filename")
+                or item.get("display_name")
+                or md.get("file_name")
+                or md.get("title")
+                or item.get("title")
+                or md.get("source")
+                or item.get("source")
+                or doc_id
+            )
+            filename = str(filename)
+            display_name = str(item.get("display_name") or strip_extensions(filename))
+            label = str(item.get("label") or f"Source {idx}")
+
+            normalized.append({
+                "label": label,
+                "id": doc_id,
+                "filename": filename,
+                "display_name": display_name,
+            })
+        return normalized
+
+    def _source_ids(self, raw_sources: Any) -> List[str]:
+        """Extract document IDs for source re-fetch during verification."""
+        # Added id extraction helper so Tier 2 verification works with list/dict source shapes.
+        return [item["id"] for item in self._normalize_sources(raw_sources) if item.get("id")]
     
     def generate_multi_queries(self, original_question: str) -> List[str]:
         """
@@ -198,7 +230,7 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
     def tier2_deep_investigation(
         self,
         question: str
-    ) -> Tuple[str, Dict[str, str], List[Dict], float]:
+    ) -> Tuple[str, List[Dict[str, str]], List[Dict[str, Any]], float]:
         """
         Tier 2: Deep investigation with multi-query expansion.
         
@@ -294,7 +326,7 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
         
         return answer, sources, tier_metrics, latency
     
-    def investigate(self, question: str) -> Tuple[str, Dict, List[Dict], float]:
+    def investigate(self, question: str) -> Tuple[str, List[Dict[str, str]], List[Dict[str, Any]], float]:
         """
         Main investigation with confidence-based escalation.
         
@@ -360,56 +392,7 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             )
             
             total_time = time.time() - total_start
-            sources = tier1_metrics.get("sources", {})
-            
-            # Format sources list as requested
-            # Build sources list (internal format)
-            sources_list: List[Dict[str, str]] = []
-            for idx, d in enumerate(docs, 1):
-                if not isinstance(d, dict):
-                    continue
-                md = d.get("metadata", {}) if isinstance(d.get("metadata", {}), dict) else {}
-                
-                doc_id = md.get("document_id") or d.get("document_id") or d.get("id")
-                if not doc_id:
-                    continue
-                doc_id = str(doc_id)
-                
-                filename = (
-                    md.get("filename") or 
-                    md.get("file_name") or 
-                    md.get("title") or 
-                    md.get("source") or 
-                    doc_id
-                )
-                filename = str(filename)
-                display_name = strip_extensions(filename)
-                
-                sources_list.append({
-                    "label": f"Source {idx}",
-                    "id": doc_id,
-                    "filename": filename,
-                    "display_name": display_name
-                })
-                
-                filename = (
-                    md.get("filename") or 
-                    md.get("file_name") or 
-                    md.get("title") or 
-                    md.get("source") or 
-                    doc_id
-                )
-                filename = str(filename)
-                display_name = strip_extensions(filename)
-                
-                sources_list.append({
-                    "label": f"Source {idx}",
-                    "id": doc_id,
-                    "filename": filename,
-                    "display_name": display_name
-                })
-
-            sources = sources_list
+            sources = self._normalize_sources(tier1_metrics.get("sources", []))  # Added to avoid undefined `docs` path and duplicate source rows.
 
             return tier1_answer, sources, all_metrics, total_time
         
@@ -423,7 +406,7 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             icon="⬆️"
         )
         
-        tier2_answer, tier2_sources, tier2_metrics, tier2_time = (
+        tier2_answer, tier2_sources, tier2_metrics, _tier2_time = (
             self.tier2_deep_investigation(question)
         )
         
@@ -432,9 +415,11 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
         # Verify Tier 2 answer
         debug_event("Verification", "Verifying Tier 2...", icon="⚖️")
         
-        tier2_context, _, _ = self.handler.get_full_document_text(
-            list(tier2_sources.values())
-        )
+        tier2_source_ids = self._source_ids(tier2_sources)  # Added source id normalization so verification works with list-based sources.
+        if tier2_source_ids:
+            tier2_context, _, _ = self.handler.get_full_document_text(tier2_source_ids)
+        else:
+            tier2_context = ""
         
         verify_start = time.time()
         tier2_verdict = self.adversarial_handler.verify_citations(
@@ -477,40 +462,46 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             icon="🏁"
         )
         
-        # Format sources list as requested
-        sources_list = []
-        docs = tier2_sources or []
-
-        for idx, d in enumerate(docs, 1):
-            if not isinstance(d, dict):
-                continue
-            md = d.get("metadata", {}) if isinstance(d.get("metadata", {}), dict) else {}
-            
-            doc_id = md.get("document_id") or d.get("document_id") or d.get("id")
-            if not doc_id:
-                continue
-            doc_id = str(doc_id)
-            
-            filename = (
-                md.get("filename") or 
-                md.get("file_name") or 
-                md.get("title") or 
-                md.get("source") or 
-                doc_id
-            )
-            filename = str(filename)
-            display_name = strip_extensions(filename)
-            
-            sources_list.append({
-                "label": f"Source {idx}",
-                "id": doc_id,
-                "filename": filename,
-                "display_name": display_name
-            })
-
-        tier2_sources = sources_list
+        tier2_sources = self._normalize_sources(tier2_sources)  # Added to return a stable source schema across Tier 1 and Tier 2 outputs.
 
         return final_answer, tier2_sources, all_metrics, total_time
+
+    def run(self, question: str) -> Dict[str, Any]:
+        """Backward-compatible entrypoint expected by `routes.py` tiered dispatcher."""
+        # Added compatibility wrapper because routes call `run(...)` and newer class exposed `investigate(...)`.
+        answer, sources, stage_metrics, total_time = self.investigate(question)
+        escalated = any(
+            isinstance(stage, dict) and str(stage.get("tier", "")).startswith("2")
+            for stage in stage_metrics
+        )
+        stages = []
+        for stage in stage_metrics:
+            if not isinstance(stage, dict):
+                continue
+            stages.append({
+                "stage": str(stage.get("tier", stage.get("stage", "unknown"))),
+                "total_time": float(stage.get("time", stage.get("fetch_time", stage.get("llm_time", 0))) or 0.0),
+            })
+
+        tokens_total = 0
+        for stage in stage_metrics:
+            if isinstance(stage, dict):
+                try:
+                    tokens_total += int(stage.get("tokens", 0) or 0)
+                except Exception:
+                    continue
+
+        return {
+            "answer": answer,
+            "sources": sources,
+            "metrics": {
+                "total_time": float(total_time),
+                "doc_count": len(sources),
+                "tokens": tokens_total,
+                "stages": stages,
+                "escalated": escalated,
+            },
+        }
 
 
 # Factory function for routes.py

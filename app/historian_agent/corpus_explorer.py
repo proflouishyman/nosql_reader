@@ -242,6 +242,11 @@ class CorpusExplorer:
         corpus_map = self._generate_corpus_map()
         questions = self._generate_research_questions()
         question_synthesis = self._generate_question_synthesis()
+        question_quality_gate = (
+            self._last_question_batch.quality_gate
+            if self._last_question_batch is not None
+            else None
+        )  # Added gate metadata passthrough so reports explain why synthesis may be skipped.
 
         report = {
             "corpus_map": corpus_map,
@@ -260,6 +265,7 @@ class CorpusExplorer:
                 "duration_seconds": time.time() - start_time,
                 "timestamp": datetime.now().isoformat(),
                 "research_lens": list(self._research_lens),  # Added to make lens usage explicit in persisted run metadata.
+                "question_quality_gate": question_quality_gate,
             },
         }
 
@@ -946,6 +952,16 @@ class CorpusExplorer:
 
         if self._last_question_batch is None:
             return {}
+
+        gate = self._last_question_batch.quality_gate or {}
+        if gate.get("action") == "stop":
+            reason = gate.get("reason") or "Question quality gate requested synthesis stop."
+            self.logger.log("synthesis_skipped", reason, level="WARN")  # Added explicit skip logging so operators can see why essay generation did not run.
+            return {
+                "status": "skipped",
+                "reason": "question_quality_gate",
+                "diagnostics": gate,
+            }
 
         return self.question_synthesizer.build_agenda(
             self.notebook,

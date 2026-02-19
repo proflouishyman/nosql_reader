@@ -174,6 +174,7 @@ class QuestionBatch:
     total_candidates: int = 0
     total_validated: int = 0
     total_accepted: int = 0
+    quality_gate: Optional[Dict[str, Any]] = None  # Added quality gate payload so callers can decide whether synthesis should proceed.
 
     def add(self, question: Question) -> None:
         self.questions.append(question)
@@ -201,6 +202,7 @@ class QuestionBatch:
                 "total_validated": self.total_validated,
                 "total_accepted": self.total_accepted,
                 "final_count": len(self.questions),
+                "quality_gate": self.quality_gate,  # Added serialized gate diagnostics for run transparency.
             },
         }
 
