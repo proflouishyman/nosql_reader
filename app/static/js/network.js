@@ -294,13 +294,41 @@ async function loadRelatedDocuments(container, docId) {
         return;
     }
 
+    const formatEntity = (entity) => {
+        if (typeof entity === "string") return entity;
+        const name = entity?.name || entity?.text || entity?.entity_id || "Unknown";
+        const type = entity?.type ? ` (${entity.type})` : "";
+        return `${name}${type}`;
+    };
+
     let html = '<ul class="related-docs-list">';
     data.related.forEach((doc) => {
+        const sharedEntities = Array.isArray(doc.shared_entities) ? doc.shared_entities : [];
+        const sharedCount = Number.isFinite(doc.shared_entity_count)
+            ? doc.shared_entity_count
+            : sharedEntities.length;
+        const sharedLabel = sharedCount === 1 ? "shared entity" : "shared entities";
+        const sharedText = sharedEntities.length
+            ? sharedEntities.map(formatEntity).join(", ")
+            : "No direct shared entities listed.";
+
+        const connectors = Array.isArray(doc.network_connector_entities)
+            ? doc.network_connector_entities
+            : [];
+        const connectorText = connectors.length
+            ? connectors.slice(0, 4).map(formatEntity).join(", ")
+            : "";
+
         html += `
             <li>
                 <a href="/document/${doc.document_id}">${doc.filename}</a>
-                <span class="shared-count">${doc.shared_entity_count} shared entities</span>
-                <span class="shared-names">${doc.shared_entities.join(", ")}</span>
+                <span class="shared-count">${sharedCount} ${sharedLabel} with current document</span>
+                <span class="shared-names"><strong>Shared:</strong> ${sharedText}</span>
+                ${
+                    connectorText
+                        ? `<span class="shared-names"><strong>Connected via:</strong> ${connectorText}</span>`
+                        : ""
+                }
             </li>
         `;
     });

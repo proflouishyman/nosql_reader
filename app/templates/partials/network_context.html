@@ -34,6 +34,10 @@
 {% if document.entity_refs %}
 <div class="info-section related-docs-section" id="related-docs-section">
   <h2>Related Documents via Network</h2>
+  <p class="section-description">
+    Shared entities are canonical entities that appear in both this document and
+    the related document. Entity types are shown in parentheses.
+  </p>
   <div id="network-related-docs"
        data-doc-id="{{ document._id }}">
     <div style="color: #999; padding: 8px 0;">Finding related documents…</div>

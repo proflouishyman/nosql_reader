@@ -510,7 +510,10 @@ def get_related_documents_via_network(
     Returns
     -------
     list of dict
-        [{document_id, filename, shared_entity_count, shared_entities}, ...]
+        Each result includes:
+        - shared_entity_count/shared_entities: direct overlap with source doc
+        - network_connection_count/network_connector_entities: 1-hop network
+          bridge signal used for discovery/ranking
     """
     documents = db["documents"]
 
@@ -525,10 +528,11 @@ def get_related_documents_via_network(
     if not source_doc:
         return []
 
-    entity_refs = set(str(ref) for ref in source_doc.get("entity_refs", []))
-    if not entity_refs:
+    source_refs = {str(ref) for ref in source_doc.get("entity_refs", [])}
+    if not source_refs:
         return []
 
+    source_entity_map = get_entities_bulk(db, list(source_refs))
     person_folder = exclude_person_folder or source_doc.get("person_folder")
 
     # Find entities connected to our doc's entities
@@ -538,7 +542,7 @@ def get_related_documents_via_network(
 
     # Get all connected entity IDs (1-hop neighbors)
     connected_ids: Set[str] = set()
-    for ref in entity_refs:
+    for ref in source_refs:
         for edge in edges_coll.find(
             {"$or": [{"source_id": ref}, {"target_id": ref}]},
             {"source_id": 1, "target_id": 1},
@@ -547,22 +551,22 @@ def get_related_documents_via_network(
             connected_ids.add(edge["target_id"])
 
     # Remove the source doc's own entities
-    connected_ids -= entity_refs
+    connected_ids -= source_refs
 
     if not connected_ids:
         return []
 
-    # Find documents that reference these connected entities
-    # Use linked_entities.document_ids for efficiency
+    # Find candidate documents through connected entities.
+    # Use linked_entities.document_ids for efficiency.
     linked = _get_linked_entities(db)
-    doc_entity_counts: Counter = Counter()
-    doc_entity_names: Dict[str, List[str]] = defaultdict(list)
+    doc_network_counts: Counter = Counter()
+    doc_connector_entities: Dict[str, Dict[str, Dict[str, Any]]] = defaultdict(dict)
 
     for eid in list(connected_ids)[:100]:  # Cap to avoid huge queries
         try:
             entity = linked.find_one(
                 {"_id": ObjectId(eid)},
-                {"document_ids": 1, "canonical_name": 1},
+                {"document_ids": 1, "canonical_name": 1, "type": 1},
             )
         except Exception:
             continue
@@ -570,19 +574,23 @@ def get_related_documents_via_network(
         if not entity:
             continue
 
-        name = entity.get("canonical_name", "Unknown")
+        connector_payload = {
+            "entity_id": eid,
+            "name": entity.get("canonical_name", "Unknown"),
+            "type": entity.get("type", "UNKNOWN"),
+        }
         for did in entity.get("document_ids", [])[:200]:  # Cap per entity
             did_str = str(did)
             if did_str != doc_id:
-                doc_entity_counts[did_str] += 1
-                if len(doc_entity_names[did_str]) < 5:
-                    doc_entity_names[did_str].append(name)
+                doc_network_counts[did_str] += 1
+                if len(doc_connector_entities[did_str]) < 6:
+                    doc_connector_entities[did_str][eid] = connector_payload
 
-    if not doc_entity_counts:
+    if not doc_network_counts:
         return []
 
-    # Get top related docs, excluding same person folder
-    top_doc_ids = [did for did, _ in doc_entity_counts.most_common(limit * 3)]
+    # Get top related docs by network connectivity signal.
+    top_doc_ids = [did for did, _ in doc_network_counts.most_common(limit * 4)]
 
     # Fetch doc info and filter
     try:
@@ -593,7 +601,7 @@ def get_related_documents_via_network(
     related = []
     for doc in documents.find(
         {"_id": {"$in": oids}},
-        {"filename": 1, "person_folder": 1},
+        {"filename": 1, "person_folder": 1, "entity_refs": 1},
     ):
         did = str(doc["_id"])
 
@@ -601,19 +609,41 @@ def get_related_documents_via_network(
         if person_folder and doc.get("person_folder") == person_folder:
             continue
 
+        # Directly shared entities = exact overlap of entity_refs.
+        candidate_refs = {str(ref) for ref in doc.get("entity_refs", [])}
+        shared_ids = [eid for eid in source_refs if eid in candidate_refs]
+        shared_entities: List[Dict[str, Any]] = []
+        for sid in shared_ids:
+            info = source_entity_map.get(sid) or {
+                "id": sid,
+                "name": sid,
+                "type": "UNKNOWN",
+            }
+            shared_entities.append(
+                {
+                    "entity_id": info["id"],
+                    "name": info["name"],
+                    "type": info["type"],
+                }
+            )
+
+        connector_entities = list(doc_connector_entities.get(did, {}).values())
+
         related.append({
             "document_id": did,
             "filename": doc.get("filename", "Unknown"),
-            "shared_entity_count": doc_entity_counts[did],
-            "shared_entities": doc_entity_names.get(did, []),
+            "shared_entity_count": len(shared_entities),
+            "shared_entities": shared_entities,
+            "network_connection_count": doc_network_counts[did],
+            "network_connector_entities": connector_entities,
         })
 
-        if len(related) >= limit:
-            break
-
-    # Sort by shared entity count
-    related.sort(key=lambda x: x["shared_entity_count"], reverse=True)
-    return related
+    # Prioritize documents that actually share entities directly, then network signal.
+    related.sort(
+        key=lambda x: (x["shared_entity_count"], x["network_connection_count"]),
+        reverse=True,
+    )
+    return related[:limit]
 
 
 # ===========================================================================
