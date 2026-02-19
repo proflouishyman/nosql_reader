@@ -51,6 +51,18 @@
           </div>
         {% endif %}
 
+        {% set biographical_narrative = none %}
+        {% if document.person_synthesis and document.person_synthesis is mapping %}
+          {% set biographical_narrative = document.person_synthesis.get('biographical_narrative') or document.person_synthesis.get('Biographical Narrative') %}
+        {% endif %}
+
+        {% if biographical_narrative %}
+          <div class="info-section">
+            <h2>Biographical Narrative</h2>
+            <p>{{ biographical_narrative }}</p>
+          </div>
+        {% endif %}
+
         <!-- Render Sections -->
         {% for section in document.sections %}
           {{ render_section(section) }}
@@ -78,7 +90,26 @@
           <div class="info-section">
             <h2>Person Synthesis</h2>
             <div class="nested-block">
-              {{ render_nested_value(document.person_synthesis) }}
+              {% if document.person_synthesis is mapping %}
+                <table class="info-table nested">
+                  {% for subkey, subvalue in document.person_synthesis.items() %}
+                    {% if subkey != 'biographical_narrative' and subkey != 'Biographical Narrative' %}
+                      <tr>
+                        <th>{{ subkey.replace('_', ' ') | title }}</th>
+                        <td>
+                          {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
+                            {{ render_nested_value(subvalue) }}
+                          {% else %}
+                            {{ subvalue }}
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                </table>
+              {% else %}
+                {{ render_nested_value(document.person_synthesis) }}
+              {% endif %}
             </div>
           </div>
         {% endif %}
