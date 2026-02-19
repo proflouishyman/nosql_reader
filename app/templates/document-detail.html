@@ -7,21 +7,23 @@
     <div class="info-panel">
       <!-- Navigation -->
       <div class="navigation">
-        <a href="{{ back_to_list_url }}" class="button button--secondary nav-button" title="Return to document list">
+        <a href="{{ back_to_list_url }}" class="button button--secondary nav-button" title="Return to document list" data-help="Return to the current document results list.">
           <span>{{ back_to_list_label }}</span>
         </a>
         <a href="{{ prev_url }}"
            class="button button--secondary nav-button {{ 'disabled' if not prev_id else '' }}"
            title="Previous Result"
+           data-help="Open the previous document in the current results context."
            {% if not prev_id %}aria-disabled="true" tabindex="-1"{% endif %}>
           <span>Previous</span>
         </a>
-        <a href="{{ url_for('index') }}" class="button button--secondary nav-button" title="Home">
+        <a href="{{ url_for('index') }}" class="button button--secondary nav-button" title="Home" data-help="Return to the application home page.">
           <span>Home</span>
         </a>
         <a href="{{ next_url }}"
            class="button button--secondary nav-button {{ 'disabled' if not next_id else '' }}"
            title="Next Result"
+           data-help="Open the next document in the current results context."
            {% if not next_id %}aria-disabled="true" tabindex="-1"{% endif %}>
           <span>Next</span>
         </a>
@@ -136,44 +138,44 @@
           <img id="documentImage" src="{{ url_for('serve_image', filename=image_path) }}" alt="Document Image">
         </div>
         <div class="zoom-controls">
-          <button id="rotateLeft">Rotate Left</button>
-          <button id="rotateRight">Rotate Right</button>
-          <button id="zoomIn">Zoom In</button>
-          <button id="zoomOut">Zoom Out</button>
-          <button id="resetZoom">Reset</button>
+          <button id="rotateLeft" data-help="Rotate the image 90 degrees counterclockwise.">Rotate Left</button>
+          <button id="rotateRight" data-help="Rotate the image 90 degrees clockwise.">Rotate Right</button>
+          <button id="zoomIn" data-help="Zoom in on the document image.">Zoom In</button>
+          <button id="zoomOut" data-help="Zoom out from the document image.">Zoom Out</button>
+          <button id="resetZoom" data-help="Reset image zoom and rotation to default values.">Reset</button>
         </div>
         <div class="adjustment-controls">
           <div class="control-group">
             <label for="brightnessRange">Brightness:</label>
-            <input type="range" id="brightnessRange" min="0.5" max="1.5" step="0.1" value="1" title="1">
+            <input type="range" id="brightnessRange" min="0.5" max="1.5" step="0.1" value="1" title="1" data-help="Adjust image brightness.">
           </div>
           <div class="control-group">
             <label for="contrastRange">Contrast:</label>
-            <input type="range" id="contrastRange" min="0.5" max="2" step="0.1" value="1" title="1">
+            <input type="range" id="contrastRange" min="0.5" max="2" step="0.1" value="1" title="1" data-help="Adjust image contrast.">
           </div>
           <div class="control-group">
             <label for="saturationRange">Saturation:</label>
-            <input type="range" id="saturationRange" min="0" max="3" step="0.1" value="1" title="1">
+            <input type="range" id="saturationRange" min="0" max="3" step="0.1" value="1" title="1" data-help="Adjust image color saturation.">
           </div>
           <div class="control-group">
             <label for="hueRange">Hue Rotation:</label>
-            <input type="range" id="hueRange" min="0" max="360" step="10" value="0" title="0">
+            <input type="range" id="hueRange" min="0" max="360" step="10" value="0" title="0" data-help="Rotate image hue values for color shifts.">
           </div>
           <div class="control-group">
             <label for="sharpenRange">Sharpen:</label>
-            <input type="range" id="sharpenRange" min="0" max="5" step="0.1" value="0" title="0">
+            <input type="range" id="sharpenRange" min="0" max="5" step="0.1" value="0" title="0" data-help="Increase edge sharpness for clearer text.">
           </div>
           <div class="control-group">
             <label for="thresholdRange">Threshold:</label>
-            <input type="range" id="thresholdRange" min="0" max="255" step="1" value="128" title="128">
+            <input type="range" id="thresholdRange" min="0" max="255" step="1" value="128" title="128" data-help="Adjust thresholding to emphasize dark/light contrast.">
           </div>
           <div class="buttons-group">
-            <button id="grayscaleBtn">Grayscale</button>
-            <button id="sepiaBtn">Sepia</button>
-            <button id="invertBtn">Invert Colors</button>
-            <button id="flipHorizontalBtn">Flip Horizontal</button>
-            <button id="flipVerticalBtn">Flip Vertical</button>
-            <button id="resetAllBtn">Reset All</button>
+            <button id="grayscaleBtn" data-help="Toggle grayscale rendering.">Grayscale</button>
+            <button id="sepiaBtn" data-help="Toggle sepia rendering.">Sepia</button>
+            <button id="invertBtn" data-help="Invert image colors.">Invert Colors</button>
+            <button id="flipHorizontalBtn" data-help="Mirror the image horizontally.">Flip Horizontal</button>
+            <button id="flipVerticalBtn" data-help="Flip the image vertically.">Flip Vertical</button>
+            <button id="resetAllBtn" data-help="Reset all image transforms and filter adjustments.">Reset All</button>
           </div>
         </div>
         <!-- SVG Filters -->

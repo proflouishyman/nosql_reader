@@ -1665,21 +1665,61 @@ def _parse_network_bool_arg(name: str, default: bool) -> bool:
     return str(raw_value).strip().lower() in ("1", "true", "yes", "y", "on")
 
 
+def _parse_network_type_pair(raw_value: str) -> Tuple[Optional[str], Optional[str]]:
+    raw = (raw_value or "").strip()
+    if not raw:
+        return None, None
+
+    separator = "|" if "|" in raw else ","
+    parts = [part.strip() for part in raw.split(separator) if part.strip()]
+    if len(parts) != 2:
+        return None, None
+    return parts[0], parts[1]
+
+
+def _parse_network_rank_mode(default: str = "most_connected") -> str:
+    allowed = {
+        "most_connected",
+        "most_cross_type",
+        "rare_but_strong",
+        "low_frequency_pairs",
+    }
+    raw_mode = request.args.get("rank_mode", default)
+    mode = str(raw_mode or default).strip().lower()
+    return mode if mode in allowed else default
+
+
+def _parse_network_pair_preset(default: str = "cross_type_only") -> str:
+    allowed = {"cross_type_only", "all_pairs", "within_type_only"}
+    raw_preset = request.args.get("pair_preset", default)
+    preset = str(raw_preset or default).strip().lower()
+    return preset if preset in allowed else default
+
+
 def _build_network_viewer_context() -> Dict[str, Any]:
     config = NetworkConfig.from_env()
     entity_id = request.args.get("entity", "").strip() or None
+    document_term = request.args.get("document_term", request.args.get("entity_search", "")).strip()
     type_filter = _parse_network_type_filter(request.args.get("type_filter", "").strip())
+    source_type, target_type = _parse_network_type_pair(request.args.get("type_pair", ""))
     min_weight = _parse_network_int_arg("min_weight", config.default_min_weight, minimum=1, maximum=9999)
     edge_limit = _parse_network_int_arg("limit", config.default_limit, minimum=1, maximum=5000)
     strict_type_filter = _parse_network_bool_arg("strict_type_filter", True)
+    rank_mode = _parse_network_rank_mode()
+    pair_preset = _parse_network_pair_preset()
 
     context = get_network_documents_for_viewer(
         db,
         entity_id=entity_id,
         type_filter=type_filter or None,
+        source_type=source_type,
+        target_type=target_type,
         min_weight=min_weight,
         limit=edge_limit,
         strict_type_filter=strict_type_filter,
+        pair_preset=pair_preset,
+        rank_mode=rank_mode,
+        document_term=document_term,
         max_documents=NETWORK_VIEWER_MAX_DOCUMENTS,
         max_docs_per_edge=NETWORK_VIEWER_MAX_DOCS_PER_EDGE,
     )
@@ -1695,6 +1735,10 @@ def _build_network_viewer_context() -> Dict[str, Any]:
         "min_weight": min_weight,
         "limit": edge_limit,
         "strict_type_filter": strict_type_filter,
+        "type_pair": [source_type, target_type] if source_type and target_type else [],
+        "pair_preset": pair_preset,
+        "rank_mode": rank_mode,
+        "document_term": document_term,
     }
     context["analysis_url"] = analysis_url
     context["generated_at"] = datetime.utcnow().isoformat()
@@ -2116,7 +2160,7 @@ def database_info():
 
 @app.route('/help')
 def help_page():
-    """Render the in-app help centre derived from the README."""
+    """Render the in-app help centre focused on current workflows."""
 
     return render_template('help.html')
 

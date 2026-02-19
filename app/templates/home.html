@@ -8,8 +8,8 @@
         <h1>Welcome to the Historical Document Reader</h1>
         <p class="home-hero__lead">Explore digitised archives, surface relevant records with full-text search, and interrogate the collection using the Historian Agent.</p>
         <div class="home-hero__actions">
-            <a class="button" href="{{ url_for('search_database') }}">Start searching</a>
-            <a class="button button--secondary" href="{{ url_for('historian_agent_page') }}">Chat with the Historian Agent</a>
+            <a class="button" href="{{ url_for('search_database') }}" data-help="Open Search Database to run structured archive queries.">Start searching</a>
+            <a class="button button--secondary" href="{{ url_for('historian_agent_page') }}" data-help="Open the Historian Agent chat workspace.">Chat with the Historian Agent</a>
         </div>
     </section>
 

@@ -45,6 +45,102 @@ def _get_network_metrics(db):
 
 
 # ===========================================================================
+# Document text matching helpers
+# ===========================================================================
+
+def _value_contains_term(value: Any, normalized_term: str) -> bool:
+    """
+    Recursively search for a term in arbitrarily nested document values.
+
+    This intentionally scans "all fields" by traversing dict/list structures
+    and checking scalar values as strings.
+    """
+    if value is None:
+        return False
+
+    if isinstance(value, str):
+        return normalized_term in value.casefold()
+
+    if isinstance(value, (int, float, bool)):
+        return normalized_term in str(value).casefold()
+
+    if isinstance(value, dict):
+        for nested in value.values():
+            if _value_contains_term(nested, normalized_term):
+                return True
+        return False
+
+    if isinstance(value, (list, tuple, set)):
+        for nested in value:
+            if _value_contains_term(nested, normalized_term):
+                return True
+        return False
+
+    # Fallback for types like ObjectId/datetime/etc.
+    try:
+        return normalized_term in str(value).casefold()
+    except Exception:
+        return False
+
+
+def _document_contains_term(
+    db,
+    doc_id: str,
+    normalized_term: str,
+    match_cache: Dict[str, bool],
+) -> bool:
+    """
+    Check if a document contains a search term anywhere across its fields.
+
+    Uses an in-request cache to avoid repeated scans of the same document.
+    """
+    if not normalized_term:
+        return True
+
+    doc_id = str(doc_id)
+    if doc_id in match_cache:
+        return match_cache[doc_id]
+
+    if not ObjectId.is_valid(doc_id):
+        match_cache[doc_id] = False
+        return False
+
+    doc = db["documents"].find_one({"_id": ObjectId(doc_id)})
+    if not doc:
+        match_cache[doc_id] = False
+        return False
+
+    matched = _value_contains_term(doc, normalized_term)
+    match_cache[doc_id] = matched
+    return matched
+
+
+def _filter_document_ids_by_term(
+    db,
+    document_ids: List[Any],
+    document_term: Optional[str],
+    match_cache: Dict[str, bool],
+) -> List[str]:
+    """
+    Filter edge document_ids down to those whose full document content matches
+    the supplied term.
+    """
+    if not document_term:
+        return [str(doc_id) for doc_id in document_ids]
+
+    normalized_term = str(document_term).strip().casefold()
+    if not normalized_term:
+        return [str(doc_id) for doc_id in document_ids]
+
+    matched_ids: List[str] = []
+    for doc_id in document_ids:
+        doc_id_str = str(doc_id)
+        if _document_contains_term(db, doc_id_str, normalized_term, match_cache):
+            matched_ids.append(doc_id_str)
+    return matched_ids
+
+
+# ===========================================================================
 # Entity info
 # ===========================================================================
 
@@ -131,6 +227,7 @@ def get_ego_network(
     type_filter: Optional[List[str]] = None,
     min_weight: int = 1,
     limit: int = 50,
+    document_term: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """
     Get the ego network for a single entity — all its direct connections.
@@ -145,6 +242,9 @@ def get_ego_network(
         Minimum edge weight to include.
     limit : int
         Maximum number of edges to return.
+    document_term : str, optional
+        If provided, keep only edges that have at least one supporting
+        document containing this term anywhere in its fields.
 
     Returns
     -------
@@ -171,6 +271,7 @@ def get_ego_network(
     cursor = edges_coll.find(query).sort("weight", -1)
 
     edges = []
+    document_match_cache: Dict[str, bool] = {}
     type_distribution: Counter = Counter()
 
     for edge in cursor:
@@ -188,6 +289,16 @@ def get_ego_network(
         if type_filter and other_type not in type_filter:
             continue
 
+        edge_document_ids = edge.get("document_ids", [])
+        matched_document_ids = _filter_document_ids_by_term(
+            db,
+            edge_document_ids if isinstance(edge_document_ids, list) else [],
+            document_term,
+            document_match_cache,
+        )
+        if document_term and not matched_document_ids:
+            continue
+
         type_distribution[other_type] += 1
 
         if len(edges) < limit:
@@ -196,7 +307,7 @@ def get_ego_network(
                 "name": other_name,
                 "type": other_type,
                 "weight": edge["weight"],
-                "document_ids": edge.get("document_ids", []),
+                "document_ids": matched_document_ids,
             })
 
     metrics = {
@@ -314,6 +425,7 @@ def get_global_network(
     min_weight: int = 3,
     limit: int = 500,
     strict_type_filter: bool = True,
+    document_term: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Get a filtered view of the global network — top edges by weight.
@@ -321,6 +433,8 @@ def get_global_network(
     strict_type_filter semantics:
     - True: both endpoints must match type_filter.
     - False: either endpoint may match type_filter.
+    - If document_term is provided, keep only edges whose document_ids contain
+      at least one document matching that term across all fields.
 
     Returns
     -------
@@ -349,9 +463,20 @@ def get_global_network(
     cursor = edges_coll.find(query).sort("weight", -1).limit(limit)
 
     edges = []
+    document_match_cache: Dict[str, bool] = {}
     node_ids: Set[str] = set()
 
     for edge in cursor:
+        edge_document_ids = edge.get("document_ids", [])
+        matched_document_ids = _filter_document_ids_by_term(
+            db,
+            edge_document_ids if isinstance(edge_document_ids, list) else [],
+            document_term,
+            document_match_cache,
+        )
+        if document_term and not matched_document_ids:
+            continue
+
         edges.append({
             "source": edge["source_id"],
             "target": edge["target_id"],
@@ -384,9 +509,14 @@ def get_network_documents_for_viewer(
     db,
     entity_id: Optional[str] = None,
     type_filter: Optional[List[str]] = None,
+    source_type: Optional[str] = None,
+    target_type: Optional[str] = None,
     min_weight: int = 3,
     limit: int = 500,
     strict_type_filter: bool = True,
+    pair_preset: str = "cross_type_only",
+    rank_mode: str = "most_connected",
+    document_term: Optional[str] = None,
     max_documents: int = 2000,
     max_docs_per_edge: int = 250,
 ) -> Dict[str, Any]:
@@ -408,6 +538,10 @@ def get_network_documents_for_viewer(
         If omitted, build from filtered global network edges.
     type_filter : list[str], optional
         Entity type filter.
+    source_type : str, optional
+        Optional type-pair filter endpoint A.
+    target_type : str, optional
+        Optional type-pair filter endpoint B.
     min_weight : int
         Minimum edge weight.
     limit : int
@@ -416,6 +550,17 @@ def get_network_documents_for_viewer(
         Global mode only:
           - True: both endpoints must match type_filter
           - False: either endpoint may match type_filter
+    pair_preset : str
+        Pair filtering preset:
+          - cross_type_only
+          - all_pairs
+          - within_type_only
+    rank_mode : str
+        Edge ranking mode:
+          - most_connected
+          - most_cross_type
+          - rare_but_strong
+          - low_frequency_pairs
     max_documents : int
         Safety cap for unique documents returned.
     max_docs_per_edge : int
@@ -437,7 +582,11 @@ def get_network_documents_for_viewer(
     safe_limit = max(1, int(limit))
     safe_max_documents = max(1, int(max_documents))
     safe_docs_per_edge = max(1, int(max_docs_per_edge))
+    rank_mode = (rank_mode or "most_connected").strip().lower()
+    pair_preset = (pair_preset or "cross_type_only").strip().lower()
     normalized_types = [t for t in (type_filter or []) if t]
+    source_type = (source_type or "").strip() or None
+    target_type = (target_type or "").strip() or None
 
     entity_info = None
     mode = "entity" if entity_id else "global"
@@ -482,14 +631,52 @@ def get_network_documents_for_viewer(
                     {"target_type": {"$in": normalized_types}},
                 ]
 
-    cursor = edges_coll.find(query, projection).sort("weight", -1).limit(safe_limit)
+        if source_type and target_type:
+            query["$and"] = query.get("$and", [])
+            query["$and"].append(
+                {
+                    "$or": [
+                        {"source_type": source_type, "target_type": target_type},
+                        {"source_type": target_type, "target_type": source_type},
+                    ]
+                }
+            )
+        elif source_type:
+            query["$and"] = query.get("$and", [])
+            query["$and"].append({"$or": [{"source_type": source_type}, {"target_type": source_type}]})
+        elif target_type:
+            query["$and"] = query.get("$and", [])
+            query["$and"].append({"$or": [{"source_type": target_type}, {"target_type": target_type}]})
+
+    edges = list(edges_coll.find(query, projection).sort("weight", -1).limit(safe_limit))
+    pair_counts: Counter = Counter()
+    for edge in edges:
+        pair_counts[(edge.get("source_type", "UNKNOWN"), edge.get("target_type", "UNKNOWN"))] += 1
+
+    def _rank_key(edge: Dict[str, Any]):
+        source_t = edge.get("source_type", "UNKNOWN")
+        target_t = edge.get("target_type", "UNKNOWN")
+        weight = int(edge.get("weight", 0) or 0)
+        pair_count = pair_counts[(source_t, target_t)] or 1
+        cross = source_t != target_t
+        if rank_mode == "most_cross_type":
+            return (0 if cross else 1, -weight, pair_count, source_t, target_t)
+        if rank_mode == "rare_but_strong":
+            rarity_score = float(weight) / float(pair_count)
+            return (-rarity_score, -weight, pair_count, source_t, target_t)
+        if rank_mode == "low_frequency_pairs":
+            return (pair_count, -weight, source_t, target_t)
+        return (-weight, pair_count, source_t, target_t)
+
+    edges.sort(key=_rank_key)
 
     doc_scores: Counter = Counter()
     doc_edge_counts: Counter = Counter()
     doc_entities: Dict[str, Set[str]] = defaultdict(set)
+    document_match_cache: Dict[str, bool] = {}
     edges_scanned = 0
 
-    for edge in cursor:
+    for edge in edges:
         edges_scanned += 1
 
         if entity_id and normalized_types:
@@ -500,16 +687,41 @@ def get_network_documents_for_viewer(
             if other_type not in normalized_types:
                 continue
 
+        source_t = edge.get("source_type")
+        target_t = edge.get("target_type")
+        if pair_preset == "cross_type_only" and source_t == target_t:
+            continue
+        if pair_preset == "within_type_only" and source_t != target_t:
+            continue
+
+        if source_type and target_type:
+            if {source_t, target_t} != {source_type, target_type}:
+                continue
+        elif source_type:
+            if source_type not in (source_t, target_t):
+                continue
+        elif target_type:
+            if target_type not in (source_t, target_t):
+                continue
+
         edge_weight = int(edge.get("weight", 0) or 0)
         edge_docs = edge.get("document_ids", [])
         if not isinstance(edge_docs, list) or not edge_docs:
             continue
 
+        matched_edge_docs = _filter_document_ids_by_term(
+            db,
+            edge_docs,
+            document_term,
+            document_match_cache,
+        )
+        if document_term and not matched_edge_docs:
+            continue
+
         source_id = str(edge.get("source_id", ""))
         target_id = str(edge.get("target_id", ""))
 
-        for raw_doc_id in edge_docs[:safe_docs_per_edge]:
-            doc_id = str(raw_doc_id)
+        for doc_id in matched_edge_docs[:safe_docs_per_edge]:
             if doc_id not in doc_scores and len(doc_scores) >= safe_max_documents:
                 continue
 
@@ -582,6 +794,11 @@ def get_network_documents_for_viewer(
             "min_weight": min_weight,
             "limit": safe_limit,
             "type_filter": normalized_types,
+            "source_type": source_type,
+            "target_type": target_type,
+            "pair_preset": pair_preset,
+            "rank_mode": rank_mode,
+            "document_term": (document_term or "").strip(),
             "max_documents": safe_max_documents,
         },
     }

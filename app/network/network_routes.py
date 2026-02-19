@@ -74,6 +74,19 @@ def _parse_bool(param: str, default: bool) -> bool:
     return str(raw).strip().lower() in ("1", "true", "yes", "y", "on")
 
 
+def _parse_document_term() -> str | None:
+    """
+    Parse optional free-text document term filter.
+
+    This term is matched across all document fields.
+    """
+    raw = request.args.get("document_term", "")
+    term = str(raw).strip()
+    if not term:
+        return None
+    return term[:120]
+
+
 def _network_enabled() -> bool:
     return NetworkConfig.from_env().enabled
 
@@ -93,6 +106,7 @@ def ego_network_endpoint(entity_id: str):
         type_filter  — comma-separated entity types (e.g., PERSON,GPE)
         min_weight   — minimum edge weight (default: 1)
         limit        — max edges to return (default: 50)
+        document_term — optional term matched across all document fields
     """
     try:
         if not _network_enabled():
@@ -105,6 +119,7 @@ def ego_network_endpoint(entity_id: str):
             type_filter=_parse_type_filter(),
             min_weight=_parse_int("min_weight", 1),
             limit=_parse_int("limit", 50),
+            document_term=_parse_document_term(),
         )
 
         if result is None:
@@ -165,6 +180,7 @@ def global_network_endpoint():
                              types are in type_filter. when false, keep edges
                              where EITHER endpoint type is in type_filter.
                              default: true.
+        document_term — optional term matched across all document fields
     """
     try:
         config = NetworkConfig.from_env()
@@ -191,6 +207,7 @@ def global_network_endpoint():
             min_weight=_parse_int("min_weight", config.default_min_weight),
             limit=_parse_int("limit", config.default_limit),
             strict_type_filter=strict_type_filter,
+            document_term=_parse_document_term(),
         )
 
         return jsonify(result)

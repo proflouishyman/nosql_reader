@@ -24,45 +24,77 @@
   {# Header #}
   <header class="network-header">
     <h1>Network Analysis</h1>
-    <div id="network-stats" class="network-stats-bar"></div>
+    <div id="network-stats" class="network-stats-bar" data-help="Type-pair chips summarize edge categories. Hover to inspect stats. Click a chip to focus that pair."></div>
+    <div id="active-type-pair-state" class="active-type-pair-state"></div>
   </header>
 
   {# Controls #}
   <div class="network-controls">
     <div class="control-group">
       <label>Entity types:</label>
-      <div id="type-filters" class="type-filters">
+      <div id="type-filters" class="type-filters" data-help="Select which entity categories to include in the graph. Unchecked types are filtered out.">
         <span style="color: #999;">Loading types…</span>
       </div>
     </div>
 
     <div class="control-group">
       <label for="strict-type-filter">Strict type match:</label>
-      <input type="checkbox" id="strict-type-filter" checked>
+      <input type="checkbox" id="strict-type-filter" checked data-help="When enabled, both ends of an edge must match selected entity types.">
+    </div>
+
+    <div class="control-group">
+      <label for="pair-preset">De-noise:</label>
+      <select id="pair-preset" data-help="Quickly suppress noisy edge categories like same-type links, or focus only on them.">
+        <option value="cross_type_only" selected>Cross-type only (recommended)</option>
+        <option value="all_pairs">All pairs</option>
+        <option value="within_type_only">Within-type only</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="ranking-mode">Ranking:</label>
+      <select id="ranking-mode" data-help="Choose how edges are prioritized before graph truncation: strongest, cross-type, rare-but-strong, or low-frequency pairs.">
+        <option value="most_connected" selected>Most connected</option>
+        <option value="most_cross_type">Most cross-type</option>
+        <option value="rare_but_strong">Rare but strong</option>
+        <option value="low_frequency_pairs">Low-frequency pairs</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="research-template">Research template:</label>
+      <select id="research-template" data-help="Apply a prebuilt investigative slice such as Person↔Org or ID↔Person reconciliation.">
+        <option value="">Select...</option>
+        <option value="person_org">Person↔Org</option>
+        <option value="person_gpe">Person↔GPE</option>
+        <option value="occupation_gpe">Occupation↔GPE</option>
+        <option value="employee_person_reconciliation">ID↔Person reconciliation</option>
+      </select>
+      <button type="button" id="apply-research-template" class="reset-network-btn" data-help="Applies the selected template to type filters and pair focus.">Apply</button>
     </div>
 
     <div class="control-group">
       <label for="min-weight-slider">Min. edge weight:</label>
-      <input type="range" id="min-weight-slider" min="1" max="50" value="3" step="1">
+      <input type="range" id="min-weight-slider" min="1" max="50" value="3" step="1" data-help="Only show edges that appear in at least this many documents.">
       <span id="min-weight-display">3</span>
     </div>
 
     <div class="control-group">
       <label for="max-nodes-slider">Max edges:</label>
-      <input type="range" id="max-nodes-slider" min="50" max="1000" value="500" step="50">
+      <input type="range" id="max-nodes-slider" min="50" max="1000" value="500" step="50" data-help="Caps displayed edges for readability and performance.">
       <span id="max-nodes-display">500</span>
     </div>
 
     <div class="control-group">
-      <label for="entity-search">Search entity:</label>
-      <input type="text" id="entity-search" placeholder="Type a name…" autocomplete="off">
+      <label for="entity-search">Document contains:</label>
+      <input type="text" id="entity-search" placeholder="Type a word or phrase…" autocomplete="off" data-help="Filters to edges supported by documents containing this term anywhere across document fields.">
     </div>
 
     <div class="control-group">
-      <button type="button" id="reset-network-controls" class="reset-network-btn">Reset</button>
+      <button type="button" id="reset-network-controls" class="reset-network-btn" data-help="Resets all filters and returns to the default global network view.">Reset</button>
     </div>
     <div class="control-group">
-      <button type="button" id="open-network-viewer" class="reset-network-btn">Open Document Viewer</button>
+      <button type="button" id="open-network-viewer" class="reset-network-btn" data-help="Launches a document list for the current network slice with Next/Previous viewer navigation.">Open Document Viewer</button>
     </div>
   </div>
 
@@ -107,12 +139,50 @@
   }
 
   .network-stats-bar .stat-badge {
-    display: inline-block;
+    display: inline-flex;
     margin: 0 4px;
     padding: 2px 8px;
-    background: #f0f0f0;
+    background: #fff;
+    color: #374151;
     border-radius: 3px;
     font-size: 0.9em;
+    border: 1px solid #d1d5db;
+  }
+
+  .network-stats-bar .stat-badge.stat-badge-button {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff;
+    color: #374151;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .network-stats-bar .stat-badge.stat-badge-button:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+
+  .network-stats-bar .stat-badge.stat-badge-active {
+    background: #fff;
+    border-color: #60a5fa;
+    color: #1e3a8a;
+    font-weight: 700;
+  }
+
+  .active-type-pair-state {
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: #475569;
+  }
+
+  .active-type-pair-state button {
+    margin-left: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
   }
 
   .network-controls {
@@ -148,6 +218,14 @@
     border-radius: 4px;
     font-size: 0.9em;
     width: 180px;
+  }
+
+  .network-controls select {
+    padding: 4px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.9em;
   }
 
   .network-controls .reset-network-btn {

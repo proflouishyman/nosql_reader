@@ -12,21 +12,21 @@
         <form method="post" enctype="multipart/form-data" class="data-files__form">
             <div class="form-field">
                 <label for="targetSubdir">Optional subfolder</label>
-                <input type="text" id="targetSubdir" name="target_subdir" placeholder="e.g. 1944/reports">
+                <input type="text" id="targetSubdir" name="target_subdir" placeholder="e.g. 1944/reports" data-help="Optionally place uploaded files in a subfolder under the archive root.">
                 <p class="form-field__hint">Use forward slashes to create nested folders. Unsafe characters are removed automatically.</p>
             </div>
             <div class="form-field">
                 <label for="archiveFiles">Choose JSON files</label>
-                <input type="file" id="archiveFiles" name="archives" accept=".json,.jsonl" multiple required>
+                <input type="file" id="archiveFiles" name="archives" accept=".json,.jsonl" multiple required data-help="Select one or more .json or .jsonl files to upload.">
                 <p class="form-field__hint">Supported formats: <code>.json</code> and <code>.jsonl</code>.</p>
             </div>
-            <button type="submit">Upload files</button>
+            <button type="submit" data-help="Upload selected files into archive storage.">Upload files</button>
         </form>
     </section>
     <section class="data-files__panel">
         <h2>Existing files</h2>
         <div class="data-files__download">
-            <a class="data-files__download-link" href="{{ url_for('download_all_archives') }}">Download all files</a>
+            <a class="data-files__download-link" href="{{ url_for('download_all_archives') }}" data-help="Download a ZIP snapshot of all archived files.">Download all files</a>
             <p class="data-files__hint">Generates a ZIP snapshot of every archive, preserving the folder structure.</p>
         </div>
         {% if archive_files %}

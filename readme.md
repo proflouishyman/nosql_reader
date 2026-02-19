@@ -35,6 +35,7 @@ The Historical Document Reader is a Flask + MongoDB application for ingesting, s
 
 - Multi-field keyword search with AND/OR toggles and paginated results.
 - Document detail views with metadata, OCR text, and linked media previews.
+- Network analysis with global/ego graph exploration, type-pair filtering, and network-derived document viewers.
 - Historian Agent with multiple query methods: Good (direct RAG), Better (adversarial RAG), Best (tiered), and Tier 0 corpus exploration.
 - In-app ingestion controls for scanning mounted image directories or rebuilding the database from mounted archives.
 - Runtime UI configuration via `app/config.json` (reloaded per request).
@@ -117,11 +118,20 @@ Set values in `.env` and restart containers after changes.
 - Session history is retained for the current browser session (timeouts are enforced server-side).
 <!-- Updated to match the actual query methods and settings panel behavior. -->
 
+### Network Analysis
+
+- Open **Network** from the top nav to explore the co-occurrence graph built from `linked_entities` and `documents.entity_refs`.
+- Use `type_filter`, strict matching, de-noise mode, ranking mode, and min-weight controls to shape graph output.
+- `Document contains` filters edges to those supported by documents containing the term anywhere in document fields.
+- Click type-pair chips to focus a pair family, or click a node to switch to ego-network view.
+- Use **Open Document Viewer** to launch a network-derived list that preserves Previous/Next navigation in document detail.
+<!-- Added current network workflow and control behavior. -->
+
 ### UI settings
 
 - **UI Preferences** writes updates to `app/config.json` so layout and styling can be tweaked without redeploying.
-- **Data ingestion** lists mounted paths, lets you scan for new images, and can rebuild the database from mounted archives.
-<!-- Added settings behaviors tied to `/settings` routes and `config.json`. -->
+- Archive JSON/JSONL upload and ZIP download are available at `/data-files`.
+<!-- Updated settings/file-management notes to match current templates and routes. -->
 
 ## Data ingestion workflows
 
@@ -225,6 +235,7 @@ Schema details for the railroad dataset (including the `ocr_text` and `summary` 
 - `setup.md`: Mac/Windows setup walkthrough and environment details.
 - `docs/backend_complete_december.md`: Deep architecture reference (some sections are design-oriented and may describe future work).
 - `docs/DATABASE_SETUP_DESIGN.md`: Database setup design and migration strategy (forward-looking).
+- `docs/network/files/NETWORK_ANALYSIS_DESIGN.md`: implemented network module contract (API, build pipeline, UI integration).
 - `app/historian_agent/readme_rag.md`: RAG pipeline notes and performance analysis.
 - `app/data_structure.md`: MongoDB schema notes for the current dataset.
 <!-- Added a map of the key docs and their scope. -->
@@ -236,7 +247,6 @@ The following items are tracked as planned or in-progress work across the docs a
 - Research notepad and annotation tooling.
 - In-browser JSON editing for corrective updates.
 - Entity linking improvements and cross-dataset references.
-- Network analysis visualizations.
 - Scheduled ingestion jobs and automation.
 - Multi-user profiles and access controls.
 <!-- Preserved and normalized the roadmap into a clear list. -->

@@ -7,7 +7,7 @@
         <!-- Added provider selector so users can switch between Ollama and OpenAI sources. -->
         <div class="form-field">
             <label for="ingestionProvider">Model provider</label>
-            <select id="ingestionProvider" name="provider" class="form-select">
+            <select id="ingestionProvider" name="provider" class="form-select" data-help="Choose whether ingestion uses a local Ollama model or an OpenAI model.">
                 <!-- Added conditional selection so the default provider reflects backend defaults. -->
                 <option value="ollama" {% if ingestion_default_provider == 'ollama' %}selected{% endif %}>Ollama (local)</option>
                 <option value="openai" {% if ingestion_default_provider == 'openai' %}selected{% endif %}>OpenAI (cloud)</option>
@@ -25,20 +25,22 @@
                     name="ollama_base_url"
                     value="{{ ingestion_ollama_base_url }}"
                     placeholder="http://localhost:11434"
-                    class="form-input">
+                    class="form-input"
+                    data-help="Set the base URL for the Ollama service used during ingestion.">
                 <p class="form-field__hint">URL of your Ollama instance.</p>
             </div>
 
             <div class="form-field">
                 <label for="ollamaModel">Ollama model</label>
-                <select id="ollamaModel" name="model" class="form-select">
+                <select id="ollamaModel" name="model" class="form-select" data-help="Select the Ollama model used to process documents.">
                     <option value="">Loading models...</option>
                 </select>
                 <button
                     type="button"
                     id="refreshModelsBtn"
                     class="button button--small button--secondary"
-                    style="margin-top: 8px;">
+                    style="margin-top: 8px;"
+                    data-help="Refresh the available model list from the Ollama server.">
                     Refresh models
                 </button>
                 <p class="form-field__hint">Select a vision-capable model for document processing.</p>
@@ -49,7 +51,7 @@
         <div class="provider-section" id="openaiSection" hidden>
             <div class="form-field">
                 <label for="openaiModel">OpenAI model</label>
-                <select id="openaiModel" name="openai_model" class="form-select">
+                <select id="openaiModel" name="openai_model" class="form-select" data-help="Select the OpenAI model used for ingestion.">
                     <!-- Added fallback option so unexpected .env defaults still appear in the dropdown. -->
                     {% set preset_models = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'] %}
                     {% if ingestion_default_openai_model and ingestion_default_openai_model not in preset_models %}
@@ -69,7 +71,8 @@
                     id="openaiApiKey"
                     name="api_key"
                     placeholder="{% if ingestion_api_key_configured %}API key configured{% else %}Enter API key{% endif %}"
-                    class="form-input">
+                    class="form-input"
+                    data-help="Enter an OpenAI API key for ingestion requests, or leave blank to keep the current key.">
                 <p class="form-field__hint">Your OpenAI API key will be stored securely.</p>
             </div>
         </div>
@@ -82,7 +85,8 @@
                 name="prompt"
                 rows="4"
                 class="form-textarea"
-                placeholder="{{ ingestion_default_prompt }}">{{ ingestion_default_prompt }}</textarea>
+                placeholder="{{ ingestion_default_prompt }}"
+                data-help="Edit instructions sent to the model while extracting document data.">{{ ingestion_default_prompt }}</textarea>
             <p class="form-field__hint">Instructions for the AI model when processing documents.</p>
         </div>
 

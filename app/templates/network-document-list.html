@@ -24,7 +24,7 @@
   </header>
 
   <div class="network-document-list__actions">
-    <a href="{{ viewer_meta.analysis_url }}" class="button button--secondary">Back to Network Analysis</a>
+    <a href="{{ viewer_meta.analysis_url }}" class="button button--secondary" data-help="Return to the network analysis controls for this viewer context.">Back to Network Analysis</a>
   </div>
 
   {% if documents %}
@@ -41,7 +41,7 @@
         {% for document in documents %}
           <tr>
             <td>
-              <a href="{{ url_for('document_detail', doc_id=document.document_id, search_id=search_id, origin='network') }}">
+              <a href="{{ url_for('document_detail', doc_id=document.document_id, search_id=search_id, origin='network') }}" data-help="Open this document in the viewer while preserving network-based Previous/Next navigation.">
                 {{ document.filename }}
               </a>
             </td>
@@ -62,10 +62,10 @@
     <nav class="network-document-list__pagination" aria-label="Network viewer pagination">
       <span>Page {{ current_page }} of {{ total_pages }}</span>
       {% if current_page > 1 %}
-        <a href="{{ url_for('network_viewer_results', search_id=search_id, page=current_page - 1, per_page=per_page) }}">Previous page</a>
+        <a href="{{ url_for('network_viewer_results', search_id=search_id, page=current_page - 1, per_page=per_page) }}" data-help="Load the previous page of network-derived documents.">Previous page</a>
       {% endif %}
       {% if current_page < total_pages %}
-        <a href="{{ url_for('network_viewer_results', search_id=search_id, page=current_page + 1, per_page=per_page) }}">Next page</a>
+        <a href="{{ url_for('network_viewer_results', search_id=search_id, page=current_page + 1, per_page=per_page) }}" data-help="Load the next page of network-derived documents.">Next page</a>
       {% endif %}
     </nav>
   {% endif %}

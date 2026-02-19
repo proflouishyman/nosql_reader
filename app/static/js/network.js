@@ -121,6 +121,25 @@ const NetworkAPI = {
 };
 
 
+const HelpTooltips = window.AppHelpTooltips || {
+    attach() {
+        return null;
+    },
+    hide() {
+        return null;
+    },
+};
+
+
+function escapeHtmlAttribute(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
+
 // ===========================================================================
 // Entity popup — hover/click interaction on document detail page
 // ===========================================================================
@@ -526,6 +545,9 @@ function renderForceGraph(container, nodes, edges, opts = {}) {
 const NetworkExplorer = {
     graph: null,
     currentData: null,
+    statsData: null,
+    activeTypePair: null,
+    availableTypes: [],
 
     async init(containerSelector = "#network-graph") {
         const container = document.querySelector(containerSelector);
@@ -534,12 +556,14 @@ const NetworkExplorer = {
         // Load available types for filter controls
         const typesData = await NetworkAPI.getTypes();
         if (typesData?.types) {
+            this.availableTypes = typesData.types;
             this.renderTypeFilters(typesData.types);
         }
 
         // Load stats
         const stats = await NetworkAPI.getStats();
         if (stats) {
+            this.statsData = stats;
             this.renderStats(stats);
         }
         if (!stats || stats.exists === false) {
@@ -553,6 +577,48 @@ const NetworkExplorer = {
             });
         }
 
+        const presetSelect = document.getElementById("pair-preset");
+        if (presetSelect) {
+            presetSelect.addEventListener("change", () => {
+                this.reloadCurrentView(container);
+            });
+        }
+
+        const rankingSelect = document.getElementById("ranking-mode");
+        if (rankingSelect) {
+            rankingSelect.addEventListener("change", () => {
+                this.reloadCurrentView(container);
+            });
+        }
+
+        const searchBox = document.getElementById("entity-search");
+        if (searchBox) {
+            let searchDebounce = null;
+            searchBox.addEventListener("input", () => {
+                if (searchDebounce) {
+                    window.clearTimeout(searchDebounce);
+                }
+                searchDebounce = window.setTimeout(() => {
+                    this.reloadCurrentView(container);
+                }, 350);
+            });
+            searchBox.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    if (searchDebounce) {
+                        window.clearTimeout(searchDebounce);
+                        searchDebounce = null;
+                    }
+                    this.reloadCurrentView(container);
+                }
+            });
+        }
+
+        const applyTemplateBtn = document.getElementById("apply-research-template");
+        if (applyTemplateBtn) {
+            applyTemplateBtn.addEventListener("click", () => this.applyResearchTemplate(container));
+        }
+
         const resetBtn = document.getElementById("reset-network-controls");
         if (resetBtn) {
             resetBtn.addEventListener("click", () => this.resetControls(container));
@@ -562,6 +628,11 @@ const NetworkExplorer = {
         if (openViewerBtn) {
             openViewerBtn.addEventListener("click", () => this.openDocumentViewer(openViewerBtn));
         }
+
+        this.attachStatsInteractions(container);
+        this.updateActivePairState();
+        this.updateOpenViewerButtonLabel();
+        HelpTooltips.attach(document);
 
         await this.reloadCurrentView(container);
     },
@@ -599,6 +670,21 @@ const NetworkExplorer = {
             strictToggle.checked = strictToggle.defaultChecked;
         }
 
+        const presetSelect = document.getElementById("pair-preset");
+        if (presetSelect) {
+            presetSelect.value = presetSelect.defaultValue || "cross_type_only";
+        }
+
+        const rankingSelect = document.getElementById("ranking-mode");
+        if (rankingSelect) {
+            rankingSelect.value = rankingSelect.defaultValue || "most_connected";
+        }
+
+        const templateSelect = document.getElementById("research-template");
+        if (templateSelect) {
+            templateSelect.value = "";
+        }
+
         const searchBox = document.getElementById("entity-search");
         if (searchBox) {
             searchBox.value = "";
@@ -607,6 +693,11 @@ const NetworkExplorer = {
         document.querySelectorAll(".type-filter-checkbox").forEach((cb) => {
             cb.checked = true;
         });
+
+        this.activeTypePair = null;
+        this.updatePairBadgeState();
+        this.updateActivePairState();
+        this.updateOpenViewerButtonLabel();
 
         // Reset to canonical global view: clear URL params like ?entity=...
         const cleanUrl = new URL(window.location.href);
@@ -628,18 +719,26 @@ const NetworkExplorer = {
 
     async loadGlobalNetwork(container) {
         const filters = this.getFilterValues();
-        const data = await NetworkAPI.getGlobalNetwork(filters);
+        const requestedLimit = Number.parseInt(filters.limit || "500", 10) || 500;
+        const apiFilters = { ...filters };
+        if (filters.rank_mode && filters.rank_mode !== "most_connected") {
+            apiFilters.limit = String(Math.min(requestedLimit * 4, 3000));
+        }
+
+        const data = await NetworkAPI.getGlobalNetwork(apiFilters);
         if (!data) {
             showGraphMessage(container, "Network endpoint unavailable. Check feature flag or server logs.");
             return;
         }
-        if (!data.nodes?.length || !data.edges?.length) {
+
+        const transformed = this.transformGraphData(data, requestedLimit);
+        if (!transformed.nodes.length || !transformed.edges.length) {
             showGraphMessage(container, "No edges match the selected filters.");
             return;
         }
 
-        this.currentData = data;
-        this.graph = renderForceGraph(container, data.nodes, data.edges, {
+        this.currentData = transformed;
+        this.graph = renderForceGraph(container, transformed.nodes, transformed.edges, {
             width: container.clientWidth || 1000,
             height: 600,
             interactive: true,
@@ -653,7 +752,7 @@ const NetworkExplorer = {
         const filters = this.getFilterValues();
         const data = await NetworkAPI.getEgoNetwork(entityId, {
             ...filters,
-            limit: 100,
+            limit: 400,
         });
         if (!data || !data.entity) {
             showGraphMessage(container, "Entity network unavailable.");
@@ -674,11 +773,19 @@ const NetworkExplorer = {
                 source: data.entity.id,
                 target: e.entity_id,
                 weight: e.weight,
+                source_type: data.entity.type,
+                target_type: e.type,
             });
         });
 
-        this.currentData = { nodes, edges };
-        this.graph = renderForceGraph(container, nodes, edges, {
+        const transformed = this.transformGraphData({ nodes, edges }, 100);
+        if (!transformed.nodes.length || !transformed.edges.length) {
+            showGraphMessage(container, "No edges match the selected filters.");
+            return;
+        }
+
+        this.currentData = transformed;
+        this.graph = renderForceGraph(container, transformed.nodes, transformed.edges, {
             width: container.clientWidth || 1000,
             height: 600,
             interactive: true,
@@ -687,6 +794,257 @@ const NetworkExplorer = {
 
         this.selectEntity(data.entity);
         this.renderLegend();
+    },
+
+    transformGraphData(data, finalLimit = null) {
+        const nodes = Array.isArray(data?.nodes) ? data.nodes : [];
+        const rawEdges = Array.isArray(data?.edges) ? data.edges : [];
+        const pairPreset = this.getPairPreset();
+        const rankMode = this.getRankingMode();
+
+        let edges = rawEdges.filter((edge) => this.edgeMatchesPreset(edge, pairPreset));
+        edges = edges.filter((edge) => this.edgeMatchesActivePair(edge));
+
+        const pairCounts = {};
+        edges.forEach((edge) => {
+            const key = `${edge.source_type || "UNKNOWN"}|${edge.target_type || "UNKNOWN"}`;
+            pairCounts[key] = (pairCounts[key] || 0) + 1;
+        });
+
+        edges.sort((a, b) => this.compareEdges(a, b, rankMode, pairCounts));
+
+        if (finalLimit && Number.isFinite(finalLimit) && finalLimit > 0) {
+            edges = edges.slice(0, finalLimit);
+        }
+
+        const nodeById = {};
+        nodes.forEach((node) => {
+            nodeById[node.id] = node;
+        });
+
+        const requiredNodeIds = new Set();
+        edges.forEach((edge) => {
+            requiredNodeIds.add(edge.source);
+            requiredNodeIds.add(edge.target);
+        });
+
+        const filteredNodes = Array.from(requiredNodeIds)
+            .map((nodeId) => nodeById[nodeId])
+            .filter(Boolean);
+
+        return { nodes: filteredNodes, edges };
+    },
+
+    edgeMatchesPreset(edge, preset) {
+        const sourceType = edge.source_type || "";
+        const targetType = edge.target_type || "";
+        if (preset === "within_type_only") {
+            return sourceType === targetType;
+        }
+        if (preset === "cross_type_only") {
+            return sourceType !== targetType;
+        }
+        return true;
+    },
+
+    edgeMatchesActivePair(edge) {
+        if (!this.activeTypePair) return true;
+        const sourceType = edge.source_type || "";
+        const targetType = edge.target_type || "";
+        const a = this.activeTypePair.source_type;
+        const b = this.activeTypePair.target_type;
+        return (
+            (sourceType === a && targetType === b) ||
+            (sourceType === b && targetType === a)
+        );
+    },
+
+    compareEdges(a, b, rankMode, pairCounts) {
+        const aWeight = Number.parseInt(a.weight || 0, 10);
+        const bWeight = Number.parseInt(b.weight || 0, 10);
+
+        const aSource = a.source_type || "UNKNOWN";
+        const aTarget = a.target_type || "UNKNOWN";
+        const bSource = b.source_type || "UNKNOWN";
+        const bTarget = b.target_type || "UNKNOWN";
+
+        const aPairKey = `${aSource}|${aTarget}`;
+        const bPairKey = `${bSource}|${bTarget}`;
+        const aPairCount = pairCounts[aPairKey] || 1;
+        const bPairCount = pairCounts[bPairKey] || 1;
+        const aCross = aSource !== aTarget;
+        const bCross = bSource !== bTarget;
+
+        if (rankMode === "most_cross_type") {
+            if (aCross !== bCross) return aCross ? -1 : 1;
+            if (aWeight !== bWeight) return bWeight - aWeight;
+            if (aPairCount !== bPairCount) return aPairCount - bPairCount;
+            return aPairKey.localeCompare(bPairKey);
+        }
+
+        if (rankMode === "rare_but_strong") {
+            const aScore = aWeight / aPairCount;
+            const bScore = bWeight / bPairCount;
+            if (aScore !== bScore) return bScore - aScore;
+            if (aWeight !== bWeight) return bWeight - aWeight;
+            return aPairKey.localeCompare(bPairKey);
+        }
+
+        if (rankMode === "low_frequency_pairs") {
+            if (aPairCount !== bPairCount) return aPairCount - bPairCount;
+            if (aWeight !== bWeight) return bWeight - aWeight;
+            return aPairKey.localeCompare(bPairKey);
+        }
+
+        if (aWeight !== bWeight) return bWeight - aWeight;
+        if (aPairCount !== bPairCount) return aPairCount - bPairCount;
+        return aPairKey.localeCompare(bPairKey);
+    },
+
+    getPairPreset() {
+        const presetSelect = document.getElementById("pair-preset");
+        const value = presetSelect ? presetSelect.value : "cross_type_only";
+        if (value === "within_type_only" || value === "all_pairs" || value === "cross_type_only") {
+            return value;
+        }
+        return "cross_type_only";
+    },
+
+    getRankingMode() {
+        const rankingSelect = document.getElementById("ranking-mode");
+        const value = rankingSelect ? rankingSelect.value : "most_connected";
+        const allowed = new Set([
+            "most_connected",
+            "most_cross_type",
+            "rare_but_strong",
+            "low_frequency_pairs",
+        ]);
+        return allowed.has(value) ? value : "most_connected";
+    },
+
+    setActiveTypePair(sourceType, targetType, syncTypeFilters = true) {
+        if (!sourceType || !targetType) {
+            this.activeTypePair = null;
+        } else if (
+            this.activeTypePair &&
+            this.activeTypePair.source_type === sourceType &&
+            this.activeTypePair.target_type === targetType
+        ) {
+            this.activeTypePair = null;
+        } else {
+            this.activeTypePair = {
+                source_type: sourceType,
+                target_type: targetType,
+            };
+        }
+
+        if (this.activeTypePair && syncTypeFilters) {
+            const allowed = new Set([this.activeTypePair.source_type, this.activeTypePair.target_type]);
+            document.querySelectorAll(".type-filter-checkbox").forEach((checkbox) => {
+                checkbox.checked = allowed.has(checkbox.value);
+            });
+            const strictToggle = document.getElementById("strict-type-filter");
+            if (strictToggle) strictToggle.checked = true;
+            const presetSelect = document.getElementById("pair-preset");
+            if (presetSelect) presetSelect.value = "all_pairs";
+        }
+
+        this.updatePairBadgeState();
+        this.updateActivePairState();
+        this.updateOpenViewerButtonLabel();
+    },
+
+    updatePairBadgeState() {
+        const active = this.activeTypePair;
+        document.querySelectorAll(".stat-badge-button[data-source-type][data-target-type]").forEach((badge) => {
+            const sourceType = badge.dataset.sourceType;
+            const targetType = badge.dataset.targetType;
+            const isActive = !!active && (
+                (active.source_type === sourceType && active.target_type === targetType) ||
+                (active.source_type === targetType && active.target_type === sourceType)
+            );
+            badge.classList.toggle("stat-badge-active", isActive);
+        });
+    },
+
+    updateActivePairState() {
+        const stateEl = document.getElementById("active-type-pair-state");
+        if (!stateEl) return;
+
+        if (!this.activeTypePair) {
+            stateEl.innerHTML = "Type pair focus: none";
+            return;
+        }
+
+        stateEl.innerHTML = `
+            Type pair focus: <strong>${this.activeTypePair.source_type}↔${this.activeTypePair.target_type}</strong>
+            <button type="button" id="clear-active-type-pair">Clear</button>
+        `;
+        const clearBtn = document.getElementById("clear-active-type-pair");
+        if (clearBtn) {
+            clearBtn.addEventListener("click", () => {
+                this.activeTypePair = null;
+                this.updatePairBadgeState();
+                this.updateActivePairState();
+                this.updateOpenViewerButtonLabel();
+                const graphContainer = document.querySelector("#network-graph");
+                if (graphContainer) this.reloadCurrentView(graphContainer);
+            });
+        }
+    },
+
+    attachStatsInteractions(container) {
+        const statsEl = document.getElementById("network-stats");
+        if (!statsEl) return;
+        statsEl.addEventListener("click", (event) => {
+            const badge = event.target.closest(".stat-badge-button[data-source-type][data-target-type]");
+            if (!badge) return;
+            const sourceType = badge.dataset.sourceType;
+            const targetType = badge.dataset.targetType;
+            this.setActiveTypePair(sourceType, targetType, true);
+            if (container) this.reloadCurrentView(container);
+        });
+    },
+
+    applyResearchTemplate(container) {
+        const templateSelect = document.getElementById("research-template");
+        if (!templateSelect) return;
+
+        const templates = {
+            person_org: {
+                types: ["PERSON", "ORG"],
+                pair: ["PERSON", "ORG"],
+            },
+            person_gpe: {
+                types: ["PERSON", "GPE"],
+                pair: ["PERSON", "GPE"],
+            },
+            occupation_gpe: {
+                types: ["OCCUPATION", "GPE"],
+                pair: ["OCCUPATION", "GPE"],
+            },
+            employee_person_reconciliation: {
+                types: ["EMPLOYEE_ID", "PERSON"],
+                pair: ["EMPLOYEE_ID", "PERSON"],
+            },
+        };
+
+        const selected = templates[templateSelect.value];
+        if (!selected) return;
+
+        const allowed = new Set(selected.types);
+        document.querySelectorAll(".type-filter-checkbox").forEach((checkbox) => {
+            checkbox.checked = allowed.has(checkbox.value);
+        });
+
+        const strictToggle = document.getElementById("strict-type-filter");
+        if (strictToggle) strictToggle.checked = true;
+
+        const presetSelect = document.getElementById("pair-preset");
+        if (presetSelect) presetSelect.value = "all_pairs";
+
+        this.setActiveTypePair(selected.pair[0], selected.pair[1], false);
+        if (container) this.reloadCurrentView(container);
     },
 
     openDocumentViewer(buttonEl = null) {
@@ -710,6 +1068,16 @@ const NetworkExplorer = {
         }
 
         window.location.href = launchUrl.toString();
+    },
+
+    updateOpenViewerButtonLabel() {
+        const openViewerBtn = document.getElementById("open-network-viewer");
+        if (!openViewerBtn) return;
+        if (this.activeTypePair) {
+            openViewerBtn.textContent = "Open Document Viewer for Pair";
+            return;
+        }
+        openViewerBtn.textContent = "Open Document Viewer";
     },
 
     selectEntity(entityData) {
@@ -772,6 +1140,25 @@ const NetworkExplorer = {
             params.strict_type_filter = strictToggle.checked ? "true" : "false";
         }
 
+        const pairPreset = this.getPairPreset();
+        if (pairPreset) {
+            params.pair_preset = pairPreset;
+        }
+
+        const rankingMode = this.getRankingMode();
+        if (rankingMode) {
+            params.rank_mode = rankingMode;
+        }
+
+        if (this.activeTypePair) {
+            params.type_pair = `${this.activeTypePair.source_type}|${this.activeTypePair.target_type}`;
+        }
+
+        const searchBox = document.getElementById("entity-search");
+        if (searchBox && searchBox.value && searchBox.value.trim()) {
+            params.document_term = searchBox.value.trim();
+        }
+
         return params;
     },
 
@@ -780,14 +1167,16 @@ const NetworkExplorer = {
         if (!container) return;
 
         container.innerHTML = types
-            .map(
-                (t) => `
+            .map((t) => {
+                const color = NetworkColors.get(t);
+                return `
             <label style="margin-right: 12px;">
                 <input type="checkbox" class="type-filter-checkbox" value="${t}" checked>
-                <span style="color: ${NetworkColors.get(t)}; font-weight: 500;">●</span> ${t}
+                <span style="color: ${color}; font-size: 1.15em; line-height: 1; vertical-align: middle;">●</span>
+                <span style="color: ${color}; font-weight: 600;">${t}</span>
             </label>
         `
-            )
+            })
             .join("");
 
         // Re-render on change
@@ -797,21 +1186,28 @@ const NetworkExplorer = {
                 this.reloadCurrentView(graphContainer);
             }
         });
+        HelpTooltips.attach(container);
     },
 
     renderStats(stats) {
         const el = document.getElementById("network-stats");
         if (!el || !stats.exists) return;
 
+        const total = stats.total_edges || 0;
         el.innerHTML = `
-            <span>${stats.total_edges.toLocaleString()} edges</span>
+            <span>${total.toLocaleString()} edges</span>
             ${stats.type_pairs
                 ?.map(
-                    (tp) =>
-                        `<span class="stat-badge">${tp.source_type}↔${tp.target_type}: ${tp.count.toLocaleString()}</span>`
+                    (tp) => {
+                        const percent = total > 0 ? ((tp.count / total) * 100).toFixed(1) : "0.0";
+                        const help = `Click to focus ${tp.source_type}↔${tp.target_type}. Count ${tp.count.toLocaleString()}, Avg weight ${tp.avg_weight}, Max weight ${tp.max_weight}, Share ${percent}%.`;
+                        return `<button type="button" class="stat-badge stat-badge-button" data-source-type="${tp.source_type}" data-target-type="${tp.target_type}" data-help="${escapeHtmlAttribute(help)}">${tp.source_type}↔${tp.target_type}: ${tp.count.toLocaleString()}</button>`;
+                    }
                 )
                 .join("") || ""}
         `;
+        this.updatePairBadgeState();
+        HelpTooltips.attach(el);
     },
 
     renderLegend() {
@@ -822,7 +1218,7 @@ const NetworkExplorer = {
         container.innerHTML = Object.entries(colors)
             .map(
                 ([type, color]) =>
-                    `<span style="margin-right: 12px;"><span style="color: ${color}; font-weight: bold;">●</span> ${type}</span>`
+                    `<span style="margin-right: 14px; color: ${color}; font-weight: 600;"><span style="font-size: 1.2em; line-height: 1; vertical-align: middle;">●</span> ${type}</span>`
             )
             .join("");
     },

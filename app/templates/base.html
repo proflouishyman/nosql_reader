@@ -10,18 +10,18 @@
 <body class="{% block body_class %}{% endblock %}">
     <header class="site-header">
         <div class="site-header__inner">
-            <a href="{{ url_for('index') }}" class="site-brand" aria-label="Historical Document Reader home">
+            <a href="{{ url_for('index') }}" class="site-brand" aria-label="Historical Document Reader home" data-help="Return to the application home page.">
                 Historical Document Reader
             </a>
             <nav class="primary-nav" aria-label="Primary navigation">
                 <ul>
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="{{ url_for('search_database') }}">Search Database</a></li>
-                    <li><a href="{{ url_for('historian_agent_page') }}">Historian Agent</a></li>
-                    <li><a href="{{ url_for('network_analysis_page') }}">Network</a></li>
-                    <li><a href="{{ url_for('database_info') }}">Database Information</a></li>
-                    <li><a href="{{ url_for('settings') }}">Settings</a></li>
-                    <li><a href="{{ url_for('help_page') }}">Help</a></li>
+                    <li><a href="{{ url_for('index') }}" data-help="Open the home page overview and entry points.">Home</a></li>
+                    <li><a href="{{ url_for('search_database') }}" data-help="Search archive records with multi-field filters and export options.">Search Database</a></li>
+                    <li><a href="{{ url_for('historian_agent_page') }}" data-help="Ask the Historian Agent research questions with source citations.">Historian Agent</a></li>
+                    <li><a href="{{ url_for('network_analysis_page') }}" data-help="Explore entity relationship graphs and launch network-based document views.">Network</a></li>
+                    <li><a href="{{ url_for('database_info') }}" data-help="Review database field coverage and dropdown-ready metadata fields.">Database Information</a></li>
+                    <li><a href="{{ url_for('settings') }}" data-help="Configure interface, ingestion, and Historian Agent settings.">Settings</a></li>
+                    <li><a href="{{ url_for('help_page') }}" data-help="Read in-app workflows, control explanations, and troubleshooting guidance.">Help</a></li>
                 </ul>
             </nav>
         </div>
@@ -42,6 +42,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    <script src="{{ url_for('static', filename='js/help-tooltips.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

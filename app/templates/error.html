@@ -5,6 +5,6 @@
 <div class="container error-page">
     <h1>Something went wrong</h1>
     <p>{{ message or 'An unexpected error occurred. Please try again later.' }}</p>
-    <a class="button" href="{{ url_for('index') }}">Return home</a>
+    <a class="button" href="{{ url_for('index') }}" data-help="Return to the home page.">Return home</a>
 </div>
 {% endblock %}

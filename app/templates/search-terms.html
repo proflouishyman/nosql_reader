@@ -10,13 +10,13 @@
 
     <div id="searchContainer" class="search-terms__controls">
         <label for="searchInput">Search terms</label>
-        <input type="text" id="searchInput" placeholder="Enter search term..." aria-label="Search terms">
-        <button id="searchButton" class="button" aria-label="Search">Search</button>
+        <input type="text" id="searchInput" placeholder="Enter search term..." aria-label="Search terms" data-help="Enter a word or phrase to filter the unique terms lists.">
+        <button id="searchButton" class="button" aria-label="Search" data-help="Apply the term filter to words and phrases.">Search</button>
     </div>
 
     <div class="search-terms__filters">
         <label for="fieldSelect">Select field</label>
-        <select id="fieldSelect">
+        <select id="fieldSelect" data-help="Choose which document field to inspect for unique vocabulary.">
             <option value="" disabled selected>Select a field</option>
             {% for field in field_structure|dictsort %}
                 {% if field[0] not in unique_fields %}
@@ -65,9 +65,9 @@
     </section>
 
     <div class="pagination-controls">
-        <button id="prevPage" class="secondary" disabled>Previous</button>
+        <button id="prevPage" class="secondary" disabled data-help="Load the previous page of terms.">Previous</button>
         <span>Page <span id="currentPage">1</span></span>
-        <button id="nextPage" class="secondary">Next</button>
+        <button id="nextPage" class="secondary" data-help="Load the next page of terms.">Next</button>
     </div>
 </div>
 {% endblock %}
