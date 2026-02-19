@@ -68,16 +68,16 @@
           {{ render_section(section) }}
         {% endfor %}
 
-        <!-- Render All Extracted Entities -->
-        {% if document.extracted_entities %}
+        <!-- Render Named Entities -->
+        {% if ner_groups %}
           <div class="info-section">
-            <h2>Extracted Entities</h2>
-            {% for type, entities in document.extracted_entities | groupby('type') %}
+            <h2>Named Entities</h2>
+            {% for entity_type, entity_values in ner_groups %}
               <div class="entity-group">
-                <h3>{{ type }}</h3>
+                <h3>{{ entity_type }}</h3>
                 <ul>
-                  {% for entity in entities %}
-                    <li>{{ entity.text }}</li>
+                  {% for entity_value in entity_values %}
+                    <li>{{ entity_value }}</li>
                   {% endfor %}
                 </ul>
               </div>

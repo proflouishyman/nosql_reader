@@ -1385,6 +1385,212 @@ def build_query(data):
     logger.debug(f"Final query: {query}")
     return query
 
+
+def _normalize_entity_type(raw_type: Any) -> str:
+    """Normalize entity category labels for consistent grouping."""
+    if raw_type is None:
+        return "UNKNOWN"
+    normalized = str(raw_type).strip()
+    if not normalized:
+        return "UNKNOWN"
+    normalized = normalized.upper().replace("-", "_").replace(" ", "_")
+
+    type_aliases = {
+        "COMPANY": "ORG",
+        "ORGANIZATION": "ORG",
+        "ORGANISATION": "ORG",
+        "LOCATION": "GPE",
+        "PLACE": "GPE",
+        "PERSON_NAME": "PERSON",
+        "EMPLOYEEID": "EMPLOYEE_ID",
+    }
+    return type_aliases.get(normalized, normalized)
+
+
+def _extract_entity_text(raw_value: Any) -> Optional[str]:
+    """Extract a displayable entity string from scalar or mapping values."""
+    if isinstance(raw_value, str):
+        text = raw_value.strip()
+        return text or None
+
+    if isinstance(raw_value, (int, float)):
+        return str(raw_value)
+
+    if isinstance(raw_value, dict):
+        for key in ("text", "term", "entity", "name", "value"):
+            value = raw_value.get(key)
+            if isinstance(value, str):
+                text = value.strip()
+                if text:
+                    return text
+            elif isinstance(value, (int, float)):
+                return str(value)
+
+    return None
+
+
+def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[str]]]:
+    """
+    Build categorized NER groups for document detail display.
+    Supports both legacy extracted_entities payloads and newer entities/entity_refs fields.
+    """
+    entities_by_type: Dict[str, List[str]] = {}
+    seen_by_type: Dict[str, set] = {}
+    empty_tokens = {"", "N/A", "NONE", "NULL"}
+
+    def add_entity(raw_type: Any, raw_value: Any) -> None:
+        entity_type = _normalize_entity_type(raw_type)
+        entity_text = _extract_entity_text(raw_value)
+        if not entity_text:
+            return
+
+        if entity_text.strip().upper() in empty_tokens:
+            return
+
+        if entity_type not in entities_by_type:
+            entities_by_type[entity_type] = []
+            seen_by_type[entity_type] = set()
+
+        key = entity_text.casefold()
+        if key in seen_by_type[entity_type]:
+            return
+
+        seen_by_type[entity_type].add(key)
+        entities_by_type[entity_type].append(entity_text)
+
+    def collect_named_entities(node: Any) -> None:
+        """Recursively collect embedded named_entities payloads from section-linked metadata."""
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key == "named_entities" and isinstance(value, list):
+                    for entity in value:
+                        if isinstance(entity, dict):
+                            add_entity(
+                                entity.get("type") or entity.get("entity_type") or entity.get("label"),
+                                entity.get("entity") or entity.get("text") or entity.get("name") or entity,
+                            )
+                        else:
+                            add_entity("UNKNOWN", entity)
+                else:
+                    collect_named_entities(value)
+        elif isinstance(node, list):
+            for item in node:
+                collect_named_entities(item)
+
+    entities_payload = document.get("entities")
+    if isinstance(entities_payload, dict):
+        for entity_type, values in entities_payload.items():
+            if isinstance(values, list):
+                for value in values:
+                    add_entity(entity_type, value)
+            else:
+                add_entity(entity_type, values)
+    elif isinstance(entities_payload, list):
+        for entity in entities_payload:
+            if isinstance(entity, dict):
+                entity_type = entity.get("type") or entity.get("entity_type") or entity.get("label")
+                add_entity(entity_type, entity)
+            else:
+                add_entity("UNKNOWN", entity)
+
+    extracted_payload = document.get("extracted_entities")
+    if isinstance(extracted_payload, dict):
+        for entity_type, values in extracted_payload.items():
+            if isinstance(values, list):
+                for value in values:
+                    add_entity(entity_type, value)
+            else:
+                add_entity(entity_type, values)
+    elif isinstance(extracted_payload, list):
+        for entity in extracted_payload:
+            if isinstance(entity, dict):
+                entity_type = entity.get("type") or entity.get("entity_type") or entity.get("label")
+                add_entity(entity_type, entity)
+            else:
+                add_entity("UNKNOWN", entity)
+
+    # Include named_entities captured inside structured linked_information blocks.
+    collect_named_entities(document.get("sections"))
+
+    entity_refs = document.get("entity_refs")
+    if isinstance(entity_refs, list) and entity_refs:
+        ref_ids: List[ObjectId] = []
+        for entity_ref in entity_refs:
+            if isinstance(entity_ref, ObjectId):
+                ref_ids.append(entity_ref)
+            elif isinstance(entity_ref, str) and ObjectId.is_valid(entity_ref):
+                ref_ids.append(ObjectId(entity_ref))
+
+        if ref_ids:
+            try:
+                linked_docs = db["linked_entities"].find(
+                    {"_id": {"$in": ref_ids}},
+                    {
+                        "type": 1,
+                        "entity_type": 1,
+                        "label": 1,
+                        "term": 1,
+                        "text": 1,
+                        "name": 1,
+                        "canonical_name": 1,
+                        "aliases": 1,
+                        "variants": 1,
+                    },
+                )
+                for linked_doc in linked_docs:
+                    entity_type = (
+                        linked_doc.get("type")
+                        or linked_doc.get("entity_type")
+                        or linked_doc.get("label")
+                        or "UNKNOWN"
+                    )
+                    add_entity(
+                        entity_type,
+                        linked_doc.get("canonical_name")
+                        or linked_doc.get("term")
+                        or linked_doc.get("text")
+                        or linked_doc.get("name"),
+                    )
+
+                    aliases = linked_doc.get("aliases")
+                    if isinstance(aliases, list):
+                        for alias in aliases:
+                            add_entity(entity_type, alias)
+
+                    variants = linked_doc.get("variants")
+                    if isinstance(variants, list):
+                        for variant in variants:
+                            add_entity(entity_type, variant)
+            except Exception:
+                logger.exception("Failed to load linked entity_refs for document detail view.")
+
+    for entity_values in entities_by_type.values():
+        entity_values.sort(key=lambda value: value.casefold())
+
+    if not entities_by_type:
+        return []
+
+    preferred_order = [
+        "PERSON",
+        "ORG",
+        "GPE",
+        "LOC",
+        "DATE",
+        "TIME",
+        "MONEY",
+        "PERCENT",
+        "OCCUPATION",
+        "EMPLOYEE_ID",
+    ]
+    ordered_types = [entity_type for entity_type in preferred_order if entity_type in entities_by_type]
+    ordered_types.extend(sorted(entity_type for entity_type in entities_by_type if entity_type not in preferred_order))
+
+    return [
+        (entity_type.replace("_", " ").title(), entities_by_type[entity_type])
+        for entity_type in ordered_types
+    ]
+
+
 @app.route('/document/<string:doc_id>')
 # @login_required
 def document_detail(doc_id):
@@ -1414,10 +1620,7 @@ def document_detail(doc_id):
     
     
     
-    search_id = request.args.get('search_id')
-    if not search_id:
-        flash('Missing search context.')
-        return redirect(url_for('index'))
+    search_id = request.args.get('search_id', '')
 
     try:
         # Fetch the document by ID
@@ -1454,21 +1657,17 @@ def document_detail(doc_id):
             if not stripped:
                 break  # No more extensions found
 
-        # Retrieve the ordered list from cache
-        ordered_ids = cache.get(f'search_{search_id}')
-        if not ordered_ids:
-            flash('Search context expired. Please perform the search again.')
-            return redirect(url_for('index'))
+        # Retrieve ordered IDs from cache when a valid search context is present.
+        ordered_ids = cache.get(f'search_{search_id}') if search_id else None
 
-        try:
+        if ordered_ids and doc_id in ordered_ids:
             current_index = ordered_ids.index(doc_id)
-        except ValueError:
-            flash('Document not found in the current search results.')
-            return redirect(url_for('index'))
-
-        # Determine previous and next IDs based on the search order
-        prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
-        next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
+            prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
+            next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
+        else:
+            # Allow direct links and stale search IDs to render the document page.
+            prev_id = None
+            next_id = None
 
         # Get the relative path from the document
         relative_path = document.get('relative_path')  # This should contain the relative path to the JSON file
@@ -1491,6 +1690,8 @@ def document_detail(doc_id):
             image_exists = False
             image_path = None
 
+        ner_groups = build_document_ner_groups(document)
+
         # Render the template with all required variables
         return render_template(
             'document-detail.html',
@@ -1500,7 +1701,8 @@ def document_detail(doc_id):
             next_id=next_id,
             search_id=search_id,
             image_path=image_path,  # Pass the constructed image path
-            image_exists=image_exists  # Pass the flag indicating if the image exists
+            image_exists=image_exists,  # Pass the flag indicating if the image exists
+            ner_groups=ner_groups
         )
     except Exception as e:
         logger.error(f"Error in document_detail: {str(e)}", exc_info=True)

@@ -1370,6 +1370,8 @@ class RecursiveSynthesizer:
                 paragraph_gaps.append(item.get("question_text") or "insufficient evidence")
                 continue
             evidence_block = "\n".join(evidence_lines) if evidence_lines else "(no evidence)"
+            if len(evidence_block) > 2200:
+                evidence_block = evidence_block[:2200]  # Cap paragraph evidence payload size so synthesis prompts stay bounded and avoid memory spikes.
 
             topic_sentence = item.get("topic_sentence")
             if is_tentative and isinstance(topic_sentence, str) and topic_sentence.strip():
@@ -1379,6 +1381,10 @@ class RecursiveSynthesizer:
                 question=item.get("question_text"),
                 topic_sentence=topic_sentence,
                 evidence=evidence_block,
+            )
+            debug_print(  # Added paragraph-stage debug so long runs show where synthesis time is spent.
+                f"[paragraph] q={str(item.get('question_text') or '')[:90]} "
+                f"docs={len(doc_ids)} evidence_chars={len(evidence_block)}"
             )
             response = self.llm.generate(
                 messages=[
