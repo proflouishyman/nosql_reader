@@ -44,6 +44,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import os
 import subprocess
 import uuid
+import threading
+import glob
 import pymongo
 from pathlib import Path
 import zipfile
@@ -123,6 +125,9 @@ _adversarial_handler = None
 _tiered_agent = None
 _tier0_explorer = None
 _last_exploration_report = None
+_exploration_runs: Dict[str, Dict[str, Any]] = {}
+_exploration_runs_lock = threading.Lock()
+_EXPLORATION_RUN_LIMIT = 30
 
 def get_rag_handler():
     """Lazy initialization of RAGQueryHandler"""
@@ -532,7 +537,12 @@ def reset_rag_handlers():
 @app.route('/api/rag/explore_corpus', methods=['POST'])
 def explore_corpus_endpoint():
     """Run Tier 0 corpus exploration (synchronous)."""
+    global _last_exploration_report
     payload = request.get_json(silent=True) or {}
+    if _is_truthy(payload.get('reuse_latest')) and _last_exploration_report is not None:
+        reused = dict(_last_exploration_report)
+        reused['reused_existing_report'] = True
+        return jsonify(reused)
 
     strategy = payload.get('strategy')
     total_budget = payload.get('total_budget')
@@ -557,10 +567,79 @@ def explore_corpus_endpoint():
         research_lens=research_lens,
     )
 
-    global _last_exploration_report
     _last_exploration_report = report
 
     return jsonify(report)
+
+
+@app.route('/api/rag/explore_corpus/start', methods=['POST'])
+def explore_corpus_start_endpoint():
+    """Start Tier 0 exploration in a background thread and return a run id."""
+    payload = request.get_json(silent=True) or {}
+    run_id = str(uuid.uuid4())
+    now = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+    run = {
+        "run_id": run_id,
+        "status": "queued",
+        "created_at": now,
+        "created_at_ts": time.time(),
+        "payload": payload,
+        "events": [],
+        "log_file": None,
+        "log_offset": 0,
+        "last_event_ts": time.time(),
+        "last_event_message": "",
+    }
+    _append_run_event(run, "[runner] request accepted")
+    with _exploration_runs_lock:
+        _exploration_runs[run_id] = run
+        _trim_exploration_runs_locked()
+
+    thread = threading.Thread(
+        target=_run_exploration_async,
+        args=(run_id, payload),
+        daemon=True,
+        name=f"tier0-run-{run_id[:8]}",
+    )
+    thread.start()
+    return jsonify({"run_id": run_id, "status": "started", "created_at": now})
+
+
+@app.route('/api/rag/explore_corpus/status/<run_id>', methods=['GET'])
+def explore_corpus_status_endpoint(run_id: str):
+    """Return status and detailed progress events for an async Tier 0 run."""
+    try:
+        since = int(request.args.get("since", "0"))
+    except ValueError:
+        since = 0
+    since = max(0, since)
+
+    with _exploration_runs_lock:
+        run = _exploration_runs.get(run_id)
+        if run is None:
+            return jsonify({"error": "Run not found"}), 404
+        _refresh_run_events(run)
+        events = run.get("events", [])
+        next_cursor = len(events)
+        delta = events[since:next_cursor] if since < next_cursor else []
+        now_ts = time.time()
+        heartbeat_age = now_ts - float(run.get("last_event_ts", now_ts))
+        status_payload = {
+            "run_id": run_id,
+            "status": run.get("status", "unknown"),
+            "created_at": run.get("created_at"),
+            "started_at": run.get("started_at"),
+            "finished_at": run.get("finished_at"),
+            "events": delta,
+            "next_cursor": next_cursor,
+            "heartbeat_age_seconds": round(heartbeat_age, 1),
+            "last_event_message": run.get("last_event_message", ""),
+            "error": run.get("error"),
+        }
+        if run.get("status") == "completed":
+            status_payload["report"] = run.get("report")
+
+    return jsonify(status_payload)
 
 
 @app.route('/api/rag/exploration_report', methods=['GET'])
@@ -570,6 +649,96 @@ def exploration_report_endpoint():
         return jsonify({'error': 'No exploration report available'}), 404
 
     return jsonify(_last_exploration_report)
+
+
+@app.route('/api/rag/exploration_notebooks', methods=['GET'])
+def list_exploration_notebooks():
+    """List saved exploration notebooks from disk."""
+    import glob
+
+    save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
+    try:
+        patterns = [
+            os.path.join(save_dir, '**', 'notebook_*.json'),
+            os.path.join(save_dir, '**', '*_notebook.json'),
+            os.path.join(save_dir, '**', 'report_*.json'),
+            os.path.join(save_dir, '**', '*_report.json'),
+        ]
+        files = []
+        for pattern in patterns:
+            files.extend(glob.glob(pattern, recursive=True))
+        # de-duplicate + newest first
+        files = sorted(set(files), key=lambda p: os.path.getmtime(p), reverse=True)[:50]
+        notebooks = []
+        for path in files:
+            stat = os.stat(path)
+            filename = os.path.basename(path)
+            artifact_type = 'report' if 'report' in filename.lower() else 'notebook'
+            notebooks.append(
+                {
+                    'path': path,
+                    'filename': filename,
+                    'artifact_type': artifact_type,
+                    'size_kb': round(stat.st_size / 1024, 1),
+                    'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                }
+            )
+        return jsonify({'notebooks': notebooks})
+    except Exception as exc:
+        return jsonify({'notebooks': [], 'error': str(exc)})
+
+
+@app.route('/api/rag/exploration_notebooks/load', methods=['POST'])
+def load_exploration_notebook():
+    """Load a specific saved notebook and make it the active report."""
+    global _last_exploration_report
+
+    payload = request.get_json(silent=True) or {}
+    path = payload.get('path', '')
+    save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
+    if not os.path.abspath(path).startswith(os.path.abspath(save_dir)):
+        return jsonify({'error': 'Invalid path'}), 400
+    try:
+        with open(path, 'r', encoding='utf-8') as handle:
+            payload = json.load(handle)
+
+        def _as_list(value):
+            if isinstance(value, list):
+                return value
+            if isinstance(value, dict):
+                return list(value.values())
+            return []
+
+        # notebook artifacts are not full reports; wrap into a report-like payload
+        is_full_report = (
+            isinstance(payload, dict)
+            and 'exploration_metadata' in payload
+            and 'question_synthesis' in payload
+            and isinstance(payload.get('corpus_map'), dict)
+            and 'statistics' in payload.get('corpus_map', {})
+        )
+        if isinstance(payload, dict) and not is_full_report:
+            _last_exploration_report = {
+                'corpus_map': {
+                    'statistics': payload.get('corpus_map', {}),
+                    'archive_notes': 'Loaded notebook snapshot from disk. Run a new exploration for refreshed synthesis outputs.',
+                },
+                'questions': _as_list(payload.get('questions')),
+                'patterns': _as_list(payload.get('patterns')),
+                'contradictions': _as_list(payload.get('contradictions')),
+                'entities': _as_list(payload.get('entities')),
+                'question_synthesis': {
+                    'themes': [],
+                    'gaps': [],
+                },
+                'loaded_from_notebook': True,
+                'notebook_path': path,
+            }
+        else:
+            _last_exploration_report = payload
+        return jsonify({'status': 'loaded'})
+    except Exception as exc:
+        return jsonify({'error': str(exc)}), 500
 
 def _archives_root() -> Path:
     """Return the archive root directory, creating it if necessary."""
@@ -593,6 +762,142 @@ def _normalise_subdirectory(raw_subdir: Optional[str]) -> Path:
         if part not in {'', '.', '..'}
     ]
     return Path(*[part for part in safe_parts if part])
+
+
+def _trim_exploration_runs_locked() -> None:
+    """Keep async exploration run registry bounded."""
+    if len(_exploration_runs) <= _EXPLORATION_RUN_LIMIT:
+        return
+    ordered = sorted(
+        _exploration_runs.items(),
+        key=lambda kv: kv[1].get("created_at_ts", 0.0),
+        reverse=True,
+    )
+    keep = {rid for rid, _ in ordered[:_EXPLORATION_RUN_LIMIT]}
+    for rid in list(_exploration_runs.keys()):
+        if rid not in keep:
+            _exploration_runs.pop(rid, None)
+
+
+def _append_run_event(run: Dict[str, Any], message: str) -> None:
+    """Append a progress event entry to the in-memory run buffer."""
+    msg = str(message).strip()
+    if not msg:
+        return
+    events: List[Dict[str, Any]] = run.setdefault("events", [])
+    events.append(
+        {
+            "index": len(events),
+            "ts": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "message": msg,
+        }
+    )
+    if len(events) > 1200:
+        run["events"] = events[-1000:]
+    run["last_event_ts"] = time.time()
+    run["last_event_message"] = msg
+
+
+def _attach_run_log_file(run: Dict[str, Any]) -> None:
+    """Attach the nearest tier0 log file created for this run."""
+    if run.get("log_file"):
+        return
+    log_dir = os.environ.get("TIER0_LOG_DIR", "/app/logs/tier0")
+    candidates = sorted(glob.glob(os.path.join(log_dir, "tier0_*.log")))
+    if not candidates:
+        return
+    created_at = float(run.get("created_at_ts", time.time()))
+    for path in reversed(candidates):
+        try:
+            if os.path.getmtime(path) >= (created_at - 10):
+                run["log_file"] = path
+                run["log_offset"] = 0
+                _append_run_event(run, f"[watch] attached log file {os.path.basename(path)}")
+                return
+        except OSError:
+            continue
+
+
+def _refresh_run_events(run: Dict[str, Any]) -> None:
+    """Tail new log lines into the run event buffer."""
+    _attach_run_log_file(run)
+    log_file = run.get("log_file")
+    if not log_file:
+        return
+    try:
+        offset = int(run.get("log_offset", 0))
+        with open(log_file, "r", encoding="utf-8", errors="replace") as handle:
+            handle.seek(offset)
+            chunk = handle.read()
+            run["log_offset"] = handle.tell()
+    except OSError:
+        return
+    if not chunk:
+        return
+    for raw in chunk.splitlines():
+        line = raw.strip()
+        if line:
+            _append_run_event(run, line)
+
+
+def _run_exploration_async(run_id: str, payload: Dict[str, Any]) -> None:
+    """Background worker for async Tier 0 exploration requests."""
+    global _last_exploration_report
+
+    strategy = payload.get("strategy")
+    total_budget = payload.get("total_budget")
+    year_range = payload.get("year_range")
+    save_notebook = payload.get("save_notebook")
+    research_lens = payload.get("research_lens", payload.get("focus_areas"))
+
+    if isinstance(year_range, list) and len(year_range) == 2:
+        try:
+            year_range = (int(year_range[0]), int(year_range[1]))
+        except Exception:
+            year_range = None
+    elif not isinstance(year_range, tuple):
+        year_range = None
+
+    with _exploration_runs_lock:
+        run = _exploration_runs.get(run_id)
+        if run is None:
+            return
+        run["status"] = "running"
+        run["started_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+        run["started_at_ts"] = time.time()
+        _append_run_event(run, "[runner] started exploration worker")
+
+    try:
+        explorer = get_tier0_explorer()
+        report = explorer.explore(
+            strategy=strategy,
+            total_budget=total_budget,
+            year_range=year_range,
+            save_notebook=save_notebook,
+            research_lens=research_lens,
+        )
+        _last_exploration_report = report
+        with _exploration_runs_lock:
+            run = _exploration_runs.get(run_id)
+            if run is None:
+                return
+            run["status"] = "completed"
+            run["report"] = report
+            run["finished_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+            run["finished_at_ts"] = time.time()
+            _refresh_run_events(run)
+            _append_run_event(run, "[runner] exploration completed successfully")
+    except Exception as exc:
+        with _exploration_runs_lock:
+            run = _exploration_runs.get(run_id)
+            if run is None:
+                return
+            run["status"] = "failed"
+            run["error"] = str(exc)
+            run["finished_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+            run["finished_at_ts"] = time.time()
+            _refresh_run_events(run)
+            _append_run_event(run, f"[runner] exploration failed: {exc}")
 
 
 def _allowed_archive(filename: str) -> bool:
@@ -1088,6 +1393,12 @@ def historian_agent_page():
         provider_options=HISTORIAN_PROVIDER_OPTIONS,
         agent_error=agent_error,
     )
+
+
+@app.route('/corpus-explorer')
+def corpus_explorer_page():
+    """Render the Corpus Explorer (Tier 0) interface."""
+    return render_template('corpus_explorer.html')
 
 
 def _parse_agent_config_payload(payload: Dict[str, Any]) -> Dict[str, Any]:

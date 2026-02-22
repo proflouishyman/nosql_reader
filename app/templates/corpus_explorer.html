@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% block title %}Corpus Explorer · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container corpus-explorer" id="corpusExplorer">
+
+  <!-- ── HERO ───────────────────────────────────────────────────────── -->
+  <div class="agent-hero corpus-explorer__hero">
+    <span class="agent-hero__badge">Tier 0 · Systematic Reading</span>
+    <h1>Corpus Explorer</h1>
+    <p class="agent-hero__subtitle">
+      Orient yourself to the archive before asking questions. The Explorer reads documents
+      systematically, surfaces patterns, contradictions, and gaps, then generates a
+      research agenda you can investigate with the Historian Agent.
+    </p>
+  </div>
+
+  <!-- ── PREVIOUS RUNS ─────────────────────────────────────────────── -->
+  <div class="ce-notebooks" id="ceNotebooks">
+    <div class="ce-notebooks__header">
+      <h2>Previous Explorations</h2>
+      <button type="button" class="button button--secondary button--sm" id="ceRefreshNotebooks">
+        Refresh
+      </button>
+    </div>
+    <div class="ce-notebooks__list" id="ceNotebookList">
+      <p class="ce-notebooks__empty">No saved explorations found.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       STATE 1: FORM
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section class="agent-panel ce-form-panel" id="ceFormPanel">
+    <div class="ce-form-panel__header">
+      <h2>Configure Exploration</h2>
+      <p>Answer a few questions to focus the exploration. All fields are optional.</p>
+    </div>
+
+    <form id="ceForm" class="ce-form" novalidate>
+
+      <!-- Research lens -->
+      <div class="ce-form__field">
+        <label for="ceResearchLens">
+          What drew you to this collection?
+          <span class="ce-form__hint">Optional — helps the AI orient toward your interests.</span>
+        </label>
+        <textarea id="ceResearchLens" name="research_lens" rows="3"
+          placeholder="e.g. I'm studying labor conditions for immigrant workers on the B&O in the 1920s…"></textarea>
+      </div>
+
+      <!-- Strategy -->
+      <div class="ce-form__field">
+        <label>Reading strategy</label>
+        <div class="ce-strategy-grid" id="ceStrategyGrid">
+          <label class="ce-strategy-card ce-strategy-card--selected" data-value="balanced">
+            <input type="radio" name="strategy" value="balanced" checked>
+            <strong>Broad Overview</strong>
+            <span>Mix of time periods, people, and document types. Best for an unfamiliar collection.</span>
+          </label>
+          <label class="ce-strategy-card" data-value="temporal">
+            <input type="radio" name="strategy" value="temporal">
+            <strong>Follow the Timeline</strong>
+            <span>Reads documents in chronological order. Best when you suspect change over time.</span>
+          </label>
+          <label class="ce-strategy-card" data-value="biographical">
+            <input type="radio" name="strategy" value="biographical">
+            <strong>Follow the People</strong>
+            <span>Groups documents by person. Best for prosopographical or life-history research.</span>
+          </label>
+          <label class="ce-strategy-card" data-value="genre">
+            <input type="radio" name="strategy" value="genre">
+            <strong>Follow Document Types</strong>
+            <span>Groups by document type. Best when you want to understand what the archive contains.</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Scope -->
+      <div class="ce-form__field">
+        <label>Scope</label>
+        <div class="ce-scope-options" id="ceScopeOptions">
+          <label class="ce-scope-card" data-value="100">
+            <input type="radio" name="scope" value="100">
+            <strong>Quick Sample</strong>
+            <span>~100 documents · 2–5 min</span>
+            <span class="ce-scope-card__use">Good for a first look.</span>
+          </label>
+          <label class="ce-scope-card ce-scope-card--selected" data-value="500">
+            <input type="radio" name="scope" value="500" checked>
+            <strong>Standard</strong>
+            <span>~500 documents · 10–20 min</span>
+            <span class="ce-scope-card__use">Recommended starting point.</span>
+          </label>
+          <label class="ce-scope-card" data-value="2000">
+            <input type="radio" name="scope" value="2000">
+            <strong>Deep Scan</strong>
+            <span>~2,000 documents · 30–60 min</span>
+            <span class="ce-scope-card__use">For comprehensive coverage.</span>
+          </label>
+          <label class="ce-scope-card" data-value="100000">
+            <input type="radio" name="scope" value="100000">
+            <strong>Full Corpus</strong>
+            <span>All documents · hours</span>
+            <span class="ce-scope-card__use">Run overnight.</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Year range -->
+      <div class="ce-form__field ce-form__field--inline">
+        <label>Year range <span class="ce-form__hint">Optional</span></label>
+        <div class="ce-year-range">
+          <input type="number" id="ceYearFrom" name="year_from" placeholder="From" min="1800" max="2100">
+          <span>to</span>
+          <input type="number" id="ceYearTo" name="year_to" placeholder="To" min="1800" max="2100">
+        </div>
+      </div>
+
+      <div class="ce-form__actions">
+        <button type="submit" class="button" id="ceSubmit">Begin Exploration</button>
+        <span class="ce-form__estimate" id="ceEstimate">~10–20 min for Standard scope</span>
+      </div>
+
+    </form>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       STATE 2: RUNNING
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section class="agent-panel ce-running-panel" id="ceRunningPanel" hidden>
+    <div class="ce-running__header">
+      <div class="agent-status">
+        <span class="agent-status__dot"></span>
+        <span id="ceRunningLabel">Exploring corpus…</span>
+      </div>
+      <span class="ce-running__elapsed" id="ceElapsed">0:00</span>
+    </div>
+    <p class="ce-running__note">
+      This page will update automatically when the exploration completes.
+      You can navigate away — the run continues in the background.
+    </p>
+    <div class="agent-debug-console">
+      <div class="agent-debug-header">
+        <span class="agent-debug-title">Progress Log</span>
+      </div>
+      <div class="agent-debug-output" id="ceProgressLog"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       STATE 3: RESULTS
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section class="ce-results" id="ceResults" hidden>
+
+    <div class="ce-results__toolbar">
+      <button type="button" class="button button--secondary button--sm" id="ceNewExploration">
+        ← New Exploration
+      </button>
+      <button type="button" class="button button--secondary button--sm" id="ceExportMarkdown">
+        Export as Markdown
+      </button>
+    </div>
+
+    <!-- Archive Overview -->
+    <div class="ce-section agent-panel" id="ceOverview">
+      <h2 class="ce-section__title">Archive Overview</h2>
+      <div class="ce-stats-grid" id="ceStatsGrid"></div>
+      <div class="ce-archive-notes" id="ceArchiveNotes"></div>
+    </div>
+
+    <!-- Grand Narrative -->
+    <div class="ce-section ce-grand-narrative" id="ceGrandNarrative">
+      <span class="ce-grand-narrative__label">Central Research Question</span>
+      <blockquote class="ce-grand-narrative__question" id="ceGrandQuestion"></blockquote>
+      <div class="ce-grand-narrative__themes" id="ceGrandThemes"></div>
+    </div>
+
+    <!-- Research Agenda -->
+    <div class="ce-section" id="ceAgenda">
+      <h2 class="ce-section__title">Research Agenda</h2>
+      <p class="ce-section__subtitle">
+        Each theme groups related questions. Click any question to investigate it
+        with the Historian Agent.
+      </p>
+      <div class="ce-themes" id="ceThemes"></div>
+    </div>
+
+    <!-- Evidence Gaps -->
+    <div class="ce-section ce-gaps-section" id="ceGapsSection">
+      <h2 class="ce-section__title">
+        <span class="ce-gaps-section__icon">⚠</span> Evidence Gaps
+      </h2>
+      <p class="ce-section__subtitle">
+        Areas the corpus appears not to document — important blind spots for your research.
+      </p>
+      <div class="ce-gaps" id="ceGaps"></div>
+    </div>
+
+    <!-- Contradictions (collapsible) -->
+    <details class="ce-section ce-collapsible" id="ceContradictionsSection">
+      <summary class="ce-collapsible__header">
+        <h2 class="ce-section__title">Contradictions <span class="ce-badge" id="ceContradictionCount"></span></h2>
+      </summary>
+      <div class="ce-contradictions" id="ceContradictions"></div>
+    </details>
+
+    <!-- Patterns (collapsible) -->
+    <details class="ce-section ce-collapsible" id="cePatternsSection">
+      <summary class="ce-collapsible__header">
+        <h2 class="ce-section__title">Patterns <span class="ce-badge" id="cePatternCount"></span></h2>
+      </summary>
+      <div class="ce-patterns" id="cePatterns"></div>
+    </details>
+
+    <!-- Entities (collapsible) -->
+    <details class="ce-section ce-collapsible" id="ceEntitiesSection">
+      <summary class="ce-collapsible__header">
+        <h2 class="ce-section__title">Key Entities <span class="ce-badge" id="ceEntityCount"></span></h2>
+      </summary>
+      <div class="ce-entities" id="ceEntities"></div>
+    </details>
+
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='corpus_explorer.js') }}"></script>
+{% endblock %}

@@ -155,15 +155,22 @@ CORPUS_MAP_PROMPT = """You are a historian who has completed a systematic readin
 READING SUMMARY:
 {notebook_summary}
 
-TASK: Write archive orientation notes.
-Provide 5-7 observations about:
-1. Scope (time period, activities documented)
-2. Voices (whose perspectives appear or are missing)
-3. Biases (selection gaps, archival imbalance)
-4. Surprises (unexpected patterns or contradictions)
-5. Research potential (what questions this archive supports)
+STRICT RULES:
+- Use ONLY facts present in READING SUMMARY.
+- If evidence is missing, say "not evidenced in this run".
+- Do NOT invent places, events, social groups, or activities not explicitly present.
+- Do NOT use placeholders like [location], [event], [name], etc.
+- Write plain text only (no markdown symbols like ** or headings with #).
+- Keep claims conservative and evidence-aware.
 
-Write 2-3 sentences per observation. Be specific.
+TASK: Write archive orientation notes with exactly 5 numbered sections:
+1) Scope and coverage
+2) Voices represented and missing
+3) Biases and selection effects
+4) Contradictions/surprises in the records
+5) Research potential and limitations
+
+Each section should be 1-2 concise sentences.
 """
 
 QUESTION_GENERATION_PROMPT = """You are a historian who has systematically read {docs_read} documents.
@@ -270,14 +277,23 @@ class CorpusExplorer:
         }
 
         if save_notebook:
+            run_dir = f"exploration_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             notebook_path = save_with_timestamp(
                 content=self.notebook.to_dict(),
                 base_dir=Path(config.notebook_save_dir),
                 filename_prefix="notebook",
-                subdirectory=f"exploration_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                subdirectory=run_dir,
             )
             report["notebook_path"] = str(notebook_path)
             self.logger.log("notebook", f"saved {notebook_path}")
+            report_path = save_with_timestamp(
+                content=report,
+                base_dir=Path(config.notebook_save_dir),
+                filename_prefix="report",
+                subdirectory=run_dir,
+            )
+            report["report_path"] = str(report_path)
+            self.logger.log("report", f"saved {report_path}")
 
         self._persist_run(report, strategy, total_budget, year_range)
 
@@ -885,6 +901,36 @@ class CorpusExplorer:
 
     def _generate_corpus_map(self) -> Dict[str, Any]:
         notebook_summary = json.dumps(self.notebook.get_summary(), indent=2)
+        stats = self.notebook.corpus_map
+        docs_read = int(stats.get("total_documents_read", 0) or 0)
+        entity_count = len(self.notebook.entities)
+        pattern_count = len(self.notebook.patterns)
+        contradiction_count = len(self.notebook.contradictions)
+
+        # Avoid speculative orientation notes when evidence is too thin.
+        if docs_read < 25 or (entity_count == 0 and pattern_count == 0):
+            time_cov = stats.get("time_coverage", {})
+            start = time_cov.get("start")
+            end = time_cov.get("end")
+            range_str = f"{start}–{end}" if start is not None and end is not None else "not evidenced in this run"
+            archive_notes = (
+                "1) Scope and coverage: "
+                f"This run read {docs_read} documents with time coverage {range_str}. "
+                "Coverage is limited, so conclusions are preliminary.\n\n"
+                "2) Voices represented and missing: "
+                "The current pass did not surface enough entity-level evidence to characterize voices reliably.\n\n"
+                "3) Biases and selection effects: "
+                "Results may be skewed by sparse extracted blocks and/or metadata gaps in sampled documents.\n\n"
+                "4) Contradictions/surprises in the records: "
+                f"This run detected {contradiction_count} explicit contradictions.\n\n"
+                "5) Research potential and limitations: "
+                "Use this as orientation only; increase budget and rerun before drawing substantive historical claims."
+            )
+            return {
+                "statistics": stats,
+                "archive_notes": archive_notes,
+            }
+
         prompt = CORPUS_MAP_PROMPT.format(notebook_summary=notebook_summary)
 
         response = self.llm.generate(
@@ -898,6 +944,8 @@ class CorpusExplorer:
         )
 
         archive_notes = response.content if response.success else "Failed to generate archive notes."
+        # Guardrail cleanup if model still emits markdown or placeholders.
+        archive_notes = archive_notes.replace("**", "").replace("[location]", "not evidenced in this run").replace("[event]", "not evidenced in this run")
 
         return {
             "statistics": self.notebook.corpus_map,
