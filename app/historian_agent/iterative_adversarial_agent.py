@@ -360,58 +360,39 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
             )
             
             total_time = time.time() - total_start
-            sources = tier1_metrics.get("sources", {})
-            
-            # Format sources list as requested
-            # Build sources list (internal format)
+            raw_sources = tier1_metrics.get("sources", [])
+
+            # Normalize source shape defensively; upstream may provide either
+            # plain source dicts or wrappers with metadata.
             sources_list: List[Dict[str, str]] = []
-            for idx, d in enumerate(docs, 1):
-                if not isinstance(d, dict):
+            for idx, item in enumerate(raw_sources if isinstance(raw_sources, list) else [], 1):
+                if not isinstance(item, dict):
                     continue
-                md = d.get("metadata", {}) if isinstance(d.get("metadata", {}), dict) else {}
-                
-                doc_id = md.get("document_id") or d.get("document_id") or d.get("id")
+                md = item.get("metadata", {}) if isinstance(item.get("metadata"), dict) else {}
+                doc_id = md.get("document_id") or item.get("document_id") or item.get("id")
                 if not doc_id:
                     continue
                 doc_id = str(doc_id)
-                
                 filename = (
-                    md.get("filename") or 
-                    md.get("file_name") or 
-                    md.get("title") or 
-                    md.get("source") or 
-                    doc_id
+                    md.get("filename")
+                    or md.get("file_name")
+                    or md.get("title")
+                    or md.get("source")
+                    or item.get("filename")
+                    or item.get("display_name")
+                    or doc_id
                 )
                 filename = str(filename)
-                display_name = strip_extensions(filename)
-                
-                sources_list.append({
-                    "label": f"Source {idx}",
-                    "id": doc_id,
-                    "filename": filename,
-                    "display_name": display_name
-                })
-                
-                filename = (
-                    md.get("filename") or 
-                    md.get("file_name") or 
-                    md.get("title") or 
-                    md.get("source") or 
-                    doc_id
+                sources_list.append(
+                    {
+                        "label": f"Source {idx}",
+                        "id": doc_id,
+                        "filename": filename,
+                        "display_name": strip_extensions(filename),
+                    }
                 )
-                filename = str(filename)
-                display_name = strip_extensions(filename)
-                
-                sources_list.append({
-                    "label": f"Source {idx}",
-                    "id": doc_id,
-                    "filename": filename,
-                    "display_name": display_name
-                })
 
-            sources = sources_list
-
-            return tier1_answer, sources, all_metrics, total_time
+            return tier1_answer, sources_list, all_metrics, total_time
         
         # ========================================
         # TIER 2: Deep Investigation
@@ -432,9 +413,22 @@ Output ONLY a JSON list of strings: ["query1", "query2", "query3"]
         # Verify Tier 2 answer
         debug_event("Verification", "Verifying Tier 2...", icon="⚖️")
         
-        tier2_context, _, _ = self.handler.get_full_document_text(
-            list(tier2_sources.values())
-        )
+        source_ids = []
+        if isinstance(tier2_sources, dict):
+            source_ids = [str(value) for value in tier2_sources.values() if value]
+        elif isinstance(tier2_sources, list):
+            for item in tier2_sources:
+                if isinstance(item, dict):
+                    metadata = item.get("metadata", {}) if isinstance(item.get("metadata", {}), dict) else {}
+                    doc_id = item.get("id") or item.get("document_id") or metadata.get("document_id")
+                    if doc_id:
+                        source_ids.append(str(doc_id))
+                elif item:
+                    source_ids.append(str(item))
+
+        tier2_context = ""
+        if source_ids:
+            tier2_context, _, _ = self.handler.get_full_document_text(source_ids)
         
         verify_start = time.time()
         tier2_verdict = self.adversarial_handler.verify_citations(
