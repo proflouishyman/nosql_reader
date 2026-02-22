@@ -120,6 +120,8 @@ from historian_agent.rag_query_handler import RAGQueryHandler
 _rag_handler = None
 _adversarial_handler = None
 _tiered_agent = None
+_tier0_explorer = None
+_last_exploration_report = None
 
 def get_rag_handler():
     """Lazy initialization of RAGQueryHandler"""
@@ -141,6 +143,15 @@ def get_tiered_agent():
     if _tiered_agent is None:
         _tiered_agent = build_agent_from_env()
     return _tiered_agent
+
+
+def get_tier0_explorer():
+    """Lazy initialization of Tier 0 CorpusExplorer."""
+    global _tier0_explorer
+    if _tier0_explorer is None:
+        from historian_agent.corpus_explorer import CorpusExplorer
+        _tier0_explorer = CorpusExplorer()
+    return _tier0_explorer
 
 # ============================================================================
 # SHARED RAG HELPER FUNCTIONS
@@ -211,7 +222,23 @@ def process_rag_query(
         
     elif method == 'tiered':
         agent = get_tiered_agent()
-        result = agent.run(question)
+        if hasattr(agent, 'run'):
+            result = agent.run(question)
+        else:
+            if hasattr(agent, 'invoke'):
+                result = agent.invoke(question)
+            elif hasattr(agent, 'investigate'):
+                answer, sources_list, stage_metrics, total_time = agent.investigate(question)
+                result = {
+                    'answer': answer,
+                    'sources': sources_list,
+                    'metrics': {
+                        'total_time': total_time,
+                        'stages': stage_metrics,
+                    },
+                }
+            else:
+                raise AttributeError("TieredHistorianAgent has no supported execution method")
         answer = result.get('answer', '')
         sources_list = result.get('sources', [])
         metrics = result.get('metrics', {})
@@ -243,6 +270,37 @@ def process_rag_query(
         'history': history,
         'method': method
     }
+
+
+def _format_tier0_summary(report: Dict[str, Any], focus_note: str) -> str:
+    """Build a concise Tier 0 summary for the Historian Agent UI."""
+    metadata = report.get("exploration_metadata", {})
+    strategy = metadata.get("strategy", "unknown")
+    documents_read = metadata.get("documents_read", 0)
+    batches_processed = metadata.get("batches_processed", 0)
+    duration_seconds = metadata.get("duration_seconds", 0) or 0
+    research_lens = metadata.get("research_lens") or []
+    notebook_path = report.get("notebook_path")
+    questions = report.get("questions") or []
+
+    summary_lines = [
+        "Tier 0 corpus exploration complete.",
+        f"Strategy: {strategy}. Documents read: {documents_read}. Batches: {batches_processed}. Duration: {float(duration_seconds):.1f}s.",
+    ]
+    if focus_note:
+        summary_lines.append(f"Focus note: {focus_note}")
+    if research_lens:
+        summary_lines.append(f"Research lens: {', '.join([str(item) for item in research_lens])}")
+    if questions:
+        summary_lines.append("Top research questions:")
+        for item in questions[:5]:
+            question_text = item.get("question") if isinstance(item, dict) else str(item)
+            if question_text:
+                summary_lines.append(f"- {question_text}")
+    if notebook_path:
+        summary_lines.append(f"Notebook saved to `{notebook_path}`.")
+
+    return "\n".join(summary_lines)
 
 # ============================================================================
 # UPDATED: Basic RAG Query Handler (Standardized)
@@ -357,10 +415,101 @@ def historian_agent_query_tiered():
         return jsonify({'error': f'Tiered agent query failed: {str(exc)}'}), 500
 
 
+@app.route('/historian-agent/query-tier0', methods=['POST'])
+def historian_agent_query_tier0():
+    """Tier 0 corpus exploration triggered from the Historian Agent UI."""
+    payload = request.get_json(silent=True) or {}
+    question = (payload.get('question') or '').strip()
+    conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
+    refresh_requested = _is_truthy(payload.get('refresh'))
+
+    history_key = _historian_history_cache_key(conversation_id)
+
+    if refresh_requested:
+        cache.delete(history_key)
+        if not question:
+            return jsonify({
+                'conversation_id': str(uuid.uuid4()),
+                'answer': '',
+                'sources': {},
+                'search_id': '',
+                'metrics': {},
+                'history': [],
+            })
+
+    if not question:
+        return jsonify({'error': 'A question is required.'}), 400
+
+    history = cache.get(history_key) or []
+
+    try:
+        strategy = payload.get('strategy')
+        total_budget = payload.get('total_budget')
+        year_range = payload.get('year_range')
+        save_notebook = payload.get('save_notebook')
+        research_lens = payload.get('research_lens', payload.get('focus_areas'))
+
+        if isinstance(year_range, list) and len(year_range) == 2:
+            try:
+                year_range = (int(year_range[0]), int(year_range[1]))
+            except Exception:
+                year_range = None
+        elif not isinstance(year_range, tuple):
+            year_range = None
+
+        explorer = get_tier0_explorer()
+        report = explorer.explore(
+            strategy=strategy,
+            total_budget=total_budget,
+            year_range=year_range,
+            save_notebook=save_notebook,
+            research_lens=research_lens,
+        )
+
+        global _last_exploration_report
+        _last_exploration_report = report
+
+        answer = _format_tier0_summary(report, question)
+        metadata = report.get("exploration_metadata", {})
+        metrics = {
+            'total_time': float(metadata.get('duration_seconds') or 0),
+            'doc_count': metadata.get('documents_read', 0),
+            'batches_processed': metadata.get('batches_processed', 0),
+            'questions': len(report.get('questions') or []),
+            'patterns': len(report.get('patterns') or []),
+            'entities': len(report.get('entities') or []),
+            'contradictions': len(report.get('contradictions') or []),
+        }
+
+        search_id = ''
+        sources_dict: Dict[str, Dict[str, str]] = {}
+
+        history.append({'role': 'user', 'content': question})
+        history.append({'role': 'assistant', 'content': answer, 'sources': sources_dict})
+        if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
+            history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
+
+        result = {
+            'conversation_id': conversation_id,
+            'answer': answer,
+            'sources': sources_dict,
+            'search_id': search_id,
+            'metrics': metrics,
+            'history': history,
+            'method': 'tier0',
+        }
+        cache.set(history_key, result['history'], timeout=HISTORIAN_HISTORY_TIMEOUT)
+        return jsonify(result)
+
+    except Exception as exc:
+        app.logger.exception('Tier 0 query failed')
+        return jsonify({'error': f'Tier 0 query failed: {str(exc)}'}), 500
+
+
 @app.route('/historian-agent/reset-rag', methods=['POST'])
 def reset_rag_handlers():
     """Reset and reinitialize all RAG handlers."""
-    global _rag_handler, _adversarial_handler, _tiered_agent
+    global _rag_handler, _adversarial_handler, _tiered_agent, _tier0_explorer, _last_exploration_report
     
     try:
         if _rag_handler: _rag_handler.close()
@@ -370,11 +519,56 @@ def reset_rag_handlers():
         _rag_handler = None
         _adversarial_handler = None
         _tiered_agent = None
+        _tier0_explorer = None
+        _last_exploration_report = None
         
         return jsonify({'message': 'All RAG handlers reset successfully', 'status': 'success'})
     except Exception as exc:
         app.logger.exception('Failed to reset RAG handlers')
         return jsonify({'error': f'Reset failed: {str(exc)}', 'status': 'error'}), 500
+
+
+@app.route('/api/rag/explore_corpus', methods=['POST'])
+def explore_corpus_endpoint():
+    """Run Tier 0 corpus exploration (synchronous)."""
+    payload = request.get_json(silent=True) or {}
+
+    strategy = payload.get('strategy')
+    total_budget = payload.get('total_budget')
+    year_range = payload.get('year_range')
+    save_notebook = payload.get('save_notebook')
+    research_lens = payload.get('research_lens', payload.get('focus_areas'))
+
+    if isinstance(year_range, list) and len(year_range) == 2:
+        try:
+            year_range = (int(year_range[0]), int(year_range[1]))
+        except Exception:
+            year_range = None
+    elif not isinstance(year_range, tuple):
+        year_range = None
+
+    explorer = get_tier0_explorer()
+    report = explorer.explore(
+        strategy=strategy,
+        total_budget=total_budget,
+        year_range=year_range,
+        save_notebook=save_notebook,
+        research_lens=research_lens,
+    )
+
+    global _last_exploration_report
+    _last_exploration_report = report
+
+    return jsonify(report)
+
+
+@app.route('/api/rag/exploration_report', methods=['GET'])
+def exploration_report_endpoint():
+    """Return the most recent Tier 0 exploration report, if available."""
+    if _last_exploration_report is None:
+        return jsonify({'error': 'No exploration report available'}), 404
+
+    return jsonify(_last_exploration_report)
 
 def _archives_root() -> Path:
     """Return the archive root directory, creating it if necessary."""
