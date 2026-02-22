@@ -532,7 +532,12 @@ def reset_rag_handlers():
 @app.route('/api/rag/explore_corpus', methods=['POST'])
 def explore_corpus_endpoint():
     """Run Tier 0 corpus exploration (synchronous)."""
+    global _last_exploration_report
     payload = request.get_json(silent=True) or {}
+    if _is_truthy(payload.get('reuse_latest')) and _last_exploration_report is not None:
+        reused = dict(_last_exploration_report)
+        reused['reused_existing_report'] = True
+        return jsonify(reused)
 
     strategy = payload.get('strategy')
     total_budget = payload.get('total_budget')
@@ -557,7 +562,6 @@ def explore_corpus_endpoint():
         research_lens=research_lens,
     )
 
-    global _last_exploration_report
     _last_exploration_report = report
 
     return jsonify(report)
@@ -579,15 +583,27 @@ def list_exploration_notebooks():
 
     save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
     try:
-        pattern = os.path.join(save_dir, '**', 'notebook_*.json')
-        files = sorted(glob.glob(pattern, recursive=True), reverse=True)[:20]
+        patterns = [
+            os.path.join(save_dir, '**', 'notebook_*.json'),
+            os.path.join(save_dir, '**', '*_notebook.json'),
+            os.path.join(save_dir, '**', 'report_*.json'),
+            os.path.join(save_dir, '**', '*_report.json'),
+        ]
+        files = []
+        for pattern in patterns:
+            files.extend(glob.glob(pattern, recursive=True))
+        # de-duplicate + newest first
+        files = sorted(set(files), key=lambda p: os.path.getmtime(p), reverse=True)[:50]
         notebooks = []
         for path in files:
             stat = os.stat(path)
+            filename = os.path.basename(path)
+            artifact_type = 'report' if 'report' in filename.lower() else 'notebook'
             notebooks.append(
                 {
                     'path': path,
-                    'filename': os.path.basename(path),
+                    'filename': filename,
+                    'artifact_type': artifact_type,
                     'size_kb': round(stat.st_size / 1024, 1),
                     'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
                 }
@@ -609,7 +625,42 @@ def load_exploration_notebook():
         return jsonify({'error': 'Invalid path'}), 400
     try:
         with open(path, 'r', encoding='utf-8') as handle:
-            _last_exploration_report = json.load(handle)
+            payload = json.load(handle)
+
+        def _as_list(value):
+            if isinstance(value, list):
+                return value
+            if isinstance(value, dict):
+                return list(value.values())
+            return []
+
+        # notebook artifacts are not full reports; wrap into a report-like payload
+        is_full_report = (
+            isinstance(payload, dict)
+            and 'exploration_metadata' in payload
+            and 'question_synthesis' in payload
+            and isinstance(payload.get('corpus_map'), dict)
+            and 'statistics' in payload.get('corpus_map', {})
+        )
+        if isinstance(payload, dict) and not is_full_report:
+            _last_exploration_report = {
+                'corpus_map': {
+                    'statistics': payload.get('corpus_map', {}),
+                    'archive_notes': 'Loaded notebook snapshot from disk. Run a new exploration for refreshed synthesis outputs.',
+                },
+                'questions': _as_list(payload.get('questions')),
+                'patterns': _as_list(payload.get('patterns')),
+                'contradictions': _as_list(payload.get('contradictions')),
+                'entities': _as_list(payload.get('entities')),
+                'question_synthesis': {
+                    'themes': [],
+                    'gaps': [],
+                },
+                'loaded_from_notebook': True,
+                'notebook_path': path,
+            }
+        else:
+            _last_exploration_report = payload
         return jsonify({'status': 'loaded'})
     except Exception as exc:
         return jsonify({'error': str(exc)}), 500

@@ -196,7 +196,7 @@
             .join('');
 
         if (corpusMap.archive_notes) {
-            notesEl.innerHTML = `<p>${escHtml(corpusMap.archive_notes)}</p>`;
+            notesEl.innerHTML = formatArchiveNotes(corpusMap.archive_notes);
         } else {
             notesEl.innerHTML = '';
         }
@@ -549,6 +549,26 @@
 
     function escAttr(str) {
         return escHtml(str).replace(/'/g, '&#39;');
+    }
+
+    function formatArchiveNotes(raw) {
+        if (!raw) return '';
+
+        const cleaned = String(raw)
+            .replace(/\*\*/g, '')
+            .replace(/\[(location|event|name)\]/gi, 'not evidenced in this run')
+            .trim();
+
+        const paragraphs = cleaned
+            .split(/\n{2,}/)
+            .map((p) => p.trim())
+            .filter(Boolean);
+
+        if (!paragraphs.length) return '';
+
+        return paragraphs
+            .map((p) => `<p>${escHtml(p).replace(/\n/g, '<br>')}</p>`)
+            .join('');
     }
 
     // ── Init ────────────────────────────────────────────────────────────
