@@ -571,6 +571,49 @@ def exploration_report_endpoint():
 
     return jsonify(_last_exploration_report)
 
+
+@app.route('/api/rag/exploration_notebooks', methods=['GET'])
+def list_exploration_notebooks():
+    """List saved exploration notebooks from disk."""
+    import glob
+
+    save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
+    try:
+        pattern = os.path.join(save_dir, '**', 'notebook_*.json')
+        files = sorted(glob.glob(pattern, recursive=True), reverse=True)[:20]
+        notebooks = []
+        for path in files:
+            stat = os.stat(path)
+            notebooks.append(
+                {
+                    'path': path,
+                    'filename': os.path.basename(path),
+                    'size_kb': round(stat.st_size / 1024, 1),
+                    'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                }
+            )
+        return jsonify({'notebooks': notebooks})
+    except Exception as exc:
+        return jsonify({'notebooks': [], 'error': str(exc)})
+
+
+@app.route('/api/rag/exploration_notebooks/load', methods=['POST'])
+def load_exploration_notebook():
+    """Load a specific saved notebook and make it the active report."""
+    global _last_exploration_report
+
+    payload = request.get_json(silent=True) or {}
+    path = payload.get('path', '')
+    save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
+    if not os.path.abspath(path).startswith(os.path.abspath(save_dir)):
+        return jsonify({'error': 'Invalid path'}), 400
+    try:
+        with open(path, 'r', encoding='utf-8') as handle:
+            _last_exploration_report = json.load(handle)
+        return jsonify({'status': 'loaded'})
+    except Exception as exc:
+        return jsonify({'error': str(exc)}), 500
+
 def _archives_root() -> Path:
     """Return the archive root directory, creating it if necessary."""
 
@@ -1088,6 +1131,12 @@ def historian_agent_page():
         provider_options=HISTORIAN_PROVIDER_OPTIONS,
         agent_error=agent_error,
     )
+
+
+@app.route('/corpus-explorer')
+def corpus_explorer_page():
+    """Render the Corpus Explorer (Tier 0) interface."""
+    return render_template('corpus_explorer.html')
 
 
 def _parse_agent_config_payload(payload: Dict[str, Any]) -> Dict[str, Any]:

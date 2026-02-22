@@ -24,6 +24,17 @@
         const suggestionButtons = Array.from(document.querySelectorAll('.agent-suggestion'));
         const submitButton = form ? form.querySelector('button[type="submit"]') : null;
 
+        // Pre-fill question when arriving from a Corpus Explorer "Investigate →" link
+        const _ceParams = new URLSearchParams(window.location.search);
+        const _cePreQ = _ceParams.get('q');
+        if (_cePreQ && questionInput) {
+            questionInput.value = decodeURIComponent(_cePreQ);
+            const note = document.createElement('p');
+            note.className = 'ce-prefill-note';
+            note.textContent = '← Pre-filled from Corpus Explorer';
+            questionInput.parentNode.insertBefore(note, questionInput);
+        }
+
         // Method selector elements
         const methodSelect = document.getElementById('agentMethod');
         const methodHint = document.getElementById('agentMethodHint');
