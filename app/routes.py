@@ -42,6 +42,7 @@ from io import StringIO, BytesIO
 from logging.handlers import RotatingFileHandler
 from typing import Any, Dict, List, Optional, Tuple
 import os
+import subprocess
 import uuid
 import pymongo
 from pathlib import Path
@@ -894,6 +895,83 @@ def _evaluate_agent_error(
     return None
 
 
+def _runtime_build_info() -> Dict[str, str]:
+    """Return git/runtime metadata for display in the Settings page."""
+
+    # routes.py lives in /app/routes.py inside the container; repo root is /app.
+    repo_root = Path(__file__).resolve().parent
+
+    def _git(*args: str) -> str:
+        try:
+            result = subprocess.check_output(
+                ["git", *args],
+                cwd=str(repo_root),
+                stderr=subprocess.STDOUT,
+                text=True,
+                timeout=2.0,
+            )
+            return result.strip()
+        except Exception:
+            return "unknown"
+
+    branch = _git("rev-parse", "--abbrev-ref", "HEAD")
+    commit_full = _git("rev-parse", "HEAD")
+    commit_short = commit_full[:8] if commit_full != "unknown" else "unknown"
+    commit_date = _git("show", "-s", "--format=%cI", "HEAD")
+    commit_subject = _git("show", "-s", "--format=%s", "HEAD")
+    dirty_status = _git("status", "--porcelain")
+
+    # Docker/runtime fallback: many images don't include .git or git binary.
+    # Read stamped metadata from app/build_info.json and/or env vars.
+    stamped: Dict[str, Any] = {}
+    build_info_path = repo_root / "build_info.json"
+    if build_info_path.exists():
+        try:
+            stamped = json.loads(build_info_path.read_text(encoding="utf-8"))
+        except Exception:
+            stamped = {}
+
+    branch = (
+        branch
+        if branch != "unknown"
+        else str(os.getenv("APP_GIT_BRANCH", stamped.get("branch", "unknown")))
+    )
+    commit_full = (
+        commit_full
+        if commit_full != "unknown"
+        else str(os.getenv("APP_GIT_COMMIT", stamped.get("commit_full", "unknown")))
+    )
+    commit_short = (
+        commit_short
+        if commit_short != "unknown"
+        else str(os.getenv("APP_GIT_COMMIT_SHORT", stamped.get("commit", "unknown")))
+    )
+    commit_date = (
+        commit_date
+        if commit_date != "unknown"
+        else str(os.getenv("APP_GIT_COMMIT_DATE", stamped.get("commit_date", "unknown")))
+    )
+    commit_subject = (
+        commit_subject
+        if commit_subject != "unknown"
+        else str(os.getenv("APP_GIT_SUBJECT", stamped.get("commit_subject", "unknown")))
+    )
+    if dirty_status == "unknown":
+        dirty_status = str(os.getenv("APP_GIT_DIRTY", stamped.get("dirty", "unknown")))
+
+    return {
+        "app_version": os.getenv("APP_VERSION", "dev"),
+        "branch": branch,
+        "commit": commit_short,
+        "commit_full": commit_full,
+        "commit_date": commit_date,
+        "commit_subject": commit_subject,
+        "dirty": "yes" if dirty_status not in ("", "unknown") else "no",
+        "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "repo_root": str(repo_root),
+    }
+
+
 def _historian_history_cache_key(conversation_id: str) -> str:
     """Return the cache key used to persist chat history for a conversation."""
 
@@ -1001,6 +1079,7 @@ def historian_agent_page():
     overrides = _historian_agent_overrides()
     agent_config = HistorianAgentConfig.from_env(overrides)
     agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
+    runtime_build = _runtime_build_info()
 
     return render_template(
         'historian_agent.html',
@@ -1767,6 +1846,7 @@ def settings():
     overrides = _historian_agent_overrides()
     agent_config = HistorianAgentConfig.from_env(overrides)
     agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
+    runtime_build = _runtime_build_info()
 
     return render_template(
         'settings.html',
@@ -1784,6 +1864,7 @@ def settings():
         ingestion_default_openai_model=image_ingestion.DEFAULT_OPENAI_MODEL,
         ingestion_ollama_base_url=image_ingestion.DEFAULT_OLLAMA_BASE_URL,
         ingestion_api_key_configured=image_ingestion.read_api_key() is not None,
+        runtime_build=runtime_build,
     )
 
 @app.route('/settings/data-ingestion/mounts', methods=['GET'])

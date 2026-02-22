@@ -58,6 +58,23 @@
 
     <!-- Removed ingestion controls to simplify the settings page per request. -->
 
+    <section id="runtime-build" class="settings-section">
+        <div class="settings-section__header">
+            <h2>Runtime build</h2>
+            <p>Use this metadata to verify exactly which code version is running.</p>
+        </div>
+        <dl class="build-meta">
+            <div><dt>App version</dt><dd>{{ runtime_build.app_version }}</dd></div>
+            <div><dt>Branch</dt><dd><code>{{ runtime_build.branch }}</code></dd></div>
+            <div><dt>Commit</dt><dd><code title="{{ runtime_build.commit_full }}">{{ runtime_build.commit }}</code></dd></div>
+            <div><dt>Commit date</dt><dd>{{ runtime_build.commit_date }}</dd></div>
+            <div><dt>Commit subject</dt><dd>{{ runtime_build.commit_subject }}</dd></div>
+            <div><dt>Working tree dirty</dt><dd>{{ runtime_build.dirty }}</dd></div>
+            <div><dt>Generated at (UTC)</dt><dd>{{ runtime_build.generated_at }}</dd></div>
+            <div><dt>Repository root</dt><dd><code>{{ runtime_build.repo_root }}</code></dd></div>
+        </dl>
+    </section>
+
     
 </div>
 
