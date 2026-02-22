@@ -364,7 +364,7 @@ class ConfigLoader:
             # Fast local model for quick operations (multi-query generation, etc.)
             "fast": {
                 "provider": "ollama",
-                "model": _env("LLM_FAST_MODEL", "llama3.2:3b"),
+                "model": _env("LLM_FAST_MODEL", "llama3.1:8b"),
                 "temperature": 0.3,
                 "timeout": 30.0,
             },
@@ -594,10 +594,10 @@ def _validate_config():
     if APP_CONFIG.providers['ollama'].base_url is None:
         issues.append("OLLAMA_BASE_URL not set")
     
-    # Check OpenAI key if using cloud profile
-    if (APP_CONFIG.llm_profiles.get('cloud', {}).get('provider') == 'openai' 
-        and not APP_CONFIG.providers['openai'].api_key):
-        issues.append("OPENAI_API_KEY not set but 'cloud' profile uses OpenAI")
+    # Check OpenAI key only when cloud is explicitly enabled/required.
+    openai_required = _env_bool("OPENAI_REQUIRED", False) or _env_bool("APP_ENABLE_CLOUD_PROFILE", False)
+    if openai_required and not APP_CONFIG.providers['openai'].api_key:
+        issues.append("OPENAI_API_KEY not set but cloud profile is enabled")
     
     # Warn about secret key
     if APP_CONFIG.secret_key == "change-me-in-production":

@@ -527,6 +527,10 @@ class ProviderRouter:
         
         # Initialize each configured provider
         for name, config in provider_configs.items():
+            # Skip OpenAI initialization unless an API key is configured.
+            if name == "openai" and not getattr(config, "api_key", None):
+                logger.info("Skipping provider openai: API key not configured")
+                continue
             try:
                 provider_class = self._get_provider_class(name)
                 self.providers[name] = provider_class(config)
