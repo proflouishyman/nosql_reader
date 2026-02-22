@@ -1,9 +1,9 @@
 {
   "branch": "codex/main-tier0-integration",
-  "commit": "c4cf1c8f",
-  "commit_full": "c4cf1c8f294c37270831bf7f7279d483f0009882",
-  "commit_date": "2026-02-22T12:16:20-05:00",
-  "commit_subject": "Fix Tier0 branch integration and document postmortem",
+  "commit": "98d2d8f9",
+  "commit_full": "98d2d8f906ff29815c00b8c77988c8601970269a",
+  "commit_date": "2026-02-22T12:59:18-05:00",
+  "commit_subject": "Default fast model to llama3.1:8b and skip unused OpenAI init",
   "dirty": "yes",
-  "generated_at": "2026-02-22T17:20:00Z"
+  "generated_at": "2026-02-22T18:04:19Z"
 }
