@@ -15,6 +15,7 @@
     const newExplBtn = document.getElementById('ceNewExploration');
     const exportBtn = document.getElementById('ceExportMarkdown');
     const refreshNbBtn = document.getElementById('ceRefreshNotebooks');
+    const runningLabel = document.getElementById('ceRunningLabel');
 
     if (!formPanel || !runningPanel || !resultsPanel || !form) {
         return;
@@ -71,6 +72,11 @@
 
     // ── Elapsed timer ───────────────────────────────────────────────────
     let elapsedInterval = null;
+    let progressInterval = null;
+    let heartbeatInterval = null;
+    let activeRunId = null;
+    let runCursor = 0;
+    let lastProgressAt = 0;
 
     function startElapsed() {
         let seconds = 0;
@@ -86,6 +92,17 @@
         if (elapsedInterval) {
             clearInterval(elapsedInterval);
             elapsedInterval = null;
+        }
+    }
+
+    function stopProgressPolling() {
+        if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+        }
+        if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+            heartbeatInterval = null;
         }
     }
 
@@ -112,44 +129,40 @@
         setState('running');
         if (progressLog) progressLog.innerHTML = '';
         stopElapsed();
+        stopProgressPolling();
         startElapsed();
+        activeRunId = null;
+        runCursor = 0;
+        lastProgressAt = Date.now();
+        if (runningLabel) runningLabel.textContent = 'Exploring corpus…';
 
         logProgress(`Starting ${strategy} exploration — budget ${budget} documents`);
         if (lens) logProgress(`Research lens: "${lens.substring(0, 80)}…"`);
         if (yearFrom && yearTo) logProgress(`Year range: ${yearFrom}–${yearTo}`);
-        logProgress('Sending request to backend…');
+        logProgress('Queueing exploration run…');
 
         const start = performance.now();
 
         try {
-            const resp = await fetch('/api/rag/explore_corpus', {
+            const resp = await fetch('/api/rag/explore_corpus/start', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
-
-            stopElapsed();
-            const elapsed = ((performance.now() - start) / 1000).toFixed(1);
 
             if (!resp.ok) {
                 const err = await resp.json().catch(() => ({}));
                 throw new Error(err.error || `HTTP ${resp.status}`);
             }
 
-            const report = await resp.json();
-            logProgress(`Exploration complete in ${elapsed}s`, 'success');
-            logProgress(
-                `Generated ${report.questions?.length || 0} questions, `
-                + `found ${report.patterns?.length || 0} patterns`,
-                'success'
-            );
-
-            activeReport = report;
-            renderResults(report);
-            setState('results');
-            loadNotebooks();
+            const started = await resp.json();
+            activeRunId = started.run_id;
+            logProgress(`Run started: ${activeRunId}`);
+            logProgress('Live progress updates enabled (2s polling + heartbeat)');
+            startProgressPolling(start);
         } catch (err) {
             stopElapsed();
+            stopProgressPolling();
             logProgress(`Error: ${err.message}`, 'error');
             const backBtn = document.createElement('button');
             backBtn.textContent = '← Back to form';
@@ -159,6 +172,66 @@
             runningPanel.appendChild(backBtn);
         }
     });
+
+    function startProgressPolling(startPerf) {
+        if (!activeRunId) return;
+
+        const poll = async () => {
+            try {
+                const resp = await fetch(`/api/rag/explore_corpus/status/${encodeURIComponent(activeRunId)}?since=${runCursor}`);
+                if (!resp.ok) throw new Error(`Status HTTP ${resp.status}`);
+                const status = await resp.json();
+                const events = status.events || [];
+                if (events.length) {
+                    events.forEach((evt) => logProgress(evt.message));
+                    runCursor = status.next_cursor || runCursor + events.length;
+                    lastProgressAt = Date.now();
+                    if (runningLabel) {
+                        const tail = status.last_event_message || 'Exploring corpus…';
+                        runningLabel.textContent = tail.length > 120 ? `${tail.slice(0, 117)}...` : tail;
+                    }
+                }
+
+                if (status.status === 'completed') {
+                    stopElapsed();
+                    stopProgressPolling();
+                    const elapsed = ((performance.now() - startPerf) / 1000).toFixed(1);
+                    logProgress(`Exploration complete in ${elapsed}s`, 'success');
+                    const report = status.report || {};
+                    logProgress(
+                        `Generated ${report.questions?.length || 0} questions, `
+                        + `found ${report.patterns?.length || 0} patterns`,
+                        'success'
+                    );
+                    activeReport = report;
+                    renderResults(report);
+                    setState('results');
+                    loadNotebooks();
+                    return;
+                }
+
+                if (status.status === 'failed') {
+                    stopElapsed();
+                    stopProgressPolling();
+                    logProgress(`Run failed: ${status.error || 'unknown error'}`, 'error');
+                    return;
+                }
+            } catch (err) {
+                logProgress(`Status poll error: ${err.message}`, 'warning');
+            }
+        };
+
+        progressInterval = setInterval(poll, 2000);
+        heartbeatInterval = setInterval(() => {
+            const silenceMs = Date.now() - lastProgressAt;
+            const silenceSec = Math.round(silenceMs / 1000);
+            if (silenceSec >= 10) {
+                logProgress(`Heartbeat: run active, waiting on model response (${silenceSec}s since last update)`, 'warning');
+                lastProgressAt = Date.now();
+            }
+        }, 10000);
+        poll();
+    }
 
     // ── Results rendering ───────────────────────────────────────────────
 
@@ -465,7 +538,11 @@
 
     // ── Toolbar actions ─────────────────────────────────────────────────
 
-    if (newExplBtn) newExplBtn.addEventListener('click', () => setState('form'));
+    if (newExplBtn) newExplBtn.addEventListener('click', () => {
+        stopElapsed();
+        stopProgressPolling();
+        setState('form');
+    });
     if (exportBtn) exportBtn.addEventListener('click', () => exportMarkdown(activeReport));
 
     function exportMarkdown(report) {
