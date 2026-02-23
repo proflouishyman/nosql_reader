@@ -231,10 +231,12 @@ def process_rag_query(
         
     elif method == 'tiered':
         agent = get_tiered_agent()
-        result = agent.run(question)
-        answer = result.get('answer', '')
-        sources_list = result.get('sources', [])
-        metrics = result.get('metrics', {})
+        answer, sources_list, tier_metrics, total_time = agent.investigate(question)
+        metrics = {
+            'total_time': total_time,
+            'doc_count': len(sources_list) if isinstance(sources_list, list) else 0,
+            'tiers': tier_metrics,
+        }
         
     else:
         raise ValueError(f"Unknown method: {method}")

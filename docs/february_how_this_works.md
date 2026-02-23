@@ -1,17 +1,19 @@
 # February 2026: How This Code Works
 
-This document is a detailed, implementation-level guide to the current `main` branch of the Historical Document Reader.
+This document is a detailed, implementation-level guide to the current repository state of the Historical Document Reader.
 
 It explains:
 
-1. Runtime architecture and startup sequence.
-2. Route and request flow.
-3. Search and document-view navigation context.
-4. Network analysis backend and frontend behavior.
-5. Statistical analysis pipeline.
-6. Data model and derived collections.
-7. Caching, performance characteristics, and failure modes.
-8. How to extend safely.
+- Runtime architecture and startup sequence.
+- Setup and environment boot requirements.
+- Route and request flow.
+- Search and document-view navigation context.
+- Network analysis backend and frontend behavior.
+- Statistical analysis pipeline.
+- Data model and derived collections.
+- File-to-data ownership and flow relationships.
+- Caching, performance characteristics, and failure modes.
+- How to extend safely.
 
 ## 1. Runtime Architecture
 
@@ -30,6 +32,65 @@ Docker runtime (current compose file):
 - Service `app` (container name: `nosql_reader_app`)
 - Service `mongodb` (container name: `nosql_reader_mongodb`)
 - App exposed at host port `5001` mapped to container `5000`
+
+## Runtime Status Snapshot (2026-02-23)
+
+Validated operational checks:
+
+1. Master smoke suite `app/util/e2e_cli_suite.py` passes `18/18`.
+2. Historian query tiers all return healthy responses:
+   - `/historian-agent/query-basic`
+   - `/historian-agent/query-adversarial`
+   - `/historian-agent/query-tiered`
+   - `/historian-agent/query-tier0`
+
+Current known behavior:
+
+1. Chroma checks are tolerant when persistence is not mounted or empty.
+2. Tier 0 can complete with `0` final questions if evidence/validation filters reject all candidates.
+3. Some document-image warnings can appear when referenced image files are absent from mounted archives.
+
+## Setup (Current)
+
+Use this exact setup flow for a clean local start:
+
+1. Ensure Docker is running.
+2. Keep one runtime env file only at `/Users/louishyman/coding/nosql/nosql_reader_cleanup/.env`.
+3. Confirm host mount directories referenced by `.env` exist (`ARCHIVES_HOST_PATH`, `MONGO_DATA_HOST_PATH`, `SESSION_HOST_PATH`).
+4. Start services:
+
+```bash
+docker compose -p nosql_reader -f docker-compose.yml up -d --build
+```
+
+5. Verify baseline behavior:
+
+```bash
+docker compose exec app python /app/util/e2e_cli_suite.py
+```
+
+6. Optionally verify RAG tier endpoints:
+
+```bash
+docker compose exec app python - <<'PY'
+import uuid
+from main import app
+
+checks = [
+    ("/historian-agent/query-basic", {"question": "What themes appear in B&O employee records?"}),
+    ("/historian-agent/query-adversarial", {"question": "What themes appear in B&O employee records?"}),
+    ("/historian-agent/query-tiered", {"question": "What themes appear in B&O employee records?"}),
+    ("/historian-agent/query-tier0", {"question": "What themes appear in B&O employee records?", "strategy": "balanced", "total_budget": 20, "save_notebook": False}),
+]
+
+with app.test_client() as client:
+    for endpoint, payload in checks:
+        payload["conversation_id"] = str(uuid.uuid4())
+        payload["refresh"] = True
+        r = client.post(endpoint, json=payload)
+        print(endpoint, r.status_code)
+PY
+```
 
 ## 2. Startup Sequence
 
@@ -58,6 +119,14 @@ At import time, `routes.py`:
 
 This means network API blueprint registration happens as part of normal app route import.
 
+## 2.3 Configuration source-of-truth
+
+Environment configuration policy:
+
+1. One runtime env file only: `/Users/louishyman/coding/nosql/nosql_reader_cleanup/.env`.
+2. No additional runtime `.env` files in subdirectories.
+3. Example variable sets are documentation-only in `docs/ENV_EXAMPLES.md`.
+
 ## 3. Request/Route Topology
 
 High-value route groups:
@@ -83,6 +152,10 @@ High-value route groups:
 - `GET /network-analysis`
 - `GET /network/viewer-launch`
 - `GET /network/viewer-results`
+
+### 3.5 Tier contract note
+
+`process_rag_query(..., method='tiered', ...)` currently calls `TieredHistorianAgent.investigate(question)` and adapts its tuple return into the shared response envelope. This is the active contract between `routes.py` and `iterative_adversarial_agent.py`.
 
 ### 3.4 Network API blueprint (`/api/network`)
 
@@ -280,14 +353,38 @@ Template hooks consumed by JS:
 
 ## 5. Data Model
 
-### 4.1 Primary source collections
+## File and Data Relationship Map
+
+This map shows which files own which data sources and where data flows between code boundaries.
+
+| File/Module | Reads | Writes | Purpose |
+|---|---|---|---|
+| `app/database_setup.py` | `.env` Mongo settings | Mongo client/session objects | Central DB connection contract used by routes and services |
+| `app/main.py` | `.env`, `app/config.json` | Flask app/cache/session config | App bootstrap and shared runtime context |
+| `app/routes.py` | `documents`, `linked_entities`, cache keys (`search_*`, `network_search_*`) | `conversations`, cache keys, API responses | Main HTTP workflow layer (search, viewer, historian endpoints) |
+| `app/network/build_network_edges.py` | `documents`, `linked_entities` | `network_edges` | Builds co-occurrence graph edges from entity refs |
+| `app/network/network_utils.py` | `network_edges`, `documents`, `linked_entities`, `network_metrics` | `network_metrics` (cached metrics) | Query/filter and entity/document network operations |
+| `app/network/statistics_routes.py` + `app/network/network_statistics.py` | `network_edges`, `network_node_attributes` | `network_statistics_cache` | Computes and serves assortativity/community/degree analytics |
+| `app/historian_agent/*` | `documents`, vector store (`chroma_db`), model env vars | `conversations`, optional cached exploration artifacts | Multi-tier RAG question answering and investigation |
+| `app/util/e2e_cli_suite.py` | Runtime env, imports, selected DB state and endpoints | Console-only output | Non-destructive integrated health and contract checks |
+| `app/templates/*` + `app/static/js/network.js` | JSON payloads from `/api/network/*` | Browser UI state only | Visualization and document-network interaction layer |
+
+### Data flow summary
+
+1. Archive ingestion populates `documents` (and linked entity references).
+2. Entity linking populates `linked_entities`.
+3. Graph build materializes `network_edges` from `documents.entity_refs`.
+4. Runtime requests query edges/entities and may cache computed views (`network_metrics`, `network_statistics_cache`).
+5. Historian tiers query corpus/vector sources and persist conversation artifacts.
+
+### Primary source collections
 
 - `documents`
   - archive metadata, text fields, optional `entities`, `entity_refs`
 - `linked_entities`
   - canonical entities (`_id`, `canonical_name`, `type`, `mention_count`, optional variants/context)
 
-### 4.2 Derived collections used by network
+### Derived collections used by network
 
 - `network_edges`
   - undirected co-occurrence edges built from `documents.entity_refs`
@@ -300,7 +397,7 @@ Template hooks consumed by JS:
 
 The app uses a shared list-context pattern for navigation.
 
-### 5.1 Search list context
+### Search list context
 
 When you run search:
 
@@ -308,7 +405,7 @@ When you run search:
 2. `GET /document/<doc_id>?search_id=<search_id>` loads current index in that ordered list.
 3. Previous/Next links are generated from this list.
 
-### 5.2 Network list context
+### Network list context
 
 Network viewer launch intentionally reuses the same pattern:
 
@@ -491,6 +588,10 @@ Robustness fixes currently in place:
 - `search_<id>` stores ordered doc IDs for list navigation.
 - `network_search_<id>` stores network viewer metadata.
 
+Additional practical cache behavior:
+
+- Tier 0 corpus exploration caches per-batch analyses and can short-circuit repeated runs.
+
 ### 13.2 Mongo cache usage
 
 - `network_metrics` stores entity metric snapshots.
@@ -582,6 +683,35 @@ for ep in [
     r = c.get(ep)
     print(ep, r.status_code)
 "
+```
+
+Master regression smoke:
+
+```bash
+docker compose exec app python /app/util/e2e_cli_suite.py
+```
+
+Tier endpoint probe (in-container, Flask test client):
+
+```bash
+python - <<'PY'
+import uuid
+from main import app
+
+checks = [
+    ("/historian-agent/query-basic", {"question": "What themes appear in B&O employee records?"}),
+    ("/historian-agent/query-adversarial", {"question": "What themes appear in B&O employee records?"}),
+    ("/historian-agent/query-tiered", {"question": "What themes appear in B&O employee records?"}),
+    ("/historian-agent/query-tier0", {"question": "What themes appear in B&O employee records?", "strategy": "balanced", "total_budget": 20, "save_notebook": False}),
+]
+
+with app.test_client() as client:
+    for endpoint, payload in checks:
+        payload["conversation_id"] = str(uuid.uuid4())
+        payload["refresh"] = True
+        r = client.post(endpoint, json=payload)
+        print(endpoint, r.status_code)
+PY
 ```
 
 ## 18. Summary

@@ -13,16 +13,96 @@ Implemented and live in this codebase:
 - Network document viewer launch/results flow that reuses search-context navigation patterns.
 - Network statistics API and UI panel (assortativity, mixing matrix, degree distribution, communities, gatekeepers, random comparison).
 
+Operational status verified on 2026-02-23:
+
+- Master end-to-end suite (`app/util/e2e_cli_suite.py`) passes: 18/18 checks.
+- Historian tier endpoints return healthy responses:
+  - `POST /historian-agent/query-basic`
+  - `POST /historian-agent/query-adversarial`
+  - `POST /historian-agent/query-tiered`
+  - `POST /historian-agent/query-tier0`
+
+Configuration policy:
+
+- One runtime environment file only: `/Users/louishyman/coding/nosql/nosql_reader_cleanup/.env`.
+- Environment examples are documentation-only in `/Users/louishyman/coding/nosql/nosql_reader_cleanup/docs/ENV_EXAMPLES.md`.
+
 ## Main Pages
 
 - `/` Home
 - `/search` Search Database
 - `/document/<doc_id>` Document viewer
 - `/historian-agent` Historian Agent
+- `/corpus-explorer` Corpus Explorer (Tier 0 exploration UI)
 - `/network-analysis` Network Analysis
 - `/network/viewer-results?search_id=<id>` Network-derived document list viewer
 - `/settings` Application settings
 - `/help` In-app usage guide
+
+## Feature Usage
+
+### 1. Database Search
+
+Use this flow when you want direct document retrieval from MongoDB:
+
+1. Open `/search`.
+2. Build one or more fielded conditions (field + term + operator).
+3. Submit search and open a result.
+4. Navigate with Previous/Next in `/document/<doc_id>`; list context is preserved via `search_id`.
+
+Relevant search endpoints:
+
+- `GET /api/searchable-fields` returns fields for search dropdowns.
+- `POST /search` executes the query and returns paginated documents plus a `search_id`.
+- `GET /document/<doc_id>?search_id=<id>` opens detail view in the same ordered result context.
+
+### 2. Historian Agent
+
+Use this flow for RAG-assisted question answering over the corpus:
+
+1. Open `/historian-agent`.
+2. Choose a method (`basic`, `adversarial`, `tiered`, or `tier0`).
+3. Submit a research question.
+4. Review answer, sources, and metrics; source links open `/document/<id>?search_id=<id>`.
+
+Historian query endpoints:
+
+- `POST /historian-agent/query` (UI-compatible default handler)
+- `POST /historian-agent/query-basic`
+- `POST /historian-agent/query-adversarial`
+- `POST /historian-agent/query-tiered`
+- `POST /historian-agent/query-tier0`
+- `POST /historian-agent/reset-rag` to reset in-memory handlers
+
+### 3. Corpus Explorer (Tier 0)
+
+Use this flow for exploratory corpus scans and notebook/report artifacts:
+
+1. Open `/corpus-explorer` for guided exploration runs.
+2. Run synchronous exploration with `POST /api/rag/explore_corpus`, or async with `POST /api/rag/explore_corpus/start`.
+3. Poll async status with `GET /api/rag/explore_corpus/status/<run_id>`.
+4. Retrieve outputs using:
+   - `GET /api/rag/exploration_report`
+   - `GET /api/rag/exploration_notebooks`
+   - `POST /api/rag/exploration_notebooks/load`
+
+Common payload fields:
+
+- `strategy`
+- `total_budget`
+- `year_range` (2-item list/tuple)
+- `research_lens` (or alias `focus_areas`)
+- `save_notebook`
+
+### 4. Network Analysis
+
+Use this flow for entity-level graph exploration and statistics:
+
+1. Open `/network-analysis`.
+2. Apply filters (`type_filter`, `min_weight`, `strict_type_filter`, `person_min_mentions`, `document_term`).
+3. Inspect global graph or entity detail context.
+4. Launch network-scoped document browsing via `/network/viewer-launch` and continue in `/network/viewer-results?search_id=<id>`.
+5. Open any document from the viewer and keep navigation context in `/document/<doc_id>?search_id=<id>`.
 
 ## Network Module Overview
 
@@ -68,7 +148,7 @@ Implemented and live in this codebase:
 ### Prerequisites
 
 - Docker + Docker Compose plugin
-- `.env` configured for Mongo + app
+- Root `.env` configured for Mongo + app
 
 ### Start
 
@@ -119,6 +199,7 @@ Useful filters on `/api/network/global` and related endpoints:
 ## Documentation Map
 
 - `docs/february_how_this_works.md` System architecture, contracts, and execution flow.
+- `docs/ENV_EXAMPLES.md` Environment variable examples (documentation only; do not create extra `.env` files).
 - `docs/network/NETWORK_ANALYSIS_IMPLEMENTATION_FROM_MAIN.md` Network implementation design notes.
 - `app/templates/help.html` In-app user guide content.
 
