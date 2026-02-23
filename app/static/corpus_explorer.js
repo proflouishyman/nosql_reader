@@ -503,32 +503,73 @@
             return;
         }
         notebookList.innerHTML = notebooks
-            .map((nb) => `
-            <button class="ce-notebook-item" data-path="${escAttr(nb.path)}">
+            .map((nb) => {
+                const kind = (nb.artifact_type || 'notebook').toLowerCase();
+                const helpText = buildNotebookHelpText(nb);
+                return `
+            <button class="ce-notebook-item" data-path="${escAttr(nb.path)}" data-help="${escAttr(helpText)}" title="${escAttr(helpText)}">
                 <span class="ce-notebook-item__name">${escHtml(nb.filename)}</span>
                 <span class="ce-notebook-item__meta">
-                    ${escHtml(nb.modified.slice(0, 16).replace('T', ' '))} · ${nb.size_kb} KB
+                    ${escHtml(nb.modified.slice(0, 16).replace('T', ' '))} · ${nb.size_kb} KB · ${escHtml(kind)}
                 </span>
-            </button>`)
+            </button>`;
+            })
             .join('');
 
         notebookList.querySelectorAll('.ce-notebook-item').forEach((btn) => {
             btn.addEventListener('click', async () => {
+                const previousLabel = btn.querySelector('.ce-notebook-item__name')?.textContent || 'exploration';
+                const allButtons = Array.from(notebookList.querySelectorAll('.ce-notebook-item'));
                 try {
+                    allButtons.forEach((b) => { b.disabled = true; });
+                    setNotebookNotice(`Loading ${previousLabel}...`);
                     const loadResp = await fetch('/api/rag/exploration_notebooks/load', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ path: btn.dataset.path }),
                     });
+                    if (!loadResp.ok) {
+                        let errMsg = `HTTP ${loadResp.status}`;
+                        try {
+                            const errData = await loadResp.json();
+                            errMsg = errData.error || errMsg;
+                        } catch (_) {
+                            // Keep HTTP fallback message.
+                        }
+                        throw new Error(errMsg);
+                    }
                     const loadData = await loadResp.json();
                     if (loadData.status === 'loaded') {
-                        const reportResp = await fetch('/api/rag/exploration_report');
-                        activeReport = await reportResp.json();
-                        renderResults(activeReport);
+                        let report = loadData.report || null;
+                        if (!report) {
+                            const reportResp = await fetch('/api/rag/exploration_report');
+                            if (!reportResp.ok) {
+                                throw new Error(`Failed to fetch report (HTTP ${reportResp.status})`);
+                            }
+                            report = await reportResp.json();
+                        }
+                        if (!report || report.error) {
+                            throw new Error(report?.error || 'No report payload available');
+                        }
+                        activeReport = report;
                         setState('results');
+                        renderResults(activeReport);
+                        const summary = getReportSummary(activeReport);
+                        const loadedPath = loadData.loaded_path || report.loaded_path || '';
+                        const pathNote = loadedPath ? ` · source: ${loadedPath.split('/').pop()}` : '';
+                        const summaryNote = `${summary.docs} docs, ${summary.patterns} patterns, ${summary.entities} entities, ${summary.questions} questions`;
+                        const isEmpty = summary.docs === 0 && summary.patterns === 0 && summary.entities === 0;
+                        setNotebookNotice(`Loaded ${previousLabel} (${summaryNote})${pathNote}.`, isEmpty);
+                        showResultsStatus(`Loaded exploration: ${previousLabel} (${summaryNote})${pathNote}.`, isEmpty);
+                        scrollToResults();
+                    } else {
+                        throw new Error(loadData.error || 'Notebook load did not return loaded status');
                     }
                 } catch (err) {
                     console.error('Failed to load notebook:', err);
+                    setNotebookNotice(`Failed to load exploration: ${err.message || 'unknown error'}`, true);
+                } finally {
+                    allButtons.forEach((b) => { b.disabled = false; });
                 }
             });
         });
@@ -549,16 +590,35 @@
         if (!report) return;
         const lines = [];
         const synthesis = report.question_synthesis || {};
+        const metadata = report.exploration_metadata || {};
 
         lines.push('# Corpus Exploration Report');
         lines.push(`Generated: ${new Date().toLocaleString()}\n`);
 
-        const stats = report.corpus_map?.statistics || {};
-        if (stats.total_documents_read) lines.push(`**Documents read:** ${stats.total_documents_read}`);
-        if (stats.date_range || (stats.year_min && stats.year_max)) {
-            lines.push(`**Date range:** ${stats.date_range || `${stats.year_min}–${stats.year_max}`}`);
+        if (Object.keys(metadata).length) {
+            lines.push('## Run Metadata');
+            Object.entries(metadata).forEach(([key, value]) => {
+                if (value == null || value === '') return;
+                if (Array.isArray(value)) {
+                    lines.push(`- **${key}:** ${value.join(', ')}`);
+                } else if (typeof value === 'object') {
+                    lines.push(`- **${key}:** \`${JSON.stringify(value)}\``);
+                } else {
+                    lines.push(`- **${key}:** ${value}`);
+                }
+            });
+            lines.push('');
         }
-        lines.push('');
+
+        const stats = report.corpus_map?.statistics || {};
+        const statEntries = Object.entries(stats).filter(([, value]) => value != null && value !== '');
+        if (statEntries.length) {
+            lines.push('## Corpus Statistics');
+            statEntries.forEach(([key, value]) => {
+                lines.push(`- **${key}:** ${value}`);
+            });
+            lines.push('');
+        }
 
         if (report.corpus_map?.archive_notes) {
             lines.push('## Archive Overview');
@@ -586,6 +646,35 @@
             lines.push('');
         }
 
+        [
+            ['temporal_questions', 'Temporal Questions'],
+            ['contradiction_questions', 'Questions from Contradictions'],
+            ['group_difference_questions', 'Group Difference Questions'],
+        ].forEach(([key, title]) => {
+            const qs = synthesis[key] || [];
+            if (!qs.length) return;
+            lines.push(`## ${title}`);
+            qs.forEach((q) => {
+                const text = typeof q === 'string' ? q : q.question_text || q.question || '';
+                if (text) lines.push(`- ${text}`);
+            });
+            lines.push('');
+        });
+
+        if (report.questions?.length) {
+            lines.push('## All Generated Questions');
+            report.questions.forEach((q) => {
+                const text = typeof q === 'string' ? q : q.question_text || q.question || '';
+                if (!text) return;
+                const why = typeof q === 'object' ? (q.why_interesting || '') : '';
+                const approach = typeof q === 'object' ? (q.approach || q.evidence_needed || '') : '';
+                lines.push(`- ${text}`);
+                if (why) lines.push(`  - Why: ${why}`);
+                if (approach) lines.push(`  - Approach: ${approach}`);
+            });
+            lines.push('');
+        }
+
         if (synthesis.gaps?.length) {
             lines.push('## Evidence Gaps');
             synthesis.gaps.forEach((g) => {
@@ -595,14 +684,86 @@
             lines.push('');
         }
 
-        if (report.contradictions?.length) {
-            lines.push('## Contradictions');
-            report.contradictions.forEach((c) => {
-                lines.push(`\n**A:** ${c.claim_a || ''}`);
-                lines.push(`**B:** ${c.claim_b || ''}`);
+        if (report.patterns?.length) {
+            lines.push('## Patterns');
+            report.patterns.forEach((p, idx) => {
+                const text = p.pattern_text || p.pattern || '';
+                const type = p.type || p.pattern_type || '';
+                const conf = p.confidence || '';
+                const evidenceDocs = p.evidence_doc_ids || p.evidence || [];
+                const evidenceBlocks = p.evidence_blocks || [];
+                lines.push(`\n### Pattern ${idx + 1}`);
+                if (text) lines.push(`- Text: ${text}`);
+                if (type) lines.push(`- Type: ${type}`);
+                if (conf) lines.push(`- Confidence: ${conf}`);
+                if (evidenceDocs.length) lines.push(`- Evidence docs: ${evidenceDocs.join(', ')}`);
+                if (evidenceBlocks.length) lines.push(`- Evidence blocks: ${evidenceBlocks.join(', ')}`);
             });
             lines.push('');
         }
+
+        if (report.entities?.length) {
+            lines.push('## Key Entities');
+            report.entities.forEach((e, idx) => {
+                const name = e.name || e.canonical_name || '';
+                const type = e.entity_type || e.type || '';
+                const docCount = e.doc_count ?? e.mention_count ?? null;
+                const variants = e.variants || [];
+                lines.push(`\n### Entity ${idx + 1}`);
+                if (name) lines.push(`- Name: ${name}`);
+                if (type) lines.push(`- Type: ${type}`);
+                if (docCount != null) lines.push(`- Count: ${docCount}`);
+                if (variants.length) lines.push(`- Variants: ${variants.join(', ')}`);
+            });
+            lines.push('');
+        }
+
+        if (report.group_indicators?.length) {
+            lines.push('## Group Indicators');
+            report.group_indicators.forEach((g, idx) => {
+                const groupType = g.group_type || g.type || '';
+                const label = g.label || g.value || '';
+                const conf = g.confidence || '';
+                const evidenceBlocks = g.evidence_blocks || g.evidence || [];
+                lines.push(`\n### Group Indicator ${idx + 1}`);
+                if (groupType) lines.push(`- Group type: ${groupType}`);
+                if (label) lines.push(`- Label: ${label}`);
+                if (conf) lines.push(`- Confidence: ${conf}`);
+                if (evidenceBlocks.length) lines.push(`- Evidence blocks: ${evidenceBlocks.join(', ')}`);
+            });
+            lines.push('');
+        }
+
+        if (report.contradictions?.length) {
+            lines.push('## Contradictions');
+            report.contradictions.forEach((c) => {
+                if (c.contradiction_type) lines.push(`\n- Type: ${c.contradiction_type}`);
+                lines.push(`\n**A:** ${c.claim_a || ''}`);
+                lines.push(`**B:** ${c.claim_b || ''}`);
+                if (c.context) lines.push(`Context: ${c.context}`);
+                if (c.source_a) lines.push(`Source A: ${c.source_a}`);
+                if (c.source_b) lines.push(`Source B: ${c.source_b}`);
+            });
+            lines.push('');
+        }
+
+        if (report.notebook_summary) {
+            lines.push('## Notebook Summary');
+            if (typeof report.notebook_summary === 'string') {
+                lines.push(report.notebook_summary);
+            } else {
+                lines.push('```json');
+                lines.push(JSON.stringify(report.notebook_summary, null, 2));
+                lines.push('```');
+            }
+            lines.push('');
+        }
+
+        lines.push('## Full Report Payload (JSON)');
+        lines.push('```json');
+        lines.push(JSON.stringify(report, null, 2));
+        lines.push('```');
+        lines.push('');
 
         const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
         const url = URL.createObjectURL(blob);
@@ -626,6 +787,99 @@
 
     function escAttr(str) {
         return escHtml(str).replace(/'/g, '&#39;');
+    }
+
+    function buildNotebookHelpText(nb) {
+        const p = nb.preview || {};
+        const lines = [];
+        lines.push(`Exploration file: ${nb.filename || 'unknown'}`);
+        lines.push(`Type: ${nb.artifact_type || 'unknown'}`);
+        if (p.loaded_file_hint && p.loaded_file_hint !== nb.filename) {
+            lines.push(`Loads as: ${p.loaded_file_hint}`);
+        }
+        if (p.strategy) lines.push(`Strategy: ${p.strategy}`);
+        if (p.total_budget != null && p.total_budget !== '') lines.push(`Budget: ${p.total_budget}`);
+        if (p.year_range) lines.push(`Year range: ${p.year_range}`);
+        lines.push(`Documents read: ${p.documents_read || 0}`);
+        lines.push(`Questions: ${p.question_count || 0}`);
+        lines.push(`Patterns: ${p.pattern_count || 0}`);
+        lines.push(`Entities: ${p.entity_count || 0}`);
+        lines.push(`Contradictions: ${p.contradiction_count || 0}`);
+        if (p.theme_count != null || p.gap_count != null) {
+            lines.push(`Themes: ${p.theme_count || 0} · Gaps: ${p.gap_count || 0}`);
+        }
+        if (Array.isArray(p.research_lens) && p.research_lens.length) {
+            lines.push(`Research lens: ${p.research_lens.join('; ')}`);
+        }
+        if (p.researcher_question) {
+            lines.push(`Researcher asked: ${p.researcher_question}`);
+        }
+        if (p.primary_question) {
+            lines.push(`Question: ${p.primary_question}`);
+        }
+        if (p.question_quality_gate) {
+            lines.push(`Question quality gate: ${p.question_quality_gate}`);
+        }
+        if (p.is_empty) {
+            lines.push('This snapshot is mostly empty and may not show rich results.');
+        }
+        if (p.preview_error) {
+            lines.push(`Preview note: ${p.preview_error}`);
+        }
+        return lines.join(' | ');
+    }
+
+    function setNotebookNotice(message, isError = false) {
+        const host = document.getElementById('ceNotebooks');
+        if (!host) return;
+        let notice = host.querySelector('.ce-notebooks__notice');
+        if (!notice) {
+            notice = document.createElement('p');
+            notice.className = 'ce-notebooks__notice';
+            notice.style.margin = '0.5rem 0 0';
+            notice.style.fontSize = '0.9rem';
+            host.appendChild(notice);
+        }
+        notice.textContent = message || '';
+        notice.style.color = isError ? '#991b1b' : '#0f5132';
+    }
+
+    function getReportSummary(report) {
+        const stats = report?.corpus_map?.statistics || {};
+        const docs = Number(stats.total_documents_read ?? report?.exploration_metadata?.documents_read ?? 0) || 0;
+        const patterns = Array.isArray(report?.patterns) ? report.patterns.length : 0;
+        const entities = Array.isArray(report?.entities) ? report.entities.length : 0;
+        const questions = Array.isArray(report?.questions) ? report.questions.length : 0;
+        const contradictions = Array.isArray(report?.contradictions) ? report.contradictions.length : 0;
+        return { docs, patterns, entities, questions, contradictions };
+    }
+
+    function showResultsStatus(message, isWarning = false) {
+        if (!resultsPanel) return;
+        let banner = document.getElementById('ceResultsStatus');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'ceResultsStatus';
+            banner.style.margin = '0 0 0.75rem';
+            banner.style.padding = '0.55rem 0.75rem';
+            banner.style.borderRadius = '8px';
+            banner.style.fontWeight = '600';
+            resultsPanel.insertBefore(banner, resultsPanel.firstChild);
+        }
+        banner.textContent = message || '';
+        banner.style.background = isWarning ? '#fef3c7' : '#e9f7ef';
+        banner.style.color = isWarning ? '#92400e' : '#0f5132';
+        banner.style.border = isWarning ? '1px solid #fcd34d' : '1px solid #b7ebc6';
+    }
+
+    function scrollToResults() {
+        if (!resultsPanel) return;
+        // scrollIntoView can fail silently in some browser/layout combinations for hidden->visible transitions.
+        if (typeof resultsPanel.scrollIntoView === 'function') {
+            resultsPanel.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+        const y = resultsPanel.getBoundingClientRect().top + window.scrollY - 16;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
 
     function formatArchiveNotes(raw) {
