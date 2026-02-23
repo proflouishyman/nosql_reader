@@ -220,3 +220,119 @@ Two diagnostics were brittle against runtime/tooling differences:
 ### Verification
 - Re-ran `quick_check.sh` and confirmed it no longer fails at the container-status step.
 - Re-ran `scripts/run_e2e_suite.sh` and confirmed the Chroma vector-store contract check passes.
+
+## 2026-02-23 - Refresh settings build metadata at app boot via run script
+
+### Problem
+The settings page showed stale branch/commit metadata (for example `codex/main-tier0-integration`) because `app/build_info.json` was mounted from the host and not refreshed automatically when booting the stack.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/run_app.sh` to:
+  - run `scripts/stamp_build_info.sh` before `docker compose up`,
+  - enforce strict shell flags and add an explicit shebang.
+- Kept metadata generation in the existing canonical script so data structure and contracts remain unchanged.
+
+### Verification
+- Ran `scripts/stamp_build_info.sh` and confirmed `/Users/louishyman/coding/nosql/nosql_reader/app/build_info.json` now reports:
+  - `branch: main`
+  - current commit SHA/date/subject
+  - fresh UTC generation timestamp.
+
+## 2026-02-23 - Restore unique terms explorer population
+
+### Problem
+`/search-terms` rendered but always returned empty results (`words=[]`, `phrases=[]`) for fields like `ocr_text` and `summary`.
+
+Root causes:
+- Legacy generator path `/app/setup/generate_unique_terms.py` used a stale import (`from app.database_setup ...`) and failed with `ModuleNotFoundError: No module named 'app'`.
+- Bootstrap expected `/app/generate_unique_terms.py`, but no canonical script existed at that location.
+- With `RUN_BOOTSTRAP` disabled by default, no fallback generation occurred at startup.
+
+### Solution
+- Added canonical generator:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/generate_unique_terms.py`
+- Implemented deterministic full rebuild of `unique_terms` from `documents` while preserving existing data contract:
+  - `term`, `field`, `type` (`word`/`phrase`), `frequency`
+- Used batched aggregation plus MongoDB bulk upserts for performance.
+- Added index assurance for:
+  - `unique_term_field_type` (unique compound index)
+  - `field_type_frequency_idx` (sort/support index)
+- Replaced `/Users/louishyman/coding/nosql/nosql_reader/app/setup/generate_unique_terms.py` with a compatibility wrapper that forwards to the canonical script and ensures `/app` is on `sys.path`.
+
+### Verification
+- Ran: `docker exec nosql_reader_app sh -lc 'cd /app && python generate_unique_terms.py --batch-size 250'`
+- Result: indexed `9,642` documents and stored `524,498` records in `unique_terms`.
+- Endpoint checks now return populated data:
+  - `/search-terms?field=ocr_text` shows non-zero `unique_words`/`unique_phrases` and populated top terms.
+  - `/search-terms?field=summary` shows non-zero `unique_words`/`unique_phrases` and populated top terms.
+
+## 2026-02-23 - Add unique terms contract smoke test and wire into master E2E suite
+
+### Problem
+After restoring unique terms generation, there was no dedicated automated contract test for:
+- `unique_terms` schema/index invariants, and
+- `/search-terms` AJAX response shape expected by the frontend.
+
+This left a regression gap where future changes could silently break the explorer while unrelated E2E checks still passed.
+
+### Solution
+- Added standalone smoke test module:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/util/unique_terms_contract_smoke.py`
+- The new script validates:
+  - `unique_terms` non-empty state,
+  - allowed `type` values (`word`/`phrase`),
+  - no null/empty `term` or `field`,
+  - `frequency` presence and non-negative values,
+  - required indexes (`unique_term_field_type`, `field_type_frequency_idx`),
+  - `/search-terms` AJAX payload contract (`words`, `phrases`, `unique_words`, `unique_phrases`, `total_records`) and row shapes.
+- Integrated into the master E2E suite:
+  - imported `run_unique_terms_contract_check` in `app/util/e2e_cli_suite.py`
+  - added check label: `Unique terms explorer contract`
+
+### Verification
+- Standalone: `python /app/util/unique_terms_contract_smoke.py` -> PASS.
+- Full suite: `./scripts/run_e2e_suite.sh` -> PASS, `Total checks: 19`, `Failed: 0`.
+
+## 2026-02-23 - Auto-populate unique terms explorer on initial page load
+
+### Problem
+Users opening `/search-terms` could see an apparently empty explorer until manually selecting a field. This looked like data was missing even when `unique_terms` was populated.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search-terms.html` to:
+  - guard `fetchData` when no field is selected and show a clear empty-state message,
+  - auto-select a default field on load (priority: `ocr_text`, then `summary`, then `filename`, then first available),
+  - automatically fetch and render the first page of terms at startup.
+
+### Verification
+- Confirmed rendered page includes `initializeExplorer()` and preferred default field logic.
+- Confirmed AJAX endpoint still returns populated payload for `ocr_text` (`unique_words`, `unique_phrases`, and table rows).
+
+## 2026-02-23 - Redesign unique terms explorer for intuitive workflow
+
+### Problem
+The prior `/search-terms` UI was functional but cognitively heavy:
+- showed words and phrases simultaneously,
+- required manual submit-style filtering,
+- had no quick field picks,
+- did not provide direct term-to-search workflow.
+
+### Solution
+- Reworked `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search-terms.html` into a guided flow:
+  - step indicator (`field -> type -> explore`),
+  - quick field chips (prefers `ocr_text`, `summary`, `filename`),
+  - single active table with `Words | Phrases` tabs,
+  - debounced live filtering + clear action,
+  - per-row actions (`Search`, `Copy`),
+  - frequency bar visualization for faster scanning.
+- Replaced jQuery AJAX call with native `fetch` while keeping backend endpoint/response contracts unchanged.
+- Added search prefill support in `/Users/louishyman/coding/nosql/nosql_reader/app/static/script.js`:
+  - reads `prefill_field` and `prefill_term` query params,
+  - sets first search row values,
+  - auto-submits search once,
+  - removes params from URL to avoid repeated auto-submit.
+- Added matching styles in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` for new chips/tabs/table/action patterns and mobile behavior.
+
+### Verification
+- Ran full suite: `./scripts/run_e2e_suite.sh`.
+- Result: `Total checks: 19`, `Failed: 0` (all pass).

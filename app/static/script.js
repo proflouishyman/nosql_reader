@@ -622,6 +622,58 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial Load
     // ===============================
 
+    /**
+     * Applies URL prefill parameters and automatically runs a search once.
+     * Supported params:
+     * - prefill_field
+     * - prefill_term
+     */
+    function applyPrefillFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const prefillField = (params.get('prefill_field') || '').trim();
+        const prefillTerm = (params.get('prefill_term') || '').trim();
+
+        if (!prefillField || !prefillTerm) {
+            return;
+        }
+
+        const fieldSelect = document.getElementById('field1');
+        if (!fieldSelect) {
+            return;
+        }
+
+        const hasFieldOption = Array.from(fieldSelect.options).some(option => option.value === prefillField);
+        if (!hasFieldOption) {
+            return;
+        }
+
+        // Trigger existing field-change behavior first because some fields swap text input to dropdown.
+        fieldSelect.value = prefillField;
+        fieldSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+        setTimeout(() => {
+            const firstTermInput = document.getElementById('searchTerm1');
+            if (!firstTermInput) {
+                return;
+            }
+
+            if (firstTermInput.tagName === 'SELECT') {
+                const hasTermOption = Array.from(firstTermInput.options).some(option => option.value === prefillTerm);
+                if (!hasTermOption) {
+                    return;
+                }
+                firstTermInput.value = prefillTerm;
+            } else {
+                firstTermInput.value = prefillTerm;
+            }
+
+            // Remove prefill params to avoid rerunning automatically on refresh/back nav.
+            window.history.replaceState({}, document.title, window.location.pathname);
+            searchForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        }, 120);
+    }
+
     // Load selected documents from localStorage
     loadSelectedDocuments();
+    applyPrefillFromUrl();
 });

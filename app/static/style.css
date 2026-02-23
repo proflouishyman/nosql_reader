@@ -322,12 +322,99 @@ button.secondary:hover,
     gap: 24px;
 }
 
-.search-terms__controls,
+.search-terms__header {
+    display: grid;
+    gap: 10px;
+}
+
+.search-terms__header h1 {
+    margin-bottom: 4px;
+}
+
+.search-terms__steps {
+    margin: 0;
+    padding-left: 20px;
+    color: #475569;
+}
+
+.search-terms__steps li {
+    margin: 2px 0;
+}
+
+.search-terms__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-terms__chip {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-terms__chip:hover,
+.search-terms__chip:focus,
+.search-terms__chip.is-active {
+    background: #e0f2fe;
+    border-color: #0ea5e9;
+    color: #0c4a6e;
+    outline: none;
+}
+
 .search-terms__filters {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+.search-terms__filters select {
+    min-width: 240px;
+}
+
+.search-terms__controls {
+    display: grid;
+    gap: 8px;
+}
+
+.search-terms__controls input {
+    max-width: 460px;
+}
+
+.search-terms__tabs {
+    display: inline-flex;
+    gap: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.search-terms__tab {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-terms__tab:hover,
+.search-terms__tab:focus {
+    border-color: #94a3b8;
+    outline: none;
+}
+
+.search-terms__tab.is-active {
+    background: #0ea5e9;
+    border-color: #0284c7;
+    color: #ffffff;
 }
 
 .search-terms__meta {
@@ -344,15 +431,124 @@ button.secondary:hover,
     padding: 20px;
     box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
     border: 1px solid #e2e8f0;
+    display: grid;
+    gap: 14px;
 }
 
 .search-terms__panel h2 {
     margin-top: 0;
+    margin-bottom: 0;
+}
+
+.search-terms__summary {
+    margin: 0;
+    color: #475569;
+    font-weight: 600;
 }
 
 .search-terms__empty {
     color: #b91c1c;
     font-weight: 600;
+}
+
+.search-terms__table-wrapper {
+    overflow-x: auto;
+}
+
+.search-terms__table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.search-terms__table th,
+.search-terms__table td {
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    padding: 12px 10px;
+    vertical-align: middle;
+}
+
+.search-terms__table th {
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #475569;
+}
+
+.search-terms__term {
+    font-weight: 600;
+    color: #0f172a;
+    word-break: break-word;
+}
+
+.search-terms__count-wrap {
+    display: grid;
+    gap: 6px;
+    min-width: 130px;
+}
+
+.search-terms__count-wrap span {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.search-terms__count-bar {
+    height: 7px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+
+.search-terms__count-bar span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0284c7, #22d3ee);
+}
+
+.search-terms__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.search-terms__action-link,
+.search-terms__action-button {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #1e293b;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.search-terms__action-link:hover,
+.search-terms__action-link:focus,
+.search-terms__action-button:hover,
+.search-terms__action-button:focus {
+    border-color: #0ea5e9;
+    color: #0c4a6e;
+    background: #e0f2fe;
+    outline: none;
+}
+
+@media (max-width: 720px) {
+    .search-terms__meta {
+        gap: 10px 16px;
+    }
+
+    .search-terms__tabs {
+        width: 100%;
+    }
+
+    .search-terms__tab {
+        flex: 1;
+        text-align: center;
+    }
 }
 
 /* Document list */

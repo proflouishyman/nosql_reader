@@ -29,6 +29,7 @@ if str(APP_ROOT) not in sys.path:
 from database_setup import get_client, get_db
 from main import cache
 from routes import app
+from util.unique_terms_contract_smoke import run_unique_terms_contract_check
 
 
 @dataclass
@@ -285,6 +286,12 @@ def main() -> int:
             return f"search_id={data['search_id']} documents={len(data['documents'])}"
 
         suite.check("Search API + document navigation context", check_search_contract)
+
+        def check_unique_terms_explorer_contract() -> str:
+            # Added dedicated contract smoke so unique_terms regressions fail the master suite.
+            return run_unique_terms_contract_check(client, db)
+
+        suite.check("Unique terms explorer contract", check_unique_terms_explorer_contract)
 
         def check_network_types_and_stats() -> str:
             types_resp = client.get("/api/network/types")

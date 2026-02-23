@@ -1,119 +1,115 @@
 {% extends 'base.html' %}
 {% block title %}Unique Terms · Historical Document Reader{% endblock %}
 
-{% block styles %}
-{{ super() }}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-{% endblock %}
-
 {% block content %}
 <div class="container search-terms-page">
-    <header>
+    <header class="search-terms__header">
         <h1>Unique terms explorer</h1>
-        <p>Select a field to review the indexed vocabulary of words and phrases extracted from the database.</p>
+        <p>Pick a field, choose words or phrases, then click a term to run a database search.</p>
+        <ol class="search-terms__steps">
+            <li>Choose a field</li>
+            <li>Select words or phrases</li>
+            <li>Explore and launch search</li>
+        </ol>
     </header>
 
-    <div id="searchContainer" class="search-terms__controls">
-        <label for="searchInput">Search terms</label>
-        <input type="text" id="searchInput" placeholder="Enter search term..." aria-label="Search terms">
-        <button id="searchButton" aria-label="Search">Search</button>
-    </div>
-
-    <div class="search-terms__filters">
-        <label for="fieldSelect">Select field</label>
-        <select id="fieldSelect">
-            <option value="" disabled selected>Select a field</option>
-            {% for field in field_structure|dictsort %}
-                {% if field[0] not in unique_fields %}
-                <option value="{{ field[0] }}">{{ field[0] }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-    </div>
-
-    <div class="search-terms__meta">
-        <p>Number of unique words: <span id="uniqueWords">0</span></p>
-        <p>Number of unique phrases: <span id="uniquePhrases">0</span></p>
-        <p>Total number of records: <span id="totalRecords">0</span></p>
-    </div>
-
-    <div id="loadingIndicator" class="loading-indicator" hidden>
-        <div class="spinner"></div>
-        <p>Loading data…</p>
-    </div>
-    <div id="noDataMessage" class="search-terms__empty" hidden></div>
-
     <section class="search-terms__panel">
-        <h2>Words</h2>
-        <table id="wordsTable" class="display" style="width:100%; margin-top: 10px;">
-            <thead>
-                <tr>
-                    <th>Word</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <h2>Field</h2>
+        <div id="fieldQuickPicks" class="search-terms__chips" aria-label="Suggested fields"></div>
+        <div class="search-terms__filters">
+            <label for="fieldSelect">All fields</label>
+            <select id="fieldSelect">
+                <option value="" disabled selected>Select a field</option>
+                {% for field in field_structure|dictsort %}
+                    {% if field[0] not in unique_fields %}
+                    <option value="{{ field[0] }}">{{ field[0] }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
     </section>
 
     <section class="search-terms__panel">
-        <h2>Phrases</h2>
-        <table id="phrasesTable" class="display" style="width:100%; margin-top: 10px;">
-            <thead>
-                <tr>
-                    <th>Phrase</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <h2>Explore</h2>
+        <div class="search-terms__controls">
+            <label for="searchInput">Filter terms</label>
+            <input type="text" id="searchInput" placeholder="Type to filter terms..." aria-label="Filter terms">
+            <button id="clearSearchButton" class="button--secondary" type="button" aria-label="Clear filter">Clear</button>
+        </div>
+
+        <div class="search-terms__tabs" role="tablist" aria-label="Term type">
+            <button id="wordsTab" class="search-terms__tab is-active" type="button" data-type="word" role="tab" aria-selected="true">Words</button>
+            <button id="phrasesTab" class="search-terms__tab" type="button" data-type="phrase" role="tab" aria-selected="false">Phrases</button>
+        </div>
+
+        <div class="search-terms__meta">
+            <p>Field: <span id="activeField">None</span></p>
+            <p>Unique words: <span id="uniqueWords">0</span></p>
+            <p>Unique phrases: <span id="uniquePhrases">0</span></p>
+            <p>Total records: <span id="totalRecords">0</span></p>
+        </div>
+        <p id="resultsSummary" class="search-terms__summary">Select a field to load data.</p>
+
+        <div id="loadingIndicator" class="loading-indicator" hidden>
+            <div class="spinner"></div>
+            <p>Loading data…</p>
+        </div>
+        <div id="noDataMessage" class="search-terms__empty" hidden></div>
+
+        <div class="search-terms__table-wrapper">
+            <table id="termsTable" class="search-terms__table">
+                <thead>
+                    <tr>
+                        <th>Term</th>
+                        <th>Count</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="termsTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="pagination-controls">
+            <button id="prevPage" disabled>Previous</button>
+            <span>Page <span id="currentPage">1</span></span>
+            <button id="nextPage">Next</button>
+        </div>
     </section>
 
-    <div class="pagination-controls">
-        <button id="prevPage" disabled>Previous</button>
-        <span>Page <span id="currentPage">1</span></span>
-        <button id="nextPage">Next</button>
-    </div>
+    <template id="termRowTemplate">
+        <tr>
+            <td class="search-terms__term"></td>
+            <td class="search-terms__count"></td>
+            <td class="search-terms__actions"></td>
+        </tr>
+    </template>
 </div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
 (function() {
-    const wordsTable = $('#wordsTable').DataTable({
-        pageLength: 25,
-        order: [[0, 'asc']],
-        columns: [
-            { data: 'word' },
-            { data: 'count' }
-        ],
-        paging: false,
-        info: false,
-        searching: false
-    });
-
-    const phrasesTable = $('#phrasesTable').DataTable({
-        pageLength: 25,
-        order: [[0, 'asc']],
-        columns: [
-            { data: 'phrase' },
-            { data: 'count' }
-        ],
-        paging: false,
-        info: false,
-        searching: false
-    });
-
+    // Keep request/response contracts unchanged while improving interaction flow.
     let currentPage = 1;
     const perPage = 100;
     let selectedField = '';
     let searchQuery = '';
+    let activeType = 'word';
+    let latestPayload = null;
+    let searchDebounceId = null;
 
+    const fieldSelect = document.getElementById('fieldSelect');
+    const quickPicks = document.getElementById('fieldQuickPicks');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchButton = document.getElementById('clearSearchButton');
+    const termsTableBody = document.getElementById('termsTableBody');
+    const resultsSummary = document.getElementById('resultsSummary');
+    const activeField = document.getElementById('activeField');
     const loadingIndicator = document.getElementById('loadingIndicator');
     const noDataMessage = document.getElementById('noDataMessage');
+    const wordsTab = document.getElementById('wordsTab');
+    const phrasesTab = document.getElementById('phrasesTab');
 
     function toggleLoading(active) {
         if (!loadingIndicator) return;
@@ -130,6 +126,7 @@
         document.getElementById('uniqueWords').textContent = data.unique_words;
         document.getElementById('uniquePhrases').textContent = data.unique_phrases;
         document.getElementById('totalRecords').textContent = data.total_records;
+        activeField.textContent = selectedField || 'None';
     }
 
     function updatePagination(page, hasMore) {
@@ -138,66 +135,257 @@
         document.getElementById('nextPage').disabled = !hasMore;
     }
 
-    function fetchData(page) {
-        toggleLoading(true);
-        showEmptyState('');
-        $.ajax({
-            url: '{{ url_for('search_terms') }}',
-            method: 'GET',
-            data: {
-                field: selectedField,
-                page: page,
-                per_page: perPage,
-                query: searchQuery
-            },
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }).done(function(data) {
-            if (data.words.length === 0 && data.phrases.length === 0) {
-                showEmptyState('No data available for the selected field or search query.');
-            }
-            wordsTable.clear();
-            data.words.forEach(item => wordsTable.row.add(item));
-            wordsTable.draw();
-
-            phrasesTable.clear();
-            data.phrases.forEach(item => phrasesTable.row.add(item));
-            phrasesTable.draw();
-
-            updateMeta(data);
-            const hasMore = data.words.length === perPage || data.phrases.length === perPage;
-            updatePagination(page, hasMore);
-        }).fail(function(xhr, status, error) {
-            alert('Error fetching data: ' + error);
-        }).always(function() {
-            toggleLoading(false);
+    function updateTabs() {
+        const tabs = [wordsTab, phrasesTab];
+        tabs.forEach(tab => {
+            const isActive = tab.dataset.type === activeType;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', String(isActive));
         });
     }
 
-    $('#fieldSelect').on('change', function() {
-        selectedField = $(this).val();
+    function normalizeRows(payload) {
+        if (!payload) return [];
+        const sourceRows = activeType === 'word' ? (payload.words || []) : (payload.phrases || []);
+        return sourceRows.map(row => ({
+            term: activeType === 'word' ? row.word : row.phrase,
+            count: row.count
+        }));
+    }
+
+    function searchUrlForTerm(term) {
+        const params = new URLSearchParams({
+            prefill_field: selectedField,
+            prefill_term: term
+        });
+        return `/search?${params.toString()}`;
+    }
+
+    function renderRows(payload) {
+        const rows = normalizeRows(payload);
+        const maxCount = Math.max(...rows.map(row => row.count), 1);
+
+        if (!termsTableBody) return;
+        termsTableBody.innerHTML = '';
+
+        rows.forEach(row => {
+            const tr = document.createElement('tr');
+
+            const termCell = document.createElement('td');
+            termCell.className = 'search-terms__term';
+            termCell.textContent = row.term;
+
+            const countCell = document.createElement('td');
+            countCell.className = 'search-terms__count';
+            const barWidth = Math.max(4, Math.round((row.count / maxCount) * 100));
+            countCell.innerHTML = `
+                <div class="search-terms__count-wrap">
+                    <span>${row.count}</span>
+                    <div class="search-terms__count-bar"><span style="width:${barWidth}%"></span></div>
+                </div>
+            `;
+
+            const actionsCell = document.createElement('td');
+            actionsCell.className = 'search-terms__actions';
+            // Keep actions explicit for fast pivoting into database search and clipboard workflows.
+            actionsCell.innerHTML = `
+                <a class="search-terms__action-link" href="${searchUrlForTerm(row.term)}">Search</a>
+                <button class="search-terms__action-button" type="button" data-copy-term="${row.term}">Copy</button>
+            `;
+
+            tr.appendChild(termCell);
+            tr.appendChild(countCell);
+            tr.appendChild(actionsCell);
+            termsTableBody.appendChild(tr);
+        });
+
+        const hasRows = rows.length > 0;
+        if (hasRows) {
+            resultsSummary.textContent = `Showing ${rows.length} ${activeType === 'word' ? 'words' : 'phrases'} on page ${currentPage}.`;
+        } else {
+            resultsSummary.textContent = `No ${activeType === 'word' ? 'words' : 'phrases'} match the current filter.`;
+        }
+    }
+
+    function fetchData(page) {
+        if (!selectedField) {
+            termsTableBody.innerHTML = '';
+            updateMeta({ unique_words: 0, unique_phrases: 0, total_records: 0 });
+            updatePagination(1, false);
+            showEmptyState('Select a field to load unique terms.');
+            return;
+        }
+
+        toggleLoading(true);
+        showEmptyState('');
+
+        const params = new URLSearchParams({
+            field: selectedField,
+            page: String(page),
+            per_page: String(perPage),
+            query: searchQuery
+        });
+
+        fetch(`{{ url_for('search_terms') }}?${params.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                latestPayload = data;
+                if (data.words.length === 0 && data.phrases.length === 0) {
+                    showEmptyState('No data available for the selected field or search query.');
+                }
+                renderRows(data);
+                updateMeta(data);
+                const activeRows = activeType === 'word' ? data.words : data.phrases;
+                const hasMore = activeRows.length === perPage;
+                updatePagination(page, hasMore);
+            })
+            .catch(error => {
+                alert('Error fetching data: ' + error.message);
+            })
+            .finally(() => {
+                toggleLoading(false);
+            });
+    }
+
+    function setField(fieldName) {
+        if (!fieldName) return;
+        selectedField = fieldName;
+        if (fieldSelect) {
+            fieldSelect.value = fieldName;
+        }
+        currentPage = 1;
+        fetchData(currentPage);
+        updateQuickPickState();
+    }
+
+    function updateQuickPickState() {
+        if (!quickPicks) return;
+        const buttons = quickPicks.querySelectorAll('button');
+        buttons.forEach(button => {
+            const isActive = button.dataset.field === selectedField;
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', String(isActive));
+        });
+    }
+
+    function buildQuickPicks(availableFields) {
+        if (!quickPicks) return;
+        quickPicks.innerHTML = '';
+        const preferredOrder = ['ocr_text', 'summary', 'filename'];
+        const candidates = preferredOrder.filter(field => availableFields.includes(field));
+
+        // Fallback to first fields if preferred ones are unavailable in this dataset.
+        const fallback = availableFields.slice(0, 3);
+        const pickFields = candidates.length ? candidates : fallback;
+
+        pickFields.forEach(field => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'search-terms__chip';
+            button.dataset.field = field;
+            button.textContent = field;
+            button.setAttribute('aria-pressed', 'false');
+            button.addEventListener('click', function() {
+                setField(field);
+            });
+            quickPicks.appendChild(button);
+        });
+    }
+
+    fieldSelect.addEventListener('change', function() {
+        setField(this.value);
+    });
+
+    searchInput.addEventListener('input', function() {
+        const nextQuery = this.value.trim();
+        clearTimeout(searchDebounceId);
+        searchDebounceId = setTimeout(function() {
+            searchQuery = nextQuery;
+            currentPage = 1;
+            fetchData(currentPage);
+        }, 250);
+    });
+
+    clearSearchButton.addEventListener('click', function() {
+        searchInput.value = '';
+        searchQuery = '';
         currentPage = 1;
         fetchData(currentPage);
     });
 
-    $('#searchButton').on('click', function() {
-        searchQuery = $('#searchInput').val().trim();
-        currentPage = 1;
-        fetchData(currentPage);
-    });
-
-    $('#prevPage').on('click', function() {
+    document.getElementById('prevPage').addEventListener('click', function() {
         if (currentPage > 1) {
             currentPage -= 1;
             fetchData(currentPage);
         }
     });
 
-    $('#nextPage').on('click', function() {
+    document.getElementById('nextPage').addEventListener('click', function() {
         currentPage += 1;
         fetchData(currentPage);
     });
+
+    [wordsTab, phrasesTab].forEach(tab => {
+        tab.addEventListener('click', function() {
+            activeType = this.dataset.type;
+            updateTabs();
+            renderRows(latestPayload);
+            if (latestPayload) {
+                const activeRows = activeType === 'word' ? latestPayload.words : latestPayload.phrases;
+                updatePagination(currentPage, activeRows.length === perPage);
+            }
+        });
+    });
+
+    termsTableBody.addEventListener('click', function(event) {
+        const copyButton = event.target.closest('[data-copy-term]');
+        if (!copyButton) return;
+
+        const term = copyButton.getAttribute('data-copy-term');
+        if (!term) return;
+
+        navigator.clipboard.writeText(term).then(function() {
+            copyButton.textContent = 'Copied';
+            setTimeout(function() {
+                copyButton.textContent = 'Copy';
+            }, 1000);
+        }).catch(function() {
+            alert('Failed to copy term to clipboard.');
+        });
+    });
+
+    function initializeExplorer() {
+        if (!fieldSelect) {
+            showEmptyState('Field selector is unavailable.');
+            return;
+        }
+
+        const availableFields = Array.from(fieldSelect.options)
+            .map(option => option.value)
+            .filter(value => value && value.trim() !== '');
+
+        if (availableFields.length === 0) {
+            showEmptyState('No searchable fields are available.');
+            return;
+        }
+
+        buildQuickPicks(availableFields);
+        const preferredOrder = ['ocr_text', 'summary', 'filename'];
+        const defaultField = preferredOrder.find(field => availableFields.includes(field)) || availableFields[0];
+        updateTabs();
+        setField(defaultField);
+    }
+
+    initializeExplorer();
 })();
 </script>
 {% endblock %}
