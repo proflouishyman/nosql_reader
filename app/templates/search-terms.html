@@ -76,6 +76,43 @@
         </div>
     </section>
 
+    <section class="search-terms__panel">
+        <h2>Cross-tab Analysis</h2>
+        <p>Given an anchor term in the selected field, find words that are disproportionately likely to appear with it.</p>
+        <div class="search-terms__crosstab-controls">
+            <label for="anchorInput">Anchor term</label>
+            <input id="anchorInput" type="text" placeholder="Example: relief">
+            <label for="minDocFreqInput">Min global docs</label>
+            <input id="minDocFreqInput" type="number" min="1" value="5">
+            <label for="minCoDocsInput">Min co-docs</label>
+            <input id="minCoDocsInput" type="number" min="1" value="3">
+            <label for="crossTabLimitInput">Rows</label>
+            <input id="crossTabLimitInput" type="number" min="1" max="100" value="25">
+            <button id="runCrossTabButton" type="button">Run analysis</button>
+        </div>
+
+        <div id="crossTabLoading" class="loading-indicator" hidden>
+            <div class="spinner"></div>
+            <p>Computing cross-tab...</p>
+        </div>
+
+        <p id="crossTabSummary" class="search-terms__summary">Enter an anchor term and run analysis.</p>
+        <div class="search-terms__table-wrapper">
+            <table id="crossTabTable" class="search-terms__table">
+                <thead>
+                    <tr>
+                        <th data-help="Candidate word that appears disproportionately with the anchor term.">Term</th>
+                        <th data-help="Relative over-representation. Values above 1 mean this term is more likely in anchor documents than elsewhere.">Lift</th>
+                        <th data-help="Number of documents containing both this term and the anchor term.">With Anchor</th>
+                        <th data-help="Number of documents containing this term anywhere in the selected field.">Global Docs</th>
+                        <th data-help="Use Search to pivot into database search, or Copy to reuse the term.">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="crossTabBody"></tbody>
+            </table>
+        </div>
+    </section>
+
     <template id="termRowTemplate">
         <tr>
             <td class="search-terms__term"></td>
@@ -110,6 +147,14 @@
     const noDataMessage = document.getElementById('noDataMessage');
     const wordsTab = document.getElementById('wordsTab');
     const phrasesTab = document.getElementById('phrasesTab');
+    const anchorInput = document.getElementById('anchorInput');
+    const runCrossTabButton = document.getElementById('runCrossTabButton');
+    const crossTabBody = document.getElementById('crossTabBody');
+    const crossTabSummary = document.getElementById('crossTabSummary');
+    const crossTabLoading = document.getElementById('crossTabLoading');
+    const minDocFreqInput = document.getElementById('minDocFreqInput');
+    const minCoDocsInput = document.getElementById('minCoDocsInput');
+    const crossTabLimitInput = document.getElementById('crossTabLimitInput');
 
     function toggleLoading(active) {
         if (!loadingIndicator) return;
@@ -133,6 +178,11 @@
         document.getElementById('currentPage').textContent = page;
         document.getElementById('prevPage').disabled = page === 1;
         document.getElementById('nextPage').disabled = !hasMore;
+    }
+
+    function toggleCrossTabLoading(active) {
+        if (!crossTabLoading) return;
+        crossTabLoading.hidden = !active;
     }
 
     function updateTabs() {
@@ -241,6 +291,10 @@
                 latestPayload = data;
                 if (data.words.length === 0 && data.phrases.length === 0) {
                     showEmptyState('No data available for the selected field or search query.');
+                }
+                // Seed cross-tab with a sensible default anchor for quicker analysis.
+                if (anchorInput && !anchorInput.value && data.words && data.words.length) {
+                    anchorInput.value = data.words[0].word;
                 }
                 renderRows(data);
                 updateMeta(data);
@@ -351,6 +405,103 @@
         if (!copyButton) return;
 
         const term = copyButton.getAttribute('data-copy-term');
+        if (!term) return;
+
+        navigator.clipboard.writeText(term).then(function() {
+            copyButton.textContent = 'Copied';
+            setTimeout(function() {
+                copyButton.textContent = 'Copy';
+            }, 1000);
+        }).catch(function() {
+            alert('Failed to copy term to clipboard.');
+        });
+    });
+
+    function renderCrossTabRows(rows) {
+        if (!crossTabBody) return;
+        crossTabBody.innerHTML = '';
+
+        rows.forEach(row => {
+            const roundedLift = Math.round(Number(row.lift) || 0);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="search-terms__term">${row.term}</td>
+                <td>${roundedLift}</td>
+                <td>${row.co_doc_count}</td>
+                <td>${row.global_doc_count}</td>
+                <td class="search-terms__actions">
+                    <a class="search-terms__action-link" href="${searchUrlForTerm(row.term)}">Search</a>
+                    <button class="search-terms__action-button" type="button" data-copy-cross-term="${row.term}">Copy</button>
+                </td>
+            `;
+            crossTabBody.appendChild(tr);
+        });
+    }
+
+    function runCrossTab() {
+        const anchor = (anchorInput.value || '').trim();
+        if (!selectedField) {
+            crossTabSummary.textContent = 'Select a field before running cross-tab analysis.';
+            return;
+        }
+        if (!anchor) {
+            crossTabSummary.textContent = 'Enter an anchor term to run cross-tab analysis.';
+            return;
+        }
+
+        const params = new URLSearchParams({
+            field: selectedField,
+            anchor: anchor,
+            limit: String(Math.max(1, Number(crossTabLimitInput.value) || 25)),
+            min_doc_freq: String(Math.max(1, Number(minDocFreqInput.value) || 5)),
+            min_co_docs: String(Math.max(1, Number(minCoDocsInput.value) || 3))
+        });
+
+        toggleCrossTabLoading(true);
+        fetch(`/search-terms/cross-tab?${params.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const rows = Array.isArray(data.results) ? data.results : [];
+                renderCrossTabRows(rows);
+
+                const analyzed = data.total_docs_analyzed || 0;
+                const withAnchor = data.docs_with_anchor || 0;
+                const duration = data.duration_ms || 0;
+                if (rows.length === 0) {
+                    crossTabSummary.textContent = `No disproportionate terms found for "${data.anchor || anchor}" in ${selectedField}. Analyzed ${analyzed} docs in ${duration} ms.`;
+                } else {
+                    crossTabSummary.textContent = `Showing ${rows.length} terms for "${data.anchor || anchor}" in ${selectedField}. Anchor appears in ${withAnchor}/${analyzed} docs (${Math.round((data.anchor_doc_rate || 0) * 100)}%). Computed in ${duration} ms.`;
+                }
+            })
+            .catch(error => {
+                crossTabSummary.textContent = `Cross-tab failed: ${error.message}`;
+            })
+            .finally(() => {
+                toggleCrossTabLoading(false);
+            });
+    }
+
+    runCrossTabButton.addEventListener('click', runCrossTab);
+    anchorInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            runCrossTab();
+        }
+    });
+
+    crossTabBody.addEventListener('click', function(event) {
+        const copyButton = event.target.closest('[data-copy-cross-term]');
+        if (!copyButton) return;
+        const term = copyButton.getAttribute('data-copy-cross-term');
         if (!term) return;
 
         navigator.clipboard.writeText(term).then(function() {

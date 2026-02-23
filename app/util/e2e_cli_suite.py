@@ -246,6 +246,33 @@ def main() -> int:
 
         suite.check("Core page routes", check_core_pages)
 
+        def check_tooltip_standard_contract() -> str:
+            tooltip_paths = [
+                "/",
+                "/search",
+                "/search-terms",
+                "/historian-agent",
+                "/corpus-explorer",
+                "/network-analysis",
+                "/database-info",
+                "/settings",
+                "/help",
+            ]
+            total_targets = 0
+            for path in tooltip_paths:
+                resp = client.get(path)
+                require(resp.status_code == 200, f"{path} returned {resp.status_code}")
+                body = resp.data.decode("utf-8", errors="ignore")
+                # Contract: pages must load the shared AppHelpTooltips runtime from base.html.
+                require("js/help-tooltips.js" in body, f"{path} missing help-tooltips.js include")
+                # Contract: pages should expose at least one data-help target for consistent UX.
+                page_targets = body.count("data-help=")
+                require(page_targets > 0, f"{path} has zero data-help targets")
+                total_targets += page_targets
+            return f"paths={len(tooltip_paths)} total_data_help_targets={total_targets}"
+
+        suite.check("Tooltip standard contract", check_tooltip_standard_contract)
+
         def check_static_assets() -> str:
             for path in [
                 "/static/js/network.js",

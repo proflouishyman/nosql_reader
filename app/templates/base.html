@@ -10,19 +10,20 @@
 <body class="{% block body_class %}{% endblock %}">
     <header class="site-header">
         <div class="site-header__inner">
-            <a href="{{ url_for('index') }}" class="site-brand" aria-label="Historical Document Reader home">
+            <a href="{{ url_for('index') }}" class="site-brand" aria-label="Historical Document Reader home" data-help="Return to the application home page.">
                 Historical Document Reader
             </a>
             <nav class="primary-nav" aria-label="Primary navigation">
+                {# Shared nav help text ensures AppHelpTooltips has consistent targets on every page. #}
                 <ul>
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="{{ url_for('search_database') }}">Search Database</a></li>
-                    <li><a href="{{ url_for('historian_agent_page') }}">Historian Agent</a></li>
-                    <li><a href="{{ url_for('corpus_explorer_page') }}">Corpus Explorer</a></li>
-                    <li><a href="{{ url_for('network_analysis_page') }}">Network Analysis</a></li>
-                    <li><a href="{{ url_for('database_info') }}">Database Information</a></li>
-                    <li><a href="{{ url_for('settings') }}">Settings</a></li>
-                    <li><a href="{{ url_for('help_page') }}">Help</a></li>
+                    <li><a href="{{ url_for('index') }}" data-help="Go to the dashboard landing page.">Home</a></li>
+                    <li><a href="{{ url_for('search_database') }}" data-help="Search documents with fielded and boolean queries.">Search Database</a></li>
+                    <li><a href="{{ url_for('historian_agent_page') }}" data-help="Ask research questions and run AI-assisted analysis.">Historian Agent</a></li>
+                    <li><a href="{{ url_for('corpus_explorer_page') }}" data-help="Generate corpus-level themes, questions, and patterns.">Corpus Explorer</a></li>
+                    <li><a href="{{ url_for('network_analysis_page') }}" data-help="Explore entity networks and connected records.">Network Analysis</a></li>
+                    <li><a href="{{ url_for('database_info') }}" data-help="Review database collections, counts, and metadata.">Database Information</a></li>
+                    <li><a href="{{ url_for('settings') }}" data-help="Configure ingestion, models, and system options.">Settings</a></li>
+                    <li><a href="{{ url_for('help_page') }}" data-help="Open usage guidance and troubleshooting notes.">Help</a></li>
                 </ul>
             </nav>
         </div>
@@ -43,6 +44,8 @@
         {% block content %}{% endblock %}
     </main>
 
+    {# Global tooltip standard used by network analysis and shared UI controls. #}
+    <script src="{{ url_for('static', filename='js/help-tooltips.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

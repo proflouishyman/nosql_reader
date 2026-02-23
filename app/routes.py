@@ -40,6 +40,7 @@ import threading
 from datetime import datetime, timedelta
 import random
 import csv
+from collections import Counter
 from io import StringIO, BytesIO
 from logging.handlers import RotatingFileHandler
 from typing import Any, Dict, List, Optional, Tuple
@@ -2609,6 +2610,215 @@ def get_unique_terms_count(db, field, term_type, query=''):
     except Exception as e:
         logger.error(f"Error counting unique terms: {e}")
         return 0
+
+
+WORD_TOKEN_PATTERN = re.compile(r"\w+")
+
+
+def _normalize_search_text(value: Any) -> str:
+    """
+    Normalize document field values to a searchable text string.
+
+    Contract note:
+    This mirrors term-generation behavior by supporting string and list[str] fields.
+    """
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list) and value and all(isinstance(item, str) for item in value):
+        return " ".join(value)
+    return ""
+
+
+def _tokenize_words(text: str) -> List[str]:
+    """Tokenize text into lowercase word tokens."""
+    return WORD_TOKEN_PATTERN.findall(text.lower())
+
+
+def _safe_int_arg(name: str, default: int, minimum: int, maximum: int) -> int:
+    """Parse and clamp integer query params to avoid invalid or expensive requests."""
+    raw_value = request.args.get(name, default)
+    try:
+        parsed = int(raw_value)
+    except (TypeError, ValueError):
+        return default
+    return max(minimum, min(maximum, parsed))
+
+
+def compute_disproportionate_terms(
+    db,
+    field: str,
+    anchor: str,
+    limit: int = 25,
+    min_doc_freq: int = 5,
+    min_co_docs: int = 3,
+) -> Dict[str, Any]:
+    """
+    Compute words disproportionately associated with an anchor term in a field.
+
+    Method:
+    - Uses document-level presence (not raw token frequency) to avoid long-document bias.
+    - Scores by lift: P(term | anchor) / P(term | not anchor), with Laplace smoothing.
+    """
+    documents_collection = db["documents"]
+
+    anchor_normalized = " ".join(_tokenize_words(anchor.strip()))
+    if not anchor_normalized:
+        return {
+            "field": field,
+            "anchor": anchor,
+            "results": [],
+            "error": "Anchor term is empty after normalization.",
+        }
+
+    is_phrase_anchor = " " in anchor_normalized
+    total_docs_analyzed = 0
+    docs_with_anchor = 0
+    global_doc_frequency: Counter = Counter()
+    co_doc_frequency: Counter = Counter()
+
+    start_time = time.time()
+
+    # Pull only the requested field to keep the scan as light as possible.
+    cursor = documents_collection.find(
+        {field: {"$exists": True}},
+        {field: 1},
+        no_cursor_timeout=True,
+    )
+
+    try:
+        for doc in cursor:
+            raw_text = _normalize_search_text(doc.get(field))
+            if not raw_text:
+                continue
+
+            normalized_text = raw_text.lower()
+            token_set = set(_tokenize_words(normalized_text))
+            if not token_set:
+                continue
+
+            total_docs_analyzed += 1
+            global_doc_frequency.update(token_set)
+
+            # Phrase anchors use substring match; single-word anchors use token membership.
+            has_anchor = (
+                anchor_normalized in normalized_text
+                if is_phrase_anchor
+                else anchor_normalized in token_set
+            )
+            if not has_anchor:
+                continue
+
+            docs_with_anchor += 1
+            for token in token_set:
+                if token == anchor_normalized:
+                    continue
+                co_doc_frequency[token] += 1
+    finally:
+        cursor.close()
+
+    if total_docs_analyzed == 0:
+        return {
+            "field": field,
+            "anchor": anchor_normalized,
+            "results": [],
+            "total_docs_analyzed": 0,
+            "docs_with_anchor": 0,
+            "anchor_doc_rate": 0.0,
+            "duration_ms": int((time.time() - start_time) * 1000),
+        }
+
+    if docs_with_anchor == 0:
+        return {
+            "field": field,
+            "anchor": anchor_normalized,
+            "results": [],
+            "total_docs_analyzed": total_docs_analyzed,
+            "docs_with_anchor": 0,
+            "anchor_doc_rate": 0.0,
+            "duration_ms": int((time.time() - start_time) * 1000),
+        }
+
+    docs_without_anchor = max(total_docs_analyzed - docs_with_anchor, 0)
+    ranked_rows: List[Dict[str, Any]] = []
+
+    for token, co_docs in co_doc_frequency.items():
+        if co_docs < min_co_docs:
+            continue
+
+        global_docs = int(global_doc_frequency.get(token, 0))
+        if global_docs < min_doc_freq:
+            continue
+
+        non_anchor_docs_with_token = max(global_docs - co_docs, 0)
+
+        # Laplace smoothing stabilizes low-count terms without changing ranking behavior materially.
+        p_token_given_anchor = (co_docs + 1) / (docs_with_anchor + 2)
+        p_token_given_non_anchor = (non_anchor_docs_with_token + 1) / (docs_without_anchor + 2)
+        lift = p_token_given_anchor / max(p_token_given_non_anchor, 1e-12)
+        log2_lift = math.log2(max(lift, 1e-12))
+
+        ranked_rows.append(
+            {
+                "term": token,
+                "co_doc_count": int(co_docs),
+                "global_doc_count": global_docs,
+                "anchor_doc_rate": round(p_token_given_anchor, 6),
+                "background_doc_rate": round(p_token_given_non_anchor, 6),
+                "lift": round(lift, 6),
+                "log2_lift": round(log2_lift, 6),
+            }
+        )
+
+    ranked_rows.sort(
+        key=lambda row: (row["log2_lift"], row["co_doc_count"], row["global_doc_count"]),
+        reverse=True,
+    )
+
+    return {
+        "field": field,
+        "anchor": anchor_normalized,
+        "total_docs_analyzed": int(total_docs_analyzed),
+        "docs_with_anchor": int(docs_with_anchor),
+        "anchor_doc_rate": round(docs_with_anchor / max(total_docs_analyzed, 1), 6),
+        "min_doc_freq": int(min_doc_freq),
+        "min_co_docs": int(min_co_docs),
+        "results": ranked_rows[:limit],
+        "duration_ms": int((time.time() - start_time) * 1000),
+    }
+
+
+@app.route('/search-terms/cross-tab', methods=['GET'])
+def search_terms_cross_tab():
+    """Return disproportionate co-occurring words for an anchor term in a selected field."""
+    client = get_client()
+    db = get_db(client)
+
+    try:
+        field = (request.args.get('field') or '').strip()
+        anchor = (request.args.get('anchor') or '').strip()
+        if not field:
+            return jsonify({"error": "No field specified"}), 400
+        if not anchor:
+            return jsonify({"error": "No anchor specified"}), 400
+
+        limit = _safe_int_arg("limit", default=25, minimum=1, maximum=100)
+        min_doc_freq = _safe_int_arg("min_doc_freq", default=5, minimum=1, maximum=5000)
+        min_co_docs = _safe_int_arg("min_co_docs", default=3, minimum=1, maximum=5000)
+
+        payload = compute_disproportionate_terms(
+            db,
+            field=field,
+            anchor=anchor,
+            limit=limit,
+            min_doc_freq=min_doc_freq,
+            min_co_docs=min_co_docs,
+        )
+        return jsonify(payload)
+    except Exception as exc:
+        logger.error("Error in search_terms_cross_tab: %s", exc, exc_info=True)
+        return jsonify({"error": "Failed to compute cross-tab analysis"}), 500
+    finally:
+        client.close()
 
 
 

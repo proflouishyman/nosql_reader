@@ -387,6 +387,21 @@ button.secondary:hover,
     max-width: 460px;
 }
 
+.search-terms__crosstab-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px 12px;
+    align-items: end;
+}
+
+.search-terms__crosstab-controls input {
+    width: 100%;
+}
+
+.search-terms__crosstab-controls button {
+    align-self: stretch;
+}
+
 .search-terms__tabs {
     display: inline-flex;
     gap: 10px;
@@ -444,6 +459,11 @@ button.secondary:hover,
     margin: 0;
     color: #475569;
     font-weight: 600;
+}
+
+.search-terms__metric-note {
+    color: #64748b;
+    font-size: 0.82rem;
 }
 
 .search-terms__empty {

@@ -336,3 +336,144 @@ The prior `/search-terms` UI was functional but cognitively heavy:
 ### Verification
 - Ran full suite: `./scripts/run_e2e_suite.sh`.
 - Result: `Total checks: 19`, `Failed: 0` (all pass).
+
+## 2026-02-23 - Add cross-tab disproportionate-word analysis for anchor terms
+
+### Problem
+Users needed a way to ask: “When this anchor word appears in OCR text, which other words are disproportionately present?”
+The existing unique-terms explorer only showed marginal frequencies, not conditional associations.
+
+### Solution
+- Added backend endpoint:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+  - `GET /search-terms/cross-tab`
+- Implemented document-level disproportionate analysis (`compute_disproportionate_terms`) with:
+  - field-scoped scan,
+  - anchor presence check (word or phrase),
+  - document-frequency counters (`global_doc_frequency`, `co_doc_frequency`),
+  - Laplace-smoothed lift score:
+    - `lift = P(term | anchor) / P(term | not anchor)`
+  - sortable outputs including `lift` and `log2_lift`.
+- Added safeguards and contracts:
+  - query arg parsing/clamping (`limit`, `min_doc_freq`, `min_co_docs`),
+  - normalized string/list[str] field handling,
+  - consistent JSON shape with summary stats and latency.
+- Added UI panel on `/search-terms`:
+  - anchor input + thresholds,
+  - “Run analysis” action,
+  - result table with term, lift, co-doc count, global doc count, and actions (`Search`, `Copy`).
+- Added styling for new controls/table in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+- Extended smoke coverage:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/util/unique_terms_contract_smoke.py`
+  - now validates `/search-terms/cross-tab` response contract.
+
+### Verification
+- Manual API check:
+  - `GET /search-terms/cross-tab?field=ocr_text&anchor=relief&limit=5&min_doc_freq=5&min_co_docs=3`
+  - returned valid payload with ranked terms and non-zero stats.
+- Full regression suite:
+  - `./scripts/run_e2e_suite.sh`
+  - `Total checks: 19`, `Failed: 0`.
+
+## 2026-02-23 - Simplify cross-tab result display and add header tooltips
+
+### Problem
+Cross-tab results were accurate but harder to scan:
+- headers lacked inline definitions,
+- `Lift` values showed trailing decimals,
+- `log2` detail added visual noise for quick interpretation.
+
+### Solution
+- Updated cross-tab table headers in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search-terms.html`
+  - Added mouseover definitions via `title` attributes for:
+    - `Term`
+    - `Lift`
+    - `With Anchor`
+    - `Global Docs`
+    - `Actions`
+- Simplified lift display in the row renderer:
+  - removed log2 display from UI,
+  - rounded `lift` to whole numbers (no trailing decimals).
+- Kept backend payload unchanged so API/data contracts remain stable.
+
+### Verification
+- Confirmed rendered HTML contains new tooltip titles and no visible `log2` label in the table.
+- Re-ran full suite: `./scripts/run_e2e_suite.sh` -> `Total checks: 19`, `Failed: 0`.
+
+## 2026-02-23 - Replace native title hover with explicit tooltip markers for cross-tab headers
+
+### Problem
+Native browser `title` tooltips were not consistently visible for header definitions in some environments.
+
+### Solution
+- Replaced native `title` attributes with explicit tooltip markers in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search-terms.html`
+  - Added `?` hint badges beside cross-tab headers using:
+    - `.search-terms__tooltip`
+    - `data-tip` content
+    - keyboard focus support via `tabindex="0"`
+- Added CSS tooltip rendering in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+  - Uses `::after` with `data-tip` for hover/focus popup.
+
+### Verification
+- Confirmed rendered page includes `.search-terms__tooltip` markers and `data-tip` content.
+- Re-ran full suite: `./scripts/run_e2e_suite.sh` -> `Total checks: 19`, `Failed: 0`.
+
+## 2026-02-23 - Align search-terms help behavior with network tooltip standard
+
+### Problem
+The cross-tab header help behavior diverged from the established network-analysis standard by using page-specific custom tooltip markup/CSS.
+
+### Solution
+- Standardized cross-tab header help to the network pattern:
+  - use `data-help` attributes on header cells in:
+    - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search-terms.html`
+  - include shared tooltip runtime:
+    - `{{ url_for('static', filename='js/help-tooltips.js') }}`
+- Removed custom tooltip styling/markup remnants from:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+  - removed `.search-terms__tooltip` and `.search-terms__th-label` rules.
+
+### Verification
+- Confirmed search-terms template now has `data-help` headers and no custom tooltip classes.
+- Re-ran full suite: `./scripts/run_e2e_suite.sh` -> `Total checks: 19`, `Failed: 0`.
+
+## 2026-02-23 - Enable tooltip standard globally across pages
+
+### Problem
+The tooltip runtime (`help-tooltips.js`) was only available on selected pages, so the `data-help` pattern was inconsistent across routes.
+
+### Solution
+- Added global tooltip runtime include in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html`
+  - this ensures all pages now load the same tooltip system.
+- Removed redundant page-specific include from:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search-terms.html`
+  - to avoid duplicate script loading.
+
+### Verification
+- Checked major routes (`/`, `/search`, `/search-terms`, `/historian-agent`, `/corpus-explorer`, `/network-analysis`, `/database-info`, `/settings`, `/help`) and confirmed `help-tooltips.js` is present in rendered HTML.
+- Re-ran full suite: `./scripts/run_e2e_suite.sh` -> `Total checks: 19`, `Failed: 0`.
+
+## 2026-02-23 - Enforce tooltip targets on all primary pages
+
+### Problem
+Even with global `help-tooltips.js` loading, several pages had no explicit `data-help` targets, so users would not see consistent delayed-help behavior across navigation flows.
+
+### Solution
+- Added `data-help` text to the shared site brand and each primary navigation link in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html`
+- Added a new contract check to the master E2E suite in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/util/e2e_cli_suite.py`
+- New check validates for key routes:
+  - HTTP 200 response
+  - `help-tooltips.js` include present
+  - at least one `data-help` target rendered
+
+### Verification
+- Ran full suite: `./scripts/run_e2e_suite.sh`
+- Result: `Total checks: 20`, `Failed: 0`
+- New passing check: `Tooltip standard contract :: paths=9 total_data_help_targets=101`.

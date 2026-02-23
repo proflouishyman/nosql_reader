@@ -109,9 +109,54 @@ def run_unique_terms_contract_check(client: Any, db: Any) -> str:
         _require(isinstance(first_phrase, dict), "phrases entries must be objects")
         _require({"phrase", "count"}.issubset(first_phrase.keys()), "phrase entry missing phrase/count keys")
 
+    # Validate cross-tab endpoint contract using a known-present anchor from the top words list.
+    anchor = words[0]["word"] if words else "the"
+    cross_tab_response = client.get(
+        "/search-terms/cross-tab",
+        query_string={
+            "field": field,
+            "anchor": anchor,
+            "limit": 10,
+            "min_doc_freq": 2,
+            "min_co_docs": 2,
+        },
+        headers={"X-Requested-With": "XMLHttpRequest"},
+    )
+    _require(cross_tab_response.status_code == 200, f"/search-terms/cross-tab returned {cross_tab_response.status_code}")
+
+    cross_tab_payload = cross_tab_response.get_json(silent=True)
+    _require(isinstance(cross_tab_payload, dict), "cross-tab payload is not a JSON object")
+
+    expected_cross_tab_keys = {
+        "field",
+        "anchor",
+        "total_docs_analyzed",
+        "docs_with_anchor",
+        "anchor_doc_rate",
+        "results",
+        "duration_ms",
+    }
+    _require(expected_cross_tab_keys.issubset(cross_tab_payload.keys()), "cross-tab payload missing required keys")
+    _require(isinstance(cross_tab_payload["results"], list), "cross-tab results must be a list")
+    _require(isinstance(cross_tab_payload["docs_with_anchor"], int), "docs_with_anchor must be an int")
+
+    if cross_tab_payload["results"]:
+        first_cross_tab_row = cross_tab_payload["results"][0]
+        expected_row_keys = {
+            "term",
+            "co_doc_count",
+            "global_doc_count",
+            "anchor_doc_rate",
+            "background_doc_rate",
+            "lift",
+            "log2_lift",
+        }
+        _require(expected_row_keys.issubset(first_cross_tab_row.keys()), "cross-tab row missing required keys")
+
     return (
         f"field={field} total_terms={total_terms} "
-        f"unique_words={unique_words} unique_phrases={unique_phrases}"
+        f"unique_words={unique_words} unique_phrases={unique_phrases} "
+        f"cross_tab_rows={len(cross_tab_payload['results'])}"
     )
 
 
