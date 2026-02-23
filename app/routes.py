@@ -641,6 +641,199 @@ def exploration_report_endpoint():
 @app.route('/api/rag/exploration_notebooks', methods=['GET'])
 def list_exploration_notebooks():
     """List saved exploration notebooks and reports from disk."""
+    def _safe_count(value: Any) -> int:
+        if isinstance(value, list):
+            return len(value)
+        if isinstance(value, dict):
+            return len(value)
+        return 0
+
+    def _pick_text(*values: Any) -> Optional[str]:
+        for value in values:
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        return None
+
+    def _coerce_int(value: Any, default: int = 0) -> int:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+
+    def _year_range_label(
+        year_range: Any,
+        corpus_map: Dict[str, Any],
+    ) -> Optional[str]:
+        if isinstance(year_range, (list, tuple)) and len(year_range) == 2:
+            return f'{year_range[0]}-{year_range[1]}'
+
+        if isinstance(year_range, str) and year_range.strip():
+            return year_range.strip()
+
+        if isinstance(corpus_map, dict):
+            time_coverage = corpus_map.get('time_coverage') or {}
+            if isinstance(time_coverage, dict):
+                start = time_coverage.get('start')
+                end = time_coverage.get('end')
+                if start and end:
+                    return f'{start} to {end}'
+
+        return None
+
+    def _build_notebook_preview(path: str, artifact_type: str) -> Dict[str, Any]:
+        preview: Dict[str, Any] = {
+            'strategy': None,
+            'total_budget': None,
+            'year_range': None,
+            'research_lens': [],
+            'documents_read': 0,
+            'question_count': 0,
+            'pattern_count': 0,
+            'entity_count': 0,
+            'contradiction_count': 0,
+            'theme_count': 0,
+            'gap_count': 0,
+            'has_synthesis': False,
+            'is_empty': True,
+            'loaded_file_hint': os.path.basename(path),
+            'primary_question': None,
+            'researcher_question': None,
+        }
+
+        try:
+            with open(path, 'r', encoding='utf-8') as handle:
+                payload = json.load(handle)
+        except Exception as exc:
+            preview['preview_error'] = str(exc)
+            return preview
+
+        if not isinstance(payload, dict):
+            preview['preview_error'] = 'JSON root is not an object.'
+            return preview
+
+        metadata = payload.get('exploration_metadata')
+        if not isinstance(metadata, dict):
+            metadata = {}
+
+        corpus_map = payload.get('corpus_map')
+        if not isinstance(corpus_map, dict):
+            corpus_map = {}
+
+        stats = corpus_map.get('statistics') if isinstance(corpus_map.get('statistics'), dict) else corpus_map
+        if not isinstance(stats, dict):
+            stats = {}
+
+        question_synthesis = payload.get('question_synthesis')
+        if not isinstance(question_synthesis, dict):
+            question_synthesis = {}
+
+        research_lens = metadata.get('research_lens') or []
+        if isinstance(research_lens, str):
+            research_lens = [item.strip() for item in research_lens.split(',') if item.strip()]
+        if not isinstance(research_lens, list):
+            research_lens = [str(research_lens)]
+
+        docs_read = _coerce_int(
+            metadata.get('documents_read', stats.get('total_documents_read', 0)),
+            default=0,
+        )
+
+        question_count = _safe_count(payload.get('questions'))
+        pattern_count = _safe_count(payload.get('patterns'))
+        entity_count = _safe_count(payload.get('entities'))
+        contradiction_count = _safe_count(payload.get('contradictions'))
+        theme_count = _safe_count(question_synthesis.get('themes'))
+        gap_count = _safe_count(question_synthesis.get('gaps'))
+
+        preview.update(
+            {
+                'strategy': metadata.get('strategy'),
+                'total_budget': metadata.get('total_budget'),
+                'year_range': _year_range_label(metadata.get('year_range'), corpus_map),
+                'research_lens': [str(item) for item in research_lens if str(item).strip()][:5],
+                'documents_read': docs_read,
+                'question_count': question_count,
+                'pattern_count': pattern_count,
+                'entity_count': entity_count,
+                'contradiction_count': contradiction_count,
+                'theme_count': theme_count,
+                'gap_count': gap_count,
+                'has_synthesis': bool(theme_count or gap_count or question_synthesis.get('grand_narrative')),
+                'is_empty': docs_read == 0 and question_count == 0 and pattern_count == 0 and entity_count == 0,
+            }
+        )
+
+        # Capture the original researcher prompt/question when available.
+        researcher_question = _pick_text(
+            metadata.get('researcher_question'),
+            metadata.get('research_question'),
+            metadata.get('user_question'),
+            metadata.get('question'),
+            metadata.get('query'),
+            metadata.get('focus_note'),
+            metadata.get('research_prompt'),
+            payload.get('researcher_question'),
+            payload.get('research_question'),
+            payload.get('user_question'),
+            payload.get('question'),
+            payload.get('query'),
+            payload.get('focus_note'),
+            payload.get('research_prompt'),
+        )
+        if not researcher_question and research_lens:
+            # Corpus Explorer stores the prompt from the "research lens" box;
+            # expose first item as the user-asked question context.
+            first_lens = research_lens[0]
+            if isinstance(first_lens, str) and first_lens.strip():
+                researcher_question = first_lens.strip()
+        preview['researcher_question'] = researcher_question
+
+        # Pull a representative question for UI hover details.
+        grand_narrative = question_synthesis.get('grand_narrative')
+        if isinstance(grand_narrative, dict):
+            candidate = grand_narrative.get('question')
+            if isinstance(candidate, str) and candidate.strip():
+                preview['primary_question'] = candidate.strip()
+        elif isinstance(grand_narrative, str) and grand_narrative.strip():
+            preview['primary_question'] = grand_narrative.strip()
+
+        if not preview.get('primary_question'):
+            questions_payload = payload.get('questions')
+            first_question = None
+            if isinstance(questions_payload, list) and questions_payload:
+                first_question = questions_payload[0]
+            elif isinstance(questions_payload, dict) and questions_payload:
+                first_question = next(iter(questions_payload.values()))
+
+            if isinstance(first_question, dict):
+                for key in ['question', 'question_text']:
+                    candidate = first_question.get(key)
+                    if isinstance(candidate, str) and candidate.strip():
+                        preview['primary_question'] = candidate.strip()
+                        break
+            elif isinstance(first_question, str) and first_question.strip():
+                preview['primary_question'] = first_question.strip()
+
+        question_quality_gate = metadata.get('question_quality_gate')
+        if isinstance(question_quality_gate, dict):
+            gate_label = question_quality_gate.get('status') or question_quality_gate.get('decision') or question_quality_gate.get('result')
+            if gate_label:
+                preview['question_quality_gate'] = str(gate_label)
+
+        if artifact_type == 'notebook':
+            sibling_reports = sorted(
+                glob.glob(os.path.join(os.path.dirname(path), '*report*.json')),
+                key=lambda p: os.path.getmtime(p),
+                reverse=True,
+            )
+            if sibling_reports:
+                preview['loaded_file_hint'] = os.path.basename(sibling_reports[0])
+                preview['has_sibling_report'] = True
+            else:
+                preview['has_sibling_report'] = False
+
+        return preview
+
     save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
     try:
         patterns = [
@@ -665,6 +858,7 @@ def list_exploration_notebooks():
                     'artifact_type': artifact_type,
                     'size_kb': round(stat.st_size / 1024, 1),
                     'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                    'preview': _build_notebook_preview(path, artifact_type),
                 }
             )
         return jsonify({'notebooks': notebooks})
@@ -686,7 +880,23 @@ def load_exploration_notebook():
         return jsonify({'error': 'Invalid path'}), 400
 
     try:
-        with open(resolved_path, 'r', encoding='utf-8') as handle:
+        path_to_load = resolved_path
+
+        # If a notebook file is selected and a sibling report exists, prefer the report
+        # so the UI can restore richer result views.
+        filename_lower = os.path.basename(resolved_path).lower()
+        if 'notebook' in filename_lower:
+            sibling_reports = sorted(
+                glob.glob(os.path.join(os.path.dirname(resolved_path), '*report*.json')),
+                key=lambda p: os.path.getmtime(p),
+                reverse=True,
+            )
+            if sibling_reports:
+                path_to_load = os.path.realpath(sibling_reports[0])
+                if not path_to_load.startswith(resolved_save_dir + os.sep) and path_to_load != resolved_save_dir:
+                    return jsonify({'error': 'Invalid report path'}), 400
+
+        with open(path_to_load, 'r', encoding='utf-8') as handle:
             loaded_payload = json.load(handle)
 
         def _as_list(value):
@@ -719,10 +929,13 @@ def load_exploration_notebook():
                 },
                 'loaded_from_notebook': True,
                 'notebook_path': resolved_path,
+                'loaded_path': path_to_load,
             }
         else:
             _last_exploration_report = loaded_payload
-        return jsonify({'status': 'loaded'})
+            if isinstance(_last_exploration_report, dict):
+                _last_exploration_report.setdefault('loaded_path', path_to_load)
+        return jsonify({'status': 'loaded', 'report': _last_exploration_report, 'loaded_path': path_to_load})
     except Exception as exc:
         return jsonify({'error': str(exc)}), 500
 
