@@ -2177,6 +2177,42 @@ def help_page():
 
     return render_template('help.html')
 
+
+def _load_runtime_build_metadata() -> Dict[str, str]:
+    """
+    Load build metadata shown on the settings page.
+
+    Falls back to safe defaults when build_info.json is missing/corrupt.
+    """
+    repo_root = str(Path(__file__).resolve().parents[1])
+    defaults: Dict[str, str] = {
+        "app_version": os.environ.get("APP_VERSION", "development"),
+        "branch": "unknown",
+        "commit": "unknown",
+        "commit_full": "unknown",
+        "commit_date": "unknown",
+        "commit_subject": "unknown",
+        "dirty": "unknown",
+        "generated_at": "unknown",
+        "repo_root": repo_root,
+    }
+
+    build_info_path = Path(__file__).resolve().parent / "build_info.json"
+    if not build_info_path.exists():
+        return defaults
+
+    try:
+        with build_info_path.open("r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+        if isinstance(payload, dict):
+            for key in defaults.keys():
+                if key in payload and payload.get(key) not in (None, ""):
+                    defaults[key] = str(payload[key])
+    except Exception:
+        logger.exception("Failed to load runtime build metadata from %s", build_info_path)
+
+    return defaults
+
 @app.route('/settings', methods=['GET', 'POST'])
 # @login_required
 def settings():
@@ -2255,6 +2291,7 @@ def settings():
     overrides = _historian_agent_overrides()
     agent_config = HistorianAgentConfig.from_env(overrides)
     agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
+    runtime_build = _load_runtime_build_metadata()
 
     return render_template(
         'settings.html',
@@ -2272,6 +2309,7 @@ def settings():
         ingestion_default_openai_model=image_ingestion.DEFAULT_OPENAI_MODEL,
         ingestion_ollama_base_url=image_ingestion.DEFAULT_OLLAMA_BASE_URL,
         ingestion_api_key_configured=image_ingestion.read_api_key() is not None,
+        runtime_build=runtime_build,
     )
 
 @app.route('/settings/data-ingestion/mounts', methods=['GET'])
