@@ -180,3 +180,23 @@ The README listed pages and endpoints but did not provide clear user-facing usag
 ### Verification
 - Cross-checked all documented routes against `app/routes.py` route declarations.
 - Confirmed endpoint names and usage descriptions align with current runtime behavior.
+
+## 2026-02-23 - Fix main-branch documentation/script path references
+
+### Problem
+Documentation and helper scripts still contained stale file paths from a cleanup workspace, which could mislead operators on `main` and break the E2E helper command.
+
+### Solution
+- Updated documentation paths to point to the active main repository root:
+  - `readme.md`
+  - `setup.md`
+  - `docs/february_how_this_works.md`
+  - `app/CLI_ingestion_files_wip/QUICK_REFERENCE.md`
+  - `app/CLI_ingestion_files_wip/CLI_README.md`
+- Fixed `scripts/run_e2e_suite.sh` to call the canonical in-container suite path:
+  - from `/app/scripts/e2e_cli_suite.py`
+  - to `/app/util/e2e_cli_suite.py`
+
+### Verification
+- Confirmed no remaining `nosql_reader_cleanup` path references in markdown files under the repo.
+- Confirmed no remaining `/app/scripts/e2e_cli_suite.py` reference in shell scripts under the repo.

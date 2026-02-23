@@ -55,7 +55,7 @@ Current known behavior:
 Use this exact setup flow for a clean local start:
 
 1. Ensure Docker is running.
-2. Keep one runtime env file only at `/Users/louishyman/coding/nosql/nosql_reader_cleanup/.env`.
+2. Keep one runtime env file only at `/Users/louishyman/coding/nosql/nosql_reader/.env`. <!-- Updated path to the main repository root. -->
 3. Confirm host mount directories referenced by `.env` exist (`ARCHIVES_HOST_PATH`, `MONGO_DATA_HOST_PATH`, `SESSION_HOST_PATH`).
 4. Start services:
 
@@ -123,7 +123,7 @@ This means network API blueprint registration happens as part of normal app rout
 
 Environment configuration policy:
 
-1. One runtime env file only: `/Users/louishyman/coding/nosql/nosql_reader_cleanup/.env`.
+1. One runtime env file only: `/Users/louishyman/coding/nosql/nosql_reader/.env`. <!-- Updated path to the main repository root. -->
 2. No additional runtime `.env` files in subdirectories.
 3. Example variable sets are documentation-only in `docs/ENV_EXAMPLES.md`.
 

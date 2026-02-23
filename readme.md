@@ -24,8 +24,8 @@ Operational status verified on 2026-02-23:
 
 Configuration policy:
 
-- One runtime environment file only: `/Users/louishyman/coding/nosql/nosql_reader_cleanup/.env`.
-- Environment examples are documentation-only in `/Users/louishyman/coding/nosql/nosql_reader_cleanup/docs/ENV_EXAMPLES.md`.
+- One runtime environment file only: `/Users/louishyman/coding/nosql/nosql_reader/.env`. <!-- Updated path to the main repository root. -->
+- Environment examples are documentation-only in `/Users/louishyman/coding/nosql/nosql_reader/docs/ENV_EXAMPLES.md`. <!-- Updated path to the main repository docs directory. -->
 
 ## Main Pages
 

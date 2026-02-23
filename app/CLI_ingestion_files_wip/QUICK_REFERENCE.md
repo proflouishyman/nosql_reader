@@ -94,7 +94,7 @@ load_dotenv()
 ```
 
 Reference example variables live in:
-`/Users/louishyman/coding/nosql/nosql_reader_cleanup/docs/ENV_EXAMPLES.md`
+`/Users/louishyman/coding/nosql/nosql_reader/docs/ENV_EXAMPLES.md` <!-- Updated docs path to the main repository. -->
 
 ## 🔍 Debugging
 

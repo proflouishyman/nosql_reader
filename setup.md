@@ -15,9 +15,9 @@ Persistent data lives on the host file system so you can rebuild containers with
 
 Environment policy for this repository:
 
-- Use one runtime env file only: `/Users/louishyman/coding/nosql/nosql_reader_cleanup/.env`.
+- Use one runtime env file only: `/Users/louishyman/coding/nosql/nosql_reader/.env`. <!-- Updated path to the main repository root. -->
 - Do not create additional `.env` files in subfolders.
-- Example variables are documented in `/Users/louishyman/coding/nosql/nosql_reader_cleanup/docs/ENV_EXAMPLES.md`.
+- Example variables are documented in `/Users/louishyman/coding/nosql/nosql_reader/docs/ENV_EXAMPLES.md`. <!-- Updated docs path to the main repository. -->
 
 ---
 
