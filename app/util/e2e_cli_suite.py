@@ -6,12 +6,13 @@ Runs against the Flask app using the Flask test client and live MongoDB data.
 Designed for quick full-path validation after backend/frontend changes.
 
 Usage:
-  python /app/scripts/e2e_cli_suite.py
+  python /app/util/e2e_cli_suite.py
 """
 
 from __future__ import annotations
 
-import re
+import importlib
+import os
 import sys
 import traceback
 from dataclasses import dataclass
@@ -87,6 +88,79 @@ def main() -> int:
         "network_enabled": True,
     }
 
+    def check_environment_contract() -> str:
+        mongo_uri = (os.environ.get("APP_MONGO_URI") or os.environ.get("MONGO_URI") or "").strip()
+        require(bool(mongo_uri), "APP_MONGO_URI or MONGO_URI must be set")
+
+        db_name = (os.environ.get("DB_NAME") or "railroad_documents").strip()
+        require(bool(db_name), "DB_NAME resolved to an empty value")
+
+        chroma_dir = (os.environ.get("CHROMA_PERSIST_DIRECTORY") or "/data/chroma_db").strip()
+        require(bool(chroma_dir), "CHROMA_PERSIST_DIRECTORY resolved to an empty value")
+
+        return f"db={db_name} chroma_dir={chroma_dir}"
+
+    suite.check("Environment contract", check_environment_contract)
+
+    def check_python_dependency_contract() -> str:
+        modules = ["openai", "spacy", "chromadb", "numpy", "pymongo"]
+        for module_name in modules:
+            importlib.import_module(module_name)
+        return f"imported={','.join(modules)}"
+
+    suite.check("Python dependency imports", check_python_dependency_contract)
+
+    def check_spacy_model_contract() -> str:
+        import spacy
+
+        nlp = spacy.load("en_core_web_lg")
+        doc = nlp("William Akel worked for the Baltimore and Ohio Railroad in 1928.")
+        require(len(doc) > 0, "spaCy tokenization returned no tokens")
+        require(len(doc.ents) > 0, "spaCy model produced zero entities on a simple sample")
+        return f"entities={len(doc.ents)}"
+
+    suite.check("spaCy model load + NER sanity", check_spacy_model_contract)
+
+    def check_chromadb_contract() -> str:
+        import chromadb
+        from chromadb.config import Settings
+
+        persist_dir = os.environ.get("CHROMA_PERSIST_DIRECTORY", "/data/chroma_db")
+        if not Path(persist_dir).exists():
+            return f"skipped (persist dir not mounted): {persist_dir}"
+
+        chroma_client = chromadb.PersistentClient(
+            path=persist_dir,
+            settings=Settings(anonymized_telemetry=False),
+        )
+
+        collection_names = {collection.name for collection in chroma_client.list_collections()}
+        if "historian_documents" not in collection_names:
+            return "skipped (historian_documents collection missing)"
+
+        collection = chroma_client.get_collection("historian_documents")
+        sample = collection.get(limit=1, include=["embeddings"])
+        embeddings = sample.get("embeddings") or []
+        if not embeddings:
+            return "skipped (historian_documents has no embeddings)"
+        embedding_dim = len(embeddings[0])
+        require(embedding_dim > 0, "embedding dimension must be > 0")
+        return f"collection=historian_documents dim={embedding_dim}"
+
+    suite.check("Chroma vector-store contract", check_chromadb_contract)
+
+    def check_historian_agent_imports() -> str:
+        modules = [
+            "historian_agent.rag_query_handler",
+            "historian_agent.adversarial_rag",
+            "historian_agent.iterative_adversarial_agent",
+        ]
+        for module_name in modules:
+            importlib.import_module(module_name)
+        return f"imported={','.join(modules)}"
+
+    suite.check("Historian-agent module imports", check_historian_agent_imports)
+
     with app.test_client() as client:
         def check_db_preflight() -> str:
             total_docs = db["documents"].count_documents({})
@@ -127,6 +201,34 @@ def main() -> int:
             return f"docs={total_docs}, linked_entities={total_linked}, network_edges={total_edges}"
 
         suite.check("DB preflight and sample IDs", check_db_preflight)
+
+        def check_document_structure_contract() -> str:
+            sample_doc = db["documents"].find_one(
+                {
+                    "$or": [
+                        {"content": {"$exists": True, "$type": "string", "$ne": ""}},
+                        {"ocr_text": {"$exists": True, "$type": "string", "$ne": ""}},
+                        {"summary": {"$exists": True, "$type": "string", "$ne": ""}},
+                    ]
+                },
+                {"_id": 1, "content": 1, "ocr_text": 1, "summary": 1, "sections": 1},
+            )
+            require(sample_doc is not None, "documents collection has no sample document")
+
+            populated_text_fields = [
+                field_name
+                for field_name in ("content", "ocr_text", "summary")
+                if isinstance(sample_doc.get(field_name), str) and sample_doc.get(field_name).strip()
+            ]
+            require(populated_text_fields, "sample document has no populated content/ocr_text/summary field")
+
+            sections_value = sample_doc.get("sections")
+            if sections_value is not None:
+                require(isinstance(sections_value, list), "document.sections must be a list when present")
+
+            return f"text_fields={','.join(populated_text_fields)}"
+
+        suite.check("Document structure contract", check_document_structure_contract)
 
         def check_core_pages() -> str:
             for path in ["/", "/search", "/historian-agent", "/network-analysis", "/help"]:

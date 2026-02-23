@@ -258,7 +258,21 @@ TASK: Verify each factual claim. Report citation_score as percentage with direct
                 icon="⚠️",
                 level="WARN"
             )
-            source_ids = list(metrics.get('sources', {}).values())
+            raw_sources = metrics.get('sources', [])
+            source_ids = []
+
+            # Normalize both legacy dict-shaped sources and current list-shaped sources.
+            if isinstance(raw_sources, dict):
+                source_ids = [str(value) for value in raw_sources.values() if value]
+            elif isinstance(raw_sources, list):
+                for item in raw_sources:
+                    if isinstance(item, dict):
+                        metadata = item.get("metadata", {}) if isinstance(item.get("metadata"), dict) else {}
+                        doc_id = item.get("id") or item.get("document_id") or metadata.get("document_id")
+                        if doc_id:
+                            source_ids.append(str(doc_id))
+                    elif item:
+                        source_ids.append(str(item))
             
             if source_ids:
                 verify_text, _, _ = self.rag_handler.get_full_document_text(source_ids)

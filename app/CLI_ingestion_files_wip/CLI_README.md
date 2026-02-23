@@ -332,7 +332,10 @@ The scripts respect these environment variables:
 - `OPENAI_API_KEY` - OpenAI API key
 - `OPENAI_API_KEY_FILE` - Path to API key file
 
-Example `.env`:
+Example variables are documented in:
+`/Users/louishyman/coding/nosql/nosql_reader_cleanup/docs/ENV_EXAMPLES.md`
+
+Example values:
 ```bash
 export HISTORIAN_AGENT_MODEL_PROVIDER=ollama
 export HISTORIAN_AGENT_MODEL=llama3.2-vision:latest

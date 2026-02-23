@@ -85,17 +85,16 @@ images/
 ## ⚙️ Environment Setup
 
 ```bash
-# Copy example config
-cp example.env .env
-nano .env
-
-# Load environment
-export $(cat .env | grep -v '^#' | xargs)
+# Edit master config in project root
+nano ../../.env
 
 # Or use in Python
 from dotenv import load_dotenv
 load_dotenv()
 ```
+
+Reference example variables live in:
+`/Users/louishyman/coding/nosql/nosql_reader_cleanup/docs/ENV_EXAMPLES.md`
 
 ## 🔍 Debugging
 
