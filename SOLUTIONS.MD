@@ -200,3 +200,23 @@ Documentation and helper scripts still contained stale file paths from a cleanup
 ### Verification
 - Confirmed no remaining `nosql_reader_cleanup` path references in markdown files under the repo.
 - Confirmed no remaining `/app/scripts/e2e_cli_suite.py` reference in shell scripts under the repo.
+
+## 2026-02-23 - Harden Docker status and Chroma embedding checks in diagnostics
+
+### Problem
+Two diagnostics were brittle against runtime/tooling differences:
+- `quick_check.sh` expected `docker compose ps` text to include `running`, but current Compose reports service status as `Up`, causing false negatives.
+- `app/util/e2e_cli_suite.py` used `sample.get("embeddings") or []`, which triggers ambiguous truth-value evaluation when Chroma returns a NumPy ndarray.
+
+### Solution
+- Updated `quick_check.sh` to use Compose status-aware service detection:
+  - `docker compose ps --status running --services | grep -qx "app"`
+- Updated `app/util/e2e_cli_suite.py` Chroma contract check to avoid ndarray truthiness and normalize embedding containers:
+  - check `None` explicitly,
+  - convert ndarray via `.tolist()` when present,
+  - otherwise coerce iterable to `list(...)`,
+  - validate with length checks.
+
+### Verification
+- Re-ran `quick_check.sh` and confirmed it no longer fails at the container-status step.
+- Re-ran `scripts/run_e2e_suite.sh` and confirmed the Chroma vector-store contract check passes.

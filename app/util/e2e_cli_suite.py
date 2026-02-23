@@ -140,8 +140,15 @@ def main() -> int:
 
         collection = chroma_client.get_collection("historian_documents")
         sample = collection.get(limit=1, include=["embeddings"])
-        embeddings = sample.get("embeddings") or []
-        if not embeddings:
+        raw_embeddings = sample.get("embeddings")  # Avoid ndarray truthiness checks that raise ValueError.
+        if raw_embeddings is None:
+            return "skipped (historian_documents has no embeddings)"
+        # Normalize to list-like access for both numpy arrays and Python lists.
+        if hasattr(raw_embeddings, "tolist"):
+            embeddings = raw_embeddings.tolist()
+        else:
+            embeddings = list(raw_embeddings)
+        if len(embeddings) == 0:
             return "skipped (historian_documents has no embeddings)"
         embedding_dim = len(embeddings[0])
         require(embedding_dim > 0, "embedding dimension must be > 0")

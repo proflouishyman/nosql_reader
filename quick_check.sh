@@ -83,7 +83,8 @@ echo ""
 
 # Test 3: Check Docker container
 echo "Test 3: Checking Docker container..."
-if docker compose ps | grep -q "app.*running"; then
+# Use compose status filtering instead of brittle text matching ("Up" vs "running").
+if docker compose ps --status running --services 2>/dev/null | grep -qx "app"; then
     print_success "Flask app container is running"
 else
     print_error "Flask app container is not running"

@@ -9,3 +9,4 @@
 [2025-12-15 18:19] app/historian_agent/__init__.py edited — Stop silent vector fallback when document_chunks is missing so DB issues surface
 [2025-12-15 19:12] app/historian_agent/retrievers.py edited — Synced vector search results with Mongo chunk metadata so citations carry parent IDs and text
 [2026-02-23 12:37] readme.md, setup.md, docs/february_how_this_works.md, app/CLI_ingestion_files_wip/QUICK_REFERENCE.md, app/CLI_ingestion_files_wip/CLI_README.md, scripts/run_e2e_suite.sh, SOLUTIONS.MD edited — Corrected stale cleanup-path references to main repo paths and fixed E2E script target path.
+[2026-02-23 12:54] quick_check.sh, app/util/e2e_cli_suite.py, SOLUTIONS.MD edited — Hardened container status detection and Chroma embeddings handling to avoid false failures across Compose/ndarray runtime differences.
