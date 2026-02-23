@@ -7,16 +7,24 @@
     <div class="info-panel">
       <!-- Navigation -->
       <div class="navigation">
-        <a href="{{ url_for('search_database') }}?return_to_search=true" class="nav-button" title="Return to Search Results">
-          <span>Search</span>
+        <a href="{{ back_to_list_url }}" class="button button--secondary nav-button" title="Return to document list" data-help="Return to the current document results list.">
+          <span>{{ back_to_list_label }}</span>
         </a>
-        <a href="{{ prev_id and url_for('document_detail', doc_id=prev_id, search_id=search_id) or '#' }}" class="nav-button {{ 'disabled' if not prev_id else '' }}" title="Previous Result">
+        <a href="{{ prev_url }}"
+           class="button button--secondary nav-button {{ 'disabled' if not prev_id else '' }}"
+           title="Previous Result"
+           data-help="Open the previous document in the current results context."
+           {% if not prev_id %}aria-disabled="true" tabindex="-1"{% endif %}>
           <span>Previous</span>
         </a>
-        <a href="{{ url_for('index') }}" class="nav-button" title="Home">
+        <a href="{{ url_for('index') }}" class="button button--secondary nav-button" title="Home" data-help="Return to the application home page.">
           <span>Home</span>
         </a>
-        <a href="{{ next_id and url_for('document_detail', doc_id=next_id, search_id=search_id) or '#' }}" class="nav-button {{ 'disabled' if not next_id else '' }}" title="Next Result">
+        <a href="{{ next_url }}"
+           class="button button--secondary nav-button {{ 'disabled' if not next_id else '' }}"
+           title="Next Result"
+           data-help="Open the next document in the current results context."
+           {% if not next_id %}aria-disabled="true" tabindex="-1"{% endif %}>
           <span>Next</span>
         </a>
       </div>
@@ -45,21 +53,39 @@
           </div>
         {% endif %}
 
+        {% set biographical_narrative = none %}
+        {% if document.person_synthesis and document.person_synthesis is mapping %}
+          {% set biographical_narrative = document.person_synthesis.get('biographical_narrative') or document.person_synthesis.get('Biographical Narrative') %}
+        {% endif %}
+
+        {% if biographical_narrative %}
+          <div class="info-section">
+            <h2>Biographical Narrative</h2>
+            <p>{{ biographical_narrative }}</p>
+          </div>
+        {% endif %}
+
         <!-- Render Sections -->
         {% for section in document.sections %}
           {{ render_section(section) }}
         {% endfor %}
 
-        <!-- Render All Extracted Entities -->
-        {% if document.extracted_entities %}
+        <!-- Render Named Entities -->
+        {% if ner_groups %}
           <div class="info-section">
-            <h2>Extracted Entities</h2>
-            {% for type, entities in document.extracted_entities | groupby('type') %}
+            <h2>Named Entities</h2>
+            {% for entity_type, entity_values in ner_groups %}
               <div class="entity-group">
-                <h3>{{ type }}</h3>
+                <h3>{{ entity_type }}</h3>
                 <ul>
-                  {% for entity in entities %}
-                    <li>{{ entity.text }}</li>
+                  {% for entity in entity_values %}
+                    <li class="entity-item"
+                        {% if entity.entity_id %}
+                        data-entity-id="{{ entity.entity_id }}"
+                        data-entity-type="{{ entity.type }}"
+                        {% endif %}>
+                      {{ entity.text }}
+                    </li>
                   {% endfor %}
                 </ul>
               </div>
@@ -67,12 +93,33 @@
           </div>
         {% endif %}
 
+        {% include 'partials/network_context.html' %}
+
         {% if document.person_synthesis %}
           <!-- Render person synthesis with nested formatting so it matches the other structured JSON blocks -->
           <div class="info-section">
             <h2>Person Synthesis</h2>
             <div class="nested-block">
-              {{ render_nested_value(document.person_synthesis) }}
+              {% if document.person_synthesis is mapping %}
+                <table class="info-table nested">
+                  {% for subkey, subvalue in document.person_synthesis.items() %}
+                    {% if subkey != 'biographical_narrative' and subkey != 'Biographical Narrative' %}
+                      <tr>
+                        <th>{{ subkey.replace('_', ' ') | title }}</th>
+                        <td>
+                          {% if subvalue is mapping or (subvalue is iterable and not subvalue is string) %}
+                            {{ render_nested_value(subvalue) }}
+                          {% else %}
+                            {{ subvalue }}
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                </table>
+              {% else %}
+                {{ render_nested_value(document.person_synthesis) }}
+              {% endif %}
             </div>
           </div>
         {% endif %}
@@ -91,44 +138,44 @@
           <img id="documentImage" src="{{ url_for('serve_image', filename=image_path) }}" alt="Document Image">
         </div>
         <div class="zoom-controls">
-          <button id="rotateLeft">Rotate Left</button>
-          <button id="rotateRight">Rotate Right</button>
-          <button id="zoomIn">Zoom In</button>
-          <button id="zoomOut">Zoom Out</button>
-          <button id="resetZoom">Reset</button>
+          <button id="rotateLeft" data-help="Rotate the image 90 degrees counterclockwise.">Rotate Left</button>
+          <button id="rotateRight" data-help="Rotate the image 90 degrees clockwise.">Rotate Right</button>
+          <button id="zoomIn" data-help="Zoom in on the document image.">Zoom In</button>
+          <button id="zoomOut" data-help="Zoom out from the document image.">Zoom Out</button>
+          <button id="resetZoom" data-help="Reset image zoom and rotation to default values.">Reset</button>
         </div>
         <div class="adjustment-controls">
           <div class="control-group">
             <label for="brightnessRange">Brightness:</label>
-            <input type="range" id="brightnessRange" min="0.5" max="1.5" step="0.1" value="1" title="1">
+            <input type="range" id="brightnessRange" min="0.5" max="1.5" step="0.1" value="1" title="1" data-help="Adjust image brightness.">
           </div>
           <div class="control-group">
             <label for="contrastRange">Contrast:</label>
-            <input type="range" id="contrastRange" min="0.5" max="2" step="0.1" value="1" title="1">
+            <input type="range" id="contrastRange" min="0.5" max="2" step="0.1" value="1" title="1" data-help="Adjust image contrast.">
           </div>
           <div class="control-group">
             <label for="saturationRange">Saturation:</label>
-            <input type="range" id="saturationRange" min="0" max="3" step="0.1" value="1" title="1">
+            <input type="range" id="saturationRange" min="0" max="3" step="0.1" value="1" title="1" data-help="Adjust image color saturation.">
           </div>
           <div class="control-group">
             <label for="hueRange">Hue Rotation:</label>
-            <input type="range" id="hueRange" min="0" max="360" step="10" value="0" title="0">
+            <input type="range" id="hueRange" min="0" max="360" step="10" value="0" title="0" data-help="Rotate image hue values for color shifts.">
           </div>
           <div class="control-group">
             <label for="sharpenRange">Sharpen:</label>
-            <input type="range" id="sharpenRange" min="0" max="5" step="0.1" value="0" title="0">
+            <input type="range" id="sharpenRange" min="0" max="5" step="0.1" value="0" title="0" data-help="Increase edge sharpness for clearer text.">
           </div>
           <div class="control-group">
             <label for="thresholdRange">Threshold:</label>
-            <input type="range" id="thresholdRange" min="0" max="255" step="1" value="128" title="128">
+            <input type="range" id="thresholdRange" min="0" max="255" step="1" value="128" title="128" data-help="Adjust thresholding to emphasize dark/light contrast.">
           </div>
           <div class="buttons-group">
-            <button id="grayscaleBtn">Grayscale</button>
-            <button id="sepiaBtn">Sepia</button>
-            <button id="invertBtn">Invert Colors</button>
-            <button id="flipHorizontalBtn">Flip Horizontal</button>
-            <button id="flipVerticalBtn">Flip Vertical</button>
-            <button id="resetAllBtn">Reset All</button>
+            <button id="grayscaleBtn" data-help="Toggle grayscale rendering.">Grayscale</button>
+            <button id="sepiaBtn" data-help="Toggle sepia rendering.">Sepia</button>
+            <button id="invertBtn" data-help="Invert image colors.">Invert Colors</button>
+            <button id="flipHorizontalBtn" data-help="Mirror the image horizontally.">Flip Horizontal</button>
+            <button id="flipVerticalBtn" data-help="Flip the image vertically.">Flip Vertical</button>
+            <button id="resetAllBtn" data-help="Reset all image transforms and filter adjustments.">Reset All</button>
           </div>
         </div>
         <!-- SVG Filters -->
@@ -167,6 +214,8 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/d3.v7.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/network.js') }}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     // Image Manipulation Code

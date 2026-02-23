@@ -1,0 +1,499 @@
+{# app/templates/network-analysis.html #}
+{#
+  Standalone network explorer page.
+
+  Shows a D3.js force-directed graph with filter controls and
+  an entity detail sidebar. Supports both global and ego-network modes.
+
+  URL patterns:
+    /network-analysis                          — global network
+    /network-analysis?entity=<entity_id>       — ego network for one entity
+    /network-analysis?types=PERSON,GPE         — type-filtered global
+    /network-analysis?min_weight=5             — weight-filtered global
+
+  Domain-agnostic: entity types, colors, and labels are all derived from
+  the data itself via the /api/network/types endpoint.
+#}
+{% extends "base.html" %}
+
+{% block title %}Network Analysis · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container network-analysis-page">
+
+  {# Header #}
+  <header class="network-header">
+    <h1>Network Analysis</h1>
+    <div id="network-stats" class="network-stats-bar" data-help="Type-pair chips summarize edge categories. Hover to inspect stats. Click a chip to focus that pair."></div>
+    <div id="active-type-pair-state" class="active-type-pair-state"></div>
+  </header>
+
+  {# Controls #}
+  <div class="network-controls">
+    <div class="control-group">
+      <label>Entity types:</label>
+      <div id="type-filters" class="type-filters" data-help="Select which entity categories to include in the graph. Unchecked types are filtered out.">
+        <span style="color: #999;">Loading types…</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="strict-type-filter">Strict type match:</label>
+      <input type="checkbox" id="strict-type-filter" checked data-help="When enabled, both ends of an edge must match selected entity types.">
+    </div>
+
+    <div class="control-group">
+      <label for="pair-preset">De-noise:</label>
+      <select id="pair-preset" data-help="Quickly suppress noisy edge categories like same-type links, or focus only on them.">
+        <option value="cross_type_only" selected>Cross-type only (recommended)</option>
+        <option value="all_pairs">All pairs</option>
+        <option value="within_type_only">Within-type only</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="ranking-mode">Ranking:</label>
+      <select id="ranking-mode" data-help="Choose how edges are prioritized before graph truncation: strongest, cross-type, rare-but-strong, or low-frequency pairs.">
+        <option value="most_connected" selected>Most connected</option>
+        <option value="most_cross_type">Most cross-type</option>
+        <option value="rare_but_strong">Rare but strong</option>
+        <option value="low_frequency_pairs">Low-frequency pairs</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="research-template">Research template:</label>
+      <select id="research-template" data-help="Apply a prebuilt investigative slice such as Person↔Org or ID↔Person reconciliation.">
+        <option value="">Select...</option>
+        <option value="person_org">Person↔Org</option>
+        <option value="person_gpe">Person↔GPE</option>
+        <option value="occupation_gpe">Occupation↔GPE</option>
+        <option value="employee_person_reconciliation">ID↔Person reconciliation</option>
+      </select>
+      <button type="button" id="apply-research-template" class="reset-network-btn" data-help="Applies the selected template to type filters and pair focus.">Apply</button>
+    </div>
+
+    <div class="control-group">
+      <label for="min-weight-slider">Min. edge weight:</label>
+      <input type="range" id="min-weight-slider" min="1" max="50" value="3" step="1" data-help="Only show edges that appear in at least this many documents.">
+      <span id="min-weight-display">3</span>
+    </div>
+
+    <div class="control-group">
+      <label for="max-nodes-slider">Max edges:</label>
+      <input type="range" id="max-nodes-slider" min="50" max="1000" value="500" step="50" data-help="Caps displayed edges for readability and performance.">
+      <span id="max-nodes-display">500</span>
+    </div>
+
+    <div class="control-group">
+      <label for="entity-search">Document contains:</label>
+      <input type="text" id="entity-search" placeholder="Type a word or phrase…" autocomplete="off" data-help="Filters to edges supported by documents containing this term anywhere across document fields.">
+    </div>
+
+    <div class="control-group">
+      <button type="button" id="reset-network-controls" class="reset-network-btn" data-help="Resets all filters and returns to the default global network view.">Reset</button>
+    </div>
+    <div class="control-group">
+      <button type="button" id="open-network-viewer" class="reset-network-btn" data-help="Launches a document list for the current network slice with Next/Previous viewer navigation.">Open Document Viewer</button>
+    </div>
+  </div>
+
+  {# Main layout: graph + sidebar #}
+  <div class="network-layout">
+    <div class="network-graph-container">
+      <div id="network-graph" style="width: 100%; height: 600px; border: 1px solid #eee; border-radius: 6px; background: #fafafa; position: relative;">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
+          Loading network…
+        </div>
+      </div>
+      <div id="network-legend" class="network-legend"></div>
+    </div>
+
+    <div class="network-sidebar" id="entity-detail-sidebar">
+      <div style="color: #999; padding: 16px;">
+        Click a node to see entity details.
+      </div>
+    </div>
+  </div>
+
+  <section class="network-analytics-panel" id="network-analytics-panel">
+    <h2>Whole Network Metrics</h2>
+    <p class="network-analytics-panel__note">
+      Metrics are computed for the currently loaded network slice (after active filters).
+    </p>
+
+    <div class="network-analytics-controls">
+      <div class="control-group">
+        <label for="person-min-mentions">Person tie minimum documents:</label>
+        <input
+          type="number"
+          id="person-min-mentions"
+          min="0"
+          step="1"
+          value="3"
+          data-help="Only count edges with PERSON endpoints when that person appears in at least this many documents."
+        >
+      </div>
+
+      <div class="control-group">
+        <label for="node-highlight-metric">Highlight central nodes by:</label>
+        <select id="node-highlight-metric" data-help="Choose the node centrality metric used to highlight nodes in the graph.">
+          <option value="harmonic" selected>Harmonic centrality</option>
+          <option value="degree">Degree centrality</option>
+          <option value="weighted_degree">Weighted degree</option>
+          <option value="betweenness">Betweenness centrality</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="node-highlight-topn">Top nodes to highlight:</label>
+        <input type="range" id="node-highlight-topn" min="3" max="50" value="10" step="1" data-help="How many highest-centrality nodes to visually emphasize.">
+        <span id="node-highlight-topn-display">10</span>
+      </div>
+    </div>
+
+    <div id="whole-network-stats" class="whole-network-stats">
+      <div class="network-stats-loading">Calculating network metrics…</div>
+    </div>
+
+    <div class="node-centrality-section">
+      <h3>Node Level Statistics</h3>
+      <div id="node-centrality-list" class="node-centrality-list">
+        <div class="network-stats-loading">Centrality list will appear after graph load.</div>
+      </div>
+    </div>
+  </section>
+
+  {% include 'partials/network_statistics.html' %}
+
+</div>
+
+<style>
+  .network-analysis-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .network-header {
+    margin-bottom: 16px;
+  }
+
+  .network-header h1 {
+    margin: 0 0 8px 0;
+  }
+
+  .network-stats-bar {
+    font-size: 0.85em;
+    color: #666;
+  }
+
+  .network-stats-bar .stat-badge {
+    display: inline-flex;
+    margin: 0 4px;
+    padding: 2px 8px;
+    background: #fff;
+    color: #374151;
+    border-radius: 3px;
+    font-size: 0.9em;
+    border: 1px solid #d1d5db;
+  }
+
+  .network-stats-bar .stat-badge.stat-badge-button {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff;
+    color: #374151;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .network-stats-bar .stat-badge.stat-badge-button:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+
+  .network-stats-bar .stat-badge.stat-badge-active {
+    background: #fff;
+    border-color: #60a5fa;
+    color: #1e3a8a;
+    font-weight: 700;
+  }
+
+  .active-type-pair-state {
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: #475569;
+  }
+
+  .active-type-pair-state button {
+    margin-left: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+  }
+
+  .network-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .network-controls .control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .network-controls label {
+    font-weight: 500;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+
+  .network-controls input[type="range"] {
+    width: 120px;
+  }
+
+  .network-controls input[type="text"] {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+    width: 180px;
+  }
+
+  .network-controls select {
+    padding: 4px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.9em;
+  }
+
+  .network-controls .reset-network-btn {
+    padding: 6px 10px;
+    border: 1px solid #c8ced6;
+    border-radius: 4px;
+    background: #fff;
+    color: #1f2937;
+    font-weight: 600;
+    line-height: 1.2;
+    box-shadow: none;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+
+  .network-controls .reset-network-btn:hover {
+    background: #eef2f6;
+  }
+
+  .type-filters label {
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+
+  .network-layout {
+    display: flex;
+    gap: 16px;
+  }
+
+  .network-graph-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .network-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 12px;
+    background: #fafafa;
+    max-height: 650px;
+    overflow-y: auto;
+  }
+
+  .network-sidebar h3 {
+    margin: 0 0 8px 0;
+  }
+
+  .network-sidebar h4 {
+    margin: 12px 0 6px 0;
+    font-size: 0.95em;
+  }
+
+  .network-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .network-sidebar ul li {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+  }
+
+  .network-sidebar a {
+    color: #2E75B6;
+    text-decoration: none;
+  }
+
+  .network-sidebar a:hover {
+    text-decoration: underline;
+  }
+
+  .network-legend {
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: #555;
+  }
+
+  .network-analytics-panel {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .network-analytics-panel h2 {
+    margin: 0 0 4px 0;
+    font-size: 1.05rem;
+  }
+
+  .network-analytics-panel__note {
+    margin: 0 0 12px 0;
+    color: #6b7280;
+    font-size: 0.9em;
+  }
+
+  .network-analytics-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .network-analytics-controls .control-group input[type="number"] {
+    width: 84px;
+    padding: 4px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .whole-network-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .whole-network-stats .stat-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f8fafc;
+    padding: 8px 10px;
+  }
+
+  .whole-network-stats .stat-card .stat-label {
+    display: block;
+    font-size: 0.8em;
+    color: #475569;
+    margin-bottom: 3px;
+  }
+
+  .whole-network-stats .stat-card .stat-value {
+    font-weight: 700;
+    color: #111827;
+    font-size: 1rem;
+  }
+
+  .node-centrality-section h3 {
+    margin: 0 0 8px 0;
+    font-size: 0.98rem;
+  }
+
+  .node-centrality-list {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    background: #f8fafc;
+  }
+
+  .node-centrality-list ol {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .node-centrality-list li {
+    padding: 2px 0;
+    font-size: 0.9em;
+    color: #1f2937;
+  }
+
+  .network-stats-loading {
+    color: #64748b;
+    font-size: 0.9em;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .network-layout {
+      flex-direction: column;
+    }
+    .network-sidebar {
+      width: 100%;
+      max-height: 300px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/d3.v7.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/network.js') }}"></script>
+<script src="{{ url_for('static', filename='js/network_statistics.js') }}"></script>
+<script>
+  // Slider display values
+  document.getElementById("min-weight-slider")?.addEventListener("input", function () {
+    document.getElementById("min-weight-display").textContent = this.value;
+  });
+  document.getElementById("max-nodes-slider")?.addEventListener("input", function () {
+    document.getElementById("max-nodes-display").textContent = this.value;
+  });
+  document.getElementById("node-highlight-topn")?.addEventListener("input", function () {
+    document.getElementById("node-highlight-topn-display").textContent = this.value;
+  });
+
+  // Slider change triggers reload
+  document.getElementById("min-weight-slider")?.addEventListener("change", () => {
+    const container = document.getElementById("network-graph");
+    const params = new URLSearchParams(window.location.search);
+    const entityId = params.get("entity");
+    if (entityId) {
+      NetworkExplorer.loadEgoNetwork(container, entityId);
+    } else {
+      NetworkExplorer.loadGlobalNetwork(container);
+    }
+  });
+  document.getElementById("max-nodes-slider")?.addEventListener("change", () => {
+    const container = document.getElementById("network-graph");
+    const params = new URLSearchParams(window.location.search);
+    const entityId = params.get("entity");
+    if (entityId) {
+      NetworkExplorer.loadEgoNetwork(container, entityId);
+    } else {
+      NetworkExplorer.loadGlobalNetwork(container);
+    }
+  });
+</script>
+{% endblock %}

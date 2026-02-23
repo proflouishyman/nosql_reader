@@ -42,10 +42,7 @@ from io import StringIO, BytesIO
 from logging.handlers import RotatingFileHandler
 from typing import Any, Dict, List, Optional, Tuple
 import os
-import subprocess
 import uuid
-import threading
-import glob
 import pymongo
 from pathlib import Path
 import zipfile
@@ -59,6 +56,9 @@ from historian_agent import (
 
 import image_ingestion
 from util.mounts import get_mounted_paths, short_tree  # Added to support read-only ingestion mounts view.
+from network import init_app as init_network
+from network.config import NetworkConfig
+from network.network_utils import get_network_documents_for_viewer
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -84,6 +84,7 @@ logger.addHandler(file_handler)
 client = get_client()
 db = get_db(client)
 documents, unique_terms_collection, field_structure_collection = get_collections(db)
+init_network(app)
 
 # Hashed password (generate this using generate_password_hash('your_actual_password'))
 ADMIN_PASSWORD_HASH = 'pbkdf2:sha256:260000$uxZ1Fkjt9WQCHwuN$ca37dfb41ebc26b19daf24885ebcd09f607cab85f92dcab13625627fd9ee902a'
@@ -118,6 +119,7 @@ All routes maintain the same session/history pattern as existing historian_agent
 from historian_agent.adversarial_rag import AdversarialRAGHandler
 from historian_agent.iterative_adversarial_agent import build_agent_from_env
 from historian_agent.rag_query_handler import RAGQueryHandler
+from historian_agent.corpus_explorer import CorpusExplorer
 
 # Global instances (initialized lazily)
 _rag_handler = None
@@ -125,9 +127,6 @@ _adversarial_handler = None
 _tiered_agent = None
 _tier0_explorer = None
 _last_exploration_report = None
-_exploration_runs: Dict[str, Dict[str, Any]] = {}
-_exploration_runs_lock = threading.Lock()
-_EXPLORATION_RUN_LIMIT = 30
 
 def get_rag_handler():
     """Lazy initialization of RAGQueryHandler"""
@@ -155,7 +154,6 @@ def get_tier0_explorer():
     """Lazy initialization of Tier 0 CorpusExplorer."""
     global _tier0_explorer
     if _tier0_explorer is None:
-        from historian_agent.corpus_explorer import CorpusExplorer
         _tier0_explorer = CorpusExplorer()
     return _tier0_explorer
 
@@ -228,23 +226,7 @@ def process_rag_query(
         
     elif method == 'tiered':
         agent = get_tiered_agent()
-        if hasattr(agent, 'run'):
-            result = agent.run(question)
-        else:
-            if hasattr(agent, 'invoke'):
-                result = agent.invoke(question)
-            elif hasattr(agent, 'investigate'):
-                answer, sources_list, stage_metrics, total_time = agent.investigate(question)
-                result = {
-                    'answer': answer,
-                    'sources': sources_list,
-                    'metrics': {
-                        'total_time': total_time,
-                        'stages': stage_metrics,
-                    },
-                }
-            else:
-                raise AttributeError("TieredHistorianAgent has no supported execution method")
+        result = agent.run(question)
         answer = result.get('answer', '')
         sources_list = result.get('sources', [])
         metrics = result.get('metrics', {})
@@ -280,6 +262,7 @@ def process_rag_query(
 
 def _format_tier0_summary(report: Dict[str, Any], focus_note: str) -> str:
     """Build a concise Tier 0 summary for the Historian Agent UI."""
+    # Added helper to format Tier 0 exploration output for chat display.
     metadata = report.get("exploration_metadata", {})
     strategy = metadata.get("strategy", "unknown")
     documents_read = metadata.get("documents_read", 0)
@@ -296,7 +279,7 @@ def _format_tier0_summary(report: Dict[str, Any], focus_note: str) -> str:
     if focus_note:
         summary_lines.append(f"Focus note: {focus_note}")
     if research_lens:
-        summary_lines.append(f"Research lens: {', '.join([str(item) for item in research_lens])}")
+        summary_lines.append(f"Research lens: {', '.join([str(item) for item in research_lens])}")  # Added to confirm historian-specified priorities were applied to the run.
     if questions:
         summary_lines.append("Top research questions:")
         for item in questions[:5]:
@@ -424,6 +407,7 @@ def historian_agent_query_tiered():
 @app.route('/historian-agent/query-tier0', methods=['POST'])
 def historian_agent_query_tier0():
     """Tier 0 corpus exploration triggered from the Historian Agent UI."""
+    # Added Tier 0 query handler to serve the new dropdown option in the Historian Agent UI.
     payload = request.get_json(silent=True) or {}
     question = (payload.get('question') or '').strip()
     conversation_id = payload.get('conversation_id') or str(uuid.uuid4())
@@ -453,7 +437,7 @@ def historian_agent_query_tier0():
         total_budget = payload.get('total_budget')
         year_range = payload.get('year_range')
         save_notebook = payload.get('save_notebook')
-        research_lens = payload.get('research_lens', payload.get('focus_areas'))
+        research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases so callers can bias Tier 0 toward historian-defined intersections.
 
         if isinstance(year_range, list) and len(year_range) == 2:
             try:
@@ -485,9 +469,9 @@ def historian_agent_query_tier0():
             'patterns': len(report.get('patterns') or []),
             'entities': len(report.get('entities') or []),
             'contradictions': len(report.get('contradictions') or []),
-        }
+        }  # Added Tier 0 metrics so the UI can surface exploration stats.
 
-        search_id = ''
+        search_id = ''  # Tier 0 does not return document sources to cache.
         sources_dict: Dict[str, Dict[str, str]] = {}
 
         history.append({'role': 'user', 'content': question})
@@ -515,7 +499,7 @@ def historian_agent_query_tier0():
 @app.route('/historian-agent/reset-rag', methods=['POST'])
 def reset_rag_handlers():
     """Reset and reinitialize all RAG handlers."""
-    global _rag_handler, _adversarial_handler, _tiered_agent, _tier0_explorer, _last_exploration_report
+    global _rag_handler, _adversarial_handler, _tiered_agent
     
     try:
         if _rag_handler: _rag_handler.close()
@@ -525,8 +509,6 @@ def reset_rag_handlers():
         _rag_handler = None
         _adversarial_handler = None
         _tiered_agent = None
-        _tier0_explorer = None
-        _last_exploration_report = None
         
         return jsonify({'message': 'All RAG handlers reset successfully', 'status': 'success'})
     except Exception as exc:
@@ -534,21 +516,20 @@ def reset_rag_handlers():
         return jsonify({'error': f'Reset failed: {str(exc)}', 'status': 'error'}), 500
 
 
+# ============================================================================
+# TIER 0 CORPUS EXPLORATION ENDPOINTS
+# ============================================================================
+
 @app.route('/api/rag/explore_corpus', methods=['POST'])
 def explore_corpus_endpoint():
     """Run Tier 0 corpus exploration (synchronous)."""
-    global _last_exploration_report
     payload = request.get_json(silent=True) or {}
-    if _is_truthy(payload.get('reuse_latest')) and _last_exploration_report is not None:
-        reused = dict(_last_exploration_report)
-        reused['reused_existing_report'] = True
-        return jsonify(reused)
 
     strategy = payload.get('strategy')
     total_budget = payload.get('total_budget')
     year_range = payload.get('year_range')
     save_notebook = payload.get('save_notebook')
-    research_lens = payload.get('research_lens', payload.get('focus_areas'))
+    research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases for API clients that prepopulate historian interests.
 
     if isinstance(year_range, list) and len(year_range) == 2:
         try:
@@ -567,79 +548,10 @@ def explore_corpus_endpoint():
         research_lens=research_lens,
     )
 
+    global _last_exploration_report
     _last_exploration_report = report
 
     return jsonify(report)
-
-
-@app.route('/api/rag/explore_corpus/start', methods=['POST'])
-def explore_corpus_start_endpoint():
-    """Start Tier 0 exploration in a background thread and return a run id."""
-    payload = request.get_json(silent=True) or {}
-    run_id = str(uuid.uuid4())
-    now = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-    run = {
-        "run_id": run_id,
-        "status": "queued",
-        "created_at": now,
-        "created_at_ts": time.time(),
-        "payload": payload,
-        "events": [],
-        "log_file": None,
-        "log_offset": 0,
-        "last_event_ts": time.time(),
-        "last_event_message": "",
-    }
-    _append_run_event(run, "[runner] request accepted")
-    with _exploration_runs_lock:
-        _exploration_runs[run_id] = run
-        _trim_exploration_runs_locked()
-
-    thread = threading.Thread(
-        target=_run_exploration_async,
-        args=(run_id, payload),
-        daemon=True,
-        name=f"tier0-run-{run_id[:8]}",
-    )
-    thread.start()
-    return jsonify({"run_id": run_id, "status": "started", "created_at": now})
-
-
-@app.route('/api/rag/explore_corpus/status/<run_id>', methods=['GET'])
-def explore_corpus_status_endpoint(run_id: str):
-    """Return status and detailed progress events for an async Tier 0 run."""
-    try:
-        since = int(request.args.get("since", "0"))
-    except ValueError:
-        since = 0
-    since = max(0, since)
-
-    with _exploration_runs_lock:
-        run = _exploration_runs.get(run_id)
-        if run is None:
-            return jsonify({"error": "Run not found"}), 404
-        _refresh_run_events(run)
-        events = run.get("events", [])
-        next_cursor = len(events)
-        delta = events[since:next_cursor] if since < next_cursor else []
-        now_ts = time.time()
-        heartbeat_age = now_ts - float(run.get("last_event_ts", now_ts))
-        status_payload = {
-            "run_id": run_id,
-            "status": run.get("status", "unknown"),
-            "created_at": run.get("created_at"),
-            "started_at": run.get("started_at"),
-            "finished_at": run.get("finished_at"),
-            "events": delta,
-            "next_cursor": next_cursor,
-            "heartbeat_age_seconds": round(heartbeat_age, 1),
-            "last_event_message": run.get("last_event_message", ""),
-            "error": run.get("error"),
-        }
-        if run.get("status") == "completed":
-            status_payload["report"] = run.get("report")
-
-    return jsonify(status_payload)
 
 
 @app.route('/api/rag/exploration_report', methods=['GET'])
@@ -649,96 +561,6 @@ def exploration_report_endpoint():
         return jsonify({'error': 'No exploration report available'}), 404
 
     return jsonify(_last_exploration_report)
-
-
-@app.route('/api/rag/exploration_notebooks', methods=['GET'])
-def list_exploration_notebooks():
-    """List saved exploration notebooks from disk."""
-    import glob
-
-    save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
-    try:
-        patterns = [
-            os.path.join(save_dir, '**', 'notebook_*.json'),
-            os.path.join(save_dir, '**', '*_notebook.json'),
-            os.path.join(save_dir, '**', 'report_*.json'),
-            os.path.join(save_dir, '**', '*_report.json'),
-        ]
-        files = []
-        for pattern in patterns:
-            files.extend(glob.glob(pattern, recursive=True))
-        # de-duplicate + newest first
-        files = sorted(set(files), key=lambda p: os.path.getmtime(p), reverse=True)[:50]
-        notebooks = []
-        for path in files:
-            stat = os.stat(path)
-            filename = os.path.basename(path)
-            artifact_type = 'report' if 'report' in filename.lower() else 'notebook'
-            notebooks.append(
-                {
-                    'path': path,
-                    'filename': filename,
-                    'artifact_type': artifact_type,
-                    'size_kb': round(stat.st_size / 1024, 1),
-                    'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                }
-            )
-        return jsonify({'notebooks': notebooks})
-    except Exception as exc:
-        return jsonify({'notebooks': [], 'error': str(exc)})
-
-
-@app.route('/api/rag/exploration_notebooks/load', methods=['POST'])
-def load_exploration_notebook():
-    """Load a specific saved notebook and make it the active report."""
-    global _last_exploration_report
-
-    payload = request.get_json(silent=True) or {}
-    path = payload.get('path', '')
-    save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
-    if not os.path.abspath(path).startswith(os.path.abspath(save_dir)):
-        return jsonify({'error': 'Invalid path'}), 400
-    try:
-        with open(path, 'r', encoding='utf-8') as handle:
-            payload = json.load(handle)
-
-        def _as_list(value):
-            if isinstance(value, list):
-                return value
-            if isinstance(value, dict):
-                return list(value.values())
-            return []
-
-        # notebook artifacts are not full reports; wrap into a report-like payload
-        is_full_report = (
-            isinstance(payload, dict)
-            and 'exploration_metadata' in payload
-            and 'question_synthesis' in payload
-            and isinstance(payload.get('corpus_map'), dict)
-            and 'statistics' in payload.get('corpus_map', {})
-        )
-        if isinstance(payload, dict) and not is_full_report:
-            _last_exploration_report = {
-                'corpus_map': {
-                    'statistics': payload.get('corpus_map', {}),
-                    'archive_notes': 'Loaded notebook snapshot from disk. Run a new exploration for refreshed synthesis outputs.',
-                },
-                'questions': _as_list(payload.get('questions')),
-                'patterns': _as_list(payload.get('patterns')),
-                'contradictions': _as_list(payload.get('contradictions')),
-                'entities': _as_list(payload.get('entities')),
-                'question_synthesis': {
-                    'themes': [],
-                    'gaps': [],
-                },
-                'loaded_from_notebook': True,
-                'notebook_path': path,
-            }
-        else:
-            _last_exploration_report = payload
-        return jsonify({'status': 'loaded'})
-    except Exception as exc:
-        return jsonify({'error': str(exc)}), 500
 
 def _archives_root() -> Path:
     """Return the archive root directory, creating it if necessary."""
@@ -762,142 +584,6 @@ def _normalise_subdirectory(raw_subdir: Optional[str]) -> Path:
         if part not in {'', '.', '..'}
     ]
     return Path(*[part for part in safe_parts if part])
-
-
-def _trim_exploration_runs_locked() -> None:
-    """Keep async exploration run registry bounded."""
-    if len(_exploration_runs) <= _EXPLORATION_RUN_LIMIT:
-        return
-    ordered = sorted(
-        _exploration_runs.items(),
-        key=lambda kv: kv[1].get("created_at_ts", 0.0),
-        reverse=True,
-    )
-    keep = {rid for rid, _ in ordered[:_EXPLORATION_RUN_LIMIT]}
-    for rid in list(_exploration_runs.keys()):
-        if rid not in keep:
-            _exploration_runs.pop(rid, None)
-
-
-def _append_run_event(run: Dict[str, Any], message: str) -> None:
-    """Append a progress event entry to the in-memory run buffer."""
-    msg = str(message).strip()
-    if not msg:
-        return
-    events: List[Dict[str, Any]] = run.setdefault("events", [])
-    events.append(
-        {
-            "index": len(events),
-            "ts": datetime.utcnow().isoformat(timespec="seconds") + "Z",
-            "message": msg,
-        }
-    )
-    if len(events) > 1200:
-        run["events"] = events[-1000:]
-    run["last_event_ts"] = time.time()
-    run["last_event_message"] = msg
-
-
-def _attach_run_log_file(run: Dict[str, Any]) -> None:
-    """Attach the nearest tier0 log file created for this run."""
-    if run.get("log_file"):
-        return
-    log_dir = os.environ.get("TIER0_LOG_DIR", "/app/logs/tier0")
-    candidates = sorted(glob.glob(os.path.join(log_dir, "tier0_*.log")))
-    if not candidates:
-        return
-    created_at = float(run.get("created_at_ts", time.time()))
-    for path in reversed(candidates):
-        try:
-            if os.path.getmtime(path) >= (created_at - 10):
-                run["log_file"] = path
-                run["log_offset"] = 0
-                _append_run_event(run, f"[watch] attached log file {os.path.basename(path)}")
-                return
-        except OSError:
-            continue
-
-
-def _refresh_run_events(run: Dict[str, Any]) -> None:
-    """Tail new log lines into the run event buffer."""
-    _attach_run_log_file(run)
-    log_file = run.get("log_file")
-    if not log_file:
-        return
-    try:
-        offset = int(run.get("log_offset", 0))
-        with open(log_file, "r", encoding="utf-8", errors="replace") as handle:
-            handle.seek(offset)
-            chunk = handle.read()
-            run["log_offset"] = handle.tell()
-    except OSError:
-        return
-    if not chunk:
-        return
-    for raw in chunk.splitlines():
-        line = raw.strip()
-        if line:
-            _append_run_event(run, line)
-
-
-def _run_exploration_async(run_id: str, payload: Dict[str, Any]) -> None:
-    """Background worker for async Tier 0 exploration requests."""
-    global _last_exploration_report
-
-    strategy = payload.get("strategy")
-    total_budget = payload.get("total_budget")
-    year_range = payload.get("year_range")
-    save_notebook = payload.get("save_notebook")
-    research_lens = payload.get("research_lens", payload.get("focus_areas"))
-
-    if isinstance(year_range, list) and len(year_range) == 2:
-        try:
-            year_range = (int(year_range[0]), int(year_range[1]))
-        except Exception:
-            year_range = None
-    elif not isinstance(year_range, tuple):
-        year_range = None
-
-    with _exploration_runs_lock:
-        run = _exploration_runs.get(run_id)
-        if run is None:
-            return
-        run["status"] = "running"
-        run["started_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-        run["started_at_ts"] = time.time()
-        _append_run_event(run, "[runner] started exploration worker")
-
-    try:
-        explorer = get_tier0_explorer()
-        report = explorer.explore(
-            strategy=strategy,
-            total_budget=total_budget,
-            year_range=year_range,
-            save_notebook=save_notebook,
-            research_lens=research_lens,
-        )
-        _last_exploration_report = report
-        with _exploration_runs_lock:
-            run = _exploration_runs.get(run_id)
-            if run is None:
-                return
-            run["status"] = "completed"
-            run["report"] = report
-            run["finished_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-            run["finished_at_ts"] = time.time()
-            _refresh_run_events(run)
-            _append_run_event(run, "[runner] exploration completed successfully")
-    except Exception as exc:
-        with _exploration_runs_lock:
-            run = _exploration_runs.get(run_id)
-            if run is None:
-                return
-            run["status"] = "failed"
-            run["error"] = str(exc)
-            run["finished_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-            run["finished_at_ts"] = time.time()
-            _refresh_run_events(run)
-            _append_run_event(run, f"[runner] exploration failed: {exc}")
 
 
 def _allowed_archive(filename: str) -> bool:
@@ -1200,83 +886,6 @@ def _evaluate_agent_error(
     return None
 
 
-def _runtime_build_info() -> Dict[str, str]:
-    """Return git/runtime metadata for display in the Settings page."""
-
-    # routes.py lives in /app/routes.py inside the container; repo root is /app.
-    repo_root = Path(__file__).resolve().parent
-
-    def _git(*args: str) -> str:
-        try:
-            result = subprocess.check_output(
-                ["git", *args],
-                cwd=str(repo_root),
-                stderr=subprocess.STDOUT,
-                text=True,
-                timeout=2.0,
-            )
-            return result.strip()
-        except Exception:
-            return "unknown"
-
-    branch = _git("rev-parse", "--abbrev-ref", "HEAD")
-    commit_full = _git("rev-parse", "HEAD")
-    commit_short = commit_full[:8] if commit_full != "unknown" else "unknown"
-    commit_date = _git("show", "-s", "--format=%cI", "HEAD")
-    commit_subject = _git("show", "-s", "--format=%s", "HEAD")
-    dirty_status = _git("status", "--porcelain")
-
-    # Docker/runtime fallback: many images don't include .git or git binary.
-    # Read stamped metadata from app/build_info.json and/or env vars.
-    stamped: Dict[str, Any] = {}
-    build_info_path = repo_root / "build_info.json"
-    if build_info_path.exists():
-        try:
-            stamped = json.loads(build_info_path.read_text(encoding="utf-8"))
-        except Exception:
-            stamped = {}
-
-    branch = (
-        branch
-        if branch != "unknown"
-        else str(os.getenv("APP_GIT_BRANCH", stamped.get("branch", "unknown")))
-    )
-    commit_full = (
-        commit_full
-        if commit_full != "unknown"
-        else str(os.getenv("APP_GIT_COMMIT", stamped.get("commit_full", "unknown")))
-    )
-    commit_short = (
-        commit_short
-        if commit_short != "unknown"
-        else str(os.getenv("APP_GIT_COMMIT_SHORT", stamped.get("commit", "unknown")))
-    )
-    commit_date = (
-        commit_date
-        if commit_date != "unknown"
-        else str(os.getenv("APP_GIT_COMMIT_DATE", stamped.get("commit_date", "unknown")))
-    )
-    commit_subject = (
-        commit_subject
-        if commit_subject != "unknown"
-        else str(os.getenv("APP_GIT_SUBJECT", stamped.get("commit_subject", "unknown")))
-    )
-    if dirty_status == "unknown":
-        dirty_status = str(os.getenv("APP_GIT_DIRTY", stamped.get("dirty", "unknown")))
-
-    return {
-        "app_version": os.getenv("APP_VERSION", "dev"),
-        "branch": branch,
-        "commit": commit_short,
-        "commit_full": commit_full,
-        "commit_date": commit_date,
-        "commit_subject": commit_subject,
-        "dirty": "yes" if dirty_status not in ("", "unknown") else "no",
-        "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
-        "repo_root": str(repo_root),
-    }
-
-
 def _historian_history_cache_key(conversation_id: str) -> str:
     """Return the cache key used to persist chat history for a conversation."""
 
@@ -1384,7 +993,6 @@ def historian_agent_page():
     overrides = _historian_agent_overrides()
     agent_config = HistorianAgentConfig.from_env(overrides)
     agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
-    runtime_build = _runtime_build_info()
 
     return render_template(
         'historian_agent.html',
@@ -1397,8 +1005,12 @@ def historian_agent_page():
 
 @app.route('/corpus-explorer')
 def corpus_explorer_page():
-    """Render the Corpus Explorer (Tier 0) interface."""
-    return render_template('corpus_explorer.html')
+    """
+    Compatibility route for the global nav link.
+
+    The corpus exploration workflow lives inside the Historian Agent page.
+    """
+    return redirect(url_for('historian_agent_page'))
 
 
 def _parse_agent_config_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -1787,6 +1399,466 @@ def build_query(data):
     logger.debug(f"Final query: {query}")
     return query
 
+
+def _normalize_entity_type(raw_type: Any) -> str:
+    """Normalize entity category labels for consistent grouping."""
+    if raw_type is None:
+        return "UNKNOWN"
+    normalized = str(raw_type).strip()
+    if not normalized:
+        return "UNKNOWN"
+    normalized = normalized.upper().replace("-", "_").replace(" ", "_")
+
+    type_aliases = {
+        "COMPANY": "ORG",
+        "ORGANIZATION": "ORG",
+        "ORGANISATION": "ORG",
+        "LOCATION": "GPE",
+        "PLACE": "GPE",
+        "PERSON_NAME": "PERSON",
+        "EMPLOYEEID": "EMPLOYEE_ID",
+    }
+    return type_aliases.get(normalized, normalized)
+
+
+def _extract_entity_text(raw_value: Any) -> Optional[str]:
+    """Extract a displayable entity string from scalar or mapping values."""
+    if isinstance(raw_value, str):
+        text = raw_value.strip()
+        return text or None
+
+    if isinstance(raw_value, (int, float)):
+        return str(raw_value)
+
+    if isinstance(raw_value, dict):
+        for key in ("text", "term", "entity", "name", "value"):
+            value = raw_value.get(key)
+            if isinstance(value, str):
+                text = value.strip()
+                if text:
+                    return text
+            elif isinstance(value, (int, float)):
+                return str(value)
+
+    return None
+
+
+def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[Dict[str, Any]]]]:
+    """
+    Build categorized NER groups for document detail display.
+    Supports both legacy extracted_entities payloads and newer entities/entity_refs fields.
+    """
+    entities_by_type: Dict[str, List[Dict[str, Any]]] = {}
+    seen_by_type: Dict[str, Dict[str, int]] = {}
+    empty_tokens = {"", "N/A", "NONE", "NULL"}
+
+    def add_entity(
+        raw_type: Any,
+        raw_value: Any,
+        entity_id: Optional[str] = None,
+        canonical_name: Optional[str] = None,
+    ) -> None:
+        entity_type = _normalize_entity_type(raw_type)
+        entity_text = _extract_entity_text(raw_value)
+        if not entity_text:
+            return
+
+        if entity_text.strip().upper() in empty_tokens:
+            return
+
+        if entity_type not in entities_by_type:
+            entities_by_type[entity_type] = []
+            seen_by_type[entity_type] = {}
+
+        key = entity_text.casefold()
+        if key in seen_by_type[entity_type]:
+            # Prefer resolved records with entity_id over unresolved duplicates.
+            existing_idx = seen_by_type[entity_type][key]
+            existing = entities_by_type[entity_type][existing_idx]
+            if entity_id and not existing.get("entity_id"):
+                existing["entity_id"] = entity_id
+                existing["canonical_name"] = canonical_name or entity_text
+            return
+
+        entities_by_type[entity_type].append(
+            {
+                "text": entity_text,
+                "entity_id": entity_id,
+                "canonical_name": canonical_name or entity_text,
+                "type": entity_type,
+            }
+        )
+        seen_by_type[entity_type][key] = len(entities_by_type[entity_type]) - 1
+
+    def collect_named_entities(node: Any) -> None:
+        """Recursively collect embedded named_entities payloads from section-linked metadata."""
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key == "named_entities" and isinstance(value, list):
+                    for entity in value:
+                        if isinstance(entity, dict):
+                            add_entity(
+                                entity.get("type") or entity.get("entity_type") or entity.get("label"),
+                                entity.get("entity") or entity.get("text") or entity.get("name") or entity,
+                            )
+                        else:
+                            add_entity("UNKNOWN", entity)
+                else:
+                    collect_named_entities(value)
+        elif isinstance(node, list):
+            for item in node:
+                collect_named_entities(item)
+
+    entities_payload = document.get("entities")
+    if isinstance(entities_payload, dict):
+        for entity_type, values in entities_payload.items():
+            if isinstance(values, list):
+                for value in values:
+                    add_entity(entity_type, value)
+            else:
+                add_entity(entity_type, values)
+    elif isinstance(entities_payload, list):
+        for entity in entities_payload:
+            if isinstance(entity, dict):
+                entity_type = entity.get("type") or entity.get("entity_type") or entity.get("label")
+                add_entity(entity_type, entity)
+            else:
+                add_entity("UNKNOWN", entity)
+
+    extracted_payload = document.get("extracted_entities")
+    if isinstance(extracted_payload, dict):
+        for entity_type, values in extracted_payload.items():
+            if isinstance(values, list):
+                for value in values:
+                    add_entity(entity_type, value)
+            else:
+                add_entity(entity_type, values)
+    elif isinstance(extracted_payload, list):
+        for entity in extracted_payload:
+            if isinstance(entity, dict):
+                entity_type = entity.get("type") or entity.get("entity_type") or entity.get("label")
+                add_entity(entity_type, entity)
+            else:
+                add_entity("UNKNOWN", entity)
+
+    # Include named_entities captured inside structured linked_information blocks.
+    collect_named_entities(document.get("sections"))
+
+    entity_refs = document.get("entity_refs")
+    if isinstance(entity_refs, list) and entity_refs:
+        ref_ids: List[ObjectId] = []
+        for entity_ref in entity_refs:
+            if isinstance(entity_ref, ObjectId):
+                ref_ids.append(entity_ref)
+            elif isinstance(entity_ref, str) and ObjectId.is_valid(entity_ref):
+                ref_ids.append(ObjectId(entity_ref))
+
+        if ref_ids:
+            try:
+                linked_docs = db["linked_entities"].find(
+                    {"_id": {"$in": ref_ids}},
+                    {
+                        "type": 1,
+                        "entity_type": 1,
+                        "label": 1,
+                        "term": 1,
+                        "text": 1,
+                        "name": 1,
+                        "canonical_name": 1,
+                        "aliases": 1,
+                        "variants": 1,
+                    },
+                )
+                for linked_doc in linked_docs:
+                    entity_type = (
+                        linked_doc.get("type")
+                        or linked_doc.get("entity_type")
+                        or linked_doc.get("label")
+                        or "UNKNOWN"
+                    )
+                    linked_entity_id = str(linked_doc["_id"])
+                    canonical_name = (
+                        linked_doc.get("canonical_name")
+                        or linked_doc.get("term")
+                        or linked_doc.get("text")
+                        or linked_doc.get("name")
+                    )
+                    add_entity(
+                        entity_type,
+                        canonical_name,
+                        entity_id=linked_entity_id,
+                        canonical_name=canonical_name,
+                    )
+
+                    aliases = linked_doc.get("aliases")
+                    if isinstance(aliases, list):
+                        for alias in aliases:
+                            add_entity(
+                                entity_type,
+                                alias,
+                                entity_id=linked_entity_id,
+                                canonical_name=canonical_name,
+                            )
+
+                    variants = linked_doc.get("variants")
+                    if isinstance(variants, list):
+                        for variant in variants:
+                            add_entity(
+                                entity_type,
+                                variant,
+                                entity_id=linked_entity_id,
+                                canonical_name=canonical_name,
+                            )
+            except Exception:
+                logger.exception("Failed to load linked entity_refs for document detail view.")
+
+    for entity_values in entities_by_type.values():
+        entity_values.sort(key=lambda value: value["text"].casefold())
+
+    if not entities_by_type:
+        return []
+
+    preferred_order = [
+        "PERSON",
+        "ORG",
+        "GPE",
+        "LOC",
+        "DATE",
+        "TIME",
+        "MONEY",
+        "PERCENT",
+        "OCCUPATION",
+        "EMPLOYEE_ID",
+    ]
+    ordered_types = [entity_type for entity_type in preferred_order if entity_type in entities_by_type]
+    ordered_types.extend(sorted(entity_type for entity_type in entities_by_type if entity_type not in preferred_order))
+
+    return [
+        (entity_type.replace("_", " ").title(), entities_by_type[entity_type])
+        for entity_type in ordered_types
+    ]
+
+
+@app.route('/network-analysis')
+def network_analysis_page():
+    """Standalone network explorer page."""
+    return render_template('network-analysis.html')
+
+
+NETWORK_VIEWER_CONTEXT_TIMEOUT = 3600
+NETWORK_VIEWER_MAX_DOCUMENTS = 2000
+NETWORK_VIEWER_MAX_DOCS_PER_EDGE = 250
+
+
+def _parse_network_type_filter(raw_value: str) -> List[str]:
+    if not raw_value:
+        return []
+    return [value.strip() for value in raw_value.split(",") if value.strip()]
+
+
+def _parse_network_int_arg(name: str, default: int, minimum: int = 1, maximum: Optional[int] = None) -> int:
+    raw_value = request.args.get(name, default)
+    try:
+        parsed_value = int(raw_value)
+    except (TypeError, ValueError):
+        parsed_value = default
+    parsed_value = max(minimum, parsed_value)
+    if maximum is not None:
+        parsed_value = min(parsed_value, maximum)
+    return parsed_value
+
+
+def _parse_network_bool_arg(name: str, default: bool) -> bool:
+    raw_value = request.args.get(name)
+    if raw_value is None:
+        return default
+    return str(raw_value).strip().lower() in ("1", "true", "yes", "y", "on")
+
+
+def _parse_network_type_pair(raw_value: str) -> Tuple[Optional[str], Optional[str]]:
+    raw = (raw_value or "").strip()
+    if not raw:
+        return None, None
+
+    separator = "|" if "|" in raw else ","
+    parts = [part.strip() for part in raw.split(separator) if part.strip()]
+    if len(parts) != 2:
+        return None, None
+    return parts[0], parts[1]
+
+
+def _parse_network_rank_mode(default: str = "most_connected") -> str:
+    allowed = {
+        "most_connected",
+        "most_cross_type",
+        "rare_but_strong",
+        "low_frequency_pairs",
+    }
+    raw_mode = request.args.get("rank_mode", default)
+    mode = str(raw_mode or default).strip().lower()
+    return mode if mode in allowed else default
+
+
+def _parse_network_pair_preset(default: str = "cross_type_only") -> str:
+    allowed = {"cross_type_only", "all_pairs", "within_type_only"}
+    raw_preset = request.args.get("pair_preset", default)
+    preset = str(raw_preset or default).strip().lower()
+    return preset if preset in allowed else default
+
+
+def _build_network_viewer_context() -> Dict[str, Any]:
+    config = NetworkConfig.from_env()
+    entity_id = request.args.get("entity", "").strip() or None
+    document_term = request.args.get("document_term", request.args.get("entity_search", "")).strip()
+    type_filter = _parse_network_type_filter(request.args.get("type_filter", "").strip())
+    source_type, target_type = _parse_network_type_pair(request.args.get("type_pair", ""))
+    min_weight = _parse_network_int_arg("min_weight", config.default_min_weight, minimum=1, maximum=9999)
+    edge_limit = _parse_network_int_arg("limit", config.default_limit, minimum=1, maximum=5000)
+    strict_type_filter = _parse_network_bool_arg("strict_type_filter", True)
+    person_min_mentions = _parse_network_int_arg("person_min_mentions", 3, minimum=0, maximum=9999)
+    rank_mode = _parse_network_rank_mode()
+    pair_preset = _parse_network_pair_preset()
+
+    context = get_network_documents_for_viewer(
+        db,
+        entity_id=entity_id,
+        type_filter=type_filter or None,
+        source_type=source_type,
+        target_type=target_type,
+        min_weight=min_weight,
+        limit=edge_limit,
+        strict_type_filter=strict_type_filter,
+        person_min_mentions=person_min_mentions,
+        pair_preset=pair_preset,
+        rank_mode=rank_mode,
+        document_term=document_term,
+        max_documents=NETWORK_VIEWER_MAX_DOCUMENTS,
+        max_docs_per_edge=NETWORK_VIEWER_MAX_DOCS_PER_EDGE,
+    )
+
+    network_query = request.query_string.decode("utf-8")
+    analysis_url = url_for("network_analysis_page")
+    if network_query:
+        analysis_url = f"{analysis_url}?{network_query}"
+
+    context["filters"] = {
+        "entity": entity_id,
+        "type_filter": type_filter,
+        "min_weight": min_weight,
+        "limit": edge_limit,
+        "strict_type_filter": strict_type_filter,
+        "person_min_mentions": person_min_mentions,
+        "type_pair": [source_type, target_type] if source_type and target_type else [],
+        "pair_preset": pair_preset,
+        "rank_mode": rank_mode,
+        "document_term": document_term,
+    }
+    context["analysis_url"] = analysis_url
+    context["generated_at"] = datetime.utcnow().isoformat()
+    return context
+
+
+def _hydrate_network_documents_from_ids(ordered_ids: List[str]) -> List[Dict[str, Any]]:
+    if not ordered_ids:
+        return []
+
+    valid_object_ids = [ObjectId(doc_id) for doc_id in ordered_ids if ObjectId.is_valid(doc_id)]
+    filename_by_id: Dict[str, str] = {}
+    if valid_object_ids:
+        for doc in documents.find({"_id": {"$in": valid_object_ids}}, {"filename": 1}):
+            filename_by_id[str(doc["_id"])] = doc.get("filename", "Unknown")
+
+    rows = []
+    for doc_id in ordered_ids:
+        rows.append(
+            {
+                "document_id": doc_id,
+                "filename": filename_by_id.get(doc_id, "Unknown"),
+                "matched_entity_count": None,
+                "matched_edge_count": None,
+                "network_score": None,
+            }
+        )
+    return rows
+
+
+@app.route('/network/viewer-launch')
+def network_viewer_launch():
+    """
+    Build a network-derived document list and launch list-driven document viewer.
+
+    The resulting list is cached using the same `search_<id>` key contract as
+    Search Database so document detail prev/next navigation works unchanged.
+    """
+    config = NetworkConfig.from_env()
+    if not config.enabled:
+        flash("Network analysis is disabled.", "warning")
+        return redirect(url_for("network_analysis_page"))
+
+    context = _build_network_viewer_context()
+    documents_for_viewer = context.get("documents", [])
+
+    search_id = str(uuid.uuid4())
+    ordered_ids = [entry["document_id"] for entry in documents_for_viewer if entry.get("document_id")]
+    cache.set(f"search_{search_id}", ordered_ids, timeout=NETWORK_VIEWER_CONTEXT_TIMEOUT)
+    cache.set(f"network_search_{search_id}", context, timeout=NETWORK_VIEWER_CONTEXT_TIMEOUT)
+
+    if not ordered_ids:
+        flash("No documents matched the current network filters.", "info")
+
+    return redirect(url_for("network_viewer_results", search_id=search_id))
+
+
+@app.route('/network/viewer-results')
+def network_viewer_results():
+    """Render network-generated document list for next/previous document navigation."""
+    search_id = request.args.get("search_id", "").strip()
+    if not search_id:
+        flash("Missing network viewer context.", "warning")
+        return redirect(url_for("network_analysis_page"))
+
+    context = cache.get(f"network_search_{search_id}") or {}
+    documents_list = context.get("documents", [])
+
+    if not documents_list:
+        ordered_ids = cache.get(f"search_{search_id}") or []
+        if ordered_ids:
+            documents_list = _hydrate_network_documents_from_ids(ordered_ids)
+
+    page = _parse_network_int_arg("page", 1, minimum=1, maximum=100000)
+    per_page = _parse_network_int_arg("per_page", 50, minimum=10, maximum=200)
+
+    total_count = len(documents_list)
+    total_pages = max(1, math.ceil(total_count / per_page)) if per_page else 1
+    if page > total_pages:
+        page = total_pages
+
+    start_idx = (page - 1) * per_page
+    end_idx = start_idx + per_page
+    page_documents = documents_list[start_idx:end_idx]
+
+    viewer_meta = {
+        "mode": context.get("mode", "global"),
+        "entity": context.get("entity"),
+        "filters": context.get("filters", {}),
+        "analysis_url": context.get("analysis_url", url_for("network_analysis_page")),
+        "generated_at": context.get("generated_at"),
+        "stats": context.get("stats", {}),
+        "expired": not bool(context),
+    }
+
+    return render_template(
+        "network-document-list.html",
+        search_id=search_id,
+        documents=page_documents,
+        total_count=total_count,
+        current_page=page,
+        total_pages=total_pages,
+        per_page=per_page,
+        viewer_meta=viewer_meta,
+    )
+
+
 @app.route('/document/<string:doc_id>')
 # @login_required
 def document_detail(doc_id):
@@ -1816,10 +1888,8 @@ def document_detail(doc_id):
     
     
     
-    search_id = request.args.get('search_id')
-    if not search_id:
-        flash('Missing search context.')
-        return redirect(url_for('index'))
+    search_id = request.args.get('search_id', '')
+    origin = request.args.get('origin', '').strip().lower()
 
     try:
         # Fetch the document by ID
@@ -1856,21 +1926,41 @@ def document_detail(doc_id):
             if not stripped:
                 break  # No more extensions found
 
-        # Retrieve the ordered list from cache
-        ordered_ids = cache.get(f'search_{search_id}')
-        if not ordered_ids:
-            flash('Search context expired. Please perform the search again.')
-            return redirect(url_for('index'))
+        # Retrieve ordered IDs from cache when a valid search context is present.
+        ordered_ids = cache.get(f'search_{search_id}') if search_id else None
 
-        try:
+        if ordered_ids and doc_id in ordered_ids:
             current_index = ordered_ids.index(doc_id)
-        except ValueError:
-            flash('Document not found in the current search results.')
-            return redirect(url_for('index'))
+            prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
+            next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
+        else:
+            # Allow direct links and stale search IDs to render the document page.
+            prev_id = None
+            next_id = None
 
-        # Determine previous and next IDs based on the search order
-        prev_id = ordered_ids[current_index - 1] if current_index > 0 else None
-        next_id = ordered_ids[current_index + 1] if current_index < len(ordered_ids) - 1 else None
+        if origin == "network":
+            if search_id:
+                back_to_list_url = url_for("network_viewer_results", search_id=search_id)
+                back_to_list_label = "Network Results"
+            else:
+                back_to_list_url = url_for("network_analysis_page")
+                back_to_list_label = "Network"
+        else:
+            back_to_list_url = f"{url_for('search_database')}?return_to_search=true"
+            back_to_list_label = "Search"
+
+        prev_url = "#"
+        next_url = "#"
+        if prev_id:
+            prev_params = {"doc_id": prev_id, "search_id": search_id}
+            if origin:
+                prev_params["origin"] = origin
+            prev_url = url_for("document_detail", **prev_params)
+        if next_id:
+            next_params = {"doc_id": next_id, "search_id": search_id}
+            if origin:
+                next_params["origin"] = origin
+            next_url = url_for("document_detail", **next_params)
 
         # Get the relative path from the document
         relative_path = document.get('relative_path')  # This should contain the relative path to the JSON file
@@ -1893,6 +1983,8 @@ def document_detail(doc_id):
             image_exists = False
             image_path = None
 
+        ner_groups = build_document_ner_groups(document)
+
         # Render the template with all required variables
         return render_template(
             'document-detail.html',
@@ -1900,9 +1992,15 @@ def document_detail(doc_id):
             display_filename=display_filename,
             prev_id=prev_id,
             next_id=next_id,
+            prev_url=prev_url,
+            next_url=next_url,
             search_id=search_id,
+            origin=origin,
+            back_to_list_url=back_to_list_url,
+            back_to_list_label=back_to_list_label,
             image_path=image_path,  # Pass the constructed image path
-            image_exists=image_exists  # Pass the flag indicating if the image exists
+            image_exists=image_exists,  # Pass the flag indicating if the image exists
+            ner_groups=ner_groups
         )
     except Exception as e:
         logger.error(f"Error in document_detail: {str(e)}", exc_info=True)
@@ -2075,7 +2173,7 @@ def database_info():
 
 @app.route('/help')
 def help_page():
-    """Render the in-app help centre derived from the README."""
+    """Render the in-app help centre focused on current workflows."""
 
     return render_template('help.html')
 
@@ -2157,7 +2255,6 @@ def settings():
     overrides = _historian_agent_overrides()
     agent_config = HistorianAgentConfig.from_env(overrides)
     agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
-    runtime_build = _runtime_build_info()
 
     return render_template(
         'settings.html',
@@ -2175,7 +2272,6 @@ def settings():
         ingestion_default_openai_model=image_ingestion.DEFAULT_OPENAI_MODEL,
         ingestion_ollama_base_url=image_ingestion.DEFAULT_OLLAMA_BASE_URL,
         ingestion_api_key_configured=image_ingestion.read_api_key() is not None,
-        runtime_build=runtime_build,
     )
 
 @app.route('/settings/data-ingestion/mounts', methods=['GET'])
