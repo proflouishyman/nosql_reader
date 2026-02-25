@@ -62,6 +62,7 @@ from util.mounts import get_mounted_paths, short_tree  # Added to support read-o
 from network import init_app as init_network
 from network.config import NetworkConfig
 from network.network_utils import get_network_documents_for_viewer
+from log_stream import stream_generator, signal_done
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -299,6 +300,20 @@ def _format_tier0_summary(report: Dict[str, Any], focus_note: str) -> str:
 
     return "\n".join(summary_lines)
 
+
+@app.route('/api/log-stream')
+def api_log_stream():
+    """SSE endpoint that streams backend log messages to the browser."""
+    return Response(
+        stream_with_context(stream_generator()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no',  # Disable proxy buffering for SSE.
+            'Connection': 'keep-alive',
+        },
+    )
+
 # ============================================================================
 # UPDATED: Basic RAG Query Handler (Standardized)
 # ============================================================================
@@ -337,6 +352,8 @@ def historian_agent_query_basic():
     except Exception as exc:
         app.logger.exception('Basic RAG query failed')
         return jsonify({'error': f'Basic RAG query failed: {str(exc)}'}), 500
+    finally:
+        signal_done()  # Close any active frontend log stream for this run.
 
 @app.route('/historian-agent/query-adversarial', methods=['POST'])
 def historian_agent_query_adversarial():
@@ -373,6 +390,8 @@ def historian_agent_query_adversarial():
     except Exception as exc:
         app.logger.exception('Adversarial RAG query failed')
         return jsonify({'error': f'Adversarial RAG query failed: {str(exc)}'}), 500
+    finally:
+        signal_done()  # Close any active frontend log stream for this run.
 
 
 @app.route('/historian-agent/query-tiered', methods=['POST'])
@@ -410,6 +429,8 @@ def historian_agent_query_tiered():
     except Exception as exc:
         app.logger.exception('Tiered agent query failed')
         return jsonify({'error': f'Tiered agent query failed: {str(exc)}'}), 500
+    finally:
+        signal_done()  # Close any active frontend log stream for this run.
 
 
 @app.route('/historian-agent/query-tier0', methods=['POST'])
@@ -502,6 +523,8 @@ def historian_agent_query_tier0():
     except Exception as exc:
         app.logger.exception('Tier 0 query failed')
         return jsonify({'error': f'Tier 0 query failed: {str(exc)}'}), 500
+    finally:
+        signal_done()  # Close any active frontend log stream for this run.
 
 
 @app.route('/historian-agent/reset-rag', methods=['POST'])
@@ -532,34 +555,36 @@ def reset_rag_handlers():
 def explore_corpus_endpoint():
     """Run Tier 0 corpus exploration (synchronous)."""
     payload = request.get_json(silent=True) or {}
+    try:
+        strategy = payload.get('strategy')
+        total_budget = payload.get('total_budget')
+        year_range = payload.get('year_range')
+        save_notebook = payload.get('save_notebook')
+        research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases for API clients that prepopulate historian interests.
 
-    strategy = payload.get('strategy')
-    total_budget = payload.get('total_budget')
-    year_range = payload.get('year_range')
-    save_notebook = payload.get('save_notebook')
-    research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases for API clients that prepopulate historian interests.
-
-    if isinstance(year_range, list) and len(year_range) == 2:
-        try:
-            year_range = (int(year_range[0]), int(year_range[1]))
-        except Exception:
+        if isinstance(year_range, list) and len(year_range) == 2:
+            try:
+                year_range = (int(year_range[0]), int(year_range[1]))
+            except Exception:
+                year_range = None
+        elif not isinstance(year_range, tuple):
             year_range = None
-    elif not isinstance(year_range, tuple):
-        year_range = None
 
-    explorer = get_tier0_explorer()
-    report = explorer.explore(
-        strategy=strategy,
-        total_budget=total_budget,
-        year_range=year_range,
-        save_notebook=save_notebook,
-        research_lens=research_lens,
-    )
+        explorer = get_tier0_explorer()
+        report = explorer.explore(
+            strategy=strategy,
+            total_budget=total_budget,
+            year_range=year_range,
+            save_notebook=save_notebook,
+            research_lens=research_lens,
+        )
 
-    global _last_exploration_report
-    _last_exploration_report = report
+        global _last_exploration_report
+        _last_exploration_report = report
 
-    return jsonify(report)
+        return jsonify(report)
+    finally:
+        signal_done()  # Close any active frontend log stream for sync exploration.
 
 
 @app.route('/api/rag/explore_corpus/start', methods=['POST'])
@@ -1101,6 +1126,8 @@ def _run_exploration_async(run_id: str, payload: Dict[str, Any]) -> None:
             run['finished_at_ts'] = time.time()
             _refresh_run_events(run)
             _append_run_event(run, f'[runner] exploration failed: {exc}')
+    finally:
+        signal_done()  # Close any active frontend log stream for async exploration.
 
 
 def _allowed_archive(filename: str) -> bool:

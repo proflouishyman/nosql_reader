@@ -1991,7 +1991,7 @@ input[type="range"] {
 }
 
 .agent-debug-output:empty::before {
-    content: "Debug log is empty. Submit a query to see pipeline events.";
+    content: "Backend log is empty. Start a run to see backend events.";
     color: #64748b;
     font-style: italic;
 }
@@ -2035,6 +2035,10 @@ input[type="range"] {
 
 .agent-debug-entry--info .agent-debug-message {
     color: #cbd5e1;
+}
+
+.agent-debug-entry--debug .agent-debug-message {
+    color: #64748b;
 }
 
 /* ============================================

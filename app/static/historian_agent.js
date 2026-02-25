@@ -84,6 +84,48 @@
             if (debugOutput) debugOutput.innerHTML = '';
         }
 
+        /**
+         * Open shared backend log stream and pipe events to debugLog().
+         */
+        function openLogStream(onDone) {
+            const source = new EventSource('/api/log-stream');
+            let closed = false;
+
+            source.onmessage = function(event) {
+                try {
+                    const payload = JSON.parse(event.data);
+                    const displayMsg = payload.source
+                        ? `${payload.source} ${payload.message}`
+                        : payload.message;
+                    debugLog(displayMsg, payload.level || 'info');
+                } catch (error) {
+                    debugLog(event.data, 'info');
+                }
+            };
+
+            source.addEventListener('done', function() {
+                if (!closed) {
+                    closed = true;
+                    source.close();
+                    if (onDone) onDone();
+                }
+            });
+
+            source.onerror = function() {
+                if (!closed) {
+                    closed = true;
+                    source.close();
+                }
+            };
+
+            return function close() {
+                if (!closed) {
+                    closed = true;
+                    source.close();
+                }
+            };
+        }
+
         if (debugClear) {
             debugClear.addEventListener('click', clearDebugLog);
         }
@@ -211,63 +253,61 @@
 
             const method = methodSelect ? methodSelect.value : 'tiered';
             const endpoint = `/historian-agent/query-${method}`;
-            
+
+            clearDebugLog();
             debugLog(`=== Starting ${method.toUpperCase()} query ===`, 'primary');
-            debugLog(`Endpoint: ${endpoint}`, 'info');
             debugLog(`Question: ${payload.question.substring(0, 100)}...`, 'info');
-            
+
             setChatSubmitting(true, `Processing with ${method} method...`);
-            
+            const closeStream = openLogStream(null);
+            const streamTimeout = setTimeout(() => closeStream(), 300000);
+
             try {
                 const startTime = performance.now();
-                debugLog('Sending request to backend...', 'info');
-                
+
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
                 });
-                
+
                 const data = await response.json();
                 const elapsedTime = ((performance.now() - startTime) / 1000).toFixed(1);
-                
+
                 if (!response.ok) {
                     throw new Error(data.error || 'Query failed');
                 }
-                
+
                 debugLog(`✓ Response received in ${elapsedTime}s`, 'success');
                 debugLog(`Method used: ${data.method || method}`, 'info');
-                
-                // Logging logic (kept for console clarity)
+
+                // Keep completion summaries for at-a-glance validation.
                 if (method === 'tiered') {
                     debugLog(`Escalated to Tier 2: ${data.metrics.escalated ? 'YES' : 'NO'}`, data.metrics.escalated ? 'warning' : 'success');
                 } else if (method === 'basic' || method === 'adversarial') {
                     debugLog(`Total Time: ${data.metrics.total_time.toFixed(1)}s`, 'info');
                 }
-                
+
                 debugLog(`Sources found: ${Object.keys(data.sources || {}).length}`, 'info');
-                
+
                 conversationId = data.conversation_id || payload.conversation_id;
                 renderHistory(data.history || []);
-                
-                //if (data.answer) {
-                //    appendMessage('assistant', data.answer, data.sources || {}, data.search_id);
-                //}
-                
-                // Call displayMetrics without the second arg now that logic is unified
+
                 displayMetrics(data);
-                
+
                 if (questionInput) {
                     questionInput.value = '';
                     questionInput.focus();
                 }
                 debugLog('=== Query complete ===', 'success');
-                
+
             } catch (error) {
                 console.error(error);
                 debugLog(`✗ Error: ${error.message}`, 'error');
                 appendMessage('assistant', error.message || 'Unable to process your question right now.', []);
             } finally {
+                clearTimeout(streamTimeout);
+                closeStream();
                 setChatSubmitting(false);
             }
         }

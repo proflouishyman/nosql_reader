@@ -88,6 +88,16 @@ def debug_step(step_name: str, detail: str = "", icon: str = "", level: str = "I
         except Exception:
             pass
 
+    # Mirror adversarial pipeline steps into SSE stream (additive only).
+    try:
+        from log_stream import push, _infer_level
+        display = f"{icon} {step_name.upper()}".strip()
+        if detail:
+            display += f": {detail}"
+        push(display, level=_infer_level(display), source="[ADVERSARIAL]")
+    except Exception:
+        pass
+
 
 # ============================================================================
 # Adversarial RAG Handler

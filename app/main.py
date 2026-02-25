@@ -26,6 +26,11 @@ from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
+# Install stderr tee after app creation to avoid import-time circulars.
+import sys
+from log_stream import StderrTee
+sys.stderr = StderrTee(sys.stderr)
+
 
 
 # Setup console logging

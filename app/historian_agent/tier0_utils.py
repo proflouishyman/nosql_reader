@@ -153,6 +153,16 @@ class Tier0Logger:
             self.log_file.write(message)
             self.log_file.flush()
 
+        # Stream Tier 0 events into SSE console without impacting run execution.
+        try:
+            from log_stream import push
+            display = f"[{level}] {step}"
+            if detail:
+                display += f": {detail}"
+            push(display, level=level.lower(), source="[TIER0]")
+        except Exception:
+            pass
+
 
 # ============================================================================
 # Heartbeat
