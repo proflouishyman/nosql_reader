@@ -477,3 +477,64 @@ Even with global `help-tooltips.js` loading, several pages had no explicit `data
 - Ran full suite: `./scripts/run_e2e_suite.sh`
 - Result: `Total checks: 20`, `Failed: 0`
 - New passing check: `Tooltip standard contract :: paths=9 total_data_help_targets=101`.
+
+## 2026-02-23 - Add real-time SSE backend log streaming for Historian Agent and Corpus Explorer
+
+### Problem
+Python backend logs were only visible on stderr/CLI, while browser debug consoles (`historian_agent.js` and `corpus_explorer.js`) only showed frontend-generated messages. This caused delayed/no visibility into long-running backend steps during Historian and Tier 0 runs.
+
+### Solution
+- Added a global SSE log stream module at:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/log_stream.py`
+  - Includes:
+    - shared in-memory queue
+    - `push(...)` API for backend emitters
+    - `stream_generator(...)` for Flask SSE streaming
+    - `signal_done()` completion sentinel
+    - `StderrTee` to mirror selected stderr lines into the stream
+- Installed stderr tee at app startup in:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/main.py`
+- Registered SSE endpoint and completion signaling in:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/routes.py`
+  - Added `/api/log-stream`
+  - Added `signal_done()` in long-running Historian routes (`query-basic`, `query-adversarial`, `query-tiered`, `query-tier0`) and Tier 0 sync/async exploration completion paths.
+- Added additive backend log push hooks in:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/rag_base.py` (`debug_print`)
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/historian_agent/adversarial_rag.py` (`debug_step`)
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/historian_agent/tier0_utils.py` (`Tier0Logger.log`)
+- Frontend SSE integration:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/static/historian_agent.js`
+    - Added reusable `openLogStream()` and wired `submitQuestion()` to open stream before fetch and always close in `finally`.
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/static/corpus_explorer.js`
+    - Replaced existing status-polling run flow with standardized SSE+single-fetch flow.
+    - UI now opens `/api/log-stream` before calling `/api/rag/explore_corpus` and closes safely with timeout/finally.
+- Added missing debug style level in:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/static/style.css`
+  - `.agent-debug-entry--debug`
+
+### Verification
+- Python syntax check:
+  - `python -m py_compile app/log_stream.py app/main.py app/routes.py app/rag_base.py app/historian_agent/adversarial_rag.py app/historian_agent/tier0_utils.py`
+- JavaScript syntax check:
+  - `node --check app/static/historian_agent.js`
+  - `node --check app/static/corpus_explorer.js`
+- Result: all checks passed.
+
+## 2026-02-25 - Standardize debug console title to "Backend Log"
+
+### Problem
+The UI used inconsistent debug-console titles ("Pipeline Debug Log" in Historian Agent and "Progress Log" in Corpus Explorer), plus a placeholder message referencing "Debug log" and "pipeline events." This made backend-streamed logs look inconsistent across pages.
+
+### Solution
+- Standardized console heading text to `Backend Log` in:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/templates/historian_agent.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/templates/corpus_explorer.html`
+- Updated empty-state helper text to match backend streaming language in:
+  - `/Users/louishyman/coding/nosql/nosql_reader_sse/app/static/style.css`
+  - New text: `Backend log is empty. Start a run to see backend events.`
+
+### Verification
+- Searched for prior labels and confirmed no remaining matches for:
+  - `Pipeline Debug Log`
+  - `Progress Log`
+- Verified all debug consoles now display consistent backend-oriented naming.

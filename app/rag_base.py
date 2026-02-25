@@ -54,8 +54,15 @@ def debug_print(*args, **kwargs):
     """
     if APP_CONFIG.debug_mode:
         timestamp = time.strftime("%H:%M:%S")
-        print(f"[{timestamp}] [DEBUG]", *args, **kwargs, file=sys.stderr)
+        message = " ".join(str(arg) for arg in args)
+        print(f"[{timestamp}] [DEBUG]", message, file=sys.stderr)
         sys.stderr.flush()
+        # Mirror debug output into SSE stream without impacting core flow.
+        try:
+            from log_stream import push
+            push(f"[DEBUG] {message}", level="debug", source="[RAG]")
+        except Exception:
+            pass
 
 
 # ============================================================================

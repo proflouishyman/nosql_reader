@@ -57,26 +57,79 @@
     setState('form');
 
     // ── Progress log ────────────────────────────────────────────────────
+    function clearProgressLog() {
+        if (progressLog) progressLog.innerHTML = '';
+    }
+
     function logProgress(message, type = 'info') {
         if (!progressLog) return;
-        const icons = { info: 'ℹ', success: '✓', warning: '⚠', error: '✗' };
-        const colors = { info: '#94a3b8', success: '#22c55e', warning: '#f59e0b', error: '#ef4444' };
-        const entry = document.createElement('div');
-        entry.className = 'agent-debug-entry';
         const ts = new Date().toLocaleTimeString();
-        entry.innerHTML = `<span class="agent-debug-time">[${ts}]</span> `
-            + `<span style="color:${colors[type] || colors.info}">${icons[type] || icons.info} ${message}</span>`;
+        const entry = document.createElement('div');
+        entry.className = `agent-debug-entry agent-debug-entry--${type}`;
+
+        const timeEl = document.createElement('span');
+        timeEl.className = 'agent-debug-time';
+        timeEl.textContent = `[${ts}]`;
+
+        const msgEl = document.createElement('span');
+        msgEl.className = 'agent-debug-message';
+        msgEl.textContent = message;
+
+        entry.appendChild(timeEl);
+        entry.appendChild(msgEl);
         progressLog.appendChild(entry);
         progressLog.scrollTop = progressLog.scrollHeight;
     }
 
+    /**
+     * Open shared backend log stream and pipe events to the progress log.
+     */
+    function openLogStream(onDone) {
+        const source = new EventSource('/api/log-stream');
+        let closed = false;
+
+        source.onmessage = function(event) {
+            try {
+                const payload = JSON.parse(event.data);
+                const displayMsg = payload.source
+                    ? `${payload.source} ${payload.message}`
+                    : payload.message;
+                logProgress(displayMsg, payload.level || 'info');
+                if (runningLabel && payload.message) {
+                    runningLabel.textContent = payload.message.length > 120
+                        ? `${payload.message.slice(0, 117)}...`
+                        : payload.message;
+                }
+            } catch (error) {
+                logProgress(event.data, 'info');
+            }
+        };
+
+        source.addEventListener('done', function() {
+            if (!closed) {
+                closed = true;
+                source.close();
+                if (onDone) onDone();
+            }
+        });
+
+        source.onerror = function() {
+            if (!closed) {
+                closed = true;
+                source.close();
+            }
+        };
+
+        return function close() {
+            if (!closed) {
+                closed = true;
+                source.close();
+            }
+        };
+    }
+
     // ── Elapsed timer ───────────────────────────────────────────────────
     let elapsedInterval = null;
-    let progressInterval = null;
-    let heartbeatInterval = null;
-    let activeRunId = null;
-    let runCursor = 0;
-    let lastProgressAt = 0;
 
     function startElapsed() {
         let seconds = 0;
@@ -92,17 +145,6 @@
         if (elapsedInterval) {
             clearInterval(elapsedInterval);
             elapsedInterval = null;
-        }
-    }
-
-    function stopProgressPolling() {
-        if (progressInterval) {
-            clearInterval(progressInterval);
-            progressInterval = null;
-        }
-        if (heartbeatInterval) {
-            clearInterval(heartbeatInterval);
-            heartbeatInterval = null;
         }
     }
 
@@ -127,111 +169,60 @@
         if (yearFrom && yearTo) payload.year_range = [yearFrom, yearTo];
 
         setState('running');
-        if (progressLog) progressLog.innerHTML = '';
+        clearProgressLog();
         stopElapsed();
-        stopProgressPolling();
         startElapsed();
-        activeRunId = null;
-        runCursor = 0;
-        lastProgressAt = Date.now();
-        if (runningLabel) runningLabel.textContent = 'Exploring corpus…';
+        if (runningLabel) runningLabel.textContent = 'Exploring corpus...';
 
-        logProgress(`Starting ${strategy} exploration — budget ${budget} documents`);
-        if (lens) logProgress(`Research lens: "${lens.substring(0, 80)}…"`);
-        if (yearFrom && yearTo) logProgress(`Year range: ${yearFrom}–${yearTo}`);
-        logProgress('Queueing exploration run…');
+        logProgress(`Starting ${strategy} exploration - budget ${budget} documents`, 'primary');
+        if (lens) logProgress(`Research lens: "${lens.substring(0, 80)}..."`, 'info');
+        if (yearFrom && yearTo) logProgress(`Year range: ${yearFrom}-${yearTo}`, 'info');
+
+        // Open stream before fetch so early backend logs are not missed.
+        const closeStream = openLogStream(null);
+        const streamTimeout = setTimeout(() => {
+            logProgress('Log stream timeout reached (10m); closing stream.', 'warning');
+            closeStream();
+        }, 600000);
 
         const start = performance.now();
 
         try {
-            const resp = await fetch('/api/rag/explore_corpus/start', {
+            const resp = await fetch('/api/rag/explore_corpus', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
+            const report = await resp.json();
 
             if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(err.error || `HTTP ${resp.status}`);
+                throw new Error(report.error || `HTTP ${resp.status}`);
             }
 
-            const started = await resp.json();
-            activeRunId = started.run_id;
-            logProgress(`Run started: ${activeRunId}`);
-            logProgress('Live progress updates enabled (2s polling + heartbeat)');
-            startProgressPolling(start);
+            const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+            logProgress(`Exploration complete in ${elapsed}s`, 'success');
+            logProgress(
+                `Generated ${report.questions?.length || 0} questions, found ${report.patterns?.length || 0} patterns`,
+                'success'
+            );
+            activeReport = report;
+            renderResults(report);
+            setState('results');
+            loadNotebooks();
         } catch (err) {
-            stopElapsed();
-            stopProgressPolling();
             logProgress(`Error: ${err.message}`, 'error');
             const backBtn = document.createElement('button');
-            backBtn.textContent = '← Back to form';
+            backBtn.textContent = '<- Back to form';
             backBtn.className = 'button button--secondary';
             backBtn.style.marginTop = '1rem';
             backBtn.onclick = () => setState('form');
             runningPanel.appendChild(backBtn);
+        } finally {
+            clearTimeout(streamTimeout);
+            closeStream();
+            stopElapsed();
         }
     });
-
-    function startProgressPolling(startPerf) {
-        if (!activeRunId) return;
-
-        const poll = async () => {
-            try {
-                const resp = await fetch(`/api/rag/explore_corpus/status/${encodeURIComponent(activeRunId)}?since=${runCursor}`);
-                if (!resp.ok) throw new Error(`Status HTTP ${resp.status}`);
-                const status = await resp.json();
-                const events = status.events || [];
-                if (events.length) {
-                    events.forEach((evt) => logProgress(evt.message));
-                    runCursor = status.next_cursor || runCursor + events.length;
-                    lastProgressAt = Date.now();
-                    if (runningLabel) {
-                        const tail = status.last_event_message || 'Exploring corpus…';
-                        runningLabel.textContent = tail.length > 120 ? `${tail.slice(0, 117)}...` : tail;
-                    }
-                }
-
-                if (status.status === 'completed') {
-                    stopElapsed();
-                    stopProgressPolling();
-                    const elapsed = ((performance.now() - startPerf) / 1000).toFixed(1);
-                    logProgress(`Exploration complete in ${elapsed}s`, 'success');
-                    const report = status.report || {};
-                    logProgress(
-                        `Generated ${report.questions?.length || 0} questions, `
-                        + `found ${report.patterns?.length || 0} patterns`,
-                        'success'
-                    );
-                    activeReport = report;
-                    renderResults(report);
-                    setState('results');
-                    loadNotebooks();
-                    return;
-                }
-
-                if (status.status === 'failed') {
-                    stopElapsed();
-                    stopProgressPolling();
-                    logProgress(`Run failed: ${status.error || 'unknown error'}`, 'error');
-                    return;
-                }
-            } catch (err) {
-                logProgress(`Status poll error: ${err.message}`, 'warning');
-            }
-        };
-
-        progressInterval = setInterval(poll, 2000);
-        heartbeatInterval = setInterval(() => {
-            const silenceMs = Date.now() - lastProgressAt;
-            const silenceSec = Math.round(silenceMs / 1000);
-            if (silenceSec >= 10) {
-                logProgress(`Heartbeat: run active, waiting on model response (${silenceSec}s since last update)`, 'warning');
-                lastProgressAt = Date.now();
-            }
-        }, 10000);
-        poll();
-    }
 
     // ── Results rendering ───────────────────────────────────────────────
 
