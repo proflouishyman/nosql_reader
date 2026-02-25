@@ -16,10 +16,11 @@
   </div>
 
   <!-- ── PREVIOUS RUNS ─────────────────────────────────────────────── -->
-  <div class="ce-notebooks" id="ceNotebooks">
+  <!-- Added page-level tooltip copy so explorer controls mirror network-analysis guidance quality. -->
+  <div class="ce-notebooks" id="ceNotebooks" data-help="Reload or open saved exploration snapshots with summary metadata.">
     <div class="ce-notebooks__header">
       <h2>Previous Explorations</h2>
-      <button type="button" class="button button--secondary button--sm" id="ceRefreshNotebooks">
+      <button type="button" class="button button--secondary button--sm" id="ceRefreshNotebooks" data-help="Refresh the saved exploration list from server-side notebook artifacts.">
         Refresh
       </button>
     </div>
@@ -46,29 +47,29 @@
           <span class="ce-form__hint">Optional — helps the AI orient toward your interests.</span>
         </label>
         <textarea id="ceResearchLens" name="research_lens" rows="3"
-          placeholder="e.g. I'm studying labor conditions for immigrant workers on the B&O in the 1920s…"></textarea>
+          placeholder="e.g. I'm studying labor conditions for immigrant workers on the B&O in the 1920s…" data-help="Describe your research lens to bias exploration themes and question generation."></textarea>
       </div>
 
       <!-- Strategy -->
       <div class="ce-form__field">
         <label>Reading strategy</label>
         <div class="ce-strategy-grid" id="ceStrategyGrid">
-          <label class="ce-strategy-card ce-strategy-card--selected" data-value="balanced">
+          <label class="ce-strategy-card ce-strategy-card--selected" data-value="balanced" data-help="Balanced strategy samples across periods, people, and document types.">
             <input type="radio" name="strategy" value="balanced" checked>
             <strong>Broad Overview</strong>
             <span>Mix of time periods, people, and document types. Best for an unfamiliar collection.</span>
           </label>
-          <label class="ce-strategy-card" data-value="temporal">
+          <label class="ce-strategy-card" data-value="temporal" data-help="Temporal strategy follows chronological progression to surface change over time.">
             <input type="radio" name="strategy" value="temporal">
             <strong>Follow the Timeline</strong>
             <span>Reads documents in chronological order. Best when you suspect change over time.</span>
           </label>
-          <label class="ce-strategy-card" data-value="biographical">
+          <label class="ce-strategy-card" data-value="biographical" data-help="Biographical strategy clusters reading around people and identity trails.">
             <input type="radio" name="strategy" value="biographical">
             <strong>Follow the People</strong>
             <span>Groups documents by person. Best for prosopographical or life-history research.</span>
           </label>
-          <label class="ce-strategy-card" data-value="genre">
+          <label class="ce-strategy-card" data-value="genre" data-help="Genre strategy groups by document type to map archival composition.">
             <input type="radio" name="strategy" value="genre">
             <strong>Follow Document Types</strong>
             <span>Groups by document type. Best when you want to understand what the archive contains.</span>
@@ -80,25 +81,25 @@
       <div class="ce-form__field">
         <label>Scope</label>
         <div class="ce-scope-options" id="ceScopeOptions">
-          <label class="ce-scope-card" data-value="100">
+          <label class="ce-scope-card" data-value="100" data-help="Quick Sample reads about 100 documents for rapid orientation.">
             <input type="radio" name="scope" value="100">
             <strong>Quick Sample</strong>
             <span>~100 documents · 2–5 min</span>
             <span class="ce-scope-card__use">Good for a first look.</span>
           </label>
-          <label class="ce-scope-card ce-scope-card--selected" data-value="500">
+          <label class="ce-scope-card ce-scope-card--selected" data-value="500" data-help="Standard scope reads about 500 documents and is the recommended default.">
             <input type="radio" name="scope" value="500" checked>
             <strong>Standard</strong>
             <span>~500 documents · 10–20 min</span>
             <span class="ce-scope-card__use">Recommended starting point.</span>
           </label>
-          <label class="ce-scope-card" data-value="2000">
+          <label class="ce-scope-card" data-value="2000" data-help="Deep Scan increases coverage to about 2,000 documents.">
             <input type="radio" name="scope" value="2000">
             <strong>Deep Scan</strong>
             <span>~2,000 documents · 30–60 min</span>
             <span class="ce-scope-card__use">For comprehensive coverage.</span>
           </label>
-          <label class="ce-scope-card" data-value="100000">
+          <label class="ce-scope-card" data-value="100000" data-help="Full Corpus runs across all documents and may take hours.">
             <input type="radio" name="scope" value="100000">
             <strong>Full Corpus</strong>
             <span>All documents · hours</span>
@@ -111,14 +112,14 @@
       <div class="ce-form__field ce-form__field--inline">
         <label>Year range <span class="ce-form__hint">Optional</span></label>
         <div class="ce-year-range">
-          <input type="number" id="ceYearFrom" name="year_from" placeholder="From" min="1800" max="2100">
+          <input type="number" id="ceYearFrom" name="year_from" placeholder="From" min="1800" max="2100" data-help="Optional lower bound year for exploration filtering.">
           <span>to</span>
-          <input type="number" id="ceYearTo" name="year_to" placeholder="To" min="1800" max="2100">
+          <input type="number" id="ceYearTo" name="year_to" placeholder="To" min="1800" max="2100" data-help="Optional upper bound year for exploration filtering.">
         </div>
       </div>
 
       <div class="ce-form__actions">
-        <button type="submit" class="button" id="ceSubmit">Begin Exploration</button>
+        <button type="submit" class="button" id="ceSubmit" data-help="Start a corpus exploration run with the selected strategy and scope.">Begin Exploration</button>
         <span class="ce-form__estimate" id="ceEstimate">~10–20 min for Standard scope</span>
       </div>
 
@@ -154,10 +155,10 @@
   <section class="ce-results" id="ceResults" hidden>
 
     <div class="ce-results__toolbar">
-      <button type="button" class="button button--secondary button--sm" id="ceNewExploration">
+      <button type="button" class="button button--secondary button--sm" id="ceNewExploration" data-help="Return to the exploration form while keeping the current report loaded.">
         ← New Exploration
       </button>
-      <button type="button" class="button button--secondary button--sm" id="ceExportMarkdown">
+      <button type="button" class="button button--secondary button--sm" id="ceExportMarkdown" data-help="Download the current exploration report as a Markdown file.">
         Export as Markdown
       </button>
     </div>
@@ -198,7 +199,7 @@
     </div>
 
     <!-- Contradictions (collapsible) -->
-    <details class="ce-section ce-collapsible" id="ceContradictionsSection">
+    <details class="ce-section ce-collapsible" id="ceContradictionsSection" data-help="Expand to inspect conflicting claims surfaced during exploration.">
       <summary class="ce-collapsible__header">
         <h2 class="ce-section__title">Contradictions <span class="ce-badge" id="ceContradictionCount"></span></h2>
       </summary>
@@ -206,7 +207,7 @@
     </details>
 
     <!-- Patterns (collapsible) -->
-    <details class="ce-section ce-collapsible" id="cePatternsSection">
+    <details class="ce-section ce-collapsible" id="cePatternsSection" data-help="Expand to review recurring patterns extracted from evidence.">
       <summary class="ce-collapsible__header">
         <h2 class="ce-section__title">Patterns <span class="ce-badge" id="cePatternCount"></span></h2>
       </summary>
@@ -214,7 +215,7 @@
     </details>
 
     <!-- Entities (collapsible) -->
-    <details class="ce-section ce-collapsible" id="ceEntitiesSection">
+    <details class="ce-section ce-collapsible" id="ceEntitiesSection" data-help="Expand to inspect frequently occurring entities in this run.">
       <summary class="ce-collapsible__header">
         <h2 class="ce-section__title">Key Entities <span class="ce-badge" id="ceEntityCount"></span></h2>
       </summary>

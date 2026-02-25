@@ -570,3 +570,38 @@ After the first layout fix, the top of the controls became visible but the full 
 
 ### Verification
 - Confirmed live stylesheet served from `http://localhost:5001/static/style.css` contains the updated panel height and adjustment-controls overflow rules.
+
+## 2026-02-25 - Extend delayed-help tooltip standard to all primary pages
+
+### Problem
+The Network Analysis page had high-quality, explicit tooltip text, but most other pages relied on generic fallback help generated at runtime. This created uneven guidance quality and left many page-specific controls under-documented.
+
+### Solution
+- Added explicit `data-help` text to primary controls and sections across templates:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/home.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search-terms.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/historian_agent.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/corpus_explorer.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/settings.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/database-info.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/help.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/document-list.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/network-document-list.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/login.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/data_files.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/error.html`
+- Added explicit tooltip attributes for dynamic controls created in JavaScript:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/static/script.js` (search result table controls)
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js` (source links)
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/static/corpus_explorer.js` (investigate links, recovery action)
+- Strengthened tooltip contract tests in:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/util/e2e_cli_suite.py`
+  - Updated contract now checks additional routes and requires page-specific tooltip targets beyond base-nav-only coverage.
+
+### Verification
+- Ran E2E suite in app container:
+  - `docker compose -p nosql_reader -f docker-compose.yml exec -T app python /app/util/e2e_cli_suite.py`
+- Result:
+  - `Tooltip standard contract` passed with `paths=12 total_data_help_targets=228`
+  - Overall suite passed: `Total checks: 20`, `Failed: 0`.

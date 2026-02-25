@@ -12,12 +12,13 @@
         <p><strong>Dropdown Fields Configuration:</strong> Fields with 2-10 unique values are available as dropdowns.</p>
     </header>
 
-    <table class="database-info__table">
+    <!-- Added data-help to document the table contract inline with network-analysis tooltip behavior. -->
+    <table class="database-info__table" data-help="Coverage table for searchable fields and dropdown-eligibility thresholds.">
         <thead>
             <tr>
-                <th scope="col">Field name</th>
-                <th scope="col">Documents with value</th>
-                <th scope="col">Dropdown Ready?</th>
+                <th scope="col" data-help="MongoDB field path used by search and display pipelines.">Field name</th>
+                <th scope="col" data-help="Number of documents that contain at least one non-empty value for this field.">Documents with value</th>
+                <th scope="col" data-help="Whether this field qualifies for dropdown filtering (2-10 distinct values).">Dropdown Ready?</th>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +38,7 @@
         </tbody>
     </table>
     
-    <div class="config-info">
+    <div class="config-info" data-help="Current dropdown-field policy and config source path.">
         <h3>Configuration Status</h3>
         <p>Configuration file loaded from: config/config.json</p>
         <p>Fields with 2-10 unique values are available as dropdowns in search.</p>

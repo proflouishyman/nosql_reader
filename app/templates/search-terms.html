@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="container search-terms-page">
+    <!-- Added explicit control help so Search Terms matches network-analysis tooltip richness. -->
     <header class="search-terms__header">
         <h1>Unique terms explorer</h1>
         <p>Pick a field, choose words or phrases, then click a term to run a database search.</p>
@@ -15,10 +16,10 @@
 
     <section class="search-terms__panel">
         <h2>Field</h2>
-        <div id="fieldQuickPicks" class="search-terms__chips" aria-label="Suggested fields"></div>
+        <div id="fieldQuickPicks" class="search-terms__chips" aria-label="Suggested fields" data-help="Quick-pick chips for frequently used fields."></div>
         <div class="search-terms__filters">
             <label for="fieldSelect">All fields</label>
-            <select id="fieldSelect">
+            <select id="fieldSelect" data-help="Choose which field to analyze for unique words and phrases.">
                 <option value="" disabled selected>Select a field</option>
                 {% for field in field_structure|dictsort %}
                     {% if field[0] not in unique_fields %}
@@ -33,13 +34,13 @@
         <h2>Explore</h2>
         <div class="search-terms__controls">
             <label for="searchInput">Filter terms</label>
-            <input type="text" id="searchInput" placeholder="Type to filter terms..." aria-label="Filter terms">
-            <button id="clearSearchButton" class="button--secondary" type="button" aria-label="Clear filter">Clear</button>
+            <input type="text" id="searchInput" placeholder="Type to filter terms..." aria-label="Filter terms" data-help="Filter currently loaded terms by substring match.">
+            <button id="clearSearchButton" class="button--secondary" type="button" aria-label="Clear filter" data-help="Clear the term filter input.">Clear</button>
         </div>
 
         <div class="search-terms__tabs" role="tablist" aria-label="Term type">
-            <button id="wordsTab" class="search-terms__tab is-active" type="button" data-type="word" role="tab" aria-selected="true">Words</button>
-            <button id="phrasesTab" class="search-terms__tab" type="button" data-type="phrase" role="tab" aria-selected="false">Phrases</button>
+            <button id="wordsTab" class="search-terms__tab is-active" type="button" data-type="word" role="tab" aria-selected="true" data-help="Show unique single-word terms for the selected field.">Words</button>
+            <button id="phrasesTab" class="search-terms__tab" type="button" data-type="phrase" role="tab" aria-selected="false" data-help="Show unique multi-word phrases for the selected field.">Phrases</button>
         </div>
 
         <div class="search-terms__meta">
@@ -70,9 +71,9 @@
         </div>
 
         <div class="pagination-controls">
-            <button id="prevPage" disabled>Previous</button>
+            <button id="prevPage" disabled data-help="Load the previous page of unique terms.">Previous</button>
             <span>Page <span id="currentPage">1</span></span>
-            <button id="nextPage">Next</button>
+            <button id="nextPage" data-help="Load the next page of unique terms.">Next</button>
         </div>
     </section>
 
@@ -81,14 +82,14 @@
         <p>Given an anchor term in the selected field, find words that are disproportionately likely to appear with it.</p>
         <div class="search-terms__crosstab-controls">
             <label for="anchorInput">Anchor term</label>
-            <input id="anchorInput" type="text" placeholder="Example: relief">
+            <input id="anchorInput" type="text" placeholder="Example: relief" data-help="Enter the anchor term used for co-occurrence comparison.">
             <label for="minDocFreqInput">Min global docs</label>
-            <input id="minDocFreqInput" type="number" min="1" value="5">
+            <input id="minDocFreqInput" type="number" min="1" value="5" data-help="Minimum global document frequency for candidate terms.">
             <label for="minCoDocsInput">Min co-docs</label>
-            <input id="minCoDocsInput" type="number" min="1" value="3">
+            <input id="minCoDocsInput" type="number" min="1" value="3" data-help="Minimum number of documents containing both anchor and candidate term.">
             <label for="crossTabLimitInput">Rows</label>
-            <input id="crossTabLimitInput" type="number" min="1" max="100" value="25">
-            <button id="runCrossTabButton" type="button">Run analysis</button>
+            <input id="crossTabLimitInput" type="number" min="1" max="100" value="25" data-help="Maximum number of cross-tab rows to return.">
+            <button id="runCrossTabButton" type="button" data-help="Run cross-tab lift analysis for the current anchor term.">Run analysis</button>
         </div>
 
         <div id="crossTabLoading" class="loading-indicator" hidden>
@@ -239,8 +240,8 @@
             actionsCell.className = 'search-terms__actions';
             // Keep actions explicit for fast pivoting into database search and clipboard workflows.
             actionsCell.innerHTML = `
-                <a class="search-terms__action-link" href="${searchUrlForTerm(row.term)}">Search</a>
-                <button class="search-terms__action-button" type="button" data-copy-term="${row.term}">Copy</button>
+                <a class="search-terms__action-link" href="${searchUrlForTerm(row.term)}" data-help="Open Search with this term prefilled as field + term.">Search</a>
+                <button class="search-terms__action-button" type="button" data-copy-term="${row.term}" data-help="Copy this term to the clipboard.">Copy</button>
             `;
 
             tr.appendChild(termCell);
@@ -430,8 +431,8 @@
                 <td>${row.co_doc_count}</td>
                 <td>${row.global_doc_count}</td>
                 <td class="search-terms__actions">
-                    <a class="search-terms__action-link" href="${searchUrlForTerm(row.term)}">Search</a>
-                    <button class="search-terms__action-button" type="button" data-copy-cross-term="${row.term}">Copy</button>
+                    <a class="search-terms__action-link" href="${searchUrlForTerm(row.term)}" data-help="Open Search with this cross-tab term prefilled.">Search</a>
+                    <button class="search-terms__action-button" type="button" data-copy-cross-term="${row.term}" data-help="Copy this cross-tab term to the clipboard.">Copy</button>
                 </td>
             `;
             crossTabBody.appendChild(tr);

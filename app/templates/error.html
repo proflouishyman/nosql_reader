@@ -5,6 +5,7 @@
 <div class="container error-page">
     <h1>Something went wrong</h1>
     <p>{{ message or 'An unexpected error occurred. Please try again later.' }}</p>
-    <a class="button" href="{{ url_for('index') }}">Return home</a>
+    <!-- Added explicit help text so even fallback pages honor the global tooltip contract. -->
+    <a class="button" href="{{ url_for('index') }}" data-help="Return to the home page and restart your workflow.">Return home</a>
 </div>
 {% endblock %}

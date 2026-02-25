@@ -3,13 +3,13 @@
 
 {% block content %}
 <div class="container home">
-    
+    <!-- Added page-level help text so home actions follow the network-analysis tooltip standard. -->
     <section class="home-hero">
         <h1>Welcome to the Historical Document Reader</h1>
         <p class="home-hero__lead">Explore digitised archives, surface relevant records with full-text search, and interrogate the collection using the Historian Agent.</p>
         <div class="home-hero__actions">
-            <a class="button" href="{{ url_for('search_database') }}">Start searching</a>
-            <a class="button button--secondary" href="{{ url_for('historian_agent_page') }}">Chat with the Historian Agent</a>
+            <a class="button" href="{{ url_for('search_database') }}" data-help="Open the Search Database workflow with fielded Boolean queries.">Start searching</a>
+            <a class="button button--secondary" href="{{ url_for('historian_agent_page') }}" data-help="Open Historian Agent to ask natural-language questions with source citations.">Chat with the Historian Agent</a>
         </div>
     </section>
 

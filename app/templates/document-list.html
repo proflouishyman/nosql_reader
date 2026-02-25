@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="container document-list-page">
+    <!-- Added page-specific help text so list actions use the same tooltip standard as network-analysis. -->
     <header class="document-list__header">
         <h1>Document list</h1>
         <p>Select any document to open the detailed viewer in a new tab. Use your browser back button to return here.</p>
@@ -17,6 +18,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="document-list__link"
+                data-help="Open this document in a new tab. Viewer navigation is scoped to that document context."
             >
                 {{ document.get('filename', 'Untitled Document') }}
             </a>

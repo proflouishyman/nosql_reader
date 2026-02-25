@@ -8,13 +8,14 @@
         <h1>Historian Agent</h1>
         <p class="agent-hero__subtitle">Ask natural language questions about the archives and receive sourced answers from the Historian Agent.</p>
     </div>
-    <section class="agent-panel" data-agent-enabled="{{ 'true' if agent_config_payload.enabled else 'false' }}" data-agent-error="{{ 'true' if agent_error else 'false' }}">
+    <!-- Added explicit help text for core Historian controls to match the network-analysis tooltip standard. -->
+    <section class="agent-panel" data-agent-enabled="{{ 'true' if agent_config_payload.enabled else 'false' }}" data-agent-error="{{ 'true' if agent_error else 'false' }}" data-help="Submit a question, monitor backend logs, and review cited source documents.">
         
         
         <!-- NEW: Method selector -->
         <div class="agent-method-selector">
             <label for="agentMethod">Query Method:</label>
-            <select id="agentMethod" name="method">
+            <select id="agentMethod" name="method" data-help="Select response strategy: fast basic, monitored adversarial, or tiered escalation.">
                 <option value="basic" selected>Good (Fast)</option>
                 <option value="adversarial">Better (Monitored)</option>
                 <option value="tiered">Best (Tiered)</option>
@@ -28,7 +29,7 @@
         <div class="agent-debug-console" id="agentDebugConsole">
             <div class="agent-debug-header">
                 <span class="agent-debug-title">Backend Log</span>
-                <button type="button" class="agent-debug-clear" id="agentDebugClear">Clear</button>
+                <button type="button" class="agent-debug-clear" id="agentDebugClear" data-help="Clear the currently displayed backend log entries.">Clear</button>
             </div>
             <div class="agent-debug-output" id="agentDebugOutput"></div>
         </div>
@@ -37,19 +38,19 @@
         
         <form id="agentForm" class="agent-form" novalidate>
             <label for="agentQuestion" class="sr-only">Ask a question</label>
-            <textarea id="agentQuestion" name="question" rows="4" placeholder="Ask the Historian Agent about the archives..."></textarea>
+            <textarea id="agentQuestion" name="question" rows="4" placeholder="Ask the Historian Agent about the archives..." data-help="Enter a focused research question. Include dates, names, or places for better retrieval."></textarea>
             <div class="agent-suggestions" aria-label="Suggested questions">
-                <button type="button" class="agent-suggestion" data-question="Summarize the key events mentioned in the May 1944 archive." data-autosend="true" aria-label="Ask about May 1944">May 1944 highlights</button>
-                <button type="button" class="agent-suggestion" data-question="Who are the main people involved in the selected document?" data-autosend="true" aria-label="Ask about people">People involved</button>
-                <button type="button" class="agent-suggestion" data-question="Give me context for the referenced operation." data-autosend="true" aria-label="Ask for context">Operational context</button>
+                <button type="button" class="agent-suggestion" data-question="Summarize the key events mentioned in the May 1944 archive." data-autosend="true" aria-label="Ask about May 1944" data-help="Insert and auto-send a sample question about timeline events in May 1944.">May 1944 highlights</button>
+                <button type="button" class="agent-suggestion" data-question="Who are the main people involved in the selected document?" data-autosend="true" aria-label="Ask about people" data-help="Insert and auto-send a sample question focused on key people in context.">People involved</button>
+                <button type="button" class="agent-suggestion" data-question="Give me context for the referenced operation." data-autosend="true" aria-label="Ask for context" data-help="Insert and auto-send a sample question for broader operational background.">Operational context</button>
             </div>
             <div class="agent-actions">
                 <div class="agent-status" id="agentStatus" role="status" aria-live="polite" hidden>
                     <span class="agent-status__dot" aria-hidden="true"></span>
                     <span id="agentStatusText">Working...</span>
                 </div>
-                <button type="submit">Send</button>
-                <button type="button" id="agentReset" class="secondary">Reset conversation</button>
+                <button type="submit" data-help="Send your current question to the selected Historian method.">Send</button>
+                <button type="button" id="agentReset" class="secondary" data-help="Clear conversation history and start a fresh session.">Reset conversation</button>
             </div>
         </form>
         

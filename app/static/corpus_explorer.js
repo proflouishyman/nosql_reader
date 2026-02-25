@@ -214,6 +214,8 @@
             const backBtn = document.createElement('button');
             backBtn.textContent = '<- Back to form';
             backBtn.className = 'button button--secondary';
+            // Provide explicit tooltip guidance for recovery action on failed runs.
+            backBtn.setAttribute('data-help', 'Return to the form to adjust options and retry exploration.');
             backBtn.style.marginTop = '1rem';
             backBtn.onclick = () => setState('form');
             runningPanel.appendChild(backBtn);
@@ -347,7 +349,8 @@
             <div class="ce-question-card__meta">${typeBadge}${scoreBadge}${docsBadge}</div>
             <p class="ce-question-card__text">${escHtml(text)}</p>
             <a href="/historian-agent?q=${encodeURIComponent(text)}" target="_blank"
-               class="ce-question-card__investigate button button--sm">
+               class="ce-question-card__investigate button button--sm"
+               data-help="Open this generated question in Historian Agent for follow-up investigation.">
                Investigate →
             </a>
         </div>`;
@@ -380,7 +383,8 @@
                             <li>
                                 <span>${escHtml(sq)}</span>
                                 <a href="/historian-agent?q=${encodeURIComponent(sq)}"
-                                   target="_blank" class="ce-gap-card__link">Investigate →</a>
+                                   target="_blank" class="ce-gap-card__link"
+                                   data-help="Open this evidence-gap question in Historian Agent.">Investigate →</a>
                             </li>`)
                             .join('')}
                     </ul>`

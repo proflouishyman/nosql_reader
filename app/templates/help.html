@@ -6,7 +6,8 @@
     <h1>Help centre</h1>
     <p class="help-intro">This guide explains how to use the running application for research workflows.</p>
 
-    <section class="help-section" id="navigation">
+    <!-- Added section-level data-help so the help page itself participates in the tooltip system. -->
+    <section class="help-section" id="navigation" data-help="Overview of main navigation destinations and their purpose.">
         <h2>Navigation overview</h2>
         <ul>
             <li><strong>Search Database:</strong> Build fielded queries and open result documents.</li>
@@ -16,7 +17,7 @@
         </ul>
     </section>
 
-    <section class="help-section" id="search-workflow">
+    <section class="help-section" id="search-workflow" data-help="Step-by-step fielded search workflow from query to document viewer navigation.">
         <h2>Search workflow</h2>
         <ol>
             <li>Open <strong>Search Database</strong>.</li>
@@ -27,7 +28,7 @@
         <p>The document viewer keeps your list context so <strong>Previous</strong> and <strong>Next</strong> move through the same result list.</p>
     </section>
 
-    <section class="help-section" id="document-viewer">
+    <section class="help-section" id="document-viewer" data-help="How entity context and related-document links work in document detail view.">
         <h2>Document viewer and network context</h2>
         <ul>
             <li><strong>Entity chips:</strong> Click an entity to open a quick network popup.</li>
@@ -37,15 +38,15 @@
         </ul>
     </section>
 
-    <section class="help-section" id="network-analysis">
+    <section class="help-section" id="network-analysis" data-help="Control reference for network filters, graph scope, and viewer launch behavior.">
         <h2>Network Analysis page</h2>
         <p>The Network Analysis page renders the global or ego entity graph and lets you tune what is shown.</p>
 
         <table>
             <thead>
                 <tr>
-                    <th scope="col">Control</th>
-                    <th scope="col">What it does</th>
+                    <th scope="col" data-help="Name of a control on the Network Analysis page.">Control</th>
+                    <th scope="col" data-help="Expected behavior of that control in graph rendering and filtering.">What it does</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,7 +86,7 @@
         </table>
     </section>
 
-    <section class="help-section" id="network-stats">
+    <section class="help-section" id="network-stats" data-help="Server-side network statistics panel capabilities and interpretation guide.">
         <h2>Statistical analysis panel</h2>
         <p>At the bottom of the Network Analysis page, click <strong>Compute Statistics</strong> to run server-side tests for the current filters.</p>
         <ul>
@@ -100,7 +101,7 @@
         <p>First run can take longer; repeated runs are cached.</p>
     </section>
 
-    <section class="help-section" id="historian-agent">
+    <section class="help-section" id="historian-agent" data-help="Recommended Historian Agent usage for question quality and citation follow-up.">
         <h2>Historian Agent workflow</h2>
         <ul>
             <li>Ask focused historical questions.</li>
@@ -110,7 +111,7 @@
         </ul>
     </section>
 
-    <section class="help-section" id="troubleshooting">
+    <section class="help-section" id="troubleshooting" data-help="Common failure modes and first-response debugging actions.">
         <h2>Troubleshooting</h2>
         <ul>
             <li><strong>No network graph:</strong> check that `network_edges` is built and non-empty.</li>

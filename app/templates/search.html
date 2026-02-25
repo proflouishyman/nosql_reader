@@ -6,15 +6,16 @@
 <div class="container search-page">
     <header class="search-page__header">
         <h1>Search the archives</h1>
-        <p>Combine multiple fields with Boolean operators to target precise records. Need a vocabulary overview? <a href="{{ url_for('search_terms') }}">Open the unique terms explorer</a>.</p>
+        <p>Combine multiple fields with Boolean operators to target precise records. Need a vocabulary overview? <a href="{{ url_for('search_terms') }}" data-help="Open Search Terms to inspect high-signal vocabulary and pivot terms into search.">Open the unique terms explorer</a>.</p>
     </header>
 
-    <form id="searchForm" class="search-form">
+    <!-- Added explicit help text to search controls to match network-analysis tooltip quality. -->
+    <form id="searchForm" class="search-form" data-help="Build a multi-row query, then run Search to load paged results with list-preserving viewer navigation.">
         <div id="searchFields" class="search-form__fields">
             {% for i in range(1, num_search_fields + 1) %}
             <div class="search-field">
                 <label for="field{{ i }}">Field</label>
-                <select name="field{{ i }}" id="field{{ i }}" class="field-select">
+                <select name="field{{ i }}" id="field{{ i }}" class="field-select" data-help="Choose the document field to search in row {{ i }}.">
                     <option value="" disabled selected>Select a field</option>
                     <!-- Dropdown fields (2-10 unique values) -->
                     <option value="collection" class="dropdown-field">collection</option>
@@ -27,19 +28,19 @@
                     {% endfor %}
                 </select>
                 <label for="operator{{ i }}">Operator</label>
-                <select name="operator{{ i }}" id="operator{{ i }}">
+                <select name="operator{{ i }}" id="operator{{ i }}" data-help="Set how row {{ i }} combines with the next condition (AND, OR, NOT).">
                     <option value="AND">AND</option>
                     <option value="OR">OR</option>
                     <option value="NOT">NOT</option>
                 </select>
                 <label for="searchTerm{{ i }}">Search term</label>
-                <input type="text" name="searchTerm{{ i }}" id="searchTerm{{ i }}" placeholder="Enter search term">
+                <input type="text" name="searchTerm{{ i }}" id="searchTerm{{ i }}" placeholder="Enter search term" data-help="Enter the query text for row {{ i }}.">
             </div>
             {% endfor %}
         </div>
         <div class="search-form__actions">
-            <button type="submit" id="searchButton">Search</button>
-            <button id="exportSelectedCsv" class="secondary" style="display: none;">Export selected to CSV</button>
+            <button type="submit" id="searchButton" data-help="Run this search and load matching documents into the results table.">Search</button>
+            <button id="exportSelectedCsv" class="secondary" style="display: none;" data-help="Export currently selected result rows as a CSV file.">Export selected to CSV</button>
         </div>
     </form>
 
@@ -48,7 +49,7 @@
         <p>Loading… Please wait.</p>
     </div>
 
-    <button id="cancelSearch" class="secondary" hidden>Cancel search</button>
+    <button id="cancelSearch" class="secondary" hidden data-help="Abort the active search request. Already-loaded rows remain visible.">Cancel search</button>
     <div id="totalResults" class="search-page__meta"></div>
     <div id="results" class="search-page__results" aria-live="polite"></div>
 </div>
@@ -139,6 +140,8 @@ function updateSearchFieldInputs() {
                     select.className = 'dropdown-input';
                     select.name = `searchTerm${index + 1}`;
                     select.id = `searchTerm${index + 1}`;
+                    // Preserve tooltip semantics when replacing text inputs with dropdowns.
+                    select.setAttribute('data-help', `Choose a preset value for row ${index + 1}.`);
                     
                     // Add default option
                     const defaultOption = document.createElement('option');
@@ -165,6 +168,8 @@ function updateSearchFieldInputs() {
                         textInput.name = `searchTerm${index + 1}`;
                         textInput.id = `searchTerm${index + 1}`;
                         textInput.placeholder = 'Enter search term';
+                        // Restore tooltip semantics when switching back to free-text input.
+                        textInput.setAttribute('data-help', `Enter the query text for row ${index + 1}.`);
                         
                         // CRITICAL: Replace the dropdown with text input
                         currentInput.parentNode.replaceChild(textInput, currentInput);

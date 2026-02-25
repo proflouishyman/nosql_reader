@@ -221,6 +221,8 @@
                     link.href = source.url;  // Use the url property directly
                     link.target = '_blank';
                     link.rel = 'noopener noreferrer';
+                    // Keep source-link tooltips explicit instead of falling back to generic link text.
+                    link.setAttribute('data-help', 'Open the cited source document in a new tab.');
                     link.textContent = `${label}: ${source.display_name}`;  // Already clean!
                     item.appendChild(link);
                     sourcesList.appendChild(item);

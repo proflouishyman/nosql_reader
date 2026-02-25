@@ -3,30 +3,31 @@
 
 {% block content %}
 <div class="container data-files">
+    <!-- Added data-help on file-management controls to match tooltip standards used in network-analysis. -->
     <div class="data-files__intro">
         <h1>Archive file management</h1>
         <p>Upload additional JSON documents that will be ingested by <code>data_processing.py</code> the next time it runs. Files are stored in <code>{{ archive_root }}</code>.</p>
     </div>
     <section class="data-files__panel">
         <h2>Upload new files</h2>
-        <form method="post" enctype="multipart/form-data" class="data-files__form">
+        <form method="post" enctype="multipart/form-data" class="data-files__form" data-help="Upload JSON/JSONL files into the archive directory for ingestion.">
             <div class="form-field">
                 <label for="targetSubdir">Optional subfolder</label>
-                <input type="text" id="targetSubdir" name="target_subdir" placeholder="e.g. 1944/reports">
+                <input type="text" id="targetSubdir" name="target_subdir" placeholder="e.g. 1944/reports" data-help="Optional relative folder path under the archive root.">
                 <p class="form-field__hint">Use forward slashes to create nested folders. Unsafe characters are removed automatically.</p>
             </div>
             <div class="form-field">
                 <label for="archiveFiles">Choose JSON files</label>
-                <input type="file" id="archiveFiles" name="archives" accept=".json,.jsonl" multiple required>
+                <input type="file" id="archiveFiles" name="archives" accept=".json,.jsonl" multiple required data-help="Select one or more .json or .jsonl files to upload.">
                 <p class="form-field__hint">Supported formats: <code>.json</code> and <code>.jsonl</code>.</p>
             </div>
-            <button type="submit">Upload files</button>
+            <button type="submit" data-help="Upload the selected files to the specified archive location.">Upload files</button>
         </form>
     </section>
     <section class="data-files__panel">
         <h2>Existing files</h2>
         <div class="data-files__download">
-            <a class="data-files__download-link" href="{{ url_for('download_all_archives') }}">Download all files</a>
+            <a class="data-files__download-link" href="{{ url_for('download_all_archives') }}" data-help="Download a ZIP archive containing all files and folders under the archive root.">Download all files</a>
             <p class="data-files__hint">Generates a ZIP snapshot of every archive, preserving the folder structure.</p>
         </div>
         {% if archive_files %}

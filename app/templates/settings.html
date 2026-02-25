@@ -5,54 +5,55 @@
 <div class="container settings-page">
     <h1>User interface</h1>
 
+    <!-- Added explicit tooltips for settings inputs so configuration pages match network-analysis guidance. -->
     <section id="ui-preferences" class="settings-section">
         <div class="settings-section__header">
             <h2>Interface appearance</h2>
             <p>Customise fonts, sizing, and colour tokens used across the application.</p>
         </div>
-        <form method="POST" class="settings-form">
+        <form method="POST" class="settings-form" data-help="Update interface fonts, sizes, colors, and spacing tokens used throughout the app.">
             <input type="hidden" name="action" value="update_ui">
             <div class="settings-grid">
                 <div class="settings-group">
                     <h3>Fonts</h3>
                     <label for="fonts_main">Main font</label>
-                    <input type="text" id="fonts_main" name="fonts[main]" value="{{ config.get('fonts', {}).get('main', '') }}">
+                    <input type="text" id="fonts_main" name="fonts[main]" value="{{ config.get('fonts', {}).get('main', '') }}" data-help="Set the primary body font family (for example: Open Sans, serif fallback).">
                     <label for="fonts_headers">Header font</label>
-                    <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config.get('fonts', {}).get('headers', '') }}">
+                    <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config.get('fonts', {}).get('headers', '') }}" data-help="Set the heading font family used for H1-H3 elements.">
                 </div>
                 <div class="settings-group">
                     <h3>Sizes</h3>
                     <label for="sizes_base">Base size</label>
-                    <input type="text" id="sizes_base" name="sizes[base]" value="{{ config.get('sizes', {}).get('base', '') }}">
+                    <input type="text" id="sizes_base" name="sizes[base]" value="{{ config.get('sizes', {}).get('base', '') }}" data-help="Set the default body text size token (for example: 16px or 1rem).">
                     <label for="sizes_h1">Heading 1</label>
-                    <input type="text" id="sizes_h1" name="sizes[h1]" value="{{ config.get('sizes', {}).get('h1', '') }}">
+                    <input type="text" id="sizes_h1" name="sizes[h1]" value="{{ config.get('sizes', {}).get('h1', '') }}" data-help="Set the size token for H1 headings.">
                     <label for="sizes_h2">Heading 2</label>
-                    <input type="text" id="sizes_h2" name="sizes[h2]" value="{{ config.get('sizes', {}).get('h2', '') }}">
+                    <input type="text" id="sizes_h2" name="sizes[h2]" value="{{ config.get('sizes', {}).get('h2', '') }}" data-help="Set the size token for H2 headings.">
                     <label for="sizes_h3">Heading 3</label>
-                    <input type="text" id="sizes_h3" name="sizes[h3]" value="{{ config.get('sizes', {}).get('h3', '') }}">
+                    <input type="text" id="sizes_h3" name="sizes[h3]" value="{{ config.get('sizes', {}).get('h3', '') }}" data-help="Set the size token for H3 headings.">
                 </div>
                 <div class="settings-group">
                     <h3>Colours</h3>
                     <label for="colors_primary">Primary colour</label>
-                    <input type="color" id="colors_primary" name="colors[primary]" value="{{ config.get('colors', {}).get('primary', '#2A4365') }}">
+                    <input type="color" id="colors_primary" name="colors[primary]" value="{{ config.get('colors', {}).get('primary', '#2A4365') }}" data-help="Pick the primary brand/action color used by buttons and accents.">
                     <label for="colors_secondary">Secondary colour</label>
-                    <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config.get('colors', {}).get('secondary', '#718096') }}">
+                    <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config.get('colors', {}).get('secondary', '#718096') }}" data-help="Pick the secondary support color used for less prominent UI elements.">
                     <label for="colors_background">Background</label>
-                    <input type="color" id="colors_background" name="colors[background]" value="{{ config.get('colors', {}).get('background', '#ffffff') }}">
+                    <input type="color" id="colors_background" name="colors[background]" value="{{ config.get('colors', {}).get('background', '#ffffff') }}" data-help="Set the default page background color token.">
                     <label for="colors_text">Text</label>
-                    <input type="color" id="colors_text" name="colors[text]" value="{{ config.get('colors', {}).get('text', '#1a202c') }}">
+                    <input type="color" id="colors_text" name="colors[text]" value="{{ config.get('colors', {}).get('text', '#1a202c') }}" data-help="Set the default text color token used across pages.">
                 </div>
                 <div class="settings-group">
                     <h3>Spacing</h3>
                     <label for="spacing_small">Small spacing</label>
-                    <input type="text" id="spacing_small" name="spacing[small]" value="{{ config.get('spacing', {}).get('small', '0.5rem') }}">
+                    <input type="text" id="spacing_small" name="spacing[small]" value="{{ config.get('spacing', {}).get('small', '0.5rem') }}" data-help="Set the compact spacing token used for dense layouts.">
                     <label for="spacing_medium">Medium spacing</label>
-                    <input type="text" id="spacing_medium" name="spacing[medium]" value="{{ config.get('spacing', {}).get('medium', '1rem') }}">
+                    <input type="text" id="spacing_medium" name="spacing[medium]" value="{{ config.get('spacing', {}).get('medium', '1rem') }}" data-help="Set the standard spacing token used between most controls.">
                     <label for="spacing_large">Large spacing</label>
-                    <input type="text" id="spacing_large" name="spacing[large]" value="{{ config.get('spacing', {}).get('large', '2rem') }}">
+                    <input type="text" id="spacing_large" name="spacing[large]" value="{{ config.get('spacing', {}).get('large', '2rem') }}" data-help="Set the large spacing token used for section separation.">
                 </div>
             </div>
-            <button type="submit">Save UI preferences</button>
+            <button type="submit" data-help="Save all UI token updates to the active configuration.">Save UI preferences</button>
         </form>
     </section>
 

@@ -28,13 +28,14 @@
   </div>
 
   {% if documents %}
-    <table class="network-document-list__table">
+    <!-- Added table-level help copy for network viewer metrics columns. -->
+    <table class="network-document-list__table" data-help="Network-derived ranking of documents for the current graph slice.">
       <thead>
         <tr>
-          <th>File</th>
-          <th>Matched entities</th>
-          <th>Matched edges</th>
-          <th>Network score</th>
+          <th data-help="Document filename link that opens viewer context for this row.">File</th>
+          <th data-help="Count of entities in this document that match current network filters.">Matched entities</th>
+          <th data-help="Count of matching network edges supported by this document.">Matched edges</th>
+          <th data-help="Composite network relevance score used to rank this list.">Network score</th>
         </tr>
       </thead>
       <tbody>

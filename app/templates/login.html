@@ -4,6 +4,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <!-- Added explicit login tooltips so auth controls follow the global delayed-help standard. -->
     <h1>Login</h1>
     
     {% with messages = get_flashed_messages() %}
@@ -16,16 +17,16 @@
         {% endif %}
     {% endwith %}
     
-    <form method="post">
+    <form method="post" data-help="Enter password and CAPTCHA answer to authenticate this session.">
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" required data-help="Enter the application password.">
         <br><br>
         
         <label for="captcha">CAPTCHA: What is {{ captcha_num1 }} + {{ captcha_num2 }}?</label>
-        <input type="number" id="captcha" name="captcha" required>
+        <input type="number" id="captcha" name="captcha" required data-help="Solve the CAPTCHA arithmetic check to continue.">
         <input type="hidden" name="captcha_answer" value="{{ captcha_answer }}">
         <br><br>
         
-        <input type="submit" value="Login">
+        <input type="submit" value="Login" data-help="Submit credentials and sign in.">
     </form>
 {% endblock %}

@@ -254,20 +254,24 @@ def main() -> int:
                 "/historian-agent",
                 "/corpus-explorer",
                 "/network-analysis",
+                "/network/viewer-results?search_id=missing",
                 "/database-info",
+                "/data-files",
                 "/settings",
                 "/help",
+                "/login",
             ]
             total_targets = 0
+            base_nav_targets = 9
             for path in tooltip_paths:
-                resp = client.get(path)
+                resp = client.get(path, follow_redirects=True)
                 require(resp.status_code == 200, f"{path} returned {resp.status_code}")
                 body = resp.data.decode("utf-8", errors="ignore")
                 # Contract: pages must load the shared AppHelpTooltips runtime from base.html.
                 require("js/help-tooltips.js" in body, f"{path} missing help-tooltips.js include")
-                # Contract: pages should expose at least one data-help target for consistent UX.
+                # Contract: each page should have page-level tooltip text in addition to base navigation targets.
                 page_targets = body.count("data-help=")
-                require(page_targets > 0, f"{path} has zero data-help targets")
+                require(page_targets > base_nav_targets, f"{path} is missing page-specific data-help targets")
                 total_targets += page_targets
             return f"paths={len(tooltip_paths)} total_data_help_targets={total_targets}"
 

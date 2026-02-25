@@ -347,12 +347,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!table) {
             table = document.createElement('table');
             table.id = 'resultsTable';
+            // Add explicit tooltip guidance for result table interactions.
+            table.setAttribute('data-help', 'Search results table. Select rows for CSV export or open a document in the viewer.');
 
             // Create table headers with a Select All checkbox
             const thead = document.createElement('thead');
             thead.innerHTML = `
                 <tr>
-                    <th><input type="checkbox" id="selectAll" /></th>
+                    <th><input type="checkbox" id="selectAll" data-help="Select or clear all currently loaded result rows." /></th>
                     <th>File</th>
                     <th>Summary</th>
                 </tr>
@@ -374,8 +376,8 @@ document.addEventListener('DOMContentLoaded', function() {
         documents.forEach(doc => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><input type="checkbox" class="select-document" data-doc-id="${doc._id}" /></td>
-                <td><a href="/document/${doc._id}?search_id=${searchId}">${doc.filename || 'No file name'}</a></td>
+                <td><input type="checkbox" class="select-document" data-doc-id="${doc._id}" data-help="Select this document for CSV export." /></td>
+                <td><a href="/document/${doc._id}?search_id=${searchId}" data-help="Open this document in detail view while preserving current search navigation.">${doc.filename || 'No file name'}</a></td>
                 <td>${doc.summary || 'No summary available.'}</td>
             `;
             // If the document is already selected, check the box
