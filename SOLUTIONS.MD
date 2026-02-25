@@ -538,3 +538,35 @@ The UI used inconsistent debug-console titles ("Pipeline Debug Log" in Historian
   - `Pipeline Debug Log`
   - `Progress Log`
 - Verified all debug consoles now display consistent backend-oriented naming.
+
+## 2026-02-25 - Keep document viewer controls visible in the right panel
+
+### Problem
+In the document detail view, the image consumed the full panel height while `.zoom-controls` and `.adjustment-controls` were rendered below it. On tall documents, controls were pushed out of view and could require page scrolling.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` to make the right image panel a sticky, fixed-height flex column:
+  - `.document-detail .image-panel` now uses `display: flex`, `flex-direction: column`, `height: calc(100vh - 40px)`, `position: sticky`, and `top: 0`.
+- Converted `#imageContainer` into the scrollable flex child that fills remaining space above controls:
+  - Uses `flex: 1`, `overflow: auto`, and `min-height: 0`.
+  - Removed the previous fixed `max-height` behavior that could squeeze controls off-screen.
+- Updated `.zoom-controls` and `.adjustment-controls` with `flex-shrink: 0` so controls remain visible and are not compressed out of the viewport.
+
+### Verification
+- Confirmed there is no inline `#imageContainer` style override in `/Users/louishyman/coding/nosql/nosql_reader/app/templates/document-detail.html`.
+- Confirmed stylesheet now drives layout with image-container scrolling and non-shrinking controls.
+
+## 2026-02-25 - Ensure full controls stack is reachable without page scroll
+
+### Problem
+After the first layout fix, the top of the controls became visible but the full `.adjustment-controls` stack could still be clipped at some viewport sizes because panel height did not account for fixed header space.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` to reduce both panel viewport contracts below the fixed header:
+  - `.document-detail .info-panel` `max-height` changed to `calc(100vh - 136px)`.
+  - `.document-detail .image-panel` `height` changed to `calc(100vh - 136px)` and sticky offset adjusted to `top: 12px`.
+- Added a controls-area fallback scroll container:
+  - `.adjustment-controls` now uses `max-height: 42vh` and `overflow-y: auto` so all controls remain reachable even on shorter viewports.
+
+### Verification
+- Confirmed live stylesheet served from `http://localhost:5001/static/style.css` contains the updated panel height and adjustment-controls overflow rules.

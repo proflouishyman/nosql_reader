@@ -11,3 +11,5 @@
 [2026-02-23 12:37] readme.md, setup.md, docs/february_how_this_works.md, app/CLI_ingestion_files_wip/QUICK_REFERENCE.md, app/CLI_ingestion_files_wip/CLI_README.md, scripts/run_e2e_suite.sh, SOLUTIONS.MD edited — Corrected stale cleanup-path references to main repo paths and fixed E2E script target path.
 [2026-02-23 12:54] quick_check.sh, app/util/e2e_cli_suite.py, SOLUTIONS.MD edited — Hardened container status detection and Chroma embeddings handling to avoid false failures across Compose/ndarray runtime differences.
 [2026-02-23 14:43] run_app.sh, app/build_info.json, SOLUTIONS.MD edited — Added pre-boot build-info stamping so settings metadata reflects current host branch/commit on startup.
+[2026-02-25 15:35] app/static/style.css, SOLUTIONS.MD edited — Reworked document detail image-panel flex layout so zoom/adjustment controls remain visible while the image scrolls.
+[2026-02-25 15:38] app/static/style.css, SOLUTIONS.MD edited — Reduced document panel height for fixed-header space and added internal adjustment-controls scrolling so full control set is reachable.
