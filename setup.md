@@ -226,3 +226,25 @@ docker compose exec app python /app/util/e2e_cli_suite.py
 4. Review `readme.md` for advanced operations like backups (`backup_db.py`, `restore_db.py`), bootstrapping scripts, and troubleshooting tips.
 
 With these steps complete, the Historical Document Reader should be ready for use on both Mac and PC.
+
+---
+
+## 6. Demographics database setup
+
+After person syntheses exist in MongoDB, build the demographics SQLite database inside the app container:
+
+```bash
+docker compose exec app python /app/setup/build_demographics_db.py --limit 10 --dry-run
+docker compose exec app python /app/setup/build_demographics_db.py
+```
+
+This writes one row per `person_folder` to `/app/data/demographics.db` (persisted via the bind-mounted `./app` directory).
+
+Optional occupation normalization (fuzzy matching over raw occupation strings):
+
+```bash
+docker compose exec app python /app/setup/normalize_occupations.py --preview --show-unmatched
+docker compose exec app python /app/setup/normalize_occupations.py
+```
+
+Use `/demographics` in the web UI to review charts, filtering, and CSV export after the database is built.

@@ -35,9 +35,16 @@ Configuration policy:
 - `/historian-agent` Historian Agent
 - `/corpus-explorer` Corpus Explorer (Tier 0 exploration UI)
 - `/network-analysis` Network Analysis
+- `/demographics` Demographics dashboard — workforce statistics and individual browser
 - `/network/viewer-results?search_id=<id>` Network-derived document list viewer
 - `/settings` Application settings
 - `/help` In-app usage guide
+
+## Demographics Notes
+
+- Race values are intentionally sparse: non-`unknown` race appears only when a source explicitly states a racial label.
+- Gender extraction is typically higher coverage than race in this corpus, but confidence fields are provided for calibration.
+- Occupations preserve raw values in `occupation_primary` and optional fuzzy-normalized values in `occupation_normalized` with scoring metadata.
 
 ## Feature Usage
 
