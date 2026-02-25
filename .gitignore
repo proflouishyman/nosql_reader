@@ -9,3 +9,6 @@ data_processing.log
 archives/
 data/
 *.log
+!app/data/
+app/data/*
+!app/data/.gitignore

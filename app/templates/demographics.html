@@ -1,0 +1,681 @@
+{% extends "base.html" %}
+{% block title %}Demographics · Historical Document Reader{% endblock %}
+
+{% block styles %}
+<style>
+  /* ── Layout ── */
+  .demo-page { display: grid; gap: 28px; }
+  .demo-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .demo-header h1 { margin: 0; }
+  .demo-header p { margin: 6px 0 0; color: #475569; max-width: 640px; }
+
+  /* ── KPI bar ── */
+  .kpi-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+  .kpi-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+    padding: 20px 18px; box-shadow: 0 4px 16px rgba(15,23,42,.06);
+    display: grid; gap: 4px;
+  }
+  .kpi-card__label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #64748b; }
+  .kpi-card__value { font-size: 2rem; font-weight: 800; color: #0f172a; font-family: 'Montserrat', sans-serif; }
+  .kpi-card__sub { font-size: 0.8rem; color: #94a3b8; }
+  .kpi-card--accent .kpi-card__value { color: #2563eb; }
+  .kpi-card--warn .kpi-card__value { color: #d97706; }
+
+  /* ── Chart grid ── */
+  .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
+  .chart-panel {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+    padding: 20px; box-shadow: 0 4px 16px rgba(15,23,42,.06);
+  }
+  .chart-panel h3 { margin: 0 0 4px; font-size: 1rem; color: #1e293b; }
+  .chart-panel .chart-note { font-size: 0.78rem; color: #94a3b8; margin: 0 0 14px; }
+  .chart-panel canvas { max-height: 280px; }
+
+  /* ── Confidence badge ── */
+  .conf-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .conf-pill { display: inline-flex; gap: 4px; align-items: center; font-size: 0.75rem;
+    padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+  .conf-pill--high { background: #dcfce7; color: #166534; }
+  .conf-pill--medium { background: #fef9c3; color: #854d0e; }
+  .conf-pill--low { background: #f1f5f9; color: #64748b; }
+
+  /* ── Person table ── */
+  .people-section { display: grid; gap: 16px; }
+  .people-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .people-controls input[type=text],
+  .people-controls select {
+    padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px;
+    font-size: 0.9rem; background: #fff; color: #1e293b;
+  }
+  .people-controls input[type=text] { min-width: 180px; }
+  .filter-btn {
+    padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
+    font-weight: 600; font-size: 0.9rem; transition: background .2s;
+  }
+  .filter-btn--primary { background: #2563eb; color: #fff; }
+  .filter-btn--primary:hover { background: #1d4ed8; }
+  .filter-btn--secondary { background: #f1f5f9; color: #475569; }
+  .filter-btn--secondary:hover { background: #e2e8f0; }
+  .filter-btn--export { background: #0f172a; color: #f8fafc; }
+  .filter-btn--export:hover { background: #1e293b; }
+
+  .people-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
+  table.people-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .people-table th {
+    background: #0f172a; color: #f8fafc; padding: 10px 14px; text-align: left;
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: .05em;
+    position: sticky; top: 0; cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  .people-table th:hover { background: #1e293b; }
+  .people-table th .sort-arrow { opacity: .4; margin-left: 4px; }
+  .people-table th.active .sort-arrow { opacity: 1; }
+  .people-table td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  .people-table tr:last-child td { border-bottom: none; }
+  .people-table tr:hover td { background: #f8fafc; }
+  .people-table .name-cell a { color: #2563eb; text-decoration: none; font-weight: 600; }
+  .people-table .name-cell a:hover { text-decoration: underline; }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 0.72rem; font-weight: 700; text-transform: capitalize;
+  }
+  .badge--male { background: #dbeafe; color: #1d4ed8; }
+  .badge--female { background: #fce7f3; color: #be185d; }
+  .badge--unknown { background: #f1f5f9; color: #64748b; }
+  .badge--white { background: #f0fdf4; color: #166534; }
+  .badge--black, .badge--colored, .badge--negro { background: #1e293b; color: #f8fafc; }
+
+  /* ── Pagination ── */
+  .pagination { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .page-btn {
+    padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0;
+    background: #fff; cursor: pointer; font-size: 0.85rem; color: #1e293b;
+    font-weight: 600; transition: background .15s;
+  }
+  .page-btn:hover:not(:disabled) { background: #f1f5f9; }
+  .page-btn:disabled { opacity: .4; cursor: default; }
+  .page-btn--active { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .page-info { font-size: 0.85rem; color: #64748b; }
+
+  /* ── No DB state ── */
+  .no-db-notice {
+    background: #fefce8; border: 1px solid #fde047; border-radius: 14px;
+    padding: 32px; text-align: center; max-width: 600px; margin: 0 auto;
+  }
+  .no-db-notice h2 { color: #854d0e; margin: 0 0 12px; }
+  .no-db-notice code {
+    display: block; background: #0f172a; color: #86efac; padding: 12px 16px;
+    border-radius: 8px; margin: 16px 0; font-size: 0.9rem; text-align: left;
+  }
+
+  /* ── Spinner ── */
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 3px solid #e2e8f0; border-top-color: #2563eb;
+    border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Historical palette for charts ── */
+  :root {
+    --c1: #1d4ed8; --c2: #b45309; --c3: #047857; --c4: #7c3aed;
+    --c5: #be123c; --c6: #0369a1; --c7: #a16207; --c8: #065f46;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container demo-page">
+
+  <!-- Added explicit help copy to mirror Network Analysis tooltip behavior. -->
+  <div class="demo-header" data-help="Demographics dashboard built from one row per person_folder, with summary charts and filterable records.">
+    <div>
+      <h1>📊 Workforce Demographics</h1>
+      <p>Statistical portrait of B&amp;O Railroad employees derived from {{ total_people }} personnel files.
+         Each individual is counted once, regardless of how many documents they appear in.</p>
+    </div>
+    {% if db_exists %}
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="/api/demographics/export" class="button" style="background:linear-gradient(135deg,#0f172a,#1e293b);" data-help="Download the full demographics dataset as CSV, including normalized occupation fields when available.">
+        ⬇ Export CSV
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if not db_exists %}
+  <!-- ── No database yet ── -->
+  <div class="no-db-notice">
+    <h2>📋 Demographics database not built yet</h2>
+    <p>Run the setup script inside your Docker container to generate the demographics database from the existing person syntheses:</p>
+    <code>docker compose exec app python /app/setup/build_demographics_db.py</code>
+    <p style="margin-top:16px;color:#78350f;font-size:0.9rem;">
+      This will process all {{ "~" }}{{ total_people or "your" }} person folders, making one LLM call per person to extract
+      gender, race, and nationality. It is idempotent — safe to re-run. Use <code style="background:none;padding:0;color:inherit;">--force</code> to reprocess.
+    </p>
+  </div>
+
+  {% else %}
+  <!-- ── KPI bar ── -->
+  <div class="kpi-bar" id="kpi-bar" data-help="Key indicators summarizing population size, injury coverage, benefit totals, and occupation diversity.">
+    <div class="kpi-card" data-help="Total unique persons in the demographics database, deduplicated by person_folder."><div class="kpi-card__label">Total Individuals</div>
+      <div class="kpi-card__value" id="kpi-total"><span class="spinner"></span></div>
+      <div class="kpi-card__sub">one row per folder</div></div>
+    <div class="kpi-card kpi-card--accent" data-help="Count of persons with one or more recorded injuries."><div class="kpi-card__label">With Injuries</div>
+      <div class="kpi-card__value" id="kpi-injured"><span class="spinner"></span></div>
+      <div class="kpi-card__sub" id="kpi-injured-pct"></div></div>
+    <div class="kpi-card kpi-card--warn" data-help="Summed benefit days across all injury/payment records."><div class="kpi-card__label">Total Benefit Days</div>
+      <div class="kpi-card__value" id="kpi-days"><span class="spinner"></span></div>
+      <div class="kpi-card__sub">across all claims</div></div>
+    <div class="kpi-card" data-help="Total recorded benefit amount across all persons."><div class="kpi-card__label">Benefits Paid</div>
+      <div class="kpi-card__value" id="kpi-benefits"><span class="spinner"></span></div>
+      <div class="kpi-card__sub">total recorded</div></div>
+    <div class="kpi-card" data-help="Distinct occupations shown in the current summary payload (normalized where available)."><div class="kpi-card__label">Unique Occupations</div>
+      <div class="kpi-card__value" id="kpi-occupations"><span class="spinner"></span></div>
+      <div class="kpi-card__sub">distinct roles found</div></div>
+  </div>
+
+  <!-- ── Charts ── -->
+  <div class="chart-grid">
+
+    <!-- Gender -->
+    <div class="chart-panel" data-help="Bar chart of extracted gender categories with percent labels and confidence badges.">
+      <h3>Gender Distribution</h3>
+      <p class="chart-note">Inferred from pronouns and document language — not always explicit.</p>
+      <canvas id="chart-gender"></canvas>
+      <div class="conf-pills" id="conf-gender"></div>
+    </div>
+
+    <!-- Race -->
+    <div class="chart-panel" data-help="Bar chart of race labels explicitly stated in source records; unknown means not stated.">
+      <h3>Race — Explicitly Stated</h3>
+      <p class="chart-note">Only includes categories explicitly named in the source documents. "Unknown" = not stated.</p>
+      <canvas id="chart-race"></canvas>
+      <div class="conf-pills" id="conf-race"></div>
+    </div>
+
+    <!-- Occupations -->
+    <div class="chart-panel" style="grid-column: span 2;" data-help="Top occupations by person count; labels prefer normalized occupation when available.">
+      <h3>Top Occupations</h3>
+      <p class="chart-note">Primary position from each person's employment timeline. Top 20 shown.</p>
+      <canvas id="chart-occupations" style="max-height:360px;"></canvas>
+    </div>
+
+    <!-- Divisions -->
+    <div class="chart-panel" data-help="Division breakdown from employment timeline entries.">
+      <h3>Divisions</h3>
+      <p class="chart-note">Railroad division from employment records.</p>
+      <canvas id="chart-divisions"></canvas>
+    </div>
+
+    <!-- Hire decades -->
+    <div class="chart-panel" data-help="Hire year distribution grouped into decade buckets.">
+      <h3>Hire Year by Decade</h3>
+      <p class="chart-note">Distribution of when employees joined the railroad.</p>
+      <canvas id="chart-decades"></canvas>
+    </div>
+
+    <!-- Injury by occupation -->
+    <div class="chart-panel" style="grid-column: span 2;" data-help="Injury totals by occupation for roles with non-zero recorded injuries.">
+      <h3>Injuries by Occupation</h3>
+      <p class="chart-note">Total recorded injuries by job role. Only occupations with injury records shown.</p>
+      <canvas id="chart-inj-occ" style="max-height:300px;"></canvas>
+    </div>
+
+  </div>
+
+  <!-- ── Person table ── -->
+  <div class="people-section" data-help="Filter, sort, and paginate person-level rows without writing SQL.">
+    <h2>Browse Individuals</h2>
+
+    <div class="people-controls">
+      <input type="text" id="filter-name" placeholder="🔍 Search name…" data-help="Search people by canonical name using partial text matching." />
+      <select id="filter-gender" data-help="Filter rows by extracted gender category.">
+        <option value="">All genders</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="unknown">Unknown</option>
+      </select>
+      <select id="filter-race" data-help="Filter rows by race label from explicit source language.">
+        <option value="">All races</option>
+      </select>
+      <select id="filter-occupation" data-help="Filter by occupation text; matches raw and normalized occupation fields.">
+        <option value="">All occupations</option>
+      </select>
+      <select id="filter-division" data-help="Filter by division text from employment timeline records.">
+        <option value="">All divisions</option>
+      </select>
+      <select id="filter-injuries" data-help="Limit rows to people with at least one recorded injury.">
+        <option value="">All persons</option>
+        <option value="1">Has injuries</option>
+      </select>
+      <button class="filter-btn filter-btn--primary" onclick="applyFilters()" data-help="Apply current filter selections and reload the table from page 1.">Apply</button>
+      <button class="filter-btn filter-btn--secondary" onclick="resetFilters()" data-help="Clear all active filters and return to the default table view.">Reset</button>
+      <a href="/api/demographics/export" class="filter-btn filter-btn--export" data-help="Export the full demographics table as CSV for offline analysis.">⬇ CSV</a>
+    </div>
+
+    <div class="people-table-wrap" data-help="Sortable person-level table. Click selected headers to toggle ascending/descending order.">
+      <table class="people-table">
+        <thead>
+          <tr>
+            <th data-col="canonical_name" onclick="sortBy('canonical_name')" data-help="Sort rows by canonical person name.">Name <span class="sort-arrow">↕</span></th>
+            <th data-col="gender" data-help="Extracted gender category.">Gender</th>
+            <th data-col="race" data-help="Race label explicitly stated in source records, if available.">Race</th>
+            <th data-col="occupation_primary" onclick="sortBy('occupation_primary')" data-help="Sort by raw primary occupation text from synthesis output.">Occupation <span class="sort-arrow">↕</span></th>
+            <th data-col="occupation_normalized" onclick="sortBy('occupation_normalized')" data-help="Sort by fuzzy-normalized occupation label when available.">Normalized <span class="sort-arrow">↕</span></th>
+            <th data-col="division" onclick="sortBy('division')" data-help="Sort by division value from employment timeline records.">Division <span class="sort-arrow">↕</span></th>
+            <th data-col="hire_year" onclick="sortBy('hire_year')" data-help="Sort by inferred hire year.">Hired <span class="sort-arrow">↕</span></th>
+            <th data-col="num_injuries" onclick="sortBy('num_injuries')" data-help="Sort by number of injury records for each person.">Injuries <span class="sort-arrow">↕</span></th>
+            <th data-col="total_benefit_days" onclick="sortBy('total_benefit_days')" data-help="Sort by total recorded benefit days.">Benefit Days <span class="sort-arrow">↕</span></th>
+            <th data-col="num_documents" onclick="sortBy('num_documents')" data-help="Sort by source document count backing each synthesis.">Docs <span class="sort-arrow">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="people-tbody">
+          <tr><td colspan="10" style="text-align:center;padding:24px;"><span class="spinner"></span> Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span class="page-info" id="page-info" data-help="Current table window and total matching rows."></span>
+      <div class="pagination" id="pagination" data-help="Navigate between pages of filtered person rows."></div>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if db_exists %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── State ──
+let currentSort = 'canonical_name';
+let currentOrder = 'asc';
+let currentPage = 1;
+const perPage = 25;
+let summaryData = null;
+
+// ── Palette ──
+const PALETTE = [
+  '#1d4ed8','#b45309','#047857','#7c3aed','#be123c',
+  '#0369a1','#a16207','#065f46','#6d28d9','#b91c1c',
+  '#0284c7','#d97706','#059669','#7e22ce','#e11d48',
+  '#0891b2','#ca8a04','#10b981','#8b5cf6','#f43f5e',
+];
+
+// ── Chart defaults ──
+Chart.defaults.font.family = "'Open Sans', sans-serif";
+Chart.defaults.color = '#475569';
+
+// Draw percentage labels for bar charts so every panel shows proportional context.
+const percentageLabelPlugin = {
+  id: 'percentageLabelPlugin',
+  afterDatasetsDraw(chart) {
+    const dataset = chart.data?.datasets?.[0];
+    if (!dataset || !Array.isArray(dataset.data)) return;
+
+    const total = dataset.data.reduce((sum, value) => sum + Number(value || 0), 0);
+    if (!total) return;
+
+    const { ctx, chartArea } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    ctx.save();
+    ctx.fillStyle = '#334155';
+    ctx.font = "600 12px 'Open Sans', sans-serif";
+    const isHorizontal = chart.options?.indexAxis === 'y';
+    ctx.textAlign = isHorizontal ? 'right' : 'center';
+    ctx.textBaseline = isHorizontal ? 'middle' : 'bottom';
+
+    meta.data.forEach((bar, index) => {
+      const value = Number(dataset.data[index] || 0);
+      const pct = (value / total) * 100;
+      const label = `${pct.toFixed(1)}%`;
+      if (isHorizontal) {
+        const textWidth = ctx.measureText(label).width;
+        let x = bar.x + textWidth + 8;
+        // Keep labels inside the chart drawing area near bar endpoints.
+        if (x > chartArea.right - 2) x = chartArea.right - 2;
+        ctx.fillText(label, x, bar.y);
+      } else {
+        // Place labels just above vertical bars; clamp to top chart boundary.
+        let y = bar.y - 6;
+        if (y < chartArea.top + 10) y = chartArea.top + 10;
+        ctx.fillText(label, bar.x, y);
+      }
+    });
+    ctx.restore();
+  }
+};
+
+// ── Load everything on page start ──
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const resp = await fetch('/api/demographics/summary');
+    if (!resp.ok) throw new Error(await resp.text());
+    summaryData = await resp.json();
+
+    populateKPIs(summaryData);
+    buildGenderChart(summaryData.gender);
+    buildRaceChart(summaryData.race);
+    buildOccupationChart(summaryData.occupations);
+    buildDivisionChart(summaryData.divisions);
+    buildDecadeChart(summaryData.hire_decades);
+    buildInjuryOccChart(summaryData.injury_by_occupation);
+    buildConfidencePills('conf-gender', summaryData.confidence.gender);
+    buildConfidencePills('conf-race', summaryData.confidence.race);
+    populateFilterDropdowns(summaryData);
+  } catch (e) {
+    console.error('Failed to load summary:', e);
+  }
+  loadPeople();
+});
+
+// ── KPIs ──
+function populateKPIs(d) {
+  const s = d.injury_stats;
+  document.getElementById('kpi-total').textContent = d.total.toLocaleString();
+  document.getElementById('kpi-injured').textContent = s.persons_with_injuries.toLocaleString();
+  document.getElementById('kpi-injured-pct').textContent =
+    `${((s.persons_with_injuries / Math.max(d.total, 1)) * 100).toFixed(1)}% of workforce`;
+  // Show summed benefit days, not injury count, for the "Total Benefit Days" KPI label.
+  document.getElementById('kpi-days').textContent = (s.total_benefit_days || 0).toLocaleString();
+  document.getElementById('kpi-benefits').textContent =
+    '$' + (s.total_benefits_paid || 0).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0});
+  document.getElementById('kpi-occupations').textContent = d.occupations.length;
+}
+
+// ── Chart builders ──
+function buildGenderChart(data) {
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+  new Chart(document.getElementById('chart-gender'), {
+    // Switched to horizontal bars for easier category comparison at a glance.
+    type: 'bar',
+    plugins: [percentageLabelPlugin],
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: PALETTE.slice(0, labels.length), borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()}` } }
+      },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+}
+
+function buildRaceChart(data) {
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+  new Chart(document.getElementById('chart-race'), {
+    // Switched to horizontal bars for easier category comparison at a glance.
+    type: 'bar',
+    plugins: [percentageLabelPlugin],
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: PALETTE.slice(0, labels.length), borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()}` } }
+      },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+}
+
+function buildOccupationChart(data) {
+  new Chart(document.getElementById('chart-occupations'), {
+    type: 'bar',
+    plugins: [percentageLabelPlugin],
+    data: {
+      labels: data.map(d => d.label),
+      datasets: [{ label: 'People', data: data.map(d => d.count),
+        backgroundColor: PALETTE[0], borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+}
+
+function buildDivisionChart(data) {
+  new Chart(document.getElementById('chart-divisions'), {
+    type: 'bar',
+    plugins: [percentageLabelPlugin],
+    data: {
+      labels: data.map(d => d.label),
+      datasets: [{ label: 'People', data: data.map(d => d.count),
+        backgroundColor: PALETTE[2], borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+}
+
+function buildDecadeChart(data) {
+  new Chart(document.getElementById('chart-decades'), {
+    type: 'bar',
+    plugins: [percentageLabelPlugin],
+    data: {
+      labels: data.map(d => d.decade + 's'),
+      datasets: [{ label: 'Employees hired', data: data.map(d => d.count),
+        backgroundColor: PALETTE[3], borderRadius: 4 }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+}
+
+function buildInjuryOccChart(data) {
+  new Chart(document.getElementById('chart-inj-occ'), {
+    type: 'bar',
+    plugins: [percentageLabelPlugin],
+    data: {
+      labels: data.map(d => d.occupation),
+      datasets: [{ label: 'Total injuries', data: data.map(d => d.injuries),
+        backgroundColor: PALETTE[4], borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: {
+          label: (ctx) => {
+            const d = data[ctx.dataIndex];
+            return ` ${ctx.parsed.x} injuries across ${d.persons} persons`;
+          }
+        }}
+      },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+}
+
+function buildConfidencePills(containerId, confData) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const labels = { high: '✓ High confidence', medium: '~ Medium confidence', low: '? Low / unknown' };
+  container.innerHTML = Object.entries(confData).map(([k, v]) =>
+    `<span class="conf-pill conf-pill--${k}">${labels[k] || k}: ${v.toLocaleString()}</span>`
+  ).join('');
+}
+
+function populateFilterDropdowns(d) {
+  // Race filter
+  const raceSelect = document.getElementById('filter-race');
+  Object.keys(d.race).sort().forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r; opt.textContent = r;
+    raceSelect.appendChild(opt);
+  });
+
+  // Occupation filter
+  const occSelect = document.getElementById('filter-occupation');
+  d.occupations.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.label; opt.textContent = `${o.label} (${o.count})`;
+    occSelect.appendChild(opt);
+  });
+
+  // Division filter
+  const divSelect = document.getElementById('filter-division');
+  d.divisions.forEach(div => {
+    const opt = document.createElement('option');
+    opt.value = div.label; opt.textContent = `${div.label} (${div.count})`;
+    divSelect.appendChild(opt);
+  });
+}
+
+// ── Person table ──
+async function loadPeople() {
+  const tbody = document.getElementById('people-tbody');
+  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;"><span class="spinner"></span></td></tr>';
+
+  const params = new URLSearchParams({
+    page: currentPage,
+    per_page: perPage,
+    sort: currentSort,
+    order: currentOrder,
+    q: document.getElementById('filter-name').value,
+    gender: document.getElementById('filter-gender').value,
+    race: document.getElementById('filter-race').value,
+    occupation: document.getElementById('filter-occupation').value,
+    division: document.getElementById('filter-division').value,
+    has_injuries: document.getElementById('filter-injuries').value,
+  });
+
+  try {
+    const resp = await fetch('/api/demographics/people?' + params);
+    const data = await resp.json();
+    renderTable(data);
+    renderPagination(data);
+    updateSortIndicators();
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#dc2626;">Error loading data: ${e.message}</td></tr>`;
+  }
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('people-tbody');
+  if (!data.people || !data.people.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:#94a3b8;">No results matching these filters.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.people.map(p => {
+    const genderBadge = `<span class="badge badge--${(p.gender||'unknown').toLowerCase()}">${p.gender || '?'}</span>`;
+    const raceBadge = p.race && p.race !== 'unknown'
+      ? `<span class="badge badge--${(p.race||'').toLowerCase().replace(/\s/g,'_')}">${p.race}</span>`
+      : '<span style="color:#94a3b8;font-size:0.8rem;">—</span>';
+
+    // Link to document search for this person
+    const nameLink = p.person_id
+      ? `<a href="/search?q=${encodeURIComponent(p.canonical_name)}" title="Search documents for this person">${p.canonical_name || '—'}</a>`
+      : (p.canonical_name || '—');
+
+    return `<tr>
+      <td class="name-cell">${nameLink}</td>
+      <td>${genderBadge}</td>
+      <td>${raceBadge}</td>
+      <td>${p.occupation_primary || '<span style="color:#94a3b8">—</span>'}</td>
+      <td title="Score: ${((p.occupation_norm_score || 0) * 100).toFixed(0)}%">
+        ${p.occupation_normalized
+          ? `<span style="color:#047857;">${p.occupation_normalized}</span>`
+          : '<span style="color:#94a3b8;font-size:0.8em;">raw only</span>'}
+      </td>
+      <td>${p.division || '<span style="color:#94a3b8">—</span>'}</td>
+      <td>${p.hire_year || '—'}</td>
+      <td>${p.num_injuries > 0 ? `<strong style="color:#dc2626;">${p.num_injuries}</strong>` : '0'}</td>
+      <td>${p.total_benefit_days > 0 ? p.total_benefit_days.toLocaleString() : '0'}</td>
+      <td>${p.num_documents}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPagination(data) {
+  const info = document.getElementById('page-info');
+  const pgDiv = document.getElementById('pagination');
+  const start = data.total === 0 ? 0 : (data.page - 1) * data.per_page + 1;
+  const end = Math.min(data.page * data.per_page, data.total);
+  info.textContent = `Showing ${start}–${end} of ${data.total.toLocaleString()} individuals`;
+
+  const pages = data.total_pages;
+  let html = '';
+  html += `<button class="page-btn" onclick="goPage(${data.page-1})" ${data.page<=1?'disabled':''}>← Prev</button>`;
+
+  // Show window of pages
+  const start_p = Math.max(1, data.page - 2);
+  const end_p = Math.min(pages, start_p + 4);
+  if (start_p > 1) html += `<button class="page-btn" onclick="goPage(1)">1</button><span style="color:#94a3b8">…</span>`;
+  for (let p = start_p; p <= end_p; p++) {
+    html += `<button class="page-btn ${p===data.page?'page-btn--active':''}" onclick="goPage(${p})">${p}</button>`;
+  }
+  if (end_p < pages) html += `<span style="color:#94a3b8">…</span><button class="page-btn" onclick="goPage(${pages})">${pages}</button>`;
+  html += `<button class="page-btn" onclick="goPage(${data.page+1})" ${data.page>=pages?'disabled':''}>Next →</button>`;
+  pgDiv.innerHTML = html;
+}
+
+function updateSortIndicators() {
+  document.querySelectorAll('.people-table th[data-col]').forEach(th => {
+    const col = th.dataset.col;
+    const arrow = th.querySelector('.sort-arrow');
+    if (!arrow) return;
+    if (col === currentSort) {
+      th.classList.add('active');
+      arrow.textContent = currentOrder === 'asc' ? '↑' : '↓';
+    } else {
+      th.classList.remove('active');
+      arrow.textContent = '↕';
+    }
+  });
+}
+
+// ── Interactions ──
+function applyFilters() { currentPage = 1; loadPeople(); }
+function resetFilters() {
+  ['filter-name','filter-gender','filter-race','filter-occupation','filter-division','filter-injuries']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  currentPage = 1; loadPeople();
+}
+function goPage(p) {
+  // Clamp page navigation client-side for better UX; API still validates server-side.
+  currentPage = Math.max(1, p);
+  loadPeople();
+}
+function sortBy(col) {
+  if (currentSort === col) {
+    currentOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort = col;
+    currentOrder = 'asc';
+  }
+  currentPage = 1;
+  loadPeople();
+}
+
+// Debounced name search
+let nameSearchTimer;
+document.getElementById('filter-name').addEventListener('input', () => {
+  clearTimeout(nameSearchTimer);
+  nameSearchTimer = setTimeout(() => applyFilters(), 350);
+});
+</script>
+{% endif %}
+{% endblock %}

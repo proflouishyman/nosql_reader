@@ -605,3 +605,128 @@ The Network Analysis page had high-quality, explicit tooltip text, but most othe
 - Result:
   - `Tooltip standard contract` passed with `paths=12 total_data_help_targets=228`
   - Overall suite passed: `Total checks: 20`, `Failed: 0`.
+
+## 2026-02-25 - Add demographics database + dashboard with occupation normalization
+
+### Problem
+The application lacked a demographics reporting surface over `person_syntheses`, so researchers could not review corpus-wide workforce statistics, browse one-row-per-person records, or export demographics without writing SQL. It also lacked a normalization path for noisy `occupation_primary` values.
+
+### Solution
+- Added a standalone demographics builder script:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/setup/build_demographics_db.py`
+  - Builds `/app/data/demographics.db` from Mongo `person_syntheses` using `person_folder` as the canonical unique key.
+  - Extracts employment/injury/date fields from synthesis JSON plus LLM-assisted `gender/race/nationality` extraction.
+  - Includes idempotent upsert behavior and migration-safe occupation-normalization columns/indexes:
+    - `occupation_normalized`, `occupation_norm_score`, `occupation_norm_method`
+    - `idx_occupation_norm`
+- Added occupation fuzzy normalizer script:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/setup/normalize_occupations.py`
+  - Uses `rapidfuzz` against curated canonical labels with manual overrides.
+  - Supports `--preview`, `--show-unmatched`, `--force`, and threshold tuning.
+- Added demographics routes and API endpoints:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+  - `GET /demographics`
+  - `GET /api/demographics/summary`
+  - `GET /api/demographics/people`
+  - `GET /api/demographics/export`
+  - Summary now prefers `COALESCE(occupation_normalized, occupation_primary)` for occupation rollups.
+  - People endpoint includes normalized occupation fields and supports occupation filtering against raw or normalized values.
+- Added full demographics dashboard UI:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html`
+  - Chart.js summary panels, confidence pills, sortable/filterable/paginated people table, CSV export actions.
+  - Added table visibility for normalized occupation + score.
+- Added nav entry and docs updates:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html`
+  - `/Users/louishyman/coding/nosql/nosql_reader/readme.md`
+  - `/Users/louishyman/coding/nosql/nosql_reader/setup.md`
+- Added persistent DB ignore rules:
+  - `/Users/louishyman/coding/nosql/nosql_reader/.gitignore`
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/data/.gitignore`
+
+### Verification
+- Syntax checks passed:
+  - `python -m py_compile app/routes.py app/setup/build_demographics_db.py app/setup/normalize_occupations.py`
+- Requested dry-run passed:
+  - `docker compose exec app python /app/setup/build_demographics_db.py --limit 5 --dry-run`
+- Live sample build passed:
+  - `docker compose exec app python /app/setup/build_demographics_db.py --limit 5`
+- Normalization preview and live runs passed:
+  - `docker compose exec app python /app/setup/normalize_occupations.py --preview --show-unmatched`
+  - `docker compose exec app python /app/setup/normalize_occupations.py`
+- Endpoint checks passed:
+  - `GET http://localhost:5001/demographics` (HTTP 200)
+  - `GET http://localhost:5001/api/demographics/summary` (HTTP 200)
+  - `GET http://localhost:5001/api/demographics/people?...` (HTTP 200)
+  - `GET http://localhost:5001/api/demographics/export` (HTTP 200; CSV download headers present)
+- Connection integrity check attempted via project helper:
+  - `bash quick_check.sh` failed one check: app container could not reach Ollama (`Test 5`).
+  - Other checks in that script passed (Ollama on host reachable, container running, mounts detected).
+
+## 2026-02-25 - Convert demographics pie charts to horizontal bars
+
+### Problem
+The demographics dashboard used doughnut charts for gender and race. With few categories but strong count differences, those pie slices were harder to compare precisely than bars.
+
+### Solution
+- Updated chart rendering in `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html`:
+  - `buildGenderChart()` now renders `type: 'bar'` with `indexAxis: 'y'`.
+  - `buildRaceChart()` now renders `type: 'bar'` with `indexAxis: 'y'`.
+  - Hid legends for these two charts and enabled integer x-axis ticks.
+  - Added inline comments documenting the reason for the chart-type change.
+
+### Verification
+- Loaded `http://localhost:5001/demographics` and confirmed dashboard script includes bar-chart config for both gender and race chart builders.
+- Existing summary endpoint contract remained unchanged (`/api/demographics/summary`).
+
+## 2026-02-25 - Add percentage labels on demographics horizontal bars
+
+### Problem
+After converting gender and race charts from pie to horizontal bars, the chart still required visual estimation to interpret each category's share of the total.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html`:
+  - Added a local Chart.js plugin (`percentageLabelPlugin`) that computes dataset totals and draws percentage text for each bar.
+  - Applied the plugin to both `buildGenderChart()` and `buildRaceChart()`.
+  - Kept labels constrained inside chart bounds to avoid clipping.
+
+### Verification
+- Confirmed template script now contains `percentageLabelPlugin` and chart configs include `plugins: [percentageLabelPlugin]` for both gender and race charts.
+- Existing `/api/demographics/summary` payload contract remains unchanged.
+
+## 2026-02-25 - Show percentages on all demographics bar charts
+
+### Problem
+Only gender and race charts showed percentage labels, while occupations, divisions, hire decades, and injury charts still required manual estimation of each category's share.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html`:
+  - Expanded `percentageLabelPlugin` to support both horizontal (`indexAxis: 'y'`) and vertical bar charts.
+  - Applied the plugin to all remaining bar charts:
+    - `buildOccupationChart()`
+    - `buildDivisionChart()`
+    - `buildDecadeChart()`
+    - `buildInjuryOccChart()`
+  - Added orientation-aware label placement comments for maintainability.
+
+### Verification
+- Confirmed each bar-chart constructor now includes `plugins: [percentageLabelPlugin]`.
+- Confirmed plugin logic branches for horizontal and vertical label positioning in the template script.
+
+## 2026-02-25 - Add Network-style delayed help tooltips to demographics page
+
+### Problem
+The demographics dashboard relied mostly on generic auto-generated tooltip text. This was less specific than Network Analysis, where controls have explicit research-facing guidance in `data-help` attributes.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html` to add explicit `data-help` annotations across:
+  - Header and CSV export actions
+  - KPI bar and individual KPI cards
+  - All chart panels
+  - Filter controls and action buttons
+  - Table container and sortable header columns
+  - Pagination and page summary indicators
+- Added an inline template comment noting that explicit help copy was added to mirror Network Analysis behavior.
+
+### Verification
+- Confirmed `37` explicit `data-help` attributes now exist in the demographics template.
+- Loaded `http://localhost:5001/demographics` and verified key tooltip strings render in HTML for header, filters, sortable columns, and pagination elements.

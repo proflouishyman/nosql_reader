@@ -40,6 +40,7 @@ import threading
 from datetime import datetime, timedelta
 import random
 import csv
+import sqlite3  # Added for demographics dashboard read-only SQLite queries and export.
 from collections import Counter
 from io import StringIO, BytesIO
 from logging.handlers import RotatingFileHandler
@@ -2183,6 +2184,289 @@ def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[
 def network_analysis_page():
     """Standalone network explorer page."""
     return render_template('network-analysis.html')
+
+
+# =============================================================================
+# DEMOGRAPHICS DASHBOARD
+# =============================================================================
+# Keep demographics SQLite under app/data so bind-mounted app directory persists it.
+DEMOGRAPHICS_DB_PATH = os.path.join(os.path.dirname(__file__), "data", "demographics.db")
+
+
+def _get_demographics_conn():
+    """Get a read-only SQLite connection. Returns None if DB doesn't exist."""
+    if not os.path.exists(DEMOGRAPHICS_DB_PATH):
+        return None
+    conn = sqlite3.connect(f"file:{DEMOGRAPHICS_DB_PATH}?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+@app.route("/demographics")
+def demographics_page():
+    """Render the demographics dashboard page."""
+    db_exists = os.path.exists(DEMOGRAPHICS_DB_PATH)
+    total = 0
+    if db_exists:
+        conn = _get_demographics_conn()
+        if conn:
+            row = conn.execute("SELECT COUNT(*) as n FROM people").fetchone()
+            total = row["n"] if row else 0
+            conn.close()
+    return render_template("demographics.html", db_exists=db_exists, total_people=total)
+
+
+@app.route("/api/demographics/summary")
+def demographics_summary():
+    """
+    Return all aggregate counts for the dashboard charts.
+    Single call loads all panel data — no SQL required from the browser.
+    """
+    conn = _get_demographics_conn()
+    if not conn:
+        return jsonify({"error": "Demographics database not built yet. Run build_demographics_db.py first."}), 503
+
+    try:
+        # Total
+        total = conn.execute("SELECT COUNT(*) as n FROM people").fetchone()["n"]
+
+        # Gender breakdown
+        gender_rows = conn.execute("""
+            SELECT gender, COUNT(*) as n FROM people GROUP BY gender ORDER BY n DESC
+        """).fetchall()
+        gender = {r["gender"] or "unknown": r["n"] for r in gender_rows}
+
+        # Race breakdown
+        race_rows = conn.execute("""
+            SELECT race, COUNT(*) as n FROM people GROUP BY race ORDER BY n DESC
+        """).fetchall()
+        race = {r["race"] or "unknown": r["n"] for r in race_rows}
+
+        # Top 20 occupations (prefer normalized label when available to reduce OCR variant noise).
+        occ_rows = conn.execute("""
+            SELECT
+                COALESCE(occupation_normalized, occupation_primary) as occ_label,
+                COUNT(*) as n
+            FROM people
+            WHERE occupation_primary IS NOT NULL AND occupation_primary != ''
+            GROUP BY occ_label
+            ORDER BY n DESC
+            LIMIT 20
+        """).fetchall()
+        occupations = [{"label": r["occ_label"], "count": r["n"]} for r in occ_rows]
+
+        # Division breakdown
+        div_rows = conn.execute("""
+            SELECT division, COUNT(*) as n
+            FROM people
+            WHERE division IS NOT NULL AND division != ''
+            GROUP BY division
+            ORDER BY n DESC
+            LIMIT 15
+        """).fetchall()
+        divisions = [{"label": r["division"], "count": r["n"]} for r in div_rows]
+
+        # Hire year distribution (decade buckets)
+        decade_rows = conn.execute("""
+            SELECT (hire_year / 10) * 10 as decade, COUNT(*) as n
+            FROM people
+            WHERE hire_year IS NOT NULL AND hire_year BETWEEN 1850 AND 1960
+            GROUP BY decade
+            ORDER BY decade
+        """).fetchall()
+        hire_decades = [{"decade": r["decade"], "count": r["n"]} for r in decade_rows]
+
+        # Injury stats
+        injury_stats = conn.execute("""
+            SELECT
+                SUM(num_injuries) as total_injuries,
+                SUM(total_benefit_days) as total_benefit_days,
+                AVG(CASE WHEN num_injuries > 0 THEN total_benefit_days END) as avg_benefit_days,
+                COUNT(CASE WHEN num_injuries > 0 THEN 1 END) as persons_with_injuries,
+                MAX(num_injuries) as max_injuries_one_person,
+                SUM(total_benefit_amount) as total_benefits_paid
+            FROM people
+        """).fetchone()
+
+        # Injury by occupation (top 10 most-injured occupations)
+        inj_occ_rows = conn.execute("""
+            SELECT occupation_primary, SUM(num_injuries) as total_injuries, COUNT(*) as persons
+            FROM people
+            WHERE occupation_primary IS NOT NULL AND num_injuries > 0
+            GROUP BY occupation_primary
+            ORDER BY total_injuries DESC
+            LIMIT 10
+        """).fetchall()
+        injury_by_occupation = [
+            {"occupation": r["occupation_primary"], "injuries": r["total_injuries"], "persons": r["persons"]}
+            for r in inj_occ_rows
+        ]
+
+        # Separation types
+        sep_rows = conn.execute("""
+            SELECT separation_type, COUNT(*) as n
+            FROM people
+            WHERE separation_type IS NOT NULL AND separation_type != 'unknown'
+            GROUP BY separation_type ORDER BY n DESC
+        """).fetchall()
+        separation_types = {r["separation_type"]: r["n"] for r in sep_rows}
+
+        # Confidence breakdown for demographics fields
+        conf_gender = conn.execute("""
+            SELECT gender_confidence, COUNT(*) as n FROM people GROUP BY gender_confidence
+        """).fetchall()
+        conf_race = conn.execute("""
+            SELECT race_confidence, COUNT(*) as n FROM people GROUP BY race_confidence
+        """).fetchall()
+
+        return jsonify({
+            "total": total,
+            "gender": gender,
+            "race": race,
+            "occupations": occupations,
+            "divisions": divisions,
+            "hire_decades": hire_decades,
+            "injury_stats": {
+                "total_injuries": injury_stats["total_injuries"] or 0,
+                "total_benefit_days": injury_stats["total_benefit_days"] or 0,
+                "persons_with_injuries": injury_stats["persons_with_injuries"] or 0,
+                "avg_benefit_days": round(injury_stats["avg_benefit_days"] or 0, 1),
+                "max_injuries_one_person": injury_stats["max_injuries_one_person"] or 0,
+                "total_benefits_paid": round(injury_stats["total_benefits_paid"] or 0, 2),
+            },
+            "injury_by_occupation": injury_by_occupation,
+            "separation_types": separation_types,
+            "confidence": {
+                "gender": {r["gender_confidence"]: r["n"] for r in conf_gender},
+                "race": {r["race_confidence"]: r["n"] for r in conf_race},
+            },
+        })
+    finally:
+        conn.close()
+
+
+@app.route("/api/demographics/people")
+def demographics_people():
+    """
+    Filterable, paginated person list.
+    Query params: gender, race, occupation, division, page, per_page, sort, order
+    """
+    conn = _get_demographics_conn()
+    if not conn:
+        return jsonify({"error": "Demographics database not built yet."}), 503
+
+    try:
+        # Filters
+        gender = request.args.get("gender", "")
+        race = request.args.get("race", "")
+        occupation = request.args.get("occupation", "")
+        division = request.args.get("division", "")
+        name_query = request.args.get("q", "")
+        has_injuries = request.args.get("has_injuries", "")
+
+        page = max(1, int(request.args.get("page", 1)))
+        per_page = min(100, int(request.args.get("per_page", 25)))
+        sort = request.args.get("sort", "canonical_name")
+        order = "DESC" if request.args.get("order", "asc").upper() == "DESC" else "ASC"
+
+        # Safe sort column whitelist
+        safe_sort_cols = {
+            "canonical_name", "hire_year", "num_injuries",
+            "total_benefit_days", "num_documents", "occupation_primary", "occupation_normalized", "division"
+        }
+        if sort not in safe_sort_cols:
+            sort = "canonical_name"
+
+        # Build WHERE clause
+        conditions = []
+        params = []
+
+        if gender:
+            conditions.append("gender = ?")
+            params.append(gender)
+        if race:
+            conditions.append("race = ?")
+            params.append(race)
+        if occupation:
+            # Match either raw or normalized occupation text for researcher-friendly filtering.
+            conditions.append("(occupation_primary LIKE ? OR occupation_normalized LIKE ?)")
+            params.append(f"%{occupation}%")
+            params.append(f"%{occupation}%")
+        if division:
+            conditions.append("division LIKE ?")
+            params.append(f"%{division}%")
+        if name_query:
+            conditions.append("canonical_name LIKE ?")
+            params.append(f"%{name_query}%")
+        if has_injuries == "1":
+            conditions.append("num_injuries > 0")
+
+        where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+
+        # Count
+        count_row = conn.execute(f"SELECT COUNT(*) as n FROM people {where}", params).fetchone()
+        total = count_row["n"]
+
+        # Fetch page
+        offset = (page - 1) * per_page
+        rows = conn.execute(f"""
+            SELECT person_folder, person_id, canonical_name, birth_year,
+                   gender, gender_confidence, race, race_confidence,
+                   nationality, occupation_primary, occupation_normalized, occupation_norm_score,
+                   occupation_norm_method, division, hire_year,
+                   separation_year, separation_type, num_injuries,
+                   total_benefit_days, total_benefit_amount, num_documents
+            FROM people {where}
+            ORDER BY {sort} {order}
+            LIMIT ? OFFSET ?
+        """, params + [per_page, offset]).fetchall()
+
+        return jsonify({
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": max(1, -(-total // per_page)),  # Ceiling division to keep API contract stable.
+            "people": [dict(r) for r in rows],
+        })
+    finally:
+        conn.close()
+
+
+@app.route("/api/demographics/export")
+def demographics_export():
+    """Export filtered demographics as CSV."""
+    conn = _get_demographics_conn()
+    if not conn:
+        return jsonify({"error": "Demographics database not built yet."}), 503
+
+    try:
+        rows = conn.execute("""
+            SELECT person_folder, person_id, canonical_name, birth_year,
+                   gender, gender_confidence, race, race_confidence,
+                   nationality, occupation_primary, occupation_normalized,
+                   occupation_norm_score, occupation_norm_method, occupations_all,
+                   division, department, hire_year, separation_year, separation_type,
+                   num_injuries, total_benefit_days, total_benefit_amount,
+                   num_documents, doc_date_earliest, doc_date_latest, processed_at
+            FROM people ORDER BY canonical_name
+        """).fetchall()
+
+        output = StringIO()
+        import csv as csv_module
+        writer = csv_module.DictWriter(output, fieldnames=[k for k in dict(rows[0]).keys()] if rows else [])
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(dict(row))
+
+        output.seek(0)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=bo_demographics_{timestamp}.csv"},
+        )
+    finally:
+        conn.close()
 
 
 NETWORK_VIEWER_CONTEXT_TIMEOUT = 3600
