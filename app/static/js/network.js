@@ -141,111 +141,136 @@ function escapeHtmlAttribute(value) {
 
 
 // ===========================================================================
-// Entity popup — hover/click interaction on document detail page
+// Historian Entity Popover
+// Replaces EntityPopup. Provides archival-research-oriented actions.
 // ===========================================================================
-const EntityPopup = (() => {
-    let activePopup = null;
-    let cache = {};
+const EntityPopover = (() => {
+    let _el = null;
 
-    function create(entityId, anchorEl) {
-        remove(); // Remove any existing popup
+    function remove() {
+        if (_el) {
+            _el.remove();
+            _el = null;
+        }
+    }
 
-        const popup = document.createElement("div");
-        popup.className = "entity-popup";
-        popup.innerHTML = '<div class="popup-loading">Loading connections…</div>';
+    function create(entityId, entityText, entityType, anchorEl) {
+        remove();
 
-        // Position relative to anchor element
+        const safeText = String(entityText || "").trim();
+        const safeType = String(entityType || "ENTITY").trim();
+        const searchUrl = `/search?prefill_field=ocr_text&prefill_term=${encodeURIComponent(safeText)}`;
+        const networkUrl = `/network-analysis?entity=${encodeURIComponent(entityId)}`;
+
+        const el = document.createElement("div");
+        el.className = "entity-popover";
+        el.setAttribute("role", "dialog");
+        el.setAttribute("aria-label", `Actions for ${safeText}`);
+        el.innerHTML = `
+            <div class="entity-popover__header">
+                <span class="entity-popover__type">${safeType}</span>
+                <span class="entity-popover__name">${safeText}</span>
+                <button class="entity-popover__close" aria-label="Close">&times;</button>
+            </div>
+            <div class="entity-popover__actions">
+                <a class="entity-popover__action entity-popover__action--primary"
+                   href="${networkUrl}" target="_blank" rel="noopener noreferrer"
+                   data-help="Open the network graph centred on this entity in a new tab.">
+                    <span class="entity-popover__action-icon">⬡</span>
+                    View in Network
+                </a>
+                <a class="entity-popover__action"
+                   href="${searchUrl}" target="_blank" rel="noopener noreferrer"
+                   data-help="Search all documents containing this entity text in a new tab.">
+                    <span class="entity-popover__action-icon">⊞</span>
+                    Search all records
+                </a>
+                <button type="button" class="entity-popover__action entity-popover__dismiss"
+                        data-help="Close this actions popover.">
+                    <span class="entity-popover__action-icon">×</span>
+                    Dismiss
+                </button>
+            </div>
+            <details class="entity-popover__network-detail">
+                <summary>Connections in corpus</summary>
+                <div class="entity-popover__network-preview" id="entityPopoverNetwork"></div>
+            </details>
+        `;
+
+        // Position popover near clicked entity while keeping it on-screen.
         const rect = anchorEl.getBoundingClientRect();
-        popup.style.position = "fixed";
-        popup.style.left = `${rect.right + 8}px`;
-        popup.style.top = `${rect.top}px`;
+        const tentativeLeft = Math.max(8, rect.left + window.scrollX - 8);
+        const tentativeTop = rect.bottom + window.scrollY + 6;
+        el.style.top = `${tentativeTop}px`;
+        el.style.left = `${tentativeLeft}px`;
 
-        document.body.appendChild(popup);
-        activePopup = popup;
+        document.body.appendChild(el);
+        _el = el;
 
-        // Reposition if offscreen
+        // Nudge left if it overflows viewport after render.
         requestAnimationFrame(() => {
-            const popupRect = popup.getBoundingClientRect();
-            if (popupRect.right > window.innerWidth - 16) {
-                popup.style.left = `${rect.left - popupRect.width - 8}px`;
-            }
-            if (popupRect.bottom > window.innerHeight - 16) {
-                popup.style.top = `${window.innerHeight - popupRect.height - 16}px`;
+            if (!_el) return;
+            const popRect = _el.getBoundingClientRect();
+            const overflowX = popRect.right - window.innerWidth + 8;
+            if (overflowX > 0) {
+                const adjusted = Math.max(8, tentativeLeft - overflowX);
+                _el.style.left = `${adjusted}px`;
             }
         });
 
-        return popup;
+        // Close affordance.
+        el.querySelector(".entity-popover__close")?.addEventListener("click", remove);
+        el.querySelector(".entity-popover__dismiss")?.addEventListener("click", remove);
+
+        // Delay outside-click bind so initial click does not immediately close.
+        setTimeout(() => {
+            document.addEventListener("click", _outsideClick, { once: true });
+        }, 0);
+
+        // Lazy-load mini network only when details is expanded.
+        const details = el.querySelector(".entity-popover__network-detail");
+        details?.addEventListener("toggle", () => {
+            if (details.open && !details.dataset.loaded) {
+                details.dataset.loaded = "true";
+                _loadMiniNetwork(entityId, el.querySelector("#entityPopoverNetwork"));
+            }
+        });
+
+        HelpTooltips.attach(el);
+        return el;
     }
 
-    function remove() {
-        if (activePopup) {
-            activePopup.remove();
-            activePopup = null;
-        }
+    function _outsideClick(e) {
+        if (_el && !_el.contains(e.target)) remove();
     }
 
-    function render(popup, data) {
-        if (!data || !data.entity) {
-            popup.innerHTML = '<div class="popup-error">No network data available.</div>';
-            return;
-        }
-
-        const { entity, edges, metrics } = data;
-        const typeColor = NetworkColors.get(entity.type);
-
-        let html = `
-            <h4>${entity.name}</h4>
-            <span class="entity-type-badge" style="background: ${typeColor}20; color: ${typeColor};">
-                ${entity.type}
-            </span>
-            <span style="margin-left: 8px; color: #666; font-size: 0.85em;">
-                ${entity.mention_count} document${entity.mention_count !== 1 ? "s" : ""}
-            </span>
-        `;
-
-        if (edges && edges.length > 0) {
-            html += `
-                <div style="margin-top: 8px; font-size: 0.85em; color: #666;">
-                    ${metrics.degree} connection${metrics.degree !== 1 ? "s" : ""}
-                </div>
-                <ul class="connections-list">
-            `;
-            edges.slice(0, 5).forEach((edge) => {
-                const c = NetworkColors.get(edge.type);
-                html += `
-                    <li>
-                        <span style="color: ${c}; font-weight: 500;">●</span>
-                        ${edge.name}
-                        <span style="float: right; color: #999; font-size: 0.85em;">${edge.weight}</span>
-                    </li>
-                `;
-            });
-            html += "</ul>";
-        } else {
-            html += '<div style="margin-top: 8px; color: #999; font-size: 0.85em;">No connections found.</div>';
-        }
-
-        html += `<a class="view-network-link" href="/network-analysis?entity=${entity.id}">View full network →</a>`;
-
-        popup.innerHTML = html;
-    }
-
-    async function show(entityId, anchorEl) {
-        const popup = create(entityId, anchorEl);
-
-        if (cache[entityId]) {
-            render(popup, cache[entityId]);
-            return;
-        }
-
+    async function _loadMiniNetwork(entityId, container) {
+        if (!container) return;
+        container.innerHTML = '<span style="color:var(--color-text-muted);font-size:0.82rem">Loading…</span>';
         const data = await NetworkAPI.getEgoNetwork(entityId, { limit: 5 });
-        if (data) {
-            cache[entityId] = data;
+        if (!data || !data.edges || data.edges.length === 0) {
+            container.innerHTML = '<span style="color:var(--color-text-muted);font-size:0.82rem">No connections found in corpus.</span>';
+            return;
         }
-        // Popup may have been removed while loading
-        if (activePopup === popup) {
-            render(popup, data);
-        }
+        const metrics = data.metrics || {};
+        const degree = metrics.degree || data.edges.length;
+        let html = '<div class="entity-popover__connections">';
+        html += `<p class="entity-popover__degree">${degree} connection${degree !== 1 ? "s" : ""}</p>`;
+        html += "<ul>";
+        data.edges.slice(0, 6).forEach((edge) => {
+            const c = NetworkColors.get(edge.type);
+            html += `<li>
+                <span style="color:${c};font-weight:600;">●</span>
+                <span>${edge.name}</span>
+                <span class="entity-popover__edge-weight">${edge.weight}</span>
+            </li>`;
+        });
+        html += "</ul></div>";
+        container.innerHTML = html;
+    }
+
+    function show(entityId, entityText, entityType, anchorEl) {
+        create(entityId, entityText, entityType, anchorEl);
     }
 
     return { show, remove };
@@ -256,16 +281,23 @@ const EntityPopup = (() => {
 // Document detail page initialization
 // ===========================================================================
 function initDocumentDetailNetwork() {
-    // --- Entity popup handlers ---
+    // --- Historian entity popover ---
     document.addEventListener("click", (e) => {
         const entityEl = e.target.closest("[data-entity-id]");
         if (entityEl) {
             e.preventDefault();
             const entityId = entityEl.dataset.entityId;
-            EntityPopup.show(entityId, entityEl);
-        } else if (!e.target.closest(".entity-popup")) {
-            EntityPopup.remove();
+            const entityType = entityEl.dataset.entityType || "ENTITY";
+            const entityText = entityEl.dataset.entityText || entityEl.textContent.trim();
+            EntityPopover.show(entityId, entityText, entityType, entityEl);
+        } else if (!e.target.closest(".entity-popover")) {
+            EntityPopover.remove();
         }
+    });
+
+    // Keyboard affordance for dismissing popover.
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") EntityPopover.remove();
     });
 
     // --- Network context panel ---
@@ -1696,6 +1728,99 @@ const NetworkExplorer = {
     },
 };
 
+// ===========================================================================
+// Person-first search for Network Analysis page
+// ===========================================================================
+const PersonSearch = (() => {
+    let _debounce = null;
+
+    function init() {
+        const input = document.getElementById("personSearchInput");
+        const results = document.getElementById("personSearchResults");
+        const clear = document.getElementById("personSearchClear");
+        if (!input || !results || !clear) return;
+
+        input.addEventListener("input", () => {
+            clearTimeout(_debounce);
+            const q = input.value.trim();
+            clear.hidden = q.length === 0;
+
+            if (q.length < 2) {
+                results.hidden = true;
+                results.innerHTML = "";
+                return;
+            }
+            _debounce = setTimeout(() => search(q, results), 250);
+        });
+
+        clear.addEventListener("click", () => {
+            input.value = "";
+            clear.hidden = true;
+            results.hidden = true;
+            results.innerHTML = "";
+            input.focus();
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest("#networkPersonSearch")) {
+                results.hidden = true;
+            }
+        });
+    }
+
+    async function search(query, resultsEl) {
+        try {
+            const resp = await fetch(`/api/network/entity-search?q=${encodeURIComponent(query)}&limit=8`);
+            if (!resp.ok) return;
+            const data = await resp.json();
+            renderResults(data.entities || [], resultsEl);
+        } catch (e) {
+            console.warn("Person search failed:", e);
+        }
+    }
+
+    function renderResults(entities, resultsEl) {
+        if (!entities.length) {
+            resultsEl.innerHTML = '<li class="person-search-result person-search-result--empty">No matches found</li>';
+            resultsEl.hidden = false;
+            return;
+        }
+
+        resultsEl.innerHTML = entities.map((entity) => `
+            <li class="person-search-result" role="option"
+                data-entity-id="${entity.id}"
+                data-entity-type="${entity.type || ""}">
+                <span class="person-search-result__name">${entity.name || entity.id}</span>
+                <span class="person-search-result__type">${entity.type || ""}</span>
+            </li>
+        `).join("");
+        resultsEl.hidden = false;
+
+        resultsEl.querySelectorAll(".person-search-result[data-entity-id]").forEach((li) => {
+            li.addEventListener("click", () => {
+                const entityId = li.dataset.entityId;
+                resultsEl.hidden = true;
+
+                // Persist focused entity in URL so existing reload logic stays consistent.
+                const url = new URL(window.location.href);
+                url.searchParams.set("entity", entityId);
+                window.history.replaceState({}, "", url.toString());
+
+                if (window.NetworkExplorer && NetworkExplorer.loadEgoNetwork) {
+                    const graphContainer = document.querySelector("#network-graph");
+                    if (graphContainer) {
+                        NetworkExplorer.loadEgoNetwork(graphContainer, entityId);
+                    }
+                } else {
+                    window.location.href = `/network-analysis?entity=${encodeURIComponent(entityId)}`;
+                }
+            });
+        });
+    }
+
+    return { init };
+})();
+
 
 // ===========================================================================
 // Auto-initialize based on page context
@@ -1709,5 +1834,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Network explorer page
     if (document.getElementById("network-graph")) {
         NetworkExplorer.init("#network-graph");
+        PersonSearch.init(); // Added person-first entrypoint for direct entity lookup.
     }
 });

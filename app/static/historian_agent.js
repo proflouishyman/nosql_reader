@@ -16,8 +16,6 @@
         const form = document.getElementById('agentForm');
         const questionInput = document.getElementById('agentQuestion');
         const historyContainer = document.getElementById('agentHistory');
-        const sourcesContainer = document.getElementById('agentSources');
-        const sourcesList = document.getElementById('agentSourcesList');
         const resetButton = document.getElementById('agentReset');
         const status = document.getElementById('agentStatus');
         const statusText = document.getElementById('agentStatusText');
@@ -321,8 +319,14 @@
             const bubble = document.createElement('div');
             bubble.className = 'agent-message__bubble';
 
-            if (role === 'assistant' && typeof marked !== 'undefined') {
-                bubble.innerHTML = marked.parse(content);
+            if (role === 'assistant') {
+                // Render Markdown first, then annotate inline [Source N] markers as footnotes.
+                const rawHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
+                const sourceRefMap = buildSourceReferenceMap(sources);
+                const annotatedHtml = injectFootnotes(rawHtml, sourceRefMap);
+                bubble.innerHTML = annotatedHtml;
+                bubble.classList.add('agent-message__bubble--research');
+                styleHistorianSections(bubble);
             } else {
                 bubble.textContent = content;
             }
@@ -334,38 +338,270 @@
             wrapper.appendChild(bubble);
 
             if (role === 'assistant' && sources && typeof sources === 'object' && Object.keys(sources).length > 0) {
-                if (sourcesContainer) {
-                    sourcesContainer.hidden = false;
-                }
-                if (sourcesList) {
-                    sourcesList.innerHTML = '';
-                    Object.entries(sources).forEach(([label, source]) => {
-                        const item = document.createElement('li');
-                        const link = document.createElement('a');
-                        link.href = source.url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        link.setAttribute('data-help', 'Open the cited source document in a new tab.');
-                        link.textContent = `${label}: ${source.display_name}`;
-                        item.appendChild(link);
-                        sourcesList.appendChild(item);
-                    });
-                }
+                const footnoteBlock = buildFootnoteBlock(sources);
+                // Keep citations visually at the bottom of each answer bubble.
+                bubble.appendChild(footnoteBlock);
             }
 
             historyContainer.appendChild(wrapper);
             historyContainer.scrollTop = historyContainer.scrollHeight;
         }
 
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        /**
+         * Replace citation markers in rendered assistant HTML with linked superscripts.
+         * Handles common model variants: [Source N], (Source N), (Sources N-M), etc.
+         */
+        function injectFootnotes(html, sourceRefMap) {
+            const sourcePattern = /(?:\[\s*([Ss]ources?[^\]]*)\s*\]|\(\s*([Ss]ources?[^\)]*)\s*\)|\b([Ss]ources?)\s*\[\s*([^\]]+)\s*\]|\[\s*(\d[^\]]*)\s*\])/g;
+            const withRefs = String(html || '').replace(sourcePattern, (match, bracketLabel, parenLabel, sourceWord, sourceBracketBody, bracketBodyOnly) => {
+                let marker = String(bracketLabel || parenLabel || '').trim();
+                if (!marker && sourceWord && sourceBracketBody) {
+                    // Normalize "Source [1: RDApp-...]" into a marker string we can parse.
+                    marker = `${sourceWord} ${sourceBracketBody}`;
+                } else if (!marker && bracketBodyOnly) {
+                    // Normalize bare numeric bracket citations like "[1: RDApp-...]" to source markers.
+                    marker = `Source ${bracketBodyOnly}`;
+                }
+                const refs = resolveMarkerReferences(marker, sourceRefMap);
+                if (!refs.length) {
+                    return match;
+                }
+                const linkHtml = refs.map((ref) => {
+                    const safeTitle = escapeHtml(ref.tooltip);
+                    return `<a href="#fn-${ref.num}" class="fn-link" title="${safeTitle}" aria-label="${safeTitle}">${ref.num}</a>`;
+                }).join('<span class="fn-link-sep">,</span>');
+                const multiClass = refs.length > 1 ? ' fn-ref--multi' : '';
+                return `<sup class="fn-ref${multiClass}">${linkHtml}</sup>`;
+            });
+            // Chicago-style placement: if punctuation follows the marker, place superscript after punctuation.
+            return moveLeadingSuperscriptsToSentenceEnd(moveSuperscriptsToClaimEnd(withRefs));
+        }
+
+        function buildSourceReferenceMap(sources) {
+            const map = { byLabel: {}, byNumber: {} };
+            if (!sources || typeof sources !== 'object') {
+                return map;
+            }
+
+            Object.entries(sources).forEach(([label, source], idx) => {
+                const num = idx + 1;
+                const citationHtml = formatArchivalCitation(source?.display_name, source || {});
+                const citationText = decodeHtmlEntities(stripHtmlTags(citationHtml));
+                const tooltip = `${num}. ${citationText}`;
+                const variants = new Set();
+
+                variants.add(normalizeSourceLabel(label));
+                variants.add(normalizeSourceLabel(`Source ${num}`));
+                variants.add(normalizeSourceLabel(`Sources ${num}`));
+
+                const labelMatch = String(label || '').match(/source\s*(\d+)/i);
+                if (labelMatch) {
+                    variants.add(normalizeSourceLabel(`Source ${labelMatch[1]}`));
+                }
+
+                map.byNumber[num] = { num, tooltip };
+                variants.forEach((variant) => {
+                    if (!variant) {
+                        return;
+                    }
+                    map.byLabel[variant] = { num, tooltip };
+                });
+            });
+
+            return map;
+        }
+
+        /**
+         * Resolve citation marker text to concrete source references.
+         * Uses exact-label matching first, then parses valid source numbers/ranges.
+         */
+        function resolveMarkerReferences(marker, sourceRefMap) {
+            const normalizedKey = normalizeSourceLabel(marker);
+            const direct = sourceRefMap.byLabel?.[normalizedKey];
+            if (direct) {
+                return [direct];
+            }
+
+            const numbers = extractSourceNumbers(marker);
+            if (!numbers.length) {
+                return [];
+            }
+
+            const refs = [];
+            const seen = new Set();
+            numbers.forEach((num) => {
+                const ref = sourceRefMap.byNumber?.[num];
+                if (ref && !seen.has(ref.num)) {
+                    seen.add(ref.num);
+                    refs.push(ref);
+                }
+            });
+            return refs;
+        }
+
+        /**
+         * Parse source numbers from markers like:
+         *   "Source 1: RDApp-225116Hupp003"
+         *   "Sources 2-10"
+         *   "Sources 1, 3, and 5"
+         */
+        function extractSourceNumbers(marker) {
+            let working = String(marker || '').toLowerCase();
+            if (!working) {
+                return [];
+            }
+
+            // Normalize dash variants to simplify range parsing.
+            working = working.replace(/[–—]/g, '-');
+            // Ignore explanatory suffixes after colon/semicolon to avoid document-ID digits.
+            working = working.split(/[:;]/, 1)[0];
+            // Strip "source"/"sources" prefix when present.
+            working = working.replace(/^\s*sources?\s*/i, '');
+
+            const numbers = new Set();
+
+            const addRange = (startRaw, endRaw) => {
+                const start = Number(startRaw);
+                const end = Number(endRaw);
+                if (!Number.isInteger(start) || !Number.isInteger(end) || start <= 0 || end <= 0) {
+                    return;
+                }
+                const from = Math.min(start, end);
+                const to = Math.max(start, end);
+                // Guard against pathological spans in malformed text.
+                if ((to - from) > 30) {
+                    return;
+                }
+                for (let value = from; value <= to; value += 1) {
+                    numbers.add(value);
+                }
+            };
+
+            working.replace(/\b(\d{1,3})\s*-\s*(\d{1,3})\b/g, (_m, start, end) => {
+                addRange(start, end);
+                return '';
+            });
+
+            working.replace(/\b(\d{1,3})\s*(?:to|through)\s*(\d{1,3})\b/g, (_m, start, end) => {
+                addRange(start, end);
+                return '';
+            });
+
+            const singleMatches = working.match(/\b\d{1,3}\b/g) || [];
+            singleMatches.forEach((token) => {
+                const value = Number(token);
+                if (Number.isInteger(value) && value > 0) {
+                    numbers.add(value);
+                }
+            });
+
+            return Array.from(numbers).sort((a, b) => a - b);
+        }
+
+        function normalizeSourceLabel(label) {
+            return String(label || '').replace(/\s+/g, ' ').trim().toLowerCase();
+        }
+
+        function stripHtmlTags(value) {
+            return String(value || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+        }
+
+        function decodeHtmlEntities(value) {
+            const decoder = document.createElement('textarea');
+            decoder.innerHTML = String(value || '');
+            return decoder.value;
+        }
+
+        function moveSuperscriptsToClaimEnd(html) {
+            return String(html || '').replace(
+                /\s*(<sup class="fn-ref[^"]*">[\s\S]*?<\/sup>)\s*([.,;:!?])/g,
+                '$2$1'
+            );
+        }
+
+        /**
+         * If a sentence starts with a citation marker (for example "Source [1] ..."),
+         * move that citation to the end of the sentence to match Chicago-style placement.
+         */
+        function moveLeadingSuperscriptsToSentenceEnd(html) {
+            return String(html || '').replace(
+                /(^|<p>\s*|<li>\s*|[.!?]\s+)\s*(<sup class="fn-ref[^"]*">[\s\S]*?<\/sup>)\s*([^<]*?)([.!?])(?=(\s|<\/p>|<\/li>|$))/g,
+                '$1$3$4$2'
+            );
+        }
+
+        function buildFootnoteBlock(sources) {
+            const block = document.createElement('div');
+            block.className = 'agent-footnotes';
+
+            const heading = document.createElement('p');
+            heading.className = 'agent-footnotes__heading';
+            heading.textContent = 'Sources';
+            block.appendChild(heading);
+
+            const ol = document.createElement('ol');
+            ol.className = 'agent-footnotes__list';
+
+            Object.entries(sources).forEach(([, source], idx) => {
+                const num = idx + 1;
+                const li = document.createElement('li');
+                li.id = `fn-${num}`;
+                li.className = 'agent-footnotes__item';
+
+                const citation = formatArchivalCitation(source?.display_name, source || {});
+                const safeUrl = escapeHtml(source?.url || '#');
+                li.innerHTML = `
+                    <span class="fn-num">${num}.</span>
+                    <span class="fn-citation">
+                        ${citation}
+                        <a class="fn-open" href="${safeUrl}" target="_blank"
+                           rel="noopener noreferrer"
+                           data-help="Open this source document in a new tab.">→ Open</a>
+                    </span>
+                `;
+                ol.appendChild(li);
+            });
+
+            block.appendChild(ol);
+            return block;
+        }
+
+        function formatArchivalCitation(displayName, source) {
+            if (!displayName) {
+                return escapeHtml(source?.url || 'Unknown source');
+            }
+            const safeDisplay = escapeHtml(displayName);
+            if (String(displayName).includes('Baltimore')) {
+                return `<em>${safeDisplay}</em>`;
+            }
+            return `Baltimore &amp; Ohio Railroad, Relief Department Records, <em>${safeDisplay}</em>`;
+        }
+
+        function styleHistorianSections(bubble) {
+            bubble.querySelectorAll('p').forEach((p) => {
+                const text = p.textContent.trim();
+                if (text.startsWith('What the record does not show')) {
+                    p.classList.add('historian-gap');
+                } else if (text.startsWith('To investigate further')) {
+                    p.classList.add('historian-leads');
+                } else if (text.includes('single record') && text.includes('corroborated')) {
+                    p.classList.add('historian-caveat');
+                }
+            });
+        }
+
         function resetConversation() {
             if (historyContainer) {
                 historyContainer.innerHTML = '';
-            }
-            if (sourcesContainer) {
-                sourcesContainer.hidden = true;
-            }
-            if (sourcesList) {
-                sourcesList.innerHTML = '';
             }
             clearDebugLog();
         }
@@ -376,12 +612,6 @@
             }
 
             historyContainer.innerHTML = '';
-            if (sourcesContainer) {
-                sourcesContainer.hidden = true;
-            }
-            if (sourcesList) {
-                sourcesList.innerHTML = '';
-            }
 
             let lastAssistantIndex = -1;
             history.forEach((item, index) => {

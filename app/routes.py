@@ -177,27 +177,75 @@ def _render(template: str, **kwargs):
 # SHARED RAG HELPER FUNCTIONS
 # ============================================================================
 
-def sources_list_to_dict(sources: List[Dict[str, str]], search_id: str) -> Dict[str, Dict[str, str]]:
+def sources_list_to_dict(sources: Any, search_id: str) -> Dict[str, Dict[str, str]]:
     """
-    Convert internal list format to API dict format at boundary.
+    Convert source payloads to the canonical API dict contract.
     
-    This is the ONLY place where we convert from list to dict.
+    Supports both shapes seen in the codebase:
+      1) RAG handlers: {"label", "id", "display_name"}
+      2) Legacy agent: {"reference", "id", "title", "snippet"}
     
     Args:
-        sources: List of source dicts [{"label": "Source 1", "id": "...", ...}]
+        sources: List/dict of source metadata from handler boundary
         search_id: Search ID for building document URLs
         
     Returns:
         Dict formatted for API response
     """
-    return {
-        source["label"]: {
-            "id": source["id"],
-            "display_name": source["display_name"],
-            "url": f"/document/{source['id']}?search_id={search_id}"
+    normalized: Dict[str, Dict[str, str]] = {}
+
+    # Pass through already-normalized dicts while enforcing required keys.
+    if isinstance(sources, dict):
+        for index, (label, source) in enumerate(sources.items(), start=1):
+            source_data = source if isinstance(source, dict) else {}
+            source_id = str(source_data.get("id") or "").strip()
+            display_name = str(source_data.get("display_name") or label or f"Source {index}").strip()
+            url = str(source_data.get("url") or "").strip()
+            if not url and source_id:
+                url = f"/document/{source_id}?search_id={search_id}"
+            normalized[str(label or f"Source {index}")] = {
+                "id": source_id,
+                "display_name": display_name,
+                "url": url,
+            }
+        return normalized
+
+    if not isinstance(sources, list):
+        return normalized
+
+    for index, source in enumerate(sources, start=1):
+        # Keep boundary conversion tolerant so mixed handler outputs do not break citation rendering.
+        source_data = source if isinstance(source, dict) else {}
+        source_id = str(source_data.get("id") or source_data.get("_id") or "").strip()
+        label = str(source_data.get("label") or "").strip()
+
+        # Convert legacy "reference" forms like "[1]" to "Source 1" labels.
+        if not label:
+            raw_reference = str(source_data.get("reference") or "").strip()
+            reference_match = re.search(r"(\d+)", raw_reference)
+            if reference_match:
+                label = f"Source {reference_match.group(1)}"
+        if not label:
+            label = f"Source {index}"
+
+        display_name = str(
+            source_data.get("display_name")
+            or source_data.get("title")
+            or source_data.get("name")
+            or label
+        ).strip()
+
+        url = str(source_data.get("url") or "").strip()
+        if not url and source_id:
+            url = f"/document/{source_id}?search_id={search_id}"
+
+        normalized[label] = {
+            "id": source_id,
+            "display_name": display_name,
+            "url": url,
         }
-        for source in sources
-    }
+
+    return normalized
 
 
 def process_rag_query(
@@ -1528,6 +1576,18 @@ def get_dropdown_fields():
                 ]
             }
         }
+        # Include explicit "missing" option for schema-gap filtering via existing row contract.
+        if "missing" not in dropdown_fields["archive_structure.physical_box"]["values"]:
+            dropdown_fields["archive_structure.physical_box"]["values"].append("missing")
+
+        # Add live record-type values from existing comparable field.
+        try:
+            doc_types = sorted([v for v in documents.distinct("document_type") if isinstance(v, str) and v.strip()])
+        except Exception:
+            doc_types = []
+        if "missing" not in doc_types:
+            doc_types.append("missing")
+        dropdown_fields["document_type"] = {"values": doc_types}
         
         logger.debug(f"Returning dropdown fields: {dropdown_fields}")
         return jsonify({"dropdown_fields": dropdown_fields})
@@ -1742,7 +1802,7 @@ def historian_agent_query():
             return jsonify({
                 'conversation_id': str(uuid.uuid4()),
                 'answer': '',
-                'sources': [],
+                'sources': {},
                 'history': [],
             })
 
@@ -1760,8 +1820,15 @@ def historian_agent_query():
         app.logger.exception('Historian agent query failed')
         return jsonify({'error': 'Historian agent failed to generate a response.'}), 500
 
+    raw_sources = result.get('sources', [])
+    search_id = str(uuid.uuid4())
+    normalized_sources = sources_list_to_dict(raw_sources, search_id)
+
+    ordered_ids = [entry.get("id") for entry in normalized_sources.values() if entry.get("id")]
+    cache.set(f'search_{search_id}', ordered_ids, timeout=3600)
+
     history.append({'role': 'user', 'content': question})
-    history.append({'role': 'assistant', 'content': result['answer']})
+    history.append({'role': 'assistant', 'content': result['answer'], 'sources': normalized_sources})
     if len(history) > HISTORIAN_HISTORY_MAX_TURNS * 2:
         history = history[-HISTORIAN_HISTORY_MAX_TURNS * 2:]
     cache.set(history_key, history, timeout=HISTORIAN_HISTORY_TIMEOUT)
@@ -1769,7 +1836,8 @@ def historian_agent_query():
     response_payload = {
         'conversation_id': conversation_id,
         'answer': result['answer'],
-        'sources': result['sources'],
+        'sources': normalized_sources,
+        'search_id': search_id,
         'history': history,
     }
     return jsonify(response_payload)
@@ -1924,7 +1992,17 @@ def build_query(data):
 
         if field and search_term:
             condition = {}
-            if operator == 'NOT':
+            normalized_missing = isinstance(search_term, str) and search_term.strip().lower() == "missing"
+            # Preserve row-based contract while supporting "missing" semantic values for sparse fields.
+            if normalized_missing and field in {"document_type", "archive_structure.physical_box"}:
+                condition = {
+                    "$or": [
+                        {field: {"$exists": False}},
+                        {field: None},
+                        {field: ""},
+                    ]
+                }
+            elif operator == 'NOT':
                 condition[field] = {'$not': {'$regex': re.escape(search_term), '$options': 'i'}}
             else:
                 condition[field] = {'$regex': re.escape(search_term), '$options': 'i'}
@@ -2166,6 +2244,53 @@ def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[
                             )
             except Exception:
                 logger.exception("Failed to load linked entity_refs for document detail view.")
+
+    # Fallback resolver for datasets where entity_refs are not populated.
+    unresolved_entity_texts: Dict[str, str] = {}
+    for entity_values in entities_by_type.values():
+        for entity in entity_values:
+            if entity.get("entity_id"):
+                continue
+            text = str(entity.get("text") or "").strip()
+            if text:
+                unresolved_entity_texts.setdefault(text.casefold(), text)
+
+    if unresolved_entity_texts:
+        resolution_cache: Dict[str, Optional[Dict[str, Any]]] = {}
+        linked_entities = db["linked_entities"]
+
+        for text in unresolved_entity_texts.values():
+            key = text.casefold()
+            if key in resolution_cache:
+                continue
+            escaped = re.escape(text)
+            exact = {"$regex": f"^{escaped}$", "$options": "i"}
+            resolution_cache[key] = linked_entities.find_one(
+                {
+                    "$or": [
+                        {"canonical_name": exact},
+                        {"name": exact},
+                        {"term": exact},
+                        {"text": exact},
+                        {"aliases": exact},
+                        {"variants": exact},
+                    ]
+                },
+                {"canonical_name": 1},
+            )
+
+        for entity_values in entities_by_type.values():
+            for entity in entity_values:
+                if entity.get("entity_id"):
+                    continue
+                text = str(entity.get("text") or "").strip()
+                if not text:
+                    continue
+                linked = resolution_cache.get(text.casefold())
+                if not linked:
+                    continue
+                entity["entity_id"] = str(linked.get("_id"))
+                entity["canonical_name"] = linked.get("canonical_name") or text
 
     for entity_values in entities_by_type.values():
         entity_values.sort(key=lambda value: value["text"].casefold())

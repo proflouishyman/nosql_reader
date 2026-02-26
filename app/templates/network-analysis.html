@@ -28,6 +28,25 @@
     <div id="active-type-pair-state" class="active-type-pair-state"></div>
   </header>
 
+  <!-- Person-first entry: search by name and center graph on result -->
+  <div class="network-person-search" id="networkPersonSearch">
+    <label for="personSearchInput" class="network-person-search__label">
+      Start with a person or place
+    </label>
+    <div class="network-person-search__row">
+      <input
+        type="text"
+        id="personSearchInput"
+        placeholder="Search by name, place, or ID..."
+        class="network-person-search__input"
+        autocomplete="off"
+        data-help="Type a name to find and centre on that entity in the network graph."
+      >
+      <button type="button" id="personSearchClear" class="network-person-search__clear" hidden aria-label="Clear search">×</button>
+    </div>
+    <ul class="network-person-search__results" id="personSearchResults" hidden role="listbox"></ul>
+  </div>
+
   {# Controls #}
   <div class="network-controls">
     <div class="control-group">

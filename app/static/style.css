@@ -1357,6 +1357,12 @@ button.secondary:hover,
     border-color: var(--palette-rgba-79-70-229-0-45);
 }
 
+/* Keep assistant citations/footnotes stacked under the claim content. */
+.agent-message--assistant {
+    flex-direction: column;
+    align-items: stretch;
+}
+
 .agent-message__role {
     font-weight: 600;
     margin-bottom: 6px;
@@ -1444,45 +1450,6 @@ button.secondary:hover,
 @keyframes agentStatusPulse {
     0%, 100% { opacity: 0.4; transform: scale(0.85); }
     50% { opacity: 1; transform: scale(1); }
-}
-
-.agent-sources {
-    display: grid;
-    gap: 12px;
-}
-
-.agent-sources h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--palette-hex-1f2937);
-}
-
-.agent-sources ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: 14px;
-}
-
-.agent-sources li {
-    padding: 16px;
-    background: var(--palette-hex-ffffff);
-    border-radius: 14px;
-    border: 1px solid var(--palette-hex-e2e8f0);
-    box-shadow: 0 10px 20px var(--palette-rgba-15-23-42-0-05);
-}
-
-.agent-source__title {
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--palette-hex-1e3a8a);
-}
-
-.agent-source__snippet {
-    margin: 0;
-    color: var(--palette-hex-475569);
-    line-height: 1.5;
 }
 
 .data-files {
@@ -2718,6 +2685,475 @@ input[type="range"] {
     background: var(--palette-hex-fffbeb);
     border: 1px solid var(--palette-hex-fde68a);
     border-radius: 10px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Historian UX additions (entity popover, footnotes, search filters, etc.)
+────────────────────────────────────────────────────────────────────────── */
+
+/* Entity item affordance */
+.entity-item[data-entity-id] {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    border-radius: var(--radius-sm);
+    padding: 2px 6px;
+    margin: 1px -6px;
+    transition: background var(--transition);
+}
+
+.entity-item[data-entity-id]:hover,
+.entity-item[data-entity-id]:focus {
+    background: var(--color-primary-muted);
+    outline: none;
+}
+
+.entity-item__hint {
+    font-size: 0.7rem;
+    color: var(--color-text-subtle);
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.entity-item[data-entity-id]:hover .entity-item__hint,
+.entity-item[data-entity-id]:focus .entity-item__hint {
+    opacity: 1;
+}
+
+/* Historian entity popover */
+.entity-popover {
+    position: absolute;
+    z-index: 200;
+    width: 280px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: popover-in 0.15s ease;
+}
+
+@keyframes popover-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.entity-popover__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.entity-popover__type {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.entity-popover__name {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.9rem;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entity-popover__close {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0 2px;
+    border-radius: 4px;
+    transition: color var(--transition);
+}
+
+.entity-popover__close:hover { color: var(--color-text); }
+
+.entity-popover__actions {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    gap: 4px;
+}
+
+.entity-popover__action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--color-text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background var(--transition);
+    border: 1px solid transparent;
+}
+
+.entity-popover__dismiss {
+    background: transparent;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+.entity-popover__action:hover {
+    background: var(--color-surface-alt);
+    border-color: var(--color-border);
+}
+
+.entity-popover__action--primary {
+    color: var(--color-primary);
+    background: var(--color-primary-muted);
+    border-color: rgba(37, 99, 235, 0.2);
+}
+
+.entity-popover__action--primary:hover {
+    background: rgba(37, 99, 235, 0.18);
+}
+
+.entity-popover__action-icon {
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.entity-popover__network-detail {
+    border-top: 1px solid var(--color-border);
+}
+
+.entity-popover__network-detail summary {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+}
+
+.entity-popover__network-detail summary::-webkit-details-marker { display: none; }
+
+.entity-popover__network-preview {
+    padding: 8px 12px 12px;
+}
+
+.entity-popover__degree {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0 0 6px;
+}
+
+.entity-popover__connections ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.entity-popover__connections li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.83rem;
+}
+
+.entity-popover__edge-weight {
+    margin-left: auto;
+    color: var(--color-text-subtle);
+    font-size: 0.78rem;
+}
+
+/* Research typography for historian answers */
+.agent-message__bubble--research {
+    font-size: 1rem;
+    line-height: 1.85;
+    color: var(--color-text);
+    width: 100%;
+    max-width: none;
+}
+
+/* Explicit assistant-bubble width guard so the answer pane fills the available row. */
+.agent-message--assistant .agent-message__bubble--research {
+    width: 100%;
+    max-width: none;
+}
+
+.agent-message__bubble--research p {
+    margin-bottom: 1em;
+}
+
+.agent-message__bubble--research p:last-child {
+    margin-bottom: 0;
+}
+
+/* Footnote superscripts */
+.fn-ref {
+    line-height: 0;
+    vertical-align: super;
+    font-size: 0.72em;
+}
+
+.fn-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 700;
+    padding: 0 1px;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--transition);
+}
+
+.fn-link:hover {
+    border-bottom-color: var(--color-primary);
+}
+
+.fn-link-sep {
+    color: var(--color-primary);
+    opacity: 0.7;
+}
+
+/* Footnote block */
+.agent-footnotes {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+}
+
+.agent-footnotes__heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    font-family: 'Montserrat', sans-serif;
+    margin: 0 0 10px;
+}
+
+.agent-footnotes__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.agent-footnotes__item {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+.fn-num {
+    font-weight: 700;
+    color: var(--color-primary);
+    flex-shrink: 0;
+    min-width: 16px;
+}
+
+.fn-citation {
+    flex: 1;
+}
+
+.fn-citation em {
+    font-style: italic;
+    color: var(--color-text);
+}
+
+.fn-open {
+    margin-left: 8px;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    transition: opacity var(--transition);
+}
+
+.fn-open:hover { opacity: 1; }
+
+/* Structured historian answer sections */
+.historian-gap {
+    background: var(--color-surface-alt);
+    border-left: 3px solid var(--color-warn-muted);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 10px 14px;
+    margin-top: 16px !important;
+    font-size: 0.92rem;
+    color: var(--color-text-muted);
+}
+
+.historian-leads {
+    background: var(--color-primary-muted);
+    border-left: 3px solid var(--color-primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 10px 14px;
+    margin-top: 8px !important;
+    font-size: 0.92rem;
+}
+
+.historian-caveat {
+    font-style: italic;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* Citation copy button */
+.citation-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+    margin-top: 6px;
+}
+
+.citation-copy-btn:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
+}
+
+.citation-copy-btn--success {
+    background: var(--color-success-muted);
+    color: var(--color-success);
+    border-color: rgba(4, 120, 87, 0.2);
+}
+
+.citation-copy-btn__icon {
+    font-size: 0.95rem;
+}
+
+/* Network person-first search */
+.network-person-search {
+    position: relative;
+    max-width: 480px;
+    margin-bottom: 20px;
+}
+
+.network-person-search__label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 6px;
+}
+
+.network-person-search__row {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.network-person-search__input {
+    width: 100%;
+    padding: 10px 36px 10px 14px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    background: var(--color-bg);
+    color: var(--color-text);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.network-person-search__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.network-person-search__clear {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color var(--transition);
+}
+
+.network-person-search__clear:hover { color: var(--color-text); }
+
+.network-person-search__results {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    z-index: 100;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.person-search-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.person-search-result:hover {
+    background: var(--color-surface-alt);
+}
+
+.person-search-result--empty {
+    color: var(--color-text-muted);
+    font-size: 0.88rem;
+    cursor: default;
+    justify-content: center;
+}
+
+.person-search-result__name {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+.person-search-result__type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-subtle);
+    font-family: 'Montserrat', sans-serif;
 }
 .ce-gap-card__title { margin: 0 0 10px; color: var(--palette-hex-92400e); font-size: 0.95rem; }
 .ce-gap-card__suggestions { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
