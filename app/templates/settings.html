@@ -17,9 +17,9 @@
                 <div class="settings-group">
                     <h3>Fonts</h3>
                     <label for="fonts_main">Main font</label>
-                    <input type="text" id="fonts_main" name="fonts[main]" value="{{ config.get('fonts', {}).get('main', '') }}" data-help="Set the primary body font family (for example: Open Sans, serif fallback).">
+                    <input type="text" id="fonts_main" name="fonts[main]" value="{{ config.get('fonts', {}).get('main', 'Open Sans, sans-serif') }}" data-help="Set the primary body font family (for example: Open Sans with sans-serif fallback).">
                     <label for="fonts_headers">Header font</label>
-                    <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config.get('fonts', {}).get('headers', '') }}" data-help="Set the heading font family used for H1-H3 elements.">
+                    <input type="text" id="fonts_headers" name="fonts[headers]" value="{{ config.get('fonts', {}).get('headers', 'Merriweather, Georgia, serif') }}" data-help="Set the heading font family used for H1-H3 elements.">
                 </div>
                 <div class="settings-group">
                     <h3>Sizes</h3>
@@ -35,13 +35,13 @@
                 <div class="settings-group">
                     <h3>Colours</h3>
                     <label for="colors_primary">Primary colour</label>
-                    <input type="color" id="colors_primary" name="colors[primary]" value="{{ config.get('colors', {}).get('primary', '#2A4365') }}" data-help="Pick the primary brand/action color used by buttons and accents.">
+                    <input type="color" id="colors_primary" name="colors[primary]" value="{{ config.get('colors', {}).get('primary', '#2563eb') }}" data-help="Pick the primary brand/action color used by buttons and accents.">
                     <label for="colors_secondary">Secondary colour</label>
-                    <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config.get('colors', {}).get('secondary', '#718096') }}" data-help="Pick the secondary support color used for less prominent UI elements.">
+                    <input type="color" id="colors_secondary" name="colors[secondary]" value="{{ config.get('colors', {}).get('secondary', '#64748b') }}" data-help="Pick the secondary support color used for less prominent UI elements.">
                     <label for="colors_background">Background</label>
                     <input type="color" id="colors_background" name="colors[background]" value="{{ config.get('colors', {}).get('background', '#ffffff') }}" data-help="Set the default page background color token.">
                     <label for="colors_text">Text</label>
-                    <input type="color" id="colors_text" name="colors[text]" value="{{ config.get('colors', {}).get('text', '#1a202c') }}" data-help="Set the default text color token used across pages.">
+                    <input type="color" id="colors_text" name="colors[text]" value="{{ config.get('colors', {}).get('text', '#1e293b') }}" data-help="Set the default text color token used across pages.">
                 </div>
                 <div class="settings-group">
                     <h3>Spacing</h3>

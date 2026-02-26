@@ -165,6 +165,14 @@ def get_tier0_explorer():
         _tier0_explorer = CorpusExplorer()
     return _tier0_explorer
 
+
+def _render(template: str, **kwargs):
+    """Render template with active nav page injection for consistent header highlighting."""
+    # Added helper to keep active-page contract centralized and avoid per-route drift.
+    page = kwargs.pop('page', template.split('.')[0].replace('-', '_'))
+    return render_template(template, active_page=page, **kwargs)
+
+
 # ============================================================================
 # SHARED RAG HELPER FUNCTIONS
 # ============================================================================
@@ -1479,7 +1487,8 @@ def login_required(f):
 # @login_required
 def index():
     app.logger.info('Rendering home page')
-    return render_template('home.html')
+    # Use _render so base nav can highlight Home without altering template contracts.
+    return _render('home.html', page='home')
 
 
 @app.route('/search')
@@ -1488,8 +1497,10 @@ def search_database():
     app.logger.info('Rendering search interface')
     num_search_fields = 3
     field_structure = get_field_structure(db)
-    return render_template(
+    # Use _render so base nav can highlight Search consistently.
+    return _render(
         'search.html',
+        page='search',
         num_search_fields=num_search_fields,
         field_structure=field_structure,
     )
@@ -1539,8 +1550,10 @@ def historian_agent_page():
     agent_config = HistorianAgentConfig.from_env(overrides)
     agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
 
-    return render_template(
+    # Use _render so base nav can highlight Historian Agent while preserving payload shape.
+    return _render(
         'historian_agent.html',
+        page='historian_agent',
         agent_enabled=agent_config.enabled and agent_error is None,
         agent_config_payload=_serialise_agent_config(agent_config),
         provider_options=HISTORIAN_PROVIDER_OPTIONS,
@@ -1551,7 +1564,8 @@ def historian_agent_page():
 @app.route('/corpus-explorer')
 def corpus_explorer_page():
     """Render the Corpus Explorer (Tier 0) interface."""
-    return render_template('corpus_explorer.html')
+    # Use _render so base nav can highlight Corpus Explorer.
+    return _render('corpus_explorer.html', page='corpus_explorer')
 
 
 def _parse_agent_config_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -2183,7 +2197,8 @@ def build_document_ner_groups(document: Dict[str, Any]) -> List[Tuple[str, List[
 @app.route('/network-analysis')
 def network_analysis_page():
     """Standalone network explorer page."""
-    return render_template('network-analysis.html')
+    # Use _render so base nav can highlight Network regardless of template hyphenation.
+    return _render('network-analysis.html', page='network_analysis')
 
 
 # =============================================================================
@@ -2213,7 +2228,8 @@ def demographics_page():
             row = conn.execute("SELECT COUNT(*) as n FROM people").fetchone()
             total = row["n"] if row else 0
             conn.close()
-    return render_template("demographics.html", db_exists=db_exists, total_people=total)
+    # Use _render so base nav can highlight Demographics while keeping existing context variables.
+    return _render("demographics.html", page='demographics', db_exists=db_exists, total_people=total)
 
 
 @app.route("/api/demographics/summary")
@@ -3175,7 +3191,8 @@ def search_terms():
         # Render the HTML template
         field_structure = get_field_structure(db)
         unique_fields = []  # Define if necessary
-        return render_template('search-terms.html', field_structure=field_structure, unique_fields=unique_fields)
+        # Use _render so nav highlights "Unique Terms Explorer" when loading the full page.
+        return _render('search-terms.html', page='search_terms', field_structure=field_structure, unique_fields=unique_fields)
 
 @app.route('/database-info')
 # @login_required
@@ -3201,14 +3218,16 @@ def database_info():
 
     traverse_structure(field_struct)
 
-    return render_template('database-info.html', collection_info=collection_info)
+    # Use _render so base nav can highlight Database Info despite dash-separated template name.
+    return _render('database-info.html', page='database_info', collection_info=collection_info)
 
 
 @app.route('/help')
 def help_page():
     """Render the in-app help centre focused on current workflows."""
 
-    return render_template('help.html')
+    # Use _render so base nav can highlight Help.
+    return _render('help.html', page='help')
 
 
 def _load_runtime_build_metadata() -> Dict[str, str]:
@@ -3326,8 +3345,10 @@ def settings():
     agent_error = _evaluate_agent_error(overrides=overrides, config=agent_config)
     runtime_build = _load_runtime_build_metadata()
 
-    return render_template(
+    # Use _render so base nav can highlight Settings while preserving settings payload contract.
+    return _render(
         'settings.html',
+        page='settings',
         config=config,
         archive_root=str(archive_root_path),
         archive_files=archive_files,
