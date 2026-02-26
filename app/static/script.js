@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelButton = document.getElementById('cancelSearch');
     const totalResultsDiv = document.getElementById('totalResults');
     const exportSelectedCsvButton = document.getElementById('exportSelectedCsv');
+    const initialSearchParams = new URLSearchParams(window.location.search);
 
     // Pagination and Search Variables
     let controller;
@@ -46,6 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => func.apply(this, args), delay);
         };
+    }
+
+    /**
+     * Escapes HTML entities for safe inline banner markup.
+     * @param {string} value - Raw text value.
+     * @returns {string} - Escaped text.
+     */
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     /**
@@ -620,6 +635,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    /**
+     * Hides search controls when list_only=1 and surfaces a compact "results list" banner.
+     */
+    function applyListOnlyModeFromUrl() {
+        const listOnly = String(initialSearchParams.get('list_only') || '').trim();
+        if (!['1', 'true', 'yes'].includes(listOnly.toLowerCase())) {
+            return;
+        }
+
+        const searchHeader = document.querySelector('.search-page__header');
+        const prefillField = (initialSearchParams.get('prefill_field') || '').trim();
+        const prefillTerm = (initialSearchParams.get('prefill_term') || '').trim();
+        const searchPage = document.querySelector('.search-page');
+
+        if (searchHeader) {
+            searchHeader.hidden = true;
+        }
+        searchForm.hidden = true;
+
+        if (!searchPage) {
+            return;
+        }
+
+        // Keep users in list mode by default while leaving an explicit path back to full controls.
+        const banner = document.createElement('div');
+        banner.className = 'search-list-only-banner';
+        banner.innerHTML = `
+            <div class="search-list-only-banner__text">
+                <strong>Document List</strong>
+                <span>${prefillTerm ? `Results for “${escapeHtml(prefillTerm)}”` : 'Showing filtered document results.'}</span>
+            </div>
+            <button type="button" class="secondary" id="showSearchControlsBtn" title="Show full search controls">
+                Show search controls
+            </button>
+        `;
+
+        const insertionTarget = loadingIndicator || totalResultsDiv || resultsDiv || searchForm;
+        if (insertionTarget && insertionTarget.parentNode) {
+            insertionTarget.parentNode.insertBefore(banner, insertionTarget);
+        } else {
+            searchPage.prepend(banner);
+        }
+
+        const showControlsButton = banner.querySelector('#showSearchControlsBtn');
+        if (showControlsButton) {
+            showControlsButton.addEventListener('click', () => {
+                if (searchHeader) {
+                    searchHeader.hidden = false;
+                }
+                searchForm.hidden = false;
+                banner.remove();
+
+                // Preserve prefilled values while exiting list-only mode.
+                if (prefillField || prefillTerm) {
+                    const nextParams = new URLSearchParams();
+                    if (prefillField) nextParams.set('prefill_field', prefillField);
+                    if (prefillTerm) nextParams.set('prefill_term', prefillTerm);
+                    const nextUrl = `${window.location.pathname}?${nextParams.toString()}`;
+                    window.history.replaceState({}, document.title, nextUrl);
+                }
+            });
+        }
+    }
+
     // ===============================
     // Initial Load
     // ===============================
@@ -631,9 +710,8 @@ document.addEventListener('DOMContentLoaded', function() {
      * - prefill_term
      */
     function applyPrefillFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        const prefillField = (params.get('prefill_field') || '').trim();
-        const prefillTerm = (params.get('prefill_term') || '').trim();
+        const prefillField = (initialSearchParams.get('prefill_field') || '').trim();
+        const prefillTerm = (initialSearchParams.get('prefill_term') || '').trim();
 
         if (!prefillField || !prefillTerm) {
             return;
@@ -677,5 +755,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load selected documents from localStorage
     loadSelectedDocuments();
+    applyListOnlyModeFromUrl();
     applyPrefillFromUrl();
 });

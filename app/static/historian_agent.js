@@ -21,6 +21,18 @@
         const statusText = document.getElementById('agentStatusText');
         const suggestionButtons = Array.from(document.querySelectorAll('.agent-suggestion'));
         const submitButton = form ? form.querySelector('button[type="submit"]') : null;
+        const refinementToggleInline = document.getElementById('refinementToggleInline');
+        const refinementToggleSettings = document.getElementById('refinementToggleSettings');
+        const refinementModal = document.getElementById('refinementModal');
+        const refinementSuggestions = document.getElementById('refinementSuggestions');
+        const searchAsIsButton = document.getElementById('searchAsIs');
+        const searchRefinedButton = document.getElementById('searchRefined');
+        const REFINEMENT_STORAGE_KEY = 'refinement_enabled';
+        const REFINEMENT_SUGGESTIONS = [
+            (question) => `What specific time period does this question cover? Try: "${question} between 1900 and 1920".`,
+            (question) => `Is there a specific person, role, or location? Try adding: "${question} [name/place]".`,
+            () => 'Are you looking for causes, counts, or examples? Consider naming one clearly.'
+        ];
 
         // Pre-fill question when arriving from a Corpus Explorer "Investigate ->" link.
         const ceParams = new URLSearchParams(window.location.search);
@@ -40,6 +52,7 @@
 
         let conversationId = null;
         let isSubmitting = false;
+        let pendingRefinementQuestion = '';
 
         // Updated hint copy to match the new Quick/Verified/Deep labels without changing method values.
         const METHOD_HINTS = {
@@ -52,6 +65,110 @@
             methodHint.textContent = METHOD_HINTS[methodSelect.value] || '';
             methodSelect.addEventListener('change', function() {
                 methodHint.textContent = METHOD_HINTS[methodSelect.value] || '';
+            });
+        }
+
+        function isRefinementEnabled() {
+            try {
+                const storedValue = window.localStorage.getItem(REFINEMENT_STORAGE_KEY);
+                return storedValue !== 'false';
+            } catch (error) {
+                return true;
+            }
+        }
+
+        function applyRefinementToggleState(enabled) {
+            if (refinementToggleInline) {
+                refinementToggleInline.checked = enabled;
+            }
+            if (refinementToggleSettings) {
+                refinementToggleSettings.checked = enabled;
+            }
+        }
+
+        function persistRefinementToggle(enabled) {
+            try {
+                window.localStorage.setItem(REFINEMENT_STORAGE_KEY, enabled ? 'true' : 'false');
+            } catch (error) {
+                // Ignore localStorage write failures and keep in-memory toggle state active.
+            }
+            applyRefinementToggleState(enabled);
+        }
+
+        function closeRefinementModal() {
+            if (refinementModal) {
+                refinementModal.style.display = 'none';
+            }
+            pendingRefinementQuestion = '';
+        }
+
+        function showRefinementModal(question) {
+            if (!refinementModal || !refinementSuggestions) {
+                return false;
+            }
+
+            pendingRefinementQuestion = question;
+            refinementSuggestions.innerHTML = REFINEMENT_SUGGESTIONS
+                .map((buildSuggestion) => `<p class="agent-refinement-tip">${buildSuggestion(question)}</p>`)
+                .join('');
+            refinementModal.style.display = 'flex';
+            return true;
+        }
+
+        function shouldSuggestRefinement(question) {
+            if (!isRefinementEnabled()) {
+                return false;
+            }
+            const wordCount = question.split(/\s+/).filter(Boolean).length;
+            return wordCount > 0 && wordCount < 5;
+        }
+
+        // Keep inline and settings toggles synchronized through one local-storage preference.
+        applyRefinementToggleState(isRefinementEnabled());
+        [refinementToggleInline, refinementToggleSettings].forEach((toggle) => {
+            if (!toggle) {
+                return;
+            }
+            toggle.addEventListener('change', function() {
+                persistRefinementToggle(Boolean(toggle.checked));
+            });
+        });
+
+        if (searchAsIsButton) {
+            searchAsIsButton.addEventListener('click', function() {
+                const question = pendingRefinementQuestion;
+                closeRefinementModal();
+                if (!question || isSubmitting) {
+                    return;
+                }
+                executeUserQuestion(question);
+            });
+        }
+
+        if (searchRefinedButton) {
+            searchRefinedButton.addEventListener('click', function() {
+                closeRefinementModal();
+                if (questionInput) {
+                    questionInput.focus();
+                    try {
+                        questionInput.setSelectionRange(0, questionInput.value.length);
+                    } catch (error) {
+                        // Keep focus behavior even if selection APIs are unavailable.
+                    }
+                }
+            });
+        }
+
+        if (refinementModal) {
+            refinementModal.addEventListener('click', function(event) {
+                if (event.target === refinementModal) {
+                    closeRefinementModal();
+                }
+            });
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && refinementModal.style.display !== 'none') {
+                    closeRefinementModal();
+                }
             });
         }
 
@@ -708,6 +825,14 @@
             }
         }
 
+        function executeUserQuestion(question) {
+            appendMessage('user', question, {}, null);
+            submitQuestion({
+                question,
+                conversation_id: conversationId,
+            });
+        }
+
         if (form) {
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -721,11 +846,10 @@
                     }
                     return;
                 }
-                appendMessage('user', question, {}, null);
-                submitQuestion({
-                    question,
-                    conversation_id: conversationId,
-                });
+                if (shouldSuggestRefinement(question) && showRefinementModal(question)) {
+                    return;
+                }
+                executeUserQuestion(question);
             });
         }
 

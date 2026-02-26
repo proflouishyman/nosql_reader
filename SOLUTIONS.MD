@@ -1220,3 +1220,181 @@ Adjusted row-based dropdown semantics so selecting `missing` for `document_type`
   - `[1: RDApp-...]`
   - `Sources [2-4]`
 - Verified live container files include the updated parser and width rule under `/app/static/`.
+
+## 2026-02-26 - Semantic Search page + API endpoint
+
+### Problem
+- The app had vector retrieval infrastructure but no dedicated semantic-search API route or UI page for running meaning-based nearest-neighbor queries directly.
+- Collection naming can differ by environment (`historian_documents` vs `historian_document_chunks`), so hardcoding one name risks returning empty results in some deployments.
+
+### Solution
+- Added semantic search routes in `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`:
+  - `GET /semantic-search` renders a new semantic-search page.
+  - `POST /api/semantic-search` validates input, embeds query text, executes vector search, and returns scored/snippet results.
+- Implemented collection fallback order in API route:
+  - Use `APP_CONFIG.chroma.collection_name` first.
+  - Fallback to `"historian_document_chunks"` when config is empty.
+- Added new template `/Users/louishyman/coding/nosql/nosql_reader/app/templates/semantic_search.html`.
+- Added frontend behavior in `/Users/louishyman/coding/nosql/nosql_reader/app/static/js/semantic_search.js`:
+  - submit search query + `top_k`,
+  - render ranked result cards with score/distance and document links,
+  - clear/reset behavior.
+- Added semantic-search styles in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`.
+- Added nav link in `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html`.
+
+### Verification
+- `python -m py_compile /Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/js/semantic_search.js`
+
+## 2026-02-26 - Semantic Search Meaning View + tooltip coverage
+
+### Problem
+- Nearest-neighbor rows were visible, but users could not quickly interpret what the neighbor set meant at a corpus level.
+- Tooltip coverage on semantic search was incomplete, especially for dynamically rendered result elements.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/semantic_search.html`:
+  - added a view toggle (`Neighbor view` vs `Meaning view`),
+  - added a dedicated meaning panel container,
+  - expanded `data-help` tooltip text across semantic-search controls and result framing.
+- Reworked `/Users/louishyman/coding/nosql/nosql_reader/app/static/js/semantic_search.js`:
+  - added `Meaning view` computation from returned neighbors (score bands, recurring terms, grouped document clusters, overlap cues),
+  - added view-state toggling and mode-aware metadata text,
+  - added `data-help` attributes for dynamic neighbor cards, score badges, meaning summaries, term chips, and document-cluster cards,
+  - explicitly attached tooltips to dynamically inserted nodes using `window.AppHelpTooltips.attach(...)`.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` with new semantic meaning-view styles (toggle pills, summary stats, term chips, cluster cards).
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/js/semantic_search.js`
+
+## 2026-02-26 - Semantic Meaning view not switching + tooltip discoverability fix
+
+### Problem
+- User reported that switching from Neighbor view to Meaning view showed no visible change.
+- Tooltips were difficult to discover in practice (2s delay) and could appear absent during quick hover checks.
+- Browser cache could keep an older `semantic_search.js` version after template/JS updates.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/js/semantic_search.js`:
+  - switched to robust init (`run now if DOM already loaded`, otherwise `DOMContentLoaded`) so bindings are always attached,
+  - added fallback mirroring of `data-help` to native `title` attributes for immediate tooltip availability if custom tooltip binding is delayed/missing.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/js/help-tooltips.js`:
+  - reduced delayed-help trigger from 2000ms to 650ms for quicker visibility.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/semantic_search.html`:
+  - added versioned semantic JS URL query param to force cache refresh of the updated script.
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/js/semantic_search.js`
+- `curl -sS http://localhost:5001/semantic-search` confirms updated markup and versioned semantic JS include.
+
+## 2026-02-26 - Historian Agent refinement modal + persistent refinement toggle
+
+### Problem
+- Historian Agent submitted every query immediately, including short/vague prompts where users wanted a quick refinement checkpoint.
+- Refinement preference needed to be user-discoverable on the Historian page and persist across sessions.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/historian_agent.html`:
+  - added an in-page `Suggest refinements` checkbox near the query box,
+  - added a refinement modal with suggestion text and `Search as typed` / `Search refined question` actions.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`:
+  - added localStorage-backed preference key `refinement_enabled` (default enabled),
+  - synchronized refinement toggles between in-page control and settings partial control when both exist,
+  - added short-query interception (`< 5` words) that opens the refinement modal before search,
+  - wired modal actions so users can run as typed or return to edit in place.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/partials/historian_agent_settings.html`:
+  - added a matching refinement toggle control (local preference only, backend config contract unchanged).
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` with modal/toggle styles.
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`
+- `curl -sS http://localhost:5001/historian-agent | rg "refinementToggleInline|refinementModal|vendor/marked.min.js"`
+
+## 2026-02-26 - Self-hosted frontend vendor assets for offline runtime
+
+### Problem
+- Templates depended on external CDNs (Google Fonts, Font Awesome, Marked.js, Chart.js), which breaks in offline kiosk deployments.
+
+### Solution
+- Added local vendor assets under `/Users/louishyman/coding/nosql/nosql_reader/app/static/vendor`:
+  - `font-awesome.min.css` + `webfonts/*`,
+  - `marked.min.js`,
+  - `chart.min.js`.
+- Rebased Font Awesome CSS webfont paths to local `vendor/webfonts`.
+- Updated template references:
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html` now uses local Font Awesome and removes Google Fonts links,
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/historian_agent.html` now uses local Marked,
+  - `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html` now uses local Chart.js.
+- Kept typography intentional with offline-safe fallback stacks in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`.
+
+### Verification
+- `curl -sS http://localhost:5001/semantic-search | rg "vendor/font-awesome.min.css"`
+- `curl -sS http://localhost:5001/historian-agent | rg "vendor/marked.min.js"`
+- `curl -sS http://localhost:5001/demographics | rg "vendor/chart.min.js"`
+
+## 2026-02-26 - Demographics columns for ethnicity/national_origin with backward-compatible contract
+
+### Problem
+- Demographics people/export payloads did not expose `ethnicity` and `national_origin`.
+- Some databases may not yet have those columns, so naive SELECTs can fail and break the page.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`:
+  - added `DEMOGRAPHIC_DISPLAY_FIELDS` shared contract,
+  - added `_demographics_table_columns(...)` and `_demographics_optional_select_expr(...)` helpers,
+  - updated `/api/demographics/people` to always return `ethnicity` and `national_origin` keys,
+  - added safe fallback for missing `national_origin` column to `nationality`, otherwise empty string,
+  - updated `/api/demographics/export` to include the same optional columns with fallback behavior.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html`:
+  - added sortable `Ethnicity` and `National Origin` table columns,
+  - updated table rendering and loading/error `colspan` handling to match the expanded schema.
+
+### Verification
+- `python -m py_compile /Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+- `curl -sS http://localhost:5001/demographics | rg "Ethnicity|National Origin"`
+
+## 2026-02-26 - Demographics term clicks now open direct results list (no search UI)
+
+### Problem
+- Clicking a demographic name/term sent users to `/search` in interface mode, requiring extra interaction and not landing directly on a document list.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/demographics.html`:
+  - replaced legacy name links with prefilled list-mode links:
+    - `/search?prefill_field=<field>&prefill_term=<term>&list_only=1`
+  - made key demographic terms clickable as well (name, ethnicity, national origin, occupation, normalized occupation, division),
+  - kept missing/unknown values non-clickable,
+  - added safe HTML escaping for dynamic term rendering.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/script.js`:
+  - added `list_only` handling on search page,
+  - hides search header/form and shows a compact “Document List” banner,
+  - keeps existing prefill auto-submit behavior to load results immediately,
+  - includes a “Show search controls” button to exit list-only view.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`:
+  - added styles for the list-only banner.
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/script.js`
+- Confirmed demographics link generation uses `list_only=1` and prefill query params.
+
+## 2026-02-26 - Restore Open Sans + Merriweather as true defaults via local bundling
+
+### Problem
+- Typography defaults relied on fallback stacks only after CDN removal, so Open Sans/Merriweather could disappear when not installed locally.
+- Requirement: keep Open Sans and Merriweather as the default look, with fallback only if those fonts cannot load.
+
+### Solution
+- Added local bundled font files in `/Users/louishyman/coding/nosql/nosql_reader/app/static/vendor/fonts/`:
+  - `open-sans-400.ttf`, `open-sans-600.ttf`, `open-sans-400-italic.ttf`
+  - `merriweather-600.ttf`, `merriweather-700.ttf`
+- Added `/Users/louishyman/coding/nosql/nosql_reader/app/static/vendor/fonts.css` with `@font-face` declarations for `Open Sans` and `Merriweather`.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html` to load `vendor/fonts.css` globally.
+- Restored font tokens in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` to:
+  - `--font-body: 'Open Sans', sans-serif;`
+  - `--font-heading: 'Merriweather', Georgia, serif;`
+
+### Verification
+- `curl -sS http://localhost:5001/search` confirms `vendor/fonts.css` is loaded.
+- `curl -sSI http://localhost:5001/static/vendor/fonts.css` returns `200`.
+- `curl -sSI http://localhost:5001/static/vendor/fonts/open-sans-400.ttf` returns `200`.
+- `curl -sSI http://localhost:5001/static/vendor/fonts/merriweather-700.ttf` returns `200`.

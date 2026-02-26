@@ -1,5 +1,5 @@
 (function () {
-    const SHOW_DELAY_MS = 2000;
+    const SHOW_DELAY_MS = 650; // Shortened so tooltip help appears quickly during active exploration workflows.
     const TOOLTIP_CLASS = "app-delayed-help-tooltip";
     const TOOLTIP_STYLE_ID = "app-delayed-help-tooltip-style";
     const BOUND_ATTR = "data-help-tooltip-bound";
