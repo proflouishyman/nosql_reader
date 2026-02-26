@@ -14,6 +14,14 @@
             </label>
             <p class="form-field__hint">Disable to pause the ChatBot without removing your settings.</p>
         </div>
+        <div class="form-field form-field--toggle">
+            <label for="refinementToggleSettings">
+                <span>Suggest question refinement</span>
+                <!-- Keep this local-storage only (no name attr) so backend agent config contract stays unchanged. -->
+                <input type="checkbox" id="refinementToggleSettings" checked>
+            </label>
+            <p class="form-field__hint">Prompt to refine short or broad questions before searching.</p>
+        </div>
         <div class="form-field">
             <label for="agentModelProvider">Model provider</label>
             <select id="agentModelProvider" name="model_provider">

@@ -7,13 +7,10 @@
     <title>{% block title %}Historical Document Reader{% endblock %}</title>
     <!-- Added lightweight inline SVG favicon to avoid external asset coupling. -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f172a'/%3E%3Ctext x='10' y='22' font-size='14' font-family='serif' fill='white'%3EH%3C/text%3E%3C/svg%3E">
-    <!-- Added explicit Google Fonts preload/load so CSS font declarations resolve consistently. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Switched display family to Merriweather for historical-reading tone while retaining Open Sans for body text. -->
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Load bundled Open Sans + Merriweather so default typography matches prior design online/offline. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fonts.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-yHnj4MvlYYKxE/6q9ZsH5mJ5RkJyKpjtXHYQVdG1Vl6HjnAsfsj0G9aJv1bQZoKEtZnSmhMWj58ZwFZJe61D1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/font-awesome.min.css') }}">
     {% block styles %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -28,6 +25,7 @@
                 <ul class="primary-nav__list">
                     <li><a href="{{ url_for('index') }}" class="{{ 'is-active' if p == 'home' }}" data-help="Go to the dashboard landing page.">Home</a></li>
                     <li><a href="{{ url_for('search_database') }}" class="{{ 'is-active' if p == 'search' }}" data-help="Search documents with fielded and boolean queries.">Search</a></li>
+                    <li><a href="{{ url_for('semantic_search_page') }}" class="{{ 'is-active' if p == 'semantic_search' }}" data-help="Search by meaning rather than exact keywords.">Semantic Search</a></li>
                     <li><a href="{{ url_for('historian_agent_page') }}" class="{{ 'is-active' if p == 'historian_agent' }}" data-help="Ask research questions and run AI-assisted analysis.">Historian Agent</a></li>
                     <li><a href="{{ url_for('corpus_explorer_page') }}" class="{{ 'is-active' if p == 'corpus_explorer' }}" data-help="Generate corpus-level themes, questions, and patterns.">Corpus Explorer</a></li>
                     <li><a href="{{ url_for('network_analysis_page') }}" class="{{ 'is-active' if p == 'network_analysis' }}" data-help="Explore entity networks and connected records.">Network</a></li>

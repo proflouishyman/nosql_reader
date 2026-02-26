@@ -1,0 +1,40 @@
+/* Locally bundled UI fonts so Open Sans + Merriweather stay available offline. */
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/static/vendor/fonts/open-sans-400.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/static/vendor/fonts/open-sans-600.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/static/vendor/fonts/open-sans-400-italic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/static/vendor/fonts/merriweather-600.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/static/vendor/fonts/merriweather-700.ttf') format('truetype');
+}

@@ -1553,6 +1553,101 @@ def search_database():
         field_structure=field_structure,
     )
 
+
+@app.route('/semantic-search')
+# @login_required
+def semantic_search_page():
+    """Render semantic vector search interface."""
+    # Keep page wiring consistent with other top-level views.
+    return _render('semantic_search.html', page='semantic_search')
+
+
+@app.route('/api/semantic-search', methods=['POST'])
+def semantic_search():
+    """Vector similarity search endpoint returning scored results."""
+    payload = request.get_json(silent=True) or {}
+    query = str(payload.get('query') or '').strip()
+    raw_top_k = payload.get('top_k', 20)
+
+    if not query:
+        return jsonify({'error': 'Query is required'}), 400
+
+    try:
+        top_k = int(raw_top_k)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'top_k must be an integer'}), 400
+    top_k = max(1, min(top_k, 100))
+
+    try:
+        from historian_agent.embeddings import EmbeddingService
+        from historian_agent.vector_store import get_vector_store
+        from config import APP_CONFIG
+
+        # Accept both legacy and current provider aliases without changing config contracts.
+        provider = str(APP_CONFIG.embedding.provider or '').strip().lower()
+        if provider == 'huggingface':
+            provider = 'local'
+
+        embedding_svc = EmbeddingService(
+            provider=provider,
+            model=APP_CONFIG.embedding.model,
+        )
+
+        # Fallback order required by audit: env/config first, then chunk collection default.
+        configured_collection = str(
+            getattr(APP_CONFIG.chroma, 'collection_name', '') or ''
+        ).strip()
+        collection_name = configured_collection or 'historian_document_chunks'
+
+        vector_store = get_vector_store(
+            store_type='chroma',
+            persist_directory=APP_CONFIG.chroma.persist_directory,
+            collection_name=collection_name,
+        )
+
+        query_embedding = embedding_svc.embed_query(query)
+        raw_results = vector_store.search(query_embedding=query_embedding, k=top_k)
+
+        def _safe_float(value: Any) -> float:
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return 0.0
+
+        results = []
+        for result in raw_results:
+            metadata = result.get('metadata', {}) if isinstance(result, dict) else {}
+            if not isinstance(metadata, dict):
+                metadata = {}
+            score = _safe_float(result.get('score') if isinstance(result, dict) else 0.0)
+            distance = _safe_float(result.get('distance') if isinstance(result, dict) else 0.0)
+            content = str(result.get('content') or '') if isinstance(result, dict) else ''
+            doc_id = str(metadata.get('document_id') or metadata.get('_id') or '').strip()
+            results.append(
+                {
+                    'chunk_id': result.get('chunk_id') if isinstance(result, dict) else '',
+                    'score': round(score, 4),
+                    'distance': round(distance, 4),
+                    'content': content[:400],
+                    'title': str(metadata.get('title') or ''),
+                    'date': str(metadata.get('date') or ''),
+                    'source': str(metadata.get('source') or ''),
+                    'doc_id': doc_id,
+                }
+            )
+
+        return jsonify(
+            {
+                'query': query,
+                'total': len(results),
+                'results': results,
+            }
+        )
+    except Exception as exc:
+        app.logger.exception('Semantic search error')
+        return jsonify({'error': str(exc)}), 500
+
+
 @app.route('/api/dropdown-fields', methods=['GET'])
 def get_dropdown_fields():
     """
@@ -2331,6 +2426,44 @@ def network_analysis_page():
 # =============================================================================
 # Keep demographics SQLite under app/data so bind-mounted app directory persists it.
 DEMOGRAPHICS_DB_PATH = os.path.join(os.path.dirname(__file__), "data", "demographics.db")
+DEMOGRAPHIC_DISPLAY_FIELDS = [
+    "canonical_name",
+    "gender",
+    "race",
+    "ethnicity",
+    "national_origin",
+    "occupation_primary",
+    "occupation_normalized",
+    "division",
+    "hire_year",
+    "num_injuries",
+    "total_benefit_days",
+    "num_documents",
+]
+
+
+def _demographics_table_columns(conn: sqlite3.Connection) -> set[str]:
+    """Return `people` table columns so optional-field queries remain backward compatible."""
+    rows = conn.execute("PRAGMA table_info(people)").fetchall()
+    return {str(row["name"]) for row in rows}
+
+
+def _demographics_optional_select_expr(
+    optional_field: str,
+    table_columns: set[str],
+    fallback_field: Optional[str] = None,
+) -> str:
+    """
+    Build optional select clauses that always emit a stable response key.
+
+    If the requested column does not exist, fall back to another known column or an empty string
+    so API consumers can rely on a consistent data contract.
+    """
+    if optional_field in table_columns:
+        return f"COALESCE({optional_field}, '') AS {optional_field}"
+    if fallback_field and fallback_field in table_columns:
+        return f"COALESCE({fallback_field}, '') AS {optional_field}"
+    return f"'' AS {optional_field}"
 
 
 def _get_demographics_conn():
@@ -2509,12 +2642,10 @@ def demographics_people():
         per_page = min(100, int(request.args.get("per_page", 25)))
         sort = request.args.get("sort", "canonical_name")
         order = "DESC" if request.args.get("order", "asc").upper() == "DESC" else "ASC"
+        table_columns = _demographics_table_columns(conn)
 
-        # Safe sort column whitelist
-        safe_sort_cols = {
-            "canonical_name", "hire_year", "num_injuries",
-            "total_benefit_days", "num_documents", "occupation_primary", "occupation_normalized", "division"
-        }
+        # Keep sortable columns aligned with the shared demographic display contract.
+        safe_sort_cols = set(DEMOGRAPHIC_DISPLAY_FIELDS)
         if sort not in safe_sort_cols:
             sort = "canonical_name"
 
@@ -2550,10 +2681,17 @@ def demographics_people():
 
         # Fetch page
         offset = (page - 1) * per_page
+        optional_ethnicity = _demographics_optional_select_expr("ethnicity", table_columns)
+        optional_national_origin = _demographics_optional_select_expr(
+            "national_origin",
+            table_columns,
+            fallback_field="nationality",
+        )
         rows = conn.execute(f"""
             SELECT person_folder, person_id, canonical_name, birth_year,
                    gender, gender_confidence, race, race_confidence,
-                   nationality, occupation_primary, occupation_normalized, occupation_norm_score,
+                   nationality, {optional_ethnicity}, {optional_national_origin},
+                   occupation_primary, occupation_normalized, occupation_norm_score,
                    occupation_norm_method, division, hire_year,
                    separation_year, separation_type, num_injuries,
                    total_benefit_days, total_benefit_amount, num_documents
@@ -2581,16 +2719,27 @@ def demographics_export():
         return jsonify({"error": "Demographics database not built yet."}), 503
 
     try:
+        table_columns = _demographics_table_columns(conn)
+        optional_ethnicity = _demographics_optional_select_expr("ethnicity", table_columns)
+        optional_national_origin = _demographics_optional_select_expr(
+            "national_origin",
+            table_columns,
+            fallback_field="nationality",
+        )
         rows = conn.execute("""
             SELECT person_folder, person_id, canonical_name, birth_year,
                    gender, gender_confidence, race, race_confidence,
-                   nationality, occupation_primary, occupation_normalized,
+                   nationality, {optional_ethnicity}, {optional_national_origin},
+                   occupation_primary, occupation_normalized,
                    occupation_norm_score, occupation_norm_method, occupations_all,
                    division, department, hire_year, separation_year, separation_type,
                    num_injuries, total_benefit_days, total_benefit_amount,
                    num_documents, doc_date_earliest, doc_date_latest, processed_at
             FROM people ORDER BY canonical_name
-        """).fetchall()
+        """.format(
+            optional_ethnicity=optional_ethnicity,
+            optional_national_origin=optional_national_origin,
+        )).fetchall()
 
         output = StringIO()
         import csv as csv_module

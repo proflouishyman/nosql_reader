@@ -75,6 +75,8 @@
   .people-table tr:hover td { background: #f8fafc; }
   .people-table .name-cell a { color: #2563eb; text-decoration: none; font-weight: 600; }
   .people-table .name-cell a:hover { text-decoration: underline; }
+  .people-table a.demo-term-link--normalized { color: #047857; text-decoration: none; }
+  .people-table a.demo-term-link--normalized:hover { text-decoration: underline; }
 
   /* ── Badge ── */
   .badge {
@@ -263,6 +265,8 @@
             <th data-col="canonical_name" onclick="sortBy('canonical_name')" data-help="Sort rows by canonical person name.">Name <span class="sort-arrow">↕</span></th>
             <th data-col="gender" data-help="Extracted gender category.">Gender</th>
             <th data-col="race" data-help="Race label explicitly stated in source records, if available.">Race</th>
+            <th data-col="ethnicity" onclick="sortBy('ethnicity')" data-help="Sort by extracted ethnicity field when available.">Ethnicity <span class="sort-arrow">↕</span></th>
+            <th data-col="national_origin" onclick="sortBy('national_origin')" data-help="Sort by extracted national origin (falls back to nationality when needed).">National Origin <span class="sort-arrow">↕</span></th>
             <th data-col="occupation_primary" onclick="sortBy('occupation_primary')" data-help="Sort by raw primary occupation text from synthesis output.">Occupation <span class="sort-arrow">↕</span></th>
             <th data-col="occupation_normalized" onclick="sortBy('occupation_normalized')" data-help="Sort by fuzzy-normalized occupation label when available.">Normalized <span class="sort-arrow">↕</span></th>
             <th data-col="division" onclick="sortBy('division')" data-help="Sort by division value from employment timeline records.">Division <span class="sort-arrow">↕</span></th>
@@ -273,7 +277,7 @@
           </tr>
         </thead>
         <tbody id="people-tbody">
-          <tr><td colspan="10" style="text-align:center;padding:24px;"><span class="spinner"></span> Loading…</td></tr>
+          <tr><td colspan="12" style="text-align:center;padding:24px;"><span class="spinner"></span> Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -290,7 +294,7 @@
 
 {% block scripts %}
 {% if db_exists %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='vendor/chart.min.js') }}"></script>
 <script>
 // ── State ──
 let currentSort = 'canonical_name';
@@ -546,7 +550,7 @@ function populateFilterDropdowns(d) {
 // ── Person table ──
 async function loadPeople() {
   const tbody = document.getElementById('people-tbody');
-  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;"><span class="spinner"></span></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;"><span class="spinner"></span></td></tr>';
 
   const params = new URLSearchParams({
     page: currentPage,
@@ -568,16 +572,37 @@ async function loadPeople() {
     renderPagination(data);
     updateSortIndicators();
   } catch (e) {
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#dc2626;">Error loading data: ${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:#dc2626;">Error loading data: ${e.message}</td></tr>`;
   }
 }
 
 function renderTable(data) {
   const tbody = document.getElementById('people-tbody');
   if (!data.people || !data.people.length) {
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:#94a3b8;">No results matching these filters.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:#94a3b8;">No results matching these filters.</td></tr>';
     return;
   }
+
+  // Escape HTML entities so demographic text values cannot break table/link markup.
+  const escapeHtml = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  // Build direct-results links that open search in list-only mode and auto-run prefilled query.
+  const buildListLink = (rawTerm, field = 'ocr_text', className = '') => {
+    const term = String(rawTerm || '').trim();
+    const normalizedTerm = term.toLowerCase();
+    if (!term || normalizedTerm === 'unknown' || normalizedTerm === 'n/a') {
+      return '<span style="color:#94a3b8">—</span>';
+    }
+    const href = `/search?prefill_field=${encodeURIComponent(field)}&prefill_term=${encodeURIComponent(term)}&list_only=1`;
+    const safeTerm = escapeHtml(term);
+    const safeClass = className ? ` class="${className}"` : '';
+    return `<a href="${href}"${safeClass} title="Open document list for ${safeTerm}">${safeTerm}</a>`;
+  };
 
   tbody.innerHTML = data.people.map(p => {
     const genderBadge = `<span class="badge badge--${(p.gender||'unknown').toLowerCase()}">${p.gender || '?'}</span>`;
@@ -585,22 +610,27 @@ function renderTable(data) {
       ? `<span class="badge badge--${(p.race||'').toLowerCase().replace(/\s/g,'_')}">${p.race}</span>`
       : '<span style="color:#94a3b8;font-size:0.8rem;">—</span>';
 
-    // Link to document search for this person
-    const nameLink = p.person_id
-      ? `<a href="/search?q=${encodeURIComponent(p.canonical_name)}" title="Search documents for this person">${p.canonical_name || '—'}</a>`
-      : (p.canonical_name || '—');
+    // Use person_name for names and ocr_text for other terms to land directly on results list view.
+    const nameLink = buildListLink(p.canonical_name, 'person_name');
+    const ethnicityLink = buildListLink(p.ethnicity, 'ocr_text');
+    const nationalOriginLink = buildListLink(p.national_origin, 'ocr_text');
+    const occupationLink = buildListLink(p.occupation_primary, 'ocr_text');
+    const normalizedOccupationLink = buildListLink(p.occupation_normalized, 'ocr_text', 'demo-term-link--normalized');
+    const divisionLink = buildListLink(p.division, 'ocr_text');
 
     return `<tr>
       <td class="name-cell">${nameLink}</td>
       <td>${genderBadge}</td>
       <td>${raceBadge}</td>
-      <td>${p.occupation_primary || '<span style="color:#94a3b8">—</span>'}</td>
+      <td>${ethnicityLink}</td>
+      <td>${nationalOriginLink}</td>
+      <td>${occupationLink}</td>
       <td title="Score: ${((p.occupation_norm_score || 0) * 100).toFixed(0)}%">
-        ${p.occupation_normalized
-          ? `<span style="color:#047857;">${p.occupation_normalized}</span>`
+        ${p.occupation_normalized && p.occupation_normalized !== 'unknown'
+          ? normalizedOccupationLink
           : '<span style="color:#94a3b8;font-size:0.8em;">raw only</span>'}
       </td>
-      <td>${p.division || '<span style="color:#94a3b8">—</span>'}</td>
+      <td>${divisionLink}</td>
       <td>${p.hire_year || '—'}</td>
       <td>${p.num_injuries > 0 ? `<strong style="color:#dc2626;">${p.num_injuries}</strong>` : '0'}</td>
       <td>${p.total_benefit_days > 0 ? p.total_benefit_days.toLocaleString() : '0'}</td>

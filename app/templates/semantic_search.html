@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Semantic Search · Historical Document Reader{% endblock %}
+
+{% block content %}
+<div class="container search-page semantic-search-page">
+    <header class="search-page__header" data-help="Semantic search retrieves nearby chunks in embedding space and lets you inspect what those neighbors represent.">
+        <h1>Semantic search</h1>
+        <p>Search by meaning instead of exact keyword matches. This endpoint queries vector-ranked document chunks and returns scored nearest neighbors.</p>
+    </header>
+
+    <!-- Mirrors search page form layout while keeping semantic-specific fields explicit. -->
+    <form id="semanticSearchForm" class="search-form" data-help="Run vector similarity search against embedded document chunks.">
+        <div class="search-form__fields semantic-search-fields">
+            <div class="semantic-search-field">
+                <label for="semanticQuery">Research question or phrase</label>
+                <input type="text"
+                       id="semanticQuery"
+                       placeholder="e.g. injuries caused by falling objects"
+                       data-help="Enter a natural language phrase. Results are ranked by semantic similarity.">
+            </div>
+            <div class="semantic-search-field semantic-search-field--small">
+                <label for="topK">Results to retrieve</label>
+                <input type="number"
+                       id="topK"
+                       value="20"
+                       min="5"
+                       max="100"
+                       data-help="Set how many nearest neighbors to inspect. Higher values broaden coverage but include weaker matches.">
+            </div>
+        </div>
+        <div class="search-form__actions">
+            <button type="submit" id="semanticSearchBtn" data-help="Run semantic retrieval and rank nearest chunks by similarity score.">Search</button>
+            <button type="button" id="clearSemanticBtn" class="secondary" data-help="Clear query text and hide both neighbors and meaning summaries.">Clear</button>
+        </div>
+    </form>
+
+    <section id="searchSpacePanel" class="semantic-results" hidden data-help="Review ranked neighbors directly or switch to Meaning view for grouped interpretation.">
+        <h2>Search space evaluated</h2>
+        <p class="help-text" data-help="These are nearest chunk candidates returned by vector similarity search. Scores are relative similarity signals, not factual confidence.">These are the document chunks ranked by similarity to your query. Score closer to 1.0 indicates stronger semantic match.</p>
+        <p id="semanticMeta" class="search-page__meta" data-help="Shows query text, neighbor count, and active interpretation mode."></p>
+
+        <div class="semantic-view-toggle" role="tablist" aria-label="Semantic result views">
+            <button type="button"
+                    id="neighborsViewBtn"
+                    class="semantic-view-toggle__btn is-active"
+                    role="tab"
+                    aria-selected="true"
+                    data-view="neighbors"
+                    data-help="Neighbor view shows the raw nearest chunks in ranked order.">
+                Neighbor view
+            </button>
+            <button type="button"
+                    id="meaningViewBtn"
+                    class="semantic-view-toggle__btn"
+                    role="tab"
+                    aria-selected="false"
+                    data-view="meaning"
+                    data-help="Meaning view summarizes what the nearest-neighbor set appears to represent.">
+                Meaning view
+            </button>
+        </div>
+
+        <div id="resultsContainer" class="semantic-results__list" data-view-panel="neighbors"></div>
+        <div id="meaningContainer" class="semantic-meaning" data-view-panel="meaning" hidden></div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/semantic_search.js', v='20260226-meaning-1') }}"></script>
+{% endblock %}

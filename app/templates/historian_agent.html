@@ -55,6 +55,11 @@
         <form id="agentForm" class="agent-form" novalidate>
             <label for="agentQuestion" class="sr-only">Ask a question</label>
             <textarea id="agentQuestion" name="question" rows="4" placeholder="Ask the Historian Agent about the archives..." data-help="Enter a focused research question. Include dates, names, or places for better retrieval."></textarea>
+            <!-- Keep refinement control visible on-page so users can discover and toggle it while composing questions. -->
+            <label class="agent-refinement-toggle" for="refinementToggleInline" data-help="If enabled, short/vague prompts open refinement suggestions before search runs.">
+                <input type="checkbox" id="refinementToggleInline" checked>
+                <span>Suggest refinements</span>
+            </label>
             <div class="agent-suggestions" aria-label="Suggested questions">
                 <button type="button" class="agent-suggestion" data-question="Summarize the key events mentioned in the May 1944 archive." data-autosend="true" aria-label="Ask about May 1944" data-help="Insert and auto-send a sample question about timeline events in May 1944.">May 1944 highlights</button>
                 <button type="button" class="agent-suggestion" data-question="Who are the main people involved in the selected document?" data-autosend="true" aria-label="Ask about people" data-help="Insert and auto-send a sample question focused on key people in context.">People involved</button>
@@ -69,6 +74,19 @@
                 <button type="button" id="agentReset" class="secondary" data-help="Clear conversation history and start a fresh session.">Reset conversation</button>
             </div>
         </form>
+
+        <!-- Refinement prompt shown before running short/vague queries when enabled. -->
+        <div id="refinementModal" class="agent-refinement-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="refinementTitle">
+            <div class="agent-refinement-modal__inner">
+                <h2 id="refinementTitle">Refine your question</h2>
+                <p>Before searching, consider narrowing your question for more precise results.</p>
+                <div class="agent-refinement-suggestions" id="refinementSuggestions"></div>
+                <div class="agent-refinement-modal__actions">
+                    <button type="button" id="searchAsIs" class="secondary" data-help="Run your current wording immediately without edits.">Search as typed</button>
+                    <button type="button" id="searchRefined" data-help="Close suggestions and return to the question box to refine wording.">Search refined question</button>
+                </div>
+            </div>
+        </div>
         
     </section>
     
@@ -78,6 +96,6 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="{{ url_for('static', filename='vendor/marked.min.js') }}"></script>
 <script src="{{ url_for('static', filename='historian_agent.js') }}"></script>
 {% endblock %}
