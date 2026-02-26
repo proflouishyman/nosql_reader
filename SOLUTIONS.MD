@@ -730,3 +730,304 @@ The demographics dashboard relied mostly on generic auto-generated tooltip text.
 ### Verification
 - Confirmed `37` explicit `data-help` attributes now exist in the demographics template.
 - Loaded `http://localhost:5001/demographics` and verified key tooltip strings render in HTML for header, filters, sortable columns, and pagination elements.
+
+## 2026-02-26 - UI overhaul branch implementation with contract-safe adjustments
+
+### Problem
+The UI refresh proposal was valid directionally, but direct copy/paste would have broken existing contracts in this codebase:
+- Historian Agent metrics currently return `metrics.total_time`, `metrics.doc_count`, and tier-stage objects in `metrics.tiers` (not `duration_ms`, `docs_retrieved`, or first-class `confidence`).
+- Current template and route naming uses mixed dash/underscore patterns (`network-analysis.html`, `database-info.html`) that required explicit mapping for nav active states.
+- Existing SSE log stream writes to `#agentDebugOutput`; replacing debug UI had to preserve that DOM contract.
+
+### Solution
+Implemented the UI overhaul on branch `codex/ui-rethink` with contract-safe adaptations across templates, routes, JS, and CSS.
+
+#### 1) `base.html` head + navigation refresh
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html`
+- Replaced the head block additions with:
+  - viewport meta
+  - inline SVG favicon
+  - Google Fonts preconnect + stylesheet
+- Reworked nav into:
+  - primary tool links (`Home`, `Search`, `Historian Agent`, `Corpus Explorer`, `Network`)
+  - `More` dropdown (`Demographics`, `Database Info`, `Settings`, `Help`)
+- Added active-link class wiring via `active_page` template variable.
+- Added in-template dropdown controller JS (`navMoreBtn` / `navMoreDropdown`) with:
+  - click toggle
+  - outside-click close
+  - `Escape` close
+
+Contract-safe note:
+- Kept route endpoints unchanged (`url_for(...)` names all existing).
+
+#### 2) Route-level active page injection via helper
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+- Added helper:
+  - `_render(template: str, **kwargs)`
+  - injects `active_page` with a safe default derived from template name
+- Updated key page routes to use `_render(...)` with explicit `page=` where needed:
+  - `/` -> `home`
+  - `/search` -> `search`
+  - `/historian-agent` -> `historian_agent`
+  - `/corpus-explorer` -> `corpus_explorer`
+  - `/network-analysis` -> `network_analysis`
+  - `/demographics` -> `demographics`
+  - `/database-info` -> `database_info`
+  - `/help` -> `help`
+  - `/settings` -> `settings`
+
+Contract-safe note:
+- Preserved all existing response payload/data contexts passed to templates.
+- Preserved template filenames exactly (`network-analysis.html`, `database-info.html`).
+
+#### 3) Home page content wiring to existing card styles
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/templates/home.html`
+- Replaced minimal hero-only body with:
+  - richer archive-context hero copy
+  - action buttons
+  - fully populated `.home-sections` card grid using existing `.home-card` CSS
+- Removed obsolete home tabs script block that was targeting elements not present in current DOM.
+
+Contract-safe note:
+- Kept all links on existing endpoints; no backend changes required.
+
+#### 4) Historian Agent template update
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/templates/historian_agent.html`
+- Updated method selector labels/hint text to Quick/Verified/Deep wording while preserving submitted values:
+  - `basic`, `adversarial`, `tiered`
+- Replaced terminal-style debug block with Activity Stream block:
+  - indicator + label
+  - show/hide log button
+  - clear button
+  - log container remains `id="agentDebugOutput"`
+- Removed old bottom performance-metrics section.
+
+Contract-safe note:
+- Preserved IDs required by JS/SSE (`agentDebugOutput`, `agentDebugClear`).
+
+#### 5) Historian Agent JS: activity stream + inline metrics without API shape changes
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`
+- Updated method hint map text to match new selector labels.
+- Added `ActivityStream` controller:
+  - running/idle indicator states
+  - auto-expand log during active run
+  - auto-collapse shortly after completion
+  - duration summary text
+- Added `normalizeInlineMetrics(rawMetrics, method)`:
+  - derives UI metrics from existing backend contract:
+    - duration from `total_time` fallback
+    - docs from `doc_count`
+    - tier/confidence inferred from `metrics.tiers` (tiered mode) and verification `score`
+- Added `renderInlineMetrics(...)` and attached pills under assistant answer bubbles.
+- Updated history rendering so inline metrics are applied to the latest assistant message for each response render cycle.
+- Removed old bottom metrics-grid rendering logic (`displayMetrics`, `addMetric`) to avoid stale/dead UI path.
+- Preserved SSE event stream behavior and log wiring.
+
+Contract-safe note:
+- No backend API changes required.
+- No changes to method endpoint URLs (`/historian-agent/query-basic|adversarial|tiered`).
+
+#### 6) CSS tokenization + nav/activity/inline-metrics styling + legacy detail color cleanup
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+- Added top-level `:root` design tokens for colors/radii/shadows/transitions.
+- Updated body/heading color usage to token variables.
+- Updated nav styling for:
+  - active link class
+  - `More` dropdown button and menu
+  - responsive wrap behavior with new `.primary-nav__list`
+- Updated document-detail legacy hardcoded colors to tokenized values:
+  - `.info-table` / `.nested-table` headers + cells
+  - `.nested-item`, `.nested-block`
+  - `.document-detail .info-section`
+  - `.resizer`, `.linked-information`, `.entity-group`
+- Added Activity Stream CSS (`.agent-activity*`).
+- Added inline metrics CSS (`.agent-metrics-bar`, `.metric-pill*`).
+- Added compatibility style for current message markup (`.agent-message__bubble`) alongside legacy `.agent-message__body`.
+
+Contract-safe note:
+- Kept existing class names used elsewhere while introducing new selectors incrementally.
+
+### Verification
+Executed checks:
+- `python3 -m py_compile app/routes.py` -> passed
+- `node --check app/static/historian_agent.js` -> passed
+- `bash ./quick_check.sh` -> partially passed
+  - Passed: host Ollama reachable, vision models detected, app container running, archives mounted
+  - Failed: container-to-Ollama connectivity (`Test 5: Container CANNOT reach Ollama`)
+
+Interpretation:
+- The UI/code changes are syntactically valid.
+- Existing environment/networking issue remains in Docker/Ollama connectivity and is unrelated to these UI edits.
+
+## 2026-02-25 - Add Unique Terms Explorer to home cards and More menu
+
+### Problem
+The refreshed dashboard and header navigation did not expose the Unique Terms Explorer in the new IA:
+- No front-page card linked to `/search-terms`.
+- No utility-menu (`More`) entry for the terms explorer.
+- `/search-terms` did not set `active_page`, so nav highlighting could not mark the new menu item as active.
+
+### Solution
+Updated templates and routing to surface Unique Terms Explorer in both requested locations while preserving route contracts.
+
+#### 1) Add menu item under More
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html`
+- Added a new dropdown link in `primary-nav__dropdown`:
+  - Label: `Unique Terms Explorer`
+  - Target: `url_for('search_terms')`
+- Extended the `More` button active-state condition to include `search_terms` so the utility group highlights when the terms page is open.
+- Added inline template comment explaining why the link was introduced.
+
+#### 2) Add dashboard card on the home page
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/templates/home.html`
+- Added a new `.home-card` in the existing card grid:
+  - Title: `Unique Terms Explorer`
+  - Icon: `fa-hashtag`
+  - Description focused on word/phrase frequency and cross-tab contrast workflow
+  - CTA link: `url_for('search_terms')`
+- Added inline template comment documenting that this is a first-class dashboard entry point.
+
+#### 3) Make active nav highlighting work for `/search-terms`
+File: `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+- Updated the HTML branch of `search_terms()` from `render_template(...)` to:
+  - `_render('search-terms.html', page='search_terms', ...)`
+- Kept AJAX behavior unchanged (`X-Requested-With == XMLHttpRequest` still returns JSON exactly as before).
+- Added inline route comment for nav-highlighting intent.
+
+### Verification
+- Syntax check:
+  - `python3 -m py_compile app/routes.py` -> passed
+- Live UI verification against running container (`http://localhost:5001`):
+  - Home page includes `Unique Terms Explorer` card + `Open Terms Explorer` link.
+  - More menu contains `Unique Terms Explorer` link to `/search-terms`.
+  - On `/search-terms`, both the More button and dropdown item show active-state classes.
+
+## 2026-02-25 - Serif heading switch + complete palette token refactor
+
+### Problem
+After the UI overhaul, typography and color system were still partially mixed:
+- Display typography used a sans-serif heading family (`Montserrat`) instead of a serif style aligned with the historical archive tone.
+- `style.css` still contained many hardcoded color literals across components, despite introducing design tokens.
+
+### Solution
+Implemented a full typography/palette normalization pass.
+
+#### 1) Switched heading/display font to serif
+Files:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/base.html`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+
+Changes:
+- Updated Google Fonts import from `Montserrat + Open Sans` to `Merriweather + Open Sans`.
+- Added root font tokens:
+  - `--font-body: 'Open Sans', sans-serif`
+  - `--font-heading: 'Merriweather', Georgia, serif`
+- Routed heading/display usages to tokens:
+  - `h1, h2, h3`
+  - `.site-brand`
+  - `.entity-group h3`
+  - `.agent-activity__label`
+- Routed compact body text usage in pills to `--font-body`.
+
+#### 2) Fully tokenized palette usage in stylesheet
+File:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+
+Changes:
+- Added `--color-surface-muted` token to remove fallback-only muted surface usage.
+- Generated and inserted a complete set of `--palette-*` aliases in `:root` for every color literal used by component rules.
+- Replaced all non-root hardcoded color literals (`#...`, `rgb(...)`, `rgba(...)`) with `var(--palette-...)` references.
+- Kept literal values centralized inside `:root` only, making palette adjustments single-source.
+
+Implementation note:
+- The replacement was performed programmatically and then verified, ensuring no residual hardcoded colors remain outside token definitions.
+
+### Verification
+- `git diff --check` -> passed
+- Live page check (`http://localhost:5001`) confirms updated Google Fonts link includes `Merriweather` + `Open Sans`.
+- Static checks on `style.css`:
+  - No hardcoded color literals remain outside `:root`.
+  - No unresolved CSS custom properties are referenced (`var(--...)` all have definitions).
+- Existing UI endpoints remained unchanged; running app container continued serving without restart failures.
+
+## 2026-02-25 - Update Settings page to match refreshed IA and theme tokens
+
+### Problem
+After the IA, font, and palette refactor, the Settings page still lagged behind in two ways:
+- It had no direct shortcut block for newly emphasized tools (including Unique Terms Explorer).
+- Persisted defaults shown in the form still reflected old typography/color values from `app/config.json` (`Montserrat`, legacy primary/secondary/text/background colors).
+
+### Solution
+Updated settings template, styling, and persisted config defaults to align with the new UI system.
+
+#### 1) Added tool shortcuts section in Settings
+File:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/settings.html`
+
+Changes:
+- Added a new `Tool shortcuts` settings section at the top with direct buttons to:
+  - Search
+  - Unique Terms Explorer
+  - Historian Agent
+  - Corpus Explorer
+- Added explanatory inline comment and `data-help` coverage.
+
+#### 2) Updated Settings form defaults to current theme contract
+File:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/settings.html`
+
+Changes:
+- Updated fallback defaults for font fields:
+  - main: `Open Sans, sans-serif`
+  - headers: `Merriweather, Georgia, serif`
+- Updated fallback defaults for color fields:
+  - primary: `#2563eb`
+  - secondary: `#64748b`
+  - background: `#ffffff`
+  - text: `#1e293b`
+
+#### 3) Added styles for settings shortcuts layout
+File:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+
+Changes:
+- Added `.settings-shortcuts` and `.settings-shortcuts .button` styles for responsive button grouping.
+- Kept styling token-based (no hardcoded non-root literals introduced).
+
+#### 4) Synced persisted config values to the new theme
+File:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/config.json`
+
+Changes:
+- Updated both flat and nested config keys for consistency:
+  - `fonts[headers]` / `fonts.headers` -> `'Merriweather', Georgia, serif`
+  - `colors[primary]` / `colors.primary` -> `#2563eb`
+  - `colors[secondary]` / `colors.secondary` -> `#64748b`
+  - `colors[background]` / `colors.background` -> `#ffffff`
+  - `colors[text]` / `colors.text` -> `#1e293b`
+
+### Verification
+- `python3 -m json.tool app/config.json` -> passed (valid JSON)
+- `git diff --check` -> passed
+- Live page check (`http://localhost:5001/settings`) confirms:
+  - `Tool shortcuts` section renders
+  - `Unique Terms Explorer` shortcut is present
+  - font/color fields now display updated Merriweather + palette values from config.
+
+## 2026-02-25 - Remove Tool shortcuts section from Settings
+
+### Problem
+The `Tool shortcuts` card introduced on the Settings page was not appropriate for the Settings information architecture, which should remain focused on configuration controls.
+
+### Solution
+Removed the shortcuts section and related styling.
+
+Files changed:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/settings.html`
+  - Removed the entire `Tool shortcuts` section block (`#tool-shortcuts`).
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+  - Removed now-unused `.settings-shortcuts` and `.settings-shortcuts .button` CSS rules.
+
+### Verification
+- Live check of `http://localhost:5001/settings` confirms the `Tool shortcuts` section no longer renders.
+- `git diff --check` passed.

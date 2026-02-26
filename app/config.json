@@ -1,20 +1,20 @@
 {
     "fonts[main]": "'Open Sans', sans-serif",
-    "fonts[headers]": "'Montserrat', sans-serif",
+    "fonts[headers]": "'Merriweather', Georgia, serif",
     "sizes[base]": "16px",
     "sizes[h1]": "2em",
     "sizes[h2]": "1.5em",
     "sizes[h3]": "1.17em",
-    "colors[primary]": "#0061ff",
-    "colors[secondary]": "#4f5459",
-    "colors[background]": "#f5f5f4",
-    "colors[text]": "#000000",
+    "colors[primary]": "#2563eb",
+    "colors[secondary]": "#64748b",
+    "colors[background]": "#ffffff",
+    "colors[text]": "#1e293b",
     "spacing[small]": "12px",
     "spacing[medium]": "17px",
     "spacing[large]": "22px",
     "fonts": {
         "main": "'Open Sans', sans-serif",
-        "headers": "'Montserrat', sans-serif"
+        "headers": "'Merriweather', Georgia, serif"
     },
     "sizes": {
         "base": "16px",
@@ -23,44 +23,14 @@
         "h3": "1.17em"
     },
     "colors": {
-        "primary": "#0061ff",
-        "secondary": "#4f5459",
-        "background": "#f5f5f4",
-        "text": "#000000"
+        "primary": "#2563eb",
+        "secondary": "#64748b",
+        "background": "#ffffff",
+        "text": "#1e293b"
     },
     "spacing": {
         "small": "12px",
         "medium": "17px",
         "large": "22px"
-    },
-    
-    "dropdown_fields": {
-        "collection": {
-            "values": ["Microfilm Digitization", "Relief Record Scans"],
-            "min_values": 2,
-            "max_values": 10,
-            "count": 2
-        },
-        "archive_structure.physical_box": {
-            "values": [
-                "Blue Box 128", 
-                "Blue Box 129", 
-                "Relief Department Box 4", 
-                "Relief Department Box 5", 
-                "Relief Department Box 6"
-            ],
-            "min_values": 2,
-            "max_values": 10,
-            "count": 7
-        }
-    },
-    "dropdown_config": {
-        "last_updated": "2024-01-01T12:00:00Z",
-        "excluded_fields": [
-            "archive_structure.format",
-            "entities.ORG",
-            "metadata.migrated_from"
-        ]
     }
-    
 }

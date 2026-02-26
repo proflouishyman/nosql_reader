@@ -15,23 +15,39 @@
         <!-- NEW: Method selector -->
         <div class="agent-method-selector">
             <label for="agentMethod">Query Method:</label>
-            <select id="agentMethod" name="method" data-help="Select response strategy: fast basic, monitored adversarial, or tiered escalation.">
-                <option value="basic" selected>Good (Fast)</option>
-                <option value="adversarial">Better (Monitored)</option>
-                <option value="tiered">Best (Tiered)</option>
+            <select id="agentMethod" name="method" data-help="Quick: fast retrieval, no verification. Verified: adversarial cross-check. Deep: tiered escalation with confidence scoring.">
+                <!-- Updated labels to plain-language quality/speed tradeoffs while preserving method values. -->
+                <option value="basic">Quick - ~5s, direct retrieval</option>
+                <option value="adversarial">Verified - ~15s, cross-checked</option>
+                <option value="tiered" selected>Deep - ~30-60s, confidence-based</option>
             </select>
             <span class="agent-method-hint" id="agentMethodHint">
-                Best quality with confidence-based escalation (~20-60s)
+                Retrieves evidence, escalates to deeper analysis if confidence is low.
             </span>
         </div>
 
-        <!-- NEW: Terminal-style debug console -->
-        <div class="agent-debug-console" id="agentDebugConsole">
-            <div class="agent-debug-header">
-                <span class="agent-debug-title">Backend Log</span>
-                <button type="button" class="agent-debug-clear" id="agentDebugClear" data-help="Clear the currently displayed backend log entries.">Clear</button>
+        <!-- Replaced always-open terminal block with a collapsible activity stream that stays quiet when idle. -->
+        <div class="agent-activity" id="agentActivity">
+            <div class="agent-activity__header">
+                <span class="agent-activity__indicator is-idle" id="activityIndicator" aria-hidden="true"></span>
+                <span class="agent-activity__label" id="activityLabel">Ready</span>
+                <button type="button"
+                        class="agent-activity__toggle"
+                        id="activityToggle"
+                        aria-expanded="false"
+                        aria-controls="agentDebugOutput"
+                        data-help="Expand or collapse the backend activity log.">
+                    Show log
+                </button>
+                <button type="button"
+                        class="agent-activity__clear"
+                        id="agentDebugClear"
+                        hidden
+                        data-help="Clear the currently displayed backend log entries.">
+                    Clear
+                </button>
             </div>
-            <div class="agent-debug-output" id="agentDebugOutput"></div>
+            <div class="agent-activity__log agent-debug-output" id="agentDebugOutput" role="log" aria-live="polite" hidden></div>
         </div>
 
         <div class="agent-history" id="agentHistory" aria-live="polite" aria-label="Historian Agent conversation"></div>
@@ -54,12 +70,6 @@
             </div>
         </form>
         
-        <!-- NEW: Performance metrics display -->
-        <div class="agent-metrics" id="agentMetrics" hidden>
-            <h3>Performance Metrics</h3>
-            <div class="agent-metrics-grid" id="agentMetricsGrid"></div>
-        </div>
-
         <div class="agent-sources" id="agentSources" hidden>
             <h2>Sources</h2>
             <ul id="agentSourcesList"></ul>

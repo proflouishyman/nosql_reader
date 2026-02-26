@@ -3,72 +3,53 @@
 
 {% block content %}
 <div class="container home">
-    <!-- Added page-level help text so home actions follow the network-analysis tooltip standard. -->
-    <section class="home-hero">
-        <h1>Welcome to the Historical Document Reader</h1>
-        <p class="home-hero__lead">Explore digitised archives, surface relevant records with full-text search, and interrogate the collection using the Historian Agent.</p>
+    <!-- Reframed hero copy to explain corpus scale and primary actions at first glance. -->
+    <section class="home-hero" data-help="Dashboard overview and primary entry points.">
+        <h1>B&amp;O Railroad Archives</h1>
+        <p class="home-hero__lead">
+            9,600+ digitised documents from the Relief Department - employment records,
+            injury reports, and administrative files. Use the tools below to explore,
+            search, and interrogate the collection.
+        </p>
         <div class="home-hero__actions">
             <a class="button" href="{{ url_for('search_database') }}" data-help="Open the Search Database workflow with fielded Boolean queries.">Start searching</a>
-            <a class="button button--secondary" href="{{ url_for('historian_agent_page') }}" data-help="Open Historian Agent to ask natural-language questions with source citations.">Chat with the Historian Agent</a>
+            <a class="button button--secondary" href="{{ url_for('historian_agent_page') }}" data-help="Open Historian Agent to ask natural-language questions with source citations.">Ask the Historian Agent</a>
         </div>
     </section>
 
-    
+    <!-- Wired existing .home-card styles into a full feature grid so key tools are visible without scrolling menus. -->
+    <div class="home-sections">
+        <div class="home-card">
+            <h2><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search</h2>
+            <p>Fielded Boolean search across all document metadata. Filter by box, collection, date, or person.</p>
+            <a class="home-card__link" href="{{ url_for('search_database') }}">Open Search &rarr;</a>
+        </div>
+        <div class="home-card">
+            <h2><i class="fa-solid fa-comments" aria-hidden="true"></i> Historian Agent</h2>
+            <p>Ask natural-language questions. The agent retrieves primary sources and cites every claim.</p>
+            <a class="home-card__link" href="{{ url_for('historian_agent_page') }}">Open Agent &rarr;</a>
+        </div>
+        <div class="home-card">
+            <h2><i class="fa-solid fa-compass" aria-hidden="true"></i> Corpus Explorer</h2>
+            <p>Systematic reading of the archive. Surfaces themes, patterns, and a research agenda before you ask questions.</p>
+            <a class="home-card__link" href="{{ url_for('corpus_explorer_page') }}">Explore Corpus &rarr;</a>
+        </div>
+        <div class="home-card">
+            <h2><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Network Analysis</h2>
+            <p>Interactive entity graph. Trace connections between people, places, and events across documents.</p>
+            <a class="home-card__link" href="{{ url_for('network_analysis_page') }}">View Networks &rarr;</a>
+        </div>
+        <div class="home-card">
+            <h2><i class="fa-solid fa-chart-bar" aria-hidden="true"></i> Demographics</h2>
+            <p>Aggregate statistics across the workforce - occupation, gender, race, and injury type distributions.</p>
+            <a class="home-card__link" href="{{ url_for('demographics_page') }}">View Demographics &rarr;</a>
+        </div>
+        <div class="home-card">
+            <!-- Added card entry point for the unique terms explorer so lexical analysis is first-class on the dashboard. -->
+            <h2><i class="fa-solid fa-hashtag" aria-hidden="true"></i> Unique Terms Explorer</h2>
+            <p>Inspect top words and phrases by field, then run cross-tab contrast to find terms most associated with an anchor concept.</p>
+            <a class="home-card__link" href="{{ url_for('search_terms') }}">Open Terms Explorer &rarr;</a>
+        </div>
+    </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-<script>
-(function() {
-    const triggers = Array.from(document.querySelectorAll('.home-tabs__trigger'));
-    const panels = Array.from(document.querySelectorAll('.home-tab-panel'));
-
-    if (!triggers.length || !panels.length) {
-        return;
-    }
-
-    function activate(targetId, trigger) {
-        triggers.forEach(btn => {
-            const isActive = btn === trigger;
-            btn.classList.toggle('is-active', isActive);
-            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-            btn.setAttribute('tabindex', isActive ? '0' : '-1');
-        });
-
-        panels.forEach(panel => {
-            const shouldShow = panel.id === targetId;
-            panel.classList.toggle('is-active', shouldShow);
-            panel.toggleAttribute('hidden', !shouldShow);
-            if (shouldShow) {
-                panel.focus({ preventScroll: true });
-            }
-        });
-    }
-
-    triggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-            const targetId = trigger.getAttribute('data-target');
-            if (!targetId) return;
-            activate(targetId, trigger);
-        });
-
-        trigger.addEventListener('keydown', event => {
-            if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
-                return;
-            }
-
-            const currentIndex = triggers.indexOf(trigger);
-            const offset = event.key === 'ArrowRight' ? 1 : -1;
-            const nextIndex = (currentIndex + offset + triggers.length) % triggers.length;
-            const nextTrigger = triggers[nextIndex];
-            nextTrigger.focus();
-            const targetId = nextTrigger.getAttribute('data-target');
-            if (targetId) {
-                activate(targetId, nextTrigger);
-            }
-        });
-    });
-})();
-</script>
 {% endblock %}

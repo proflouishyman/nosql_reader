@@ -2,7 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Added responsive viewport meta so mobile layouts do not render zoomed-out by default. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Historical Document Reader{% endblock %}</title>
+    <!-- Added lightweight inline SVG favicon to avoid external asset coupling. -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f172a'/%3E%3Ctext x='10' y='22' font-size='14' font-family='serif' fill='white'%3EH%3C/text%3E%3C/svg%3E">
+    <!-- Added explicit Google Fonts preload/load so CSS font declarations resolve consistently. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Switched display family to Merriweather for historical-reading tone while retaining Open Sans for body text. -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-yHnj4MvlYYKxE/6q9ZsH5mJ5RkJyKpjtXHYQVdG1Vl6HjnAsfsj0G9aJv1bQZoKEtZnSmhMWj58ZwFZJe61D1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     {% block styles %}{% endblock %}
@@ -14,17 +23,40 @@
                 Historical Document Reader
             </a>
             <nav class="primary-nav" aria-label="Primary navigation">
-                {# Shared nav help text ensures AppHelpTooltips has consistent targets on every page. #}
-                <ul>
-                    <li><a href="{{ url_for('index') }}" data-help="Go to the dashboard landing page.">Home</a></li>
-                    <li><a href="{{ url_for('search_database') }}" data-help="Search documents with fielded and boolean queries.">Search Database</a></li>
-                    <li><a href="{{ url_for('historian_agent_page') }}" data-help="Ask research questions and run AI-assisted analysis.">Historian Agent</a></li>
-                    <li><a href="{{ url_for('corpus_explorer_page') }}" data-help="Generate corpus-level themes, questions, and patterns.">Corpus Explorer</a></li>
-                    <li><a href="{{ url_for('network_analysis_page') }}" data-help="Explore entity networks and connected records.">Network Analysis</a></li>
-                    <li><a href="{{ url_for('demographics_page') }}" data-help="Browse aggregate statistics and demographics for all persons in the corpus.">Demographics</a></li> {# Added demographics entrypoint in primary nav for direct access. #}
-                    <li><a href="{{ url_for('database_info') }}" data-help="Review database collections, counts, and metadata.">Database Information</a></li>
-                    <li><a href="{{ url_for('settings') }}" data-help="Configure ingestion, models, and system options.">Settings</a></li>
-                    <li><a href="{{ url_for('help_page') }}" data-help="Open usage guidance and troubleshooting notes.">Help</a></li>
+                {# Added active-page aware nav grouping to reduce overflow while preserving all existing routes. #}
+                {% set p = active_page | default('') %}
+                <ul class="primary-nav__list">
+                    <li><a href="{{ url_for('index') }}" class="{{ 'is-active' if p == 'home' }}" data-help="Go to the dashboard landing page.">Home</a></li>
+                    <li><a href="{{ url_for('search_database') }}" class="{{ 'is-active' if p == 'search' }}" data-help="Search documents with fielded and boolean queries.">Search</a></li>
+                    <li><a href="{{ url_for('historian_agent_page') }}" class="{{ 'is-active' if p == 'historian_agent' }}" data-help="Ask research questions and run AI-assisted analysis.">Historian Agent</a></li>
+                    <li><a href="{{ url_for('corpus_explorer_page') }}" class="{{ 'is-active' if p == 'corpus_explorer' }}" data-help="Generate corpus-level themes, questions, and patterns.">Corpus Explorer</a></li>
+                    <li><a href="{{ url_for('network_analysis_page') }}" class="{{ 'is-active' if p == 'network_analysis' }}" data-help="Explore entity networks and connected records.">Network</a></li>
+                    <li class="primary-nav__more">
+                        <button class="primary-nav__more-btn {{ 'is-active' if p in ['demographics', 'database_info', 'search_terms', 'settings', 'help'] }}"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                id="navMoreBtn">
+                            More <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <ul class="primary-nav__dropdown" id="navMoreDropdown" role="menu">
+                            <li role="none">
+                                <a role="menuitem" href="{{ url_for('demographics_page') }}" class="{{ 'is-active' if p == 'demographics' }}">Demographics</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" href="{{ url_for('database_info') }}" class="{{ 'is-active' if p == 'database_info' }}">Database Info</a>
+                            </li>
+                            <li role="none">
+                                <!-- Added direct access to the unique term-frequency explorer from the utility menu. -->
+                                <a role="menuitem" href="{{ url_for('search_terms') }}" class="{{ 'is-active' if p == 'search_terms' }}">Unique Terms Explorer</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" href="{{ url_for('settings') }}" class="{{ 'is-active' if p == 'settings' }}">Settings</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" href="{{ url_for('help_page') }}" class="{{ 'is-active' if p == 'help' }}">Help</a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -47,6 +79,44 @@
 
     {# Global tooltip standard used by network analysis and shared UI controls. #}
     <script src="{{ url_for('static', filename='js/help-tooltips.js') }}"></script>
+    <script>
+    (function () {
+        // Added nav dropdown controller so utility links remain accessible on narrow headers.
+        const btn = document.getElementById('navMoreBtn');
+        const drop = document.getElementById('navMoreDropdown');
+        if (!btn || !drop) return;
+
+        function openDrop() {
+            btn.setAttribute('aria-expanded', 'true');
+            drop.classList.add('is-open');
+        }
+
+        function closeDrop() {
+            btn.setAttribute('aria-expanded', 'false');
+            drop.classList.remove('is-open');
+        }
+
+        btn.addEventListener('click', () => {
+            if (drop.classList.contains('is-open')) {
+                closeDrop();
+            } else {
+                openDrop();
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!btn.contains(event.target) && !drop.contains(event.target)) {
+                closeDrop();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDrop();
+            }
+        });
+    })();
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
