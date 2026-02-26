@@ -20,9 +20,10 @@
                     <!-- Dropdown fields (2-10 unique values) -->
                     <option value="collection" class="dropdown-field">collection</option>
                     <option value="archive_structure.physical_box" class="dropdown-field">archive_structure.physical_box</option>
+                    <option value="document_type" class="dropdown-field">document_type</option>
                     <!-- Searchable fields (many unique values) -->
                     {% for field in field_structure|dictsort %}
-                    {% if field[0] not in ['collection', 'archive_structure.physical_box'] %}
+                    {% if field[0] not in ['collection', 'archive_structure.physical_box', 'document_type'] %}
                     <option value="{{ field[0] }}" class="searchable-field">{{ field[0] }}</option>
                     {% endif %}
                     {% endfor %}
@@ -107,8 +108,12 @@ fetch('/api/dropdown-fields')
                     "Blue Box 129", 
                     "Relief Department Box 4", 
                     "Relief Department Box 5", 
-                    "Relief Department Box 6"
+                    "Relief Department Box 6",
+                    "missing"
                 ]
+            },
+            "document_type": {
+                "values": ["missing"]
             }
         };
     })

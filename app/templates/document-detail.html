@@ -31,6 +31,12 @@
 
       <!-- Document Title -->
        <h1>{{ display_filename }}</h1>
+       <button class="citation-copy-btn" id="copyCitationBtn"
+               data-help="Copy a formatted archival citation for this document to the clipboard."
+               aria-label="Copy archival citation">
+        <span class="citation-copy-btn__icon">⎘</span>
+        <span class="citation-copy-btn__label">Copy citation</span>
+      </button>
       
 
     
@@ -83,8 +89,13 @@
                         {% if entity.entity_id %}
                         data-entity-id="{{ entity.entity_id }}"
                         data-entity-type="{{ entity.type }}"
+                        data-entity-text="{{ entity.text | e }}"
+                        tabindex="0"
+                        role="button"
+                        aria-label="Actions for {{ entity.text }}: view in network or search all records"
                         {% endif %}>
                       {{ entity.text }}
+                      {% if entity.entity_id %}<span class="entity-item__hint" aria-hidden="true">↗</span>{% endif %}
                     </li>
                   {% endfor %}
                 </ul>
@@ -126,6 +137,15 @@
 
 
       </div>
+      <script>
+        // Expose document metadata for citation builder without changing backend contracts.
+        window._documentMeta = {
+          physical_box: "{{ document.get('archive_structure', {}).get('physical_box', '') | e }}",
+          document_id: "{{ document._id | e }}",
+          year: "{{ document.get('metadata', {}).get('year', '') | e }}",
+          filename: "{{ document.get('filename', '') | replace('.jpg','') | replace('.png','') | replace('.pdf','') | replace('.json','') | e }}"
+        };
+      </script>
     </div>
 
     <!-- Resizer Element -->
@@ -501,6 +521,53 @@
     };
 
     resizer.addEventListener('mousedown', mouseDownHandler);
+
+    // Allow Enter/Space to trigger entity popover for keyboard users.
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const entityEl = e.target.closest('[data-entity-id]');
+        if (entityEl) {
+          e.preventDefault();
+          entityEl.click();
+        }
+      }
+    });
+
+    // Copy archival citation for the current document.
+    (function initializeCitationCopy() {
+      const btn = document.getElementById('copyCitationBtn');
+      if (!btn) return;
+
+      const doc = window._documentMeta || {};
+      const box = doc.physical_box || 'Relief Department Records';
+      const docId = doc.document_id || document.location.pathname.split('/').pop();
+      const year = doc.year || '';
+      const filename = doc.filename || '';
+
+      const citation = [
+        'Baltimore & Ohio Railroad',
+        'Relief Department Records',
+        box,
+        filename || `Document ${docId}`,
+        year,
+      ].filter(Boolean).join(', ') + '.';
+
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(citation);
+          const label = btn.querySelector('.citation-copy-btn__label');
+          if (!label) return;
+          label.textContent = 'Copied!';
+          btn.classList.add('citation-copy-btn--success');
+          setTimeout(() => {
+            label.textContent = 'Copy citation';
+            btn.classList.remove('citation-copy-btn--success');
+          }, 2000);
+        } catch (error) {
+          console.error('Clipboard write failed:', error);
+        }
+      });
+    })();
   });
 </script>
 {% endblock %}

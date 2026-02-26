@@ -324,3 +324,51 @@ def entity_types_endpoint():
     except Exception as e:
         logger.error("Error in entity_types_endpoint: %s", e, exc_info=True)
         return jsonify({"error": "Internal server error"}), 500
+
+
+@network_bp.route("/entity-search", methods=["GET"])
+def entity_search_endpoint():
+    """
+    GET /api/network/entity-search?q=<query>&limit=<n>
+
+    Returns linked entities matching a partial name query. Used by the
+    person-first network entrypoint in the UI.
+    """
+    try:
+        if not _network_enabled():
+            return jsonify({"entities": []})
+
+        q = request.args.get("q", "").strip()
+        limit = min(_parse_int("limit", 8), 20)
+
+        if len(q) < 2:
+            return jsonify({"entities": []})
+
+        db = _db()
+        linked = db["linked_entities"]
+        regex = {"$regex": q, "$options": "i"}
+
+        cursor = linked.find(
+            {"$or": [{"name": regex}, {"canonical_name": regex}]},
+            {"entity_id": 1, "name": 1, "type": 1, "canonical_name": 1},
+        ).limit(limit)
+
+        entities = []
+        for doc in cursor:
+            # Keep ID contract stable: prefer entity_id, otherwise Mongo _id string.
+            entity_id = doc.get("entity_id") or str(doc.get("_id", ""))
+            if not entity_id:
+                continue
+            entities.append(
+                {
+                    "id": entity_id,
+                    "name": doc.get("canonical_name") or doc.get("name") or entity_id,
+                    "type": doc.get("type", ""),
+                }
+            )
+
+        return jsonify({"entities": entities})
+
+    except Exception as e:
+        logger.error("Error in entity_search_endpoint: %s", e, exc_info=True)
+        return jsonify({"entities": []}), 500

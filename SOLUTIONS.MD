@@ -1031,3 +1031,192 @@ Files changed:
 ### Verification
 - Live check of `http://localhost:5001/settings` confirms the `Tool shortcuts` section no longer renders.
 - `git diff --check` passed.
+
+## 2026-02-26 - Historian UX implementation (all 7 features) with canonical search fields
+
+### Problem
+The historian workflow needed seven UI/backend improvements at once: entity action popovers, inline citation footnotes, structured answer sections, archival-first search filters, citation copy from document detail, research memo export, and person-first network entry. The search filter wiring also needed to use real comparable schema fields and avoid silent zero-result queries from wrong field paths.
+
+### Solution
+Implemented all seven features using existing contracts and existing schema fields, with additive changes only.
+
+Files changed:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/js/network.js`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/network/network_routes.py`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/rag_query_handler.py`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/document-detail.html`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search.html`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/script.js`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/corpus_explorer.html`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/corpus_explorer.js`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/network-analysis.html`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+
+Key outcomes:
+- Replaced legacy entity popup with historian action popover (View in Network, Search all records, Dismiss) and lazy mini-network preview.
+- Added keyboard accessibility for entity actions and Escape-close behavior.
+- Added person-first network search UI plus `/api/network/entity-search` endpoint.
+- Added inline `[Source N]` footnote superscripts and archival citation footnote block in historian answers while preserving legacy sources panel.
+- Added historian section styling for uncertainty/gaps/leads markers.
+- Updated shared RAG generation prompt so Basic, Adversarial, and Tiered all produce symmetric historian sections.
+- Added date range, record type, physical box filters to search UI while preserving existing JSON `/search` contract.
+- Wired canonical comparable fields only: `year`, `document_type`, `archive_structure.physical_box`.
+- Added explicit `missing` filter handling for `document_type` and `archive_structure.physical_box`.
+- Added dynamic `document_type` options to `/api/dropdown-fields` from existing data.
+- Added one-click archival citation copy on document detail using injected `window._documentMeta`.
+- Added Corpus Explorer "Export as Memo" action and memo generation.
+- Added fallback entity resolution by text when `entity_refs` are absent so popover actions still work where possible.
+
+### Verification
+- `python -m py_compile app/routes.py app/network/network_routes.py app/historian_agent/rag_query_handler.py` passed.
+- `node --check app/static/js/network.js app/static/historian_agent.js app/static/corpus_explorer.js app/static/script.js` passed.
+- `/api/dropdown-fields` now returns `document_type` values.
+- `build_query(...)` in container confirms canonical-field queries and `missing` conditions are generated correctly.
+- `quick_check.sh` was executed; DB/app checks ran, but it reported an existing environment connectivity issue: app container cannot reach Ollama.
+
+## 2026-02-26 - Search UX rollback to field-row-only filters
+
+### Problem
+The new top-level archival filter panel (date range / record type / physical box) conflicted with the preferred search interaction model. The desired model is to keep filtering inside the existing row-based `Field + Operator + Search term` contract.
+
+### Solution
+Removed the top archival filter box and reverted search query handling to the original row-based contract while keeping `document_type` as a dropdown-backed field option inside existing field rows.
+
+Files changed:
+- `/Users/louishyman/coding/nosql/nosql_reader/app/templates/search.html`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/script.js`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+- `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`
+
+Details:
+- Removed `search-primary-filters` markup and associated JS wiring for top controls.
+- Restored frontend validation to require first-row `field1 + searchTerm1` as before.
+- Removed backend `date_from` / `date_to` / `record_type` / `physical_box` additive query block from `build_query`.
+- Added `document_type` as a hardcoded dropdown-class field option in the existing field selector and excluded duplicates from dynamic loop.
+- Kept `/api/dropdown-fields` support for `document_type` values so selecting `document_type` in any row uses a value dropdown.
+
+### Verification
+- `python -m py_compile app/routes.py app/network/network_routes.py` passed.
+- `node --check app/static/script.js app/static/js/network.js` passed.
+- Grep check confirms top-filter selectors/markup are removed.
+
+### 2026-02-26 Follow-up
+Adjusted row-based dropdown semantics so selecting `missing` for `document_type` or `archive_structure.physical_box` now maps to missing/null/empty-field queries in `build_query`, instead of a literal text regex. Also ensured `/api/dropdown-fields` returns `document_type` options from live data and includes a `missing` option for both dropdown-backed sparse fields.
+
+## 2026-02-26 - Historian Agent Chicago-style inline footnotes + hover source previews
+
+### Problem
+- Historian Agent inline citations were rendered exactly where `[Source N]` appeared, which often placed superscripts before terminal punctuation instead of Chicago-style claim endings.
+- Superscript hover text only showed the source label, not the actual citation.
+- A legacy side source list could conflict with the new bottom footnote reading flow.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js` to:
+  - build a source-reference map that links source labels to footnote numbers and citation tooltip text,
+  - inject superscript links from `[Source N]` markers with source-aware hover text,
+  - move superscripts after trailing punctuation (`. , ; : ! ?`) for Chicago-style placement,
+  - keep citations in the per-answer bottom footnote block and stop repopulating the legacy side source panel.
+- Added small helper utilities for source-label normalization and HTML-entity-safe tooltip text.
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`
+- Confirmed no remaining code path unhides/repopulates the legacy side source list during answer rendering.
+
+## 2026-02-26 - Historian Agent template/style cleanup for bottom-footnote citations
+
+### Problem
+- The Historian Agent template still included a legacy `agent-sources` side panel structure even after switching to inline superscripts + bottom footnotes.
+- Keeping inactive legacy source-panel HTML/CSS made the page contract ambiguous.
+
+### Solution
+- Removed the legacy sources panel markup from `/Users/louishyman/coding/nosql/nosql_reader/app/templates/historian_agent.html`.
+- Removed unused `.agent-sources`, `.agent-source__title`, and `.agent-source__snippet` styles from `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`.
+- Kept the existing historian page layout and controls unchanged otherwise.
+
+### Verification
+- Confirmed no remaining `agent-sources` HTML block in the historian template.
+- Confirmed legacy `agent-sources` CSS selectors are removed.
+
+## 2026-02-26 - Historian Agent footnotes forced below answer + `(Source N)` superscript conversion
+
+### Problem
+- In live rendering, footnotes appeared as a right-side column beside the assistant answer instead of at the bottom.
+- Some model outputs used `(Source N)` markers, which were not converted to inline superscripts because only `[Source N]` was parsed.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`:
+  - append the footnote block inside the assistant bubble (`bubble.appendChild`) so citations render at the bottom of each answer,
+  - expand citation marker parsing to handle both `[Source N]` and `(Source N)`.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`:
+  - set `.agent-message--assistant` to a vertical stack (`flex-direction: column`) as a layout safeguard to keep answer + footnotes aligned bottom-first.
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`
+- Quick regex sanity check confirmed `(Source 1)` and `[Source 7]` both transform to superscripts and land after punctuation.
+
+### Follow-up cleanup
+- Removed stale Historian Agent JS references to `agentSources`/`agentSourcesList` now that side-source markup is gone, preventing dead code paths and keeping the contract explicit.
+
+## 2026-02-26 - Root-cause fix: historian citation parser contract drift
+
+### Problem
+- Citation rendering failed for real model output variants like `(Source 1: RDApp-225116Hupp003)` and `(Sources 2-10)`.
+- The previous fallback extracted all digits from the marker text, so document IDs contaminated source-number resolution (for example, `Source 1: RDApp-225116...` became an invalid composite number), leaving citations unconverted.
+
+### Solution
+- Reworked citation parsing in `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`:
+  - `buildSourceReferenceMap` now stores references by label and by source number,
+  - `resolveMarkerReferences` resolves exact labels first, then parsed numeric references,
+  - `extractSourceNumbers` parses singular/plural/range/list forms and intentionally ignores suffix text after `:`/`;` to avoid document-ID digit bleed,
+  - `injectFootnotes` now supports multi-source markers (comma-separated superscripts) and keeps Chicago punctuation placement.
+- Added `.fn-link-sep` style in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` for multi-reference superscript separators.
+- Tightened generation contract in `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/rag_query_handler.py` to enforce exact `[Source N]` markers and avoid non-canonical forms.
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`
+- `python -m py_compile /Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/rag_query_handler.py`
+- Manual parser sanity checks:
+  - `Source 1: RDApp-225116Hupp003 => 1`
+  - `Sources 2-10 => 2,3,4,5,6,7,8,9,10`
+  - `Sources 1, 3, and 5 => 1,3,5`
+
+## 2026-02-26 - Normalize `/historian-agent/query` sources at API boundary
+
+### Problem
+- `/historian-agent/query` returned legacy source lists (`reference/id/title/snippet`) directly from `agent.invoke`, while historian frontend citation rendering expects canonical source dict entries with `display_name` and `url`.
+- This route-level shape drift risked `Unknown source` citations and inconsistent behavior compared with `/historian-agent/query-basic|adversarial|tiered`.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`:
+  - generalized `sources_list_to_dict` to normalize both modern (`label/id/display_name`) and legacy (`reference/id/title/snippet`) source shapes,
+  - added tolerant pass-through for already-normalized dicts,
+  - normalized `/historian-agent/query` output through `sources_list_to_dict` before returning,
+  - added `search_id` + cached ordered IDs for normalized route parity,
+  - persisted normalized sources in assistant history entries.
+
+### Verification
+- `python -m py_compile /Users/louishyman/coding/nosql/nosql_reader/app/routes.py`
+- Confirmed `/historian-agent/query` response payload now emits canonical `sources` dict entries with `id`, `display_name`, and `url`.
+
+## 2026-02-26 - Follow-up citation parser hardening for `Source [N: ...]` variants
+
+### Problem
+- Answers still showed literal markers like `Source [1: RDApp-...]` because citation replacement only matched bracket forms with numeric-only payloads, so bracket bodies containing `:` and IDs bypassed superscript conversion.
+
+### Solution
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js` citation pattern to match:
+  - `Source [1: ...]`
+  - `Sources [2-4]`
+  - bare `[1: ...]`
+- Normalized matched bracket bodies back into `Source ...` markers before number extraction, so existing range/list parsing logic applies consistently.
+- Added explicit assistant research-bubble width guard in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css` to ensure full-width answer layout.
+
+### Verification
+- `node --check /Users/louishyman/coding/nosql/nosql_reader/app/static/historian_agent.js`
+- Regex sanity checks confirmed conversion for:
+  - `Source [1: RDApp-...]`
+  - `[1: RDApp-...]`
+  - `Sources [2-4]`
+- Verified live container files include the updated parser and width rule under `/app/static/`.
