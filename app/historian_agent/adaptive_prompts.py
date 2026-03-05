@@ -8,7 +8,7 @@ from typing import Dict
 from config import APP_CONFIG
 
 
-VALID_PROMPT_VARIANTS = {"v1", "v2", "v3", "v4", "v5"}
+VALID_PROMPT_VARIANTS = {"v1", "v2", "v3", "v4", "v5", "v6"}
 
 
 def normalize_prompt_variant(raw: str) -> str:
@@ -45,6 +45,11 @@ ADAPTIVE_BATCH_SYSTEM_MESSAGES: Dict[str, str] = {
         "You are a historian generating research questions as an archive-reading process: "
         "observation -> puzzle -> system-level explanation. Prioritize causal, institutional, "
         "social-structure, change-over-time, and experience/meaning questions."
+    ),
+    "v6": (
+        "You are a historian assistant performing inductive archival reasoning at two levels: "
+        "archival questions from document patterns, then historical questions that explain larger "
+        "systems. Keep every question evidence-traceable."
     ),
 }
 
@@ -276,6 +281,17 @@ PROCESS (follow in order):
 3) Convert puzzles into system-level questions (institutions, incentives, hierarchy, change over time).
 4) Keep only high-value questions that can aggregate evidence across multiple documents.
 
+FOUR ARCHIVAL SIGNALS (explicitly scan for each):
+- repetition: recurring classifications, phrasing, outcomes, or blame patterns
+- anomaly: outliers that violate dominant patterns
+- change: shifts over time in categories, procedures, or outcomes
+- absence: expected actors/voices/categories missing from records
+
+INDUCTIVE MODE:
+- Think in this order: documents -> observations -> patterns -> puzzles -> explanatory questions.
+- Do not start from external theory or prior assumptions not grounded in DOCUMENTS.
+- Treat the archive itself as an artifact produced by institutions and power.
+
 HISTORIAN QUESTION TYPES (target these):
 - causal: why did X happen
 - institutional: how did systems/organizations work
@@ -287,12 +303,91 @@ QUALITY FILTER:
 - Reject factoid/trivia prompts ("when", "who", "what year", "how many") unless tied to broader explanation.
 - Reject vague pseudo-analytic prompts ("what impact", "what role", "what was life like") unless rewritten with mechanism and scope.
 - Prefer questions where historians could reasonably disagree.
+- Prefer questions requiring evidence from multiple records, not one-off lookup.
 - Each question must cite evidence blocks.
 - If no valid historian-grade question exists, return "questions": [].
+
+QUESTION FIT CHECKS (must pass):
+- Is this question answerable with available archival evidence?
+- Does it explain a process, system, or power relation?
+- Is scope bounded (actors/place/time) enough for this corpus?
+- Does it preserve room for new independent directions?
 
 CLOSED-WORLD RULES:
 - Use only facts present in DOCUMENTS.
 - Never invent names, dates, places, institutions, or causes.
+
+PRIOR_KNOWLEDGE:
+{prior_knowledge}
+
+RESEARCH_LENS:
+{research_lens}
+
+DOCUMENTS:
+{documents_json}
+
+Return ONLY JSON schema:
+{{
+  "entities": [
+    {{"name": str, "type": "person|organization|place", "first_seen": "block_id", "context": str}}
+  ],
+  "patterns": [
+    {{"pattern": str, "type": str, "evidence_blocks": ["block_id"], "confidence": "low|medium|high", "time_range": str}}
+  ],
+  "contradictions": [
+    {{"claim_a": str, "claim_b": str, "source_a": "block_id", "source_b": "block_id", "context": str}}
+  ],
+  "group_indicators": [
+    {{"group_type": "race|gender|class|ethnicity|national_origin|occupation", "label": str, "evidence_blocks": ["block_id"], "confidence": "low|medium|high"}}
+  ],
+  "questions": [
+    {{
+      "question": str,
+      "why_interesting": str,
+      "evidence_needed": str,
+      "related_entities": [],
+      "time_window": str,
+      "evidence_blocks": ["block_id"],
+      "axis_tags": [str],
+      "suggested_level": "micro|meso_hint|macro_hint",
+      "parent_hint": str
+    }}
+  ],
+  "temporal_events": {{"year": [str]}}
+}}
+""",
+    "v6": """You are a historian assistant. Use an evidence-first, two-level workflow.
+
+CORE PRINCIPLE:
+- Do not start with a question and hunt for answers.
+- Start with DOCUMENTS and generate questions from evidence.
+
+TWO-LEVEL INDUCTION:
+1) archival-level: observations -> patterns/signals -> archival puzzles/questions
+2) historical-level: cluster archival puzzles into broader questions about systems, power, and change
+
+FOUR SIGNAL SCAN (required):
+- repetition
+- anomaly
+- change over time
+- absence/silence
+
+THREE-READER MODE (internal, then synthesize):
+- pattern finder
+- anomaly detector
+- question generator
+
+OUTPUT POLICY:
+- Questions in output should be historical-level when evidence supports scaling up.
+- Keep micro/local questions only when they are necessary evidence anchors for broader threads.
+- Every question must be traceable to specific block evidence.
+- Preserve independent directions; do not force all questions into one theme.
+
+QUALITY BOUNDARIES:
+- Reject factoid prompts unless tied to explanation.
+- Reject vague pseudo-analytic prompts unless rewritten with mechanism, scope, and actors.
+- Prefer questions where multiple interpretations are plausible.
+- Keep archive-fit: questions must be answerable with this corpus.
 
 PRIOR_KNOWLEDGE:
 {prior_knowledge}
@@ -405,6 +500,27 @@ Rules:
 - Prefer "why/how/compare/change_continuity/explain".
 - Block factoid framing ("when/who/what year/how many") unless the question is strictly micro-factual.
 - Prefer questions that imply mechanism and allow disagreement.
+- Avoid purely normative phrasing ("was X good/bad"); convert to explanatory framing.
+- Keep archive-fit: do not rewrite into questions the corpus cannot answer.
+
+Return JSON only:
+{{"question": str, "question_type": str, "changed": bool}}
+Valid question_type: "why", "how", "compare", "change_continuity", "explain", "what"
+""",
+    "v6": """TASK: Transform archival/local prompts into historian-grade questions when valid.
+
+QUESTION:
+{question_text}
+
+Rules:
+- Preserve actors, place, period, and scope.
+- Prefer why/how/compare/change_continuity/explain.
+- Distinguish:
+  - archival question (about record/form/category)
+  - historical question (about system/process producing those records)
+- If safe scaling is possible without inventing facts, rewrite toward historical level.
+- Keep as "what" only for strict micro evidence anchors.
+- Avoid normative framing and factoid wording.
 
 Return JSON only:
 {{"question": str, "question_type": str, "changed": bool}}
@@ -502,7 +618,28 @@ Promotion requirements:
 - Keep causal/institutional/social-structure/change dimensions explicit when supported.
 - Preserve contradiction/tension if present.
 - Keep question answerable by this corpus.
+- Avoid generic restatements; include mechanism or differentiating condition.
+- If evidence is too thin, prefer no promotion over weak promotion.
 - Do not output "what" questions.
+
+Return JSON only: {{"question": str, "question_type": str}}
+Valid question_type: "why", "how", "compare", "change_continuity", "explain"
+""",
+    "v6": """TASK: Promote from archival puzzles to historical questions.
+
+CURRENT QUESTION ({current_level}): {question_text}
+SUB-QUESTIONS:
+{children_text}
+EVIDENCE SUMMARY:
+{evidence_summary}
+{tension_note}
+
+Promotion logic:
+- Ask what larger institutional/social process must exist for these records to look this way.
+- Make the question system-level while preserving document-level traceability.
+- Preserve contradiction/tension; do not smooth conflict away.
+- Keep bounded scope and corpus answerability.
+- Skip promotion if evidence is insufficient or would force generic phrasing.
 
 Return JSON only: {{"question": str, "question_type": str}}
 Valid question_type: "why", "how", "compare", "change_continuity", "explain"
@@ -568,6 +705,21 @@ Rules:
 - Ask how/why a pattern changed, persisted, or diverged across this span.
 - Tie change to institutional, social, or causal mechanisms when evidence allows.
 - Avoid generic phrasing and invented factors.
+- Keep bounded scope so the question remains answerable in this corpus.
+
+Return JSON only: {{"question": str}}
+""",
+    "v6": """TASK: Write one historian-grade change/continuity question.
+
+QUESTIONS:
+{questions}
+TIME SPAN: {min_year}–{max_year}
+
+Rules:
+- Ask how/why patterns changed, persisted, or diverged.
+- Tie changes to systems/power/institutions when supported by evidence.
+- Keep scope bounded and answerable in this corpus.
+- Avoid generic "what changed" phrasing.
 
 Return JSON only: {{"question": str}}
 """,
@@ -647,6 +799,25 @@ Rules:
 - Seeds must be explanation-oriented and testable in corpus reading.
 - Prioritize these types: causal, institutional, social-structure, change-over-time, experience/meaning.
 - Use only allowed question types: why, how, compare, change_continuity, explain.
+- Keep seeds broad enough for discovery but not so broad they absorb every micro observation.
+- No invented specifics.
+
+Output JSON array only:
+{{"question": str, "question_type": str, "tags": [str]}}
+Allowed tags: {axes}
+""",
+    "v6": """TASK: Extract seed questions that support inductive archival discovery.
+
+INPUT:
+{text}
+
+Rules:
+- Return 2 to {max_questions} seeds.
+- Include a mix of:
+  - direct historical questions (system/process level),
+  - archival-form questions (record production/classification) that can scale upward.
+- Allowed types: why, how, compare, change_continuity, explain.
+- Keep seeds broad enough for discovery but bounded enough for falsification.
 - No invented specifics.
 
 Output JSON array only:

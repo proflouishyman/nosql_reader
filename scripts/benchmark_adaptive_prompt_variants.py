@@ -279,7 +279,7 @@ def main() -> int:
     parser.add_argument("--documents", type=int, default=100)
     parser.add_argument("--strategy", default="balanced")
     parser.add_argument("--sort-order", default="archival")
-    parser.add_argument("--variants", default="v3,v4,v5")
+    parser.add_argument("--variants", default="v4,v5,v6")
     parser.add_argument("--ledger-model", default="")
     parser.add_argument(
         "--models",

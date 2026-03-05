@@ -1566,3 +1566,29 @@ Observed behavior:
 ### Verification
 - `python -m py_compile app/historian_agent/adaptive_prompts.py scripts/benchmark_adaptive_prompt_variants.py app/tests/test_adaptive_prompts.py`
 - `PYTHONPATH=app pytest -q app/tests/test_adaptive_prompts.py app/tests/test_adaptive_question_graph.py app/tests/test_research_consultation.py` -> `14 passed`
+
+## 2026-03-05 - Historian-inductive plan synthesis and v5/v6 prompt architecture update
+
+### Problem
+- New historian guidance required a stronger explicit model of how questions emerge from archives:
+  - scale jump from local record to system-level explanation,
+  - archival vs historical question distinction,
+  - four archival signals (repetition/anomaly/change/absence),
+  - iterative evidence-first reasoning.
+- Existing plan text did not fully map these ideas to concrete implementation tasks and tests.
+
+### Solution
+- Updated prompt architecture in `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/adaptive_prompts.py`:
+  - expanded `v5` with stronger archive-fit and mechanism constraints,
+  - added experimental `v6` prompt family encoding two-level induction and archival->historical transformation,
+  - kept output schema stable for backward compatibility.
+- Extended prompt tests in `/Users/louishyman/coding/nosql/nosql_reader/app/tests/test_adaptive_prompts.py` for `v6` markers.
+- Updated benchmark defaults in `/Users/louishyman/coding/nosql/nosql_reader/scripts/benchmark_adaptive_prompt_variants.py` to include newer variants when desired.
+- Rewrote planning artifacts:
+  - `/Users/louishyman/coding/nosql/nosql_reader/docs/adaptive_prompt_variant_plan.md` -> synthesized v2 strategy,
+  - added `/Users/louishyman/coding/nosql/nosql_reader/docs/adaptive_design_v3.md` with actionable implementation/testing roadmap.
+
+### Verification
+- `python -m py_compile app/historian_agent/adaptive_prompts.py scripts/benchmark_adaptive_prompt_variants.py app/tests/test_adaptive_prompts.py`
+- `PYTHONPATH=app pytest -q app/tests/test_adaptive_prompts.py` -> `6 passed`
+- Relaunched iterative test runs focused on `v4` vs `v5` while keeping qwen3.5 watcher active.

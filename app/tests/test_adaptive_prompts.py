@@ -57,3 +57,10 @@ def test_v5_is_valid_prompt_variant() -> None:
     batch_prompt = prompts_mod.get_batch_analysis_prompt("v5")
     assert "PROCESS (follow in order)" in batch_prompt
     assert "HISTORIAN QUESTION TYPES" in batch_prompt
+
+
+def test_v6_is_valid_prompt_variant() -> None:
+    assert prompts_mod.normalize_prompt_variant("v6") == "v6"
+    batch_prompt = prompts_mod.get_batch_analysis_prompt("v6")
+    assert "TWO-LEVEL INDUCTION" in batch_prompt
+    assert "THREE-READER MODE" in batch_prompt

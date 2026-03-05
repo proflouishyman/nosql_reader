@@ -1,62 +1,127 @@
-# Adaptive Prompt Variant Plan
+# Adaptive Prompt Variant Plan v2 (Historian-Inductive Synthesis)
 
-## Purpose
+## Why the Plan Changed
 
-This document defines prompt variants for adaptive corpus exploration so we can
-run repeatable A/B/C tests and select the variant that best supports historian
-style question aggregation.
+The original plan focused on graph growth metrics. The revised plan incorporates
+historian practice directly:
 
-## Scope
+1. Questions emerge from documents (not pre-specified hypotheses alone).
+2. Reading is inductive and iterative (documents -> patterns -> puzzles -> questions).
+3. Archives are analyzed as institutional artifacts (including absences/silences).
+4. Strong questions are explanatory, bounded, and debatable.
 
-Prompt variants are run-scoped and currently apply to:
+This shifts us from "generate more nodes" to "generate better historical questions."
 
-1. Batch attentive extraction (entities, patterns, contradictions, questions)
-2. Why/how enforcement for question framing
-3. Promotion prompts (micro -> meso, meso -> macro)
-4. Change/continuity prompt
-5. Seed extraction prompt
+## Revised Core Model
 
-## Variant Keys
+### Inductive pipeline (required behavior)
 
-- `v1`: Baseline behavior (conservative, closest to prior prompt style)
-- `v2`: Mechanism/comparison emphasis with stronger axis-aware question framing
-- `v3`: Question-thread emphasis (micro to macro ladder) with stricter anti-trivia filter
+1. Extract document-level observations.
+2. Detect four archival signals across documents:
+   - repetition
+   - anomaly
+   - change over time
+   - absence
+3. Convert signals into puzzles.
+4. Convert puzzles into historian-grade questions.
+5. Accumulate evidence and promote only when evidence supports abstraction.
+
+### Question quality target
+
+Questions should primarily fall into:
+
+1. Causal
+2. Institutional
+3. Social Structure
+4. Change Over Time
+5. Experience/Meaning
+
+## Prompt Variant Strategy
+
+Variants now represent intentional reasoning styles:
+
+- `v1`: baseline legacy-compatible
+- `v2`: mechanism/comparison emphasis
+- `v3`: micro->macro thread emphasis
+- `v4`: strict contract + anti-trivia formatting discipline
+- `v5`: historian-inductive process with explicit four-signal scan
 
 ## Runtime Controls
 
-- Config default: `TIER0_ADAPTIVE_PROMPT_VARIANT=v1`
-- Per-run override in API payload: `prompt_variant` (`v1|v2|v3`)
+- `TIER0_ADAPTIVE_PROMPT_VARIANT` controls default.
+- API payload `prompt_variant` overrides per run.
+- API payload `ledger_model` overrides model per run.
+- Both values are recorded in `exploration_metadata`.
 
-The override is stored in `exploration_metadata.prompt_variant` for auditability.
+## Actionable Implementation Backlog
 
-## Benchmark Method
+### A. Prompt/Extraction (implemented + next)
 
-Use the benchmark script:
+1. Keep `v5` as historian-inductive baseline for current experiments.
+2. Add explicit output fields (future):
+   - `signal_type`: repetition|anomaly|change|absence
+   - `question_family`: causal|institutional|social_structure|change_over_time|experience_meaning
+3. Add hard rejection for weak pseudo-analytic templates unless rewritten.
+
+### B. Graph Aggregation (next)
+
+1. Preserve independent threads when low-confidence links only.
+2. Increase promotion gating for generic meso/macro rewrites.
+3. Add lineage trace export per macro question:
+   macro -> meso -> micro -> evidence blocks.
+
+### C. Evaluation Harness (implemented + next)
+
+1. Keep structure metrics:
+   - emergent nodes, meso/macro nodes, promotions, seed confirmation.
+2. Keep quality proxies (implemented):
+   - `quality_analytic_ratio`
+   - `quality_factoid_count`
+   - `quality_vague_count`
+3. Add curated gold/bad benchmark set (next):
+   - good historical questions
+   - bad factoid/trivia
+   - pseudo-analytic weak forms
+
+### D. Model A/B/C (in progress)
+
+1. Run matrix by prompt variant x model family.
+2. Track failure/timeout rates separately from quality.
+3. Select by quality-first, speed-second policy.
+
+## Benchmark Method (current)
 
 ```bash
 python scripts/benchmark_adaptive_prompt_variants.py \
   --base-url http://localhost:5001 \
-  --documents 100 \
-  --variants v1,v2,v3 \
+  --documents 25 \
+  --variants v3,v4,v5 \
+  --models qwen2.5:32b,gemma3:12b,llama3.1:8b \
   --sort-order archival
 ```
 
-Output JSON is saved under:
+Output:
 
-- `logs/prompt_variant_benchmarks/`
+- `/Users/louishyman/coding/nosql/nosql_reader/logs/prompt_variant_benchmarks/`
 
-## Selection Criteria
+## Acceptance Criteria (revised)
 
-Choose the prompt variant that maximizes:
+### Must pass
 
-1. Emergent node formation (`graph_emergent_nodes`)
-2. Meso/macro growth (`graph_meso_nodes + graph_macro_nodes`, excluding seed-only wins)
-3. Graph structure (`graph_edges`, `decision_log_count`)
-4. Promotion activity (`defrag_promotions_total`)
-5. Seed grounding (`seed_questions_confirmed`)
+1. Non-trivial emergent graph growth (not seed-only collapse).
+2. Meso/macro promotions are present and evidence-grounded.
+3. Macro questions are traceable to micro evidence.
+4. Factoid/vague question counts stay low.
+5. Seed questions are explicitly confirmed or unconfirmed.
 
-Reject variants that:
+### Preferred
 
-1. Collapse to seed-only graphs
-2. Inflate micro-only nodes with low promotions
-3. Increase runtime significantly with no structural graph gain
+1. Higher analytic ratio with similar or better seed confirmation.
+2. Stable behavior across at least two model families.
+3. Runtime remains within practical iteration bounds.
+
+## Immediate Next Steps
+
+1. Benchmark `v5` against `v3` and `v4` at 25 docs and 100 docs.
+2. Promote `v5` only if quality proxies improve without seed-collapse regression.
+3. Build curated evaluator set from historian-provided examples and wire into benchmark report.
