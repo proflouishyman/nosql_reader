@@ -6,6 +6,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import asdict
 from datetime import datetime
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -44,12 +45,25 @@ class IncrementalCorpusExplorer(CorpusExplorer):
         self._docs_read_for_graph = 0
         self._sub_batches_seen = 0
         self._defrag_index = 0
-        self._interval_budget = LLMBudget(
-            cap=APP_CONFIG.tier0.llm_budget_per_interval,
+        # Reserve part of interval budget for defrag/promotions so ingestion
+        # traffic does not starve higher-level synthesis.
+        total_cap = int(APP_CONFIG.tier0.llm_budget_per_interval)
+        requested_defrag = int(getattr(APP_CONFIG.tier0, "llm_defrag_budget_per_interval", max(6, total_cap // 2)))
+        defrag_cap = max(1, min(requested_defrag, total_cap))
+        ingest_cap = max(0, total_cap - defrag_cap)
+        self._ingest_budget = LLMBudget(
+            cap=ingest_cap,
+            enforce=APP_CONFIG.tier0.llm_budget_enforce,
+        )
+        self._defrag_budget = LLMBudget(
+            cap=defrag_cap,
             enforce=APP_CONFIG.tier0.llm_budget_enforce,
         )
         # Prompt variant is run-scoped so A/B/C tests can override without changing contracts.
         self._prompt_variant: str = resolve_prompt_variant(None)
+        # Model selection is run-scoped to enable fair A/B testing without app restarts.
+        self._ledger_model: str = str(APP_CONFIG.tier0.ledger_expand_model)
+        self._model_override_active: bool = False
         self._seed_node_ids: List[str] = []
         self._research_brief: Optional[ResearchBrief] = None
 
@@ -63,6 +77,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
         sort_order: Optional[str] = None,
         research_brief: Optional[Any] = None,
         prompt_variant: Optional[str] = None,
+        ledger_model: Optional[str] = None,
     ) -> Dict[str, Any]:
         start_time = datetime.now()
 
@@ -71,6 +86,12 @@ class IncrementalCorpusExplorer(CorpusExplorer):
         total_budget = total_budget or cfg.exploration_budget
         save_notebook = cfg.notebook_auto_save if save_notebook is None else save_notebook
         self._prompt_variant = resolve_prompt_variant(prompt_variant)
+
+        requested_model = str(ledger_model or "").strip()
+        # Keep overrides local to this run instead of mutating frozen global config.
+        self._ledger_model = requested_model or str(APP_CONFIG.tier0.ledger_expand_model)
+        self._model_override_active = bool(requested_model)
+
         # Build a stable consultation object no matter whether caller sends raw lens text or full brief.
         brief_payload = research_brief if research_brief is not None else {
             "primary_lens": research_lens or "",
@@ -91,11 +112,16 @@ class IncrementalCorpusExplorer(CorpusExplorer):
         self._docs_read_for_graph = 0
         self._sub_batches_seen = 0
         self._defrag_index = 0
-        self._interval_budget.reset()
+        self._ingest_budget.reset()
+        self._defrag_budget.reset()
 
         self.logger.log(
             "start",
-            f"adaptive strategy={strategy} budget={total_budget} sort={self._research_brief.sort_order} prompt={self._prompt_variant}",
+            (
+                f"adaptive strategy={strategy} budget={total_budget} "
+                f"sort={self._research_brief.sort_order} prompt={self._prompt_variant} "
+                f"model={self._ledger_model}"
+            ),
         )
         if self._research_lens:
             self.logger.log("lens", "; ".join(self._research_lens))
@@ -154,6 +180,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                 "research_brief": self._research_brief.to_dict() if self._research_brief else None,
                 "sort_order": self._research_brief.sort_order if self._research_brief else None,
                 "prompt_variant": self._prompt_variant,
+                "ledger_model": self._ledger_model,
                 "missing_primary_sort_fields": missing_sort_fields,
             },
         }
@@ -187,7 +214,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
         if not brief.primary_lens.strip() and not brief.prior_hypotheses.strip():
             return graph
 
-        if not self._interval_budget.request("heavy"):
+        if not self._ingest_budget.request("heavy"):
             return graph
 
         seed_limit = max(1, int(APP_CONFIG.tier0.seed_max_questions))
@@ -195,7 +222,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
             text=brief.prior_hypotheses,
             axes=axes,
             llm=self.llm,
-            model=APP_CONFIG.tier0.ledger_expand_model,
+            model=self._ledger_model,
             timeout_s=APP_CONFIG.tier0.llm_heavy_timeout,
             max_questions=min(3, seed_limit),
             prompt_variant=self._prompt_variant,
@@ -204,7 +231,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
             text=brief.primary_lens,
             axes=axes,
             llm=self.llm,
-            model=APP_CONFIG.tier0.ledger_expand_model,
+            model=self._ledger_model,
             timeout_s=APP_CONFIG.tier0.llm_heavy_timeout,
             max_questions=seed_limit,
             prompt_variant=self._prompt_variant,
@@ -344,8 +371,9 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                 question_text=raw_text,
                 level="micro",
                 llm=self.llm,
-                budget=self._interval_budget,
+                budget=self._ingest_budget,
                 prompt_variant=self._prompt_variant,
+                model_name=self._ledger_model,
             )
             node = QuestionNode(
                 node_id=str(uuid.uuid4()),
@@ -377,8 +405,9 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                 candidate_node=node,
                 similar_nodes=similar,
                 llm=self.llm,
-                budget=self._interval_budget,
+                budget=self._ingest_budget,
                 batch_label=batch_label,
+                model_name=self._ledger_model,
             )
             self.graph.add_decision_log(log)
 
@@ -466,6 +495,49 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                         except Exception:
                             continue
 
+                # Seed-touch evidence: if a seed question is semantically close,
+                # attach the same block evidence so seed confirmation reflects usage.
+                seed_nodes = [
+                    seed for seed in self.graph.nodes.values()
+                    if seed.evidence_owner and seed.origin == "seed" and seed.level == "macro"
+                ]
+                scored_seeds: List[Tuple[float, QuestionNode]] = []
+                node_tags = set(node.tags)
+                for seed in seed_nodes:
+                    seed_tags = set(seed.tags)
+                    overlap = len(node_tags & seed_tags)
+                    lexical = SequenceMatcher(
+                        None,
+                        final_text.lower(),
+                        (seed.question_text or "").lower(),
+                    ).ratio()
+                    score = (overlap * 0.75) + (lexical * 0.25)
+                    if overlap > 0 or lexical >= 0.45:
+                        scored_seeds.append((score, seed))
+                scored_seeds.sort(key=lambda item: item[0], reverse=True)
+
+                for _, seed in scored_seeds[:2]:
+                    seed_id = self.graph.canonical_id(seed.node_id)
+                    for block in raw_blocks[:4]:
+                        block_id = str(block).strip()
+                        if not block_id:
+                            continue
+                        doc_id = block_id.split("::")[0] if "::" in block_id else block_id
+                        seed_link = EvidenceLink(
+                            link_id=str(uuid.uuid4()),
+                            question_id=seed_id,
+                            doc_id=doc_id,
+                            block_id=block_id,
+                            evidence_type="extends",
+                            strength=0.55,
+                            note=f"Seed-touch evidence from micro question: {final_text[:140]}",
+                            batch_label=batch_label,
+                        )
+                        try:
+                            self.graph.add_evidence(seed_link, interval_index=self._defrag_index)
+                        except Exception:
+                            continue
+
     def _integrate_evidence(self, findings: Dict[str, Any], batch_label: str) -> None:
         if self.graph is None:
             return
@@ -549,18 +621,28 @@ class IncrementalCorpusExplorer(CorpusExplorer):
             doc_store=self.doc_store,
             config=APP_CONFIG.tier0,
             batch_label=batch_label,
-            budget=self._interval_budget,
+            budget=self._defrag_budget,
             prompt_variant=self._prompt_variant,
+            model_name=self._ledger_model,
         )
         self.logger.log(
             "defrag",
-            f"interval={snapshot.interval_index} merges={snapshot.merges_performed} promotions={snapshot.promotions_performed} llm={snapshot.llm_calls_this_interval}/{APP_CONFIG.tier0.llm_budget_per_interval}",
+            (
+                f"interval={snapshot.interval_index} merges={snapshot.merges_performed} "
+                f"promotions={snapshot.promotions_performed} "
+                f"defrag_llm={snapshot.llm_calls_this_interval}/{self._defrag_budget.cap} "
+                f"ingest_llm={self._ingest_budget.used}/{self._ingest_budget.cap}"
+            ),
         )
+        self._ingest_budget.reset()
 
     def _infer_tags(self, text: str) -> List[str]:
         lowered = text.lower()
         tags: List[str] = []
-        for axis in APP_CONFIG.tier0.question_axes:
+        active_axes = self.graph.axes if self.graph is not None else APP_CONFIG.tier0.question_axes
+        axis_set = {str(axis).strip().lower() for axis in active_axes if str(axis).strip()}
+
+        for axis in active_axes:
             token = str(axis).strip().lower()
             if not token:
                 continue
@@ -568,11 +650,30 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                 tags.append(token)
         if not tags:
             if any(tok in lowered for tok in ["year", "decade", "time", "period"]):
-                tags.append("time")
+                if "time" in axis_set:
+                    tags.append("time")
             if any(tok in lowered for tok in ["place", "location", "division", "city", "state"]):
-                tags.append("place")
-            if any(tok in lowered for tok in ["occupation", "worker", "job", "department"]):
-                tags.append("group")
+                if "place" in axis_set:
+                    tags.append("place")
+            if any(tok in lowered for tok in ["occupation", "worker", "job", "department", "brakemen", "laborer"]):
+                if "occupation" in axis_set:
+                    tags.append("occupation")
+                elif "group" in axis_set:
+                    tags.append("group")
+            if any(tok in lowered for tok in ["ethnic", "immigrant", "irish", "german", "nationality"]):
+                if "ethnicity" in axis_set:
+                    tags.append("ethnicity")
+                elif "group" in axis_set:
+                    tags.append("group")
+            if any(tok in lowered for tok in ["union", "organizing"]):
+                if "unionization" in axis_set:
+                    tags.append("unionization")
+            if any(tok in lowered for tok in ["manager", "superintendent", "foreman", "management"]):
+                if "management" in axis_set:
+                    tags.append("management")
+            if any(tok in lowered for tok in ["law", "legislation", "policy", "act"]):
+                if "legislation" in axis_set:
+                    tags.append("legislation")
         return tags
 
     def _batch_analysis_prompt_template(self) -> str:
@@ -582,6 +683,20 @@ class IncrementalCorpusExplorer(CorpusExplorer):
     def _batch_analysis_system_message(self) -> str:
         # Keep system behavior aligned with the selected adaptive prompt variant.
         return get_batch_system_message(self._prompt_variant)
+
+    def _batch_analysis_provider_override(self) -> Optional[str]:
+        if not self._model_override_active:
+            return None
+        profile_cfg = APP_CONFIG.llm_profiles.get(APP_CONFIG.tier0.batch_profile, {})
+        if not isinstance(profile_cfg, dict):
+            return None
+        provider = str(profile_cfg.get("provider") or "").strip()
+        return provider or None
+
+    def _batch_analysis_model_override(self) -> Optional[str]:
+        if not self._model_override_active:
+            return None
+        return self._ledger_model
 
     def _export_graph_questions(self) -> List[Dict[str, Any]]:
         if self.graph is None:

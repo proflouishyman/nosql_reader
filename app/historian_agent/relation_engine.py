@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional, Tuple
 import uuid
+import re
 
 from config import APP_CONFIG
 from llm_abstraction import LLMClient
@@ -18,6 +19,11 @@ from historian_agent.adaptive_prompts import (
 )
 from historian_agent.question_graph import QuestionNode, RelationDecisionLog
 from historian_agent.tier0_utils import parse_llm_json
+
+
+def _ledger_provider() -> str:
+    profile = APP_CONFIG.llm_profiles.get("fast", {})
+    return str(profile.get("provider") or "ollama")
 
 
 @dataclass
@@ -35,12 +41,40 @@ class _BudgetProtocol:
         raise NotImplementedError
 
 
+def _heuristic_question_type(question_text: str) -> Optional[str]:
+    """Cheap local classifier to preserve budget for expensive defrag calls."""
+    text = (question_text or "").strip()
+    lowered = text.lower()
+    if not lowered:
+        return None
+
+    if lowered.startswith("why ") or lowered.startswith("why did") or lowered.startswith("why was"):
+        return "why"
+    if lowered.startswith("how ") or lowered.startswith("how did") or lowered.startswith("how was"):
+        if "change over time" in lowered or "over time" in lowered:
+            return "change_continuity"
+        return "how"
+    if lowered.startswith("to what extent"):
+        return "compare"
+    if "change over time" in lowered or "between " in lowered and " and " in lowered:
+        return "change_continuity"
+    if lowered.startswith("compare ") or " differ " in lowered or " versus " in lowered:
+        return "compare"
+    if lowered.startswith("what ") or lowered.startswith("who ") or lowered.startswith("when ") or lowered.startswith("where "):
+        return "what"
+    # Treat explanatory statements and modals as "how" style by default.
+    if re.match(r"^(can|could|would|did|does|do)\b", lowered):
+        return "how"
+    return None
+
+
 def enforce_why_how(
     question_text: str,
     level: str,
     llm: LLMClient,
     budget: _BudgetProtocol,
     prompt_variant: Optional[str] = None,
+    model_name: Optional[str] = None,
 ) -> Tuple[str, str, bool]:
     """
     Returns (final_text, question_type, was_rewritten).
@@ -48,6 +82,10 @@ def enforce_why_how(
     On budget exhaustion, LLM failure, parse failure, or timeout fallback:
     returns original text with question_type="what".
     """
+    heuristic_type = _heuristic_question_type(question_text)
+    if heuristic_type and heuristic_type != "what":
+        return question_text, heuristic_type, False
+
     if not budget.request("light"):
         return question_text, "what", False
 
@@ -58,7 +96,8 @@ def enforce_why_how(
                 {"role": "system", "content": "You enforce historical question framing."},
                 {"role": "user", "content": get_why_how_prompt(variant).format(question_text=question_text)},
             ],
-            model=APP_CONFIG.tier0.ledger_expand_model,
+            provider=_ledger_provider(),
+            model=model_name or APP_CONFIG.tier0.ledger_expand_model,
             timeout=APP_CONFIG.tier0.llm_light_timeout,
             temperature=0.0,
         )
@@ -84,14 +123,15 @@ def enforce_why_how(
     return final_text, q_type, changed
 
 
-def _expand_call(q_a: str, q_b: str, llm: LLMClient) -> str:
+def _expand_call(q_a: str, q_b: str, llm: LLMClient, model_name: Optional[str] = None) -> str:
     try:
         response = llm.generate(
             messages=[
                 {"role": "system", "content": "You compare question specificity."},
                 {"role": "user", "content": EXPAND_DIRECTION_PROMPT.format(q_a=q_a, q_b=q_b)},
             ],
-            model=APP_CONFIG.tier0.ledger_expand_model,
+            provider=_ledger_provider(),
+            model=model_name or APP_CONFIG.tier0.ledger_expand_model,
             timeout=APP_CONFIG.tier0.llm_light_timeout,
             temperature=0.0,
         )
@@ -113,6 +153,7 @@ def _decide_relation_standard(
     similar_nodes: List[Tuple[QuestionNode, float]],
     llm: LLMClient,
     budget: _BudgetProtocol,
+    model_name: Optional[str] = None,
 ) -> RelationDecision:
     if not similar_nodes:
         return RelationDecision(action="new_thread")
@@ -125,7 +166,7 @@ def _decide_relation_standard(
 
     if best_sim >= cfg.ledger_merge_threshold:
         if budget.request("light"):
-            direction = _expand_call(candidate_text, best_node.question_text, llm)
+            direction = _expand_call(candidate_text, best_node.question_text, llm, model_name=model_name)
             skipped = False
         else:
             direction = "LATERAL"
@@ -167,6 +208,7 @@ def decide_relation_with_seed_guard(
     llm: LLMClient,
     budget: _BudgetProtocol,
     batch_label: str,
+    model_name: Optional[str] = None,
 ) -> Tuple[RelationDecision, RelationDecisionLog]:
     """
     Compare best-seed and best-non-seed candidates separately to avoid over-attaching
@@ -205,6 +247,7 @@ def decide_relation_with_seed_guard(
             similar_nodes=similar_nodes,
             llm=llm,
             budget=budget,
+            model_name=model_name,
         )
         if similar_nodes:
             best_match_sim = similar_nodes[0][1]

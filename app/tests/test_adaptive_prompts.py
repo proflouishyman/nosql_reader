@@ -33,9 +33,12 @@ def test_batch_prompt_variants_are_distinct() -> None:
     v1 = prompts_mod.get_batch_analysis_prompt("v1")
     v2 = prompts_mod.get_batch_analysis_prompt("v2")
     v3 = prompts_mod.get_batch_analysis_prompt("v3")
+    v4 = prompts_mod.get_batch_analysis_prompt("v4")
     assert v1 != v2
     assert v2 != v3
+    assert v3 != v4
     assert "question-building process" in v3
+    assert "INSTRUCTIONS (follow in order)" in v4
 
 
 def test_seed_prompt_variants_render_expected_placeholders() -> None:
@@ -43,3 +46,7 @@ def test_seed_prompt_variants_render_expected_placeholders() -> None:
     rendered = template.format(text="lens", max_questions=3, axes="time, place")
     assert "2 to 3" in rendered
     assert "Allowed tags: time, place" in rendered
+
+
+def test_v4_is_valid_prompt_variant() -> None:
+    assert prompts_mod.normalize_prompt_variant("v4") == "v4"

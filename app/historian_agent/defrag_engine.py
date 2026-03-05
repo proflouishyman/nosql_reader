@@ -29,6 +29,12 @@ from historian_agent.question_graph import (
 )
 from historian_agent.tier0_utils import parse_llm_json
 
+
+def _ledger_provider() -> str:
+    profile = APP_CONFIG.llm_profiles.get("fast", {})
+    return str(profile.get("provider") or "ollama")
+
+
 @dataclass
 class LLMBudget:
     cap: int
@@ -212,6 +218,7 @@ def _promote_question(
     budget: LLMBudget,
     cfg: Tier0Config,
     prompt_variant: Optional[str] = None,
+    model_name: Optional[str] = None,
 ) -> Optional[QuestionNode]:
     if not budget.request("medium"):
         return None
@@ -240,7 +247,8 @@ def _promote_question(
                     target_level=target_level,
                 )},
             ],
-            model=cfg.ledger_expand_model,
+            provider=_ledger_provider(),
+            model=model_name or cfg.ledger_expand_model,
             timeout=cfg.llm_medium_timeout,
             temperature=0.2,
         )
@@ -290,6 +298,7 @@ def _check_change_continuity(
     budget: LLMBudget,
     cfg: Tier0Config,
     prompt_variant: Optional[str] = None,
+    model_name: Optional[str] = None,
 ) -> Optional[QuestionNode]:
     if not budget.request("light"):
         return None
@@ -325,7 +334,8 @@ def _check_change_continuity(
                     max_year=max(years),
                 )},
             ],
-            model=cfg.ledger_expand_model,
+            provider=_ledger_provider(),
+            model=model_name or cfg.ledger_expand_model,
             timeout=cfg.llm_light_timeout,
             temperature=0.2,
         )
@@ -380,6 +390,7 @@ def defrag(
     batch_label: Optional[str] = None,
     budget: Optional[LLMBudget] = None,
     prompt_variant: Optional[str] = None,
+    model_name: Optional[str] = None,
 ) -> DefragSnapshot:
     cfg = config or APP_CONFIG.tier0
     label = batch_label or f"defrag-{interval_index}"
@@ -399,7 +410,16 @@ def defrag(
                 continue
             if any(parent.level == "meso" for parent in graph.get_parents(node.node_id)):
                 continue
-            promoted = _promote_question(node, graph, "meso", llm, budget, cfg, prompt_variant=prompt_variant)
+            promoted = _promote_question(
+                node,
+                graph,
+                "meso",
+                llm,
+                budget,
+                cfg,
+                prompt_variant=prompt_variant,
+                model_name=model_name,
+            )
             if promoted is None:
                 continue
             graph.add_node(promoted)
@@ -439,7 +459,16 @@ def defrag(
                 continue
             if any(parent.level == "macro" for parent in graph.get_parents(node.node_id)):
                 continue
-            promoted = _promote_question(node, graph, "macro", llm, budget, cfg, prompt_variant=prompt_variant)
+            promoted = _promote_question(
+                node,
+                graph,
+                "macro",
+                llm,
+                budget,
+                cfg,
+                prompt_variant=prompt_variant,
+                model_name=model_name,
+            )
             if promoted is None:
                 continue
             graph.add_node(promoted)
@@ -484,6 +513,7 @@ def defrag(
             budget,
             cfg,
             prompt_variant=prompt_variant,
+            model_name=model_name,
         )
         if cc_node is None:
             continue

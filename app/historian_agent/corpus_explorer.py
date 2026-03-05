@@ -223,6 +223,7 @@ class CorpusExplorer:
         sort_order: Optional[str] = None,
         research_brief: Optional[Any] = None,
         prompt_variant: Optional[str] = None,
+        ledger_model: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Execute systematic corpus exploration."""
         start_time = time.time()
@@ -237,6 +238,8 @@ class CorpusExplorer:
                 research_lens = research_brief.get("primary_lens") or research_brief.get("research_lens")
             else:
                 research_lens = str(research_brief)
+        # Legacy explorer ignores ledger_model so endpoint payloads stay mode-compatible.
+        _ = ledger_model
         self._research_lens = self._normalize_research_lens(research_lens)  # Added normalization to keep lens input predictable across API/UI variants.
 
         self.logger.log("start", f"strategy={strategy} budget={total_budget}")
@@ -533,7 +536,9 @@ class CorpusExplorer:
                     {"role": "system", "content": self._batch_analysis_system_message()},
                     {"role": "user", "content": prompt},
                 ],
-                profile=APP_CONFIG.tier0.batch_profile,
+                profile=self._batch_analysis_profile(),
+                provider=self._batch_analysis_provider_override(),
+                model=self._batch_analysis_model_override(),
                 temperature=0.2,
                 timeout=APP_CONFIG.tier0.llm_timeout,
             )
@@ -587,6 +592,18 @@ class CorpusExplorer:
     def _batch_analysis_system_message(self) -> str:
         """Return the analysis system message (override in adaptive mode)."""
         return INDUCTIVE_SYSTEM_MESSAGE
+
+    def _batch_analysis_profile(self) -> str:
+        """Return the profile used for batch extraction calls."""
+        return APP_CONFIG.tier0.batch_profile
+
+    def _batch_analysis_provider_override(self) -> Optional[str]:
+        """Optional provider override for model A/B experiments."""
+        return None
+
+    def _batch_analysis_model_override(self) -> Optional[str]:
+        """Optional model override for run-scoped experimentation."""
+        return None
 
     def _needs_repair(self, findings: Dict[str, Any], doc_count: int) -> bool:
         if not APP_CONFIG.tier0.strict_closed_world:

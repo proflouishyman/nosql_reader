@@ -1509,3 +1509,36 @@ Benchmark runs (100 docs, adaptive, archival sort):
 Observed behavior:
 - `v3` reliably increases graph activity and emergent micro-node generation.
 - Promotion bottleneck remains (meso/macro promotion still 0), indicating remaining work is now primarily in promotion/evidence aggregation thresholds rather than prompt output formatting.
+
+## 2026-03-05 - Prompt-quality v4 variant, run-scoped model A/B hooks, and benchmark resiliency
+
+### Problem
+- Adaptive prompt experiments needed stronger prompt structure based on current provider best practices.
+- Model A/B testing through the API failed when trying to mutate frozen config (`FrozenInstanceError` on `Tier0Config`).
+- Benchmark matrix runs were brittle when one model/variant failed and auto-model selection could pick non-text models.
+
+### Solution
+- Added adaptive prompt variant `v4` in `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/adaptive_prompts.py` with:
+  - ordered instructions,
+  - explicit closed-world constraints,
+  - quality rubric,
+  - compact good/bad examples,
+  - preserved JSON output contract.
+- Extended prompt tests in `/Users/louishyman/coding/nosql/nosql_reader/app/tests/test_adaptive_prompts.py` to validate `v4`.
+- Refactored adaptive run-scoped model selection without mutating frozen config:
+  - threaded `ledger_model` through `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py` into explorer calls,
+  - added run-scoped model/provider overrides in `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/incremental_explorer.py` and `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/corpus_explorer.py`,
+  - threaded explicit `model_name` through relation/defrag calls in `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/relation_engine.py` and `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/defrag_engine.py`.
+- Hardened benchmark harness in `/Users/louishyman/coding/nosql/nosql_reader/scripts/benchmark_adaptive_prompt_variants.py`:
+  - supports model matrix testing,
+  - filters out non-text/cloud/vision models for `--models auto`,
+  - continues on per-run errors and records status/error rows,
+  - default variants updated to `v2,v3,v4`.
+- Added web-review notes and implementation mapping in `/Users/louishyman/coding/nosql/nosql_reader/docs/prompting_best_practices_web_review_2026-03-05.md`.
+
+### Verification
+- `python -m py_compile app/historian_agent/adaptive_prompts.py app/historian_agent/relation_engine.py app/historian_agent/defrag_engine.py app/historian_agent/incremental_explorer.py app/historian_agent/corpus_explorer.py app/routes.py scripts/benchmark_adaptive_prompt_variants.py`
+- `PYTHONPATH=app pytest -q app/tests/test_adaptive_question_graph.py app/tests/test_research_consultation.py app/tests/test_adaptive_prompts.py` → `13 passed`
+- Prompt/model matrix benchmark:
+  - `python scripts/benchmark_adaptive_prompt_variants.py --documents 10 --variants v3,v4 --models qwen2.5:32b,gemma3:12b,llama3.1:8b --sort-order archival --timeout 600`
+  - output saved to: `/Users/louishyman/coding/nosql/nosql_reader/logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260305_001605.json`

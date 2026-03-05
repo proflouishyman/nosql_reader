@@ -8,7 +8,7 @@ from typing import Dict
 from config import APP_CONFIG
 
 
-VALID_PROMPT_VARIANTS = {"v1", "v2", "v3"}
+VALID_PROMPT_VARIANTS = {"v1", "v2", "v3", "v4"}
 
 
 def normalize_prompt_variant(raw: str) -> str:
@@ -36,6 +36,10 @@ ADAPTIVE_BATCH_SYSTEM_MESSAGES: Dict[str, str] = {
     "v3": (
         "You are a historian constructing question threads from micro observations to meso/macro hypotheses. "
         "Do not output isolated trivia; output analytically useful questions with evidence anchors."
+    ),
+    "v4": (
+        "You are a social historian building an auditable evidence graph from archival documents. "
+        "Output only high-value, cross-document questions with explicit block-level evidence anchors."
     ),
 }
 
@@ -190,6 +194,75 @@ QUESTION QUALITY FILTER:
 - Keep only questions that can accumulate evidence across documents.
 - Include at most 6 questions, highest analytic value first.
 """,
+    "v4": """INSTRUCTIONS (follow in order):
+1. Read <PRIOR_KNOWLEDGE>, <RESEARCH_LENS>, and <DOCUMENTS>.
+2. Extract only claims supported by explicit document block ids.
+3. Produce high-value historian questions for cross-document explanation.
+4. Return JSON only. Do not include commentary.
+
+<CLOSED_WORLD_RULES>
+- Use only facts present in <DOCUMENTS>.
+- Never invent names, dates, places, institutions, or causal claims.
+- Every pattern, contradiction, and question must cite at least one valid block_id from the input.
+- Prefer false negatives over false positives.
+</CLOSED_WORLD_RULES>
+
+<QUESTION_RUBRIC>
+- Keep only questions that can aggregate evidence across multiple documents or groups.
+- Prefer "why/how/compare/change_continuity/explain" framing.
+- Avoid single-person retrieval questions unless they explicitly test a broader mechanism.
+- Include at most 6 questions ranked by analytic value.
+- If no valid analytic question exists, return "questions": [].
+</QUESTION_RUBRIC>
+
+<GOOD_BAD_EXAMPLES>
+GOOD: "How did injury compensation differ across occupations, and why?"
+BAD: "What happened to John Smith on March 3?"
+GOOD: "Why do contradictory injury reports cluster in specific years or offices?"
+</GOOD_BAD_EXAMPLES>
+
+<PRIOR_KNOWLEDGE>
+{prior_knowledge}
+</PRIOR_KNOWLEDGE>
+
+<RESEARCH_LENS>
+{research_lens}
+</RESEARCH_LENS>
+
+<DOCUMENTS>
+{documents_json}
+</DOCUMENTS>
+
+Return EXACT JSON schema:
+{{
+  "entities": [
+    {{"name": str, "type": "person|organization|place", "first_seen": "block_id", "context": str}}
+  ],
+  "patterns": [
+    {{"pattern": str, "type": str, "evidence_blocks": ["block_id"], "confidence": "low|medium|high", "time_range": str}}
+  ],
+  "contradictions": [
+    {{"claim_a": str, "claim_b": str, "source_a": "block_id", "source_b": "block_id", "context": str}}
+  ],
+  "group_indicators": [
+    {{"group_type": "race|gender|class|ethnicity|national_origin|occupation", "label": str, "evidence_blocks": ["block_id"], "confidence": "low|medium|high"}}
+  ],
+  "questions": [
+    {{
+      "question": str,
+      "why_interesting": str,
+      "evidence_needed": str,
+      "related_entities": [],
+      "time_window": str,
+      "evidence_blocks": ["block_id"],
+      "axis_tags": [str],
+      "suggested_level": "micro|meso_hint|macro_hint",
+      "parent_hint": str
+    }}
+  ],
+  "temporal_events": {{"year": [str]}}
+}}
+""",
 }
 
 
@@ -231,6 +304,25 @@ Hard constraints:
   without changing meaning.
 
 Return JSON only: {{"question": str, "question_type": str, "changed": bool}}
+Valid question_type: "why", "how", "compare", "change_continuity", "explain", "what"
+""",
+    "v4": """TASK: Enforce historian-grade question framing.
+
+QUESTION:
+{question_text}
+
+Rules:
+- Keep the same actors, place, period, and scope.
+- If descriptive/"what happened", reframe to why/how/compare/change when possible.
+- Use "what" only when reframing would change meaning and the question is strictly micro-factual.
+
+Decision examples:
+- Input: "What injury did Adams sustain?" -> keep as "what" (micro factual).
+- Input: "What happened to brakemen injuries over time?" -> rewrite as change/continuity.
+- Input: "Why were reports delayed?" -> unchanged.
+
+Return JSON only:
+{{"question": str, "question_type": str, "changed": bool}}
 Valid question_type: "why", "how", "compare", "change_continuity", "explain", "what"
 """,
 }
@@ -291,6 +383,26 @@ Produce ONE {target_level} question that integrates sub-questions while retainin
 Return JSON only: {{"question": str, "question_type": str}}
 Valid question_type: "why", "how", "compare", "change_continuity", "explain"
 """,
+    "v4": """TASK: Promote a question to a higher analytical level without losing evidence constraints.
+
+CURRENT QUESTION ({current_level}): {question_text}
+SUB-QUESTIONS:
+{children_text}
+EVIDENCE SUMMARY:
+{evidence_summary}
+{tension_note}
+
+Requirements:
+- Output one {target_level} question only.
+- Keep the same phenomenon and corpus scope.
+- Increase explanatory leverage (mechanism, comparison, or change over time).
+- Preserve contradictions as tension; do not resolve uncertainty.
+- Must be answerable using the available corpus evidence.
+- Must not be a "what" question.
+
+Return JSON only: {{"question": str, "question_type": str}}
+Valid question_type: "why", "how", "compare", "change_continuity", "explain"
+""",
 }
 
 
@@ -325,6 +437,20 @@ TIME SPAN: {min_year}–{max_year}
 
 Return one question that foregrounds mechanism of change OR persistence across periods.
 Avoid generic wording. Keep it analyzable with available archival evidence.
+
+Return JSON only: {{"question": str}}
+""",
+    "v4": """TASK: Write one historian-grade change/continuity question.
+
+QUESTIONS:
+{questions}
+TIME SPAN: {min_year}–{max_year}
+
+Rules:
+- Ask how/why a pattern changed, persisted, or diverged across this span.
+- Keep wording specific enough to test in this corpus.
+- Do not invent causes not implied by the evidence context.
+- Avoid generic phrasing.
 
 Return JSON only: {{"question": str}}
 """,
@@ -377,6 +503,23 @@ Return JSON array only:
 {{"question": str, "question_type": str, "tags": [str]}}
 Allowed tags: {axes}
 """,
+    "v4": """TASK: Extract seed questions for a historian before corpus reading.
+
+INPUT:
+{text}
+
+Rules:
+- Return 2 to {max_questions} seeds.
+- Seeds must be broad but falsifiable within corpus reading.
+- Allowed types: why, how, compare, change_continuity, explain.
+- Do not output "what happened" questions.
+- Do not invent names, dates, places, or institutions.
+- Prefer distinct analytical dimensions when possible.
+
+Output JSON array only:
+{{"question": str, "question_type": str, "tags": [str]}}
+Allowed tags: {axes}
+""",
 }
 
 
@@ -416,4 +559,3 @@ def get_change_continuity_prompt(variant: str) -> str:
 def get_seed_extraction_prompt(variant: str) -> str:
     key = normalize_prompt_variant(variant)
     return SEED_EXTRACTION_PROMPTS.get(key, SEED_EXTRACTION_PROMPTS["v1"])
-

@@ -85,9 +85,14 @@ def _capture_ollama_models() -> List[str]:
     return models
 
 
-def _variant_payload(args: argparse.Namespace, variant: str, brief: Dict[str, Any]) -> Dict[str, Any]:
+def _variant_payload(
+    args: argparse.Namespace,
+    variant: str,
+    brief: Dict[str, Any],
+    ledger_model: str,
+) -> Dict[str, Any]:
     """Build a stable benchmark request for one prompt variant."""
-    return {
+    payload: Dict[str, Any] = {
         "mode": "adaptive",
         "strategy": args.strategy,
         "total_budget": args.documents,
@@ -100,9 +105,18 @@ def _variant_payload(args: argparse.Namespace, variant: str, brief: Dict[str, An
             "confirmed": True,
         },
     }
+    if ledger_model:
+        # Keep model override explicit per run so matrix experiments are reproducible.
+        payload["ledger_model"] = ledger_model
+    return payload
 
 
-def _summarize_variant(variant: str, report: Dict[str, Any], elapsed_s: float) -> Dict[str, Any]:
+def _summarize_variant(
+    variant: str,
+    requested_model: str,
+    report: Dict[str, Any],
+    elapsed_s: float,
+) -> Dict[str, Any]:
     metadata = report.get("exploration_metadata") if isinstance(report.get("exploration_metadata"), dict) else {}
     graph = report.get("question_graph") if isinstance(report.get("question_graph"), dict) else {}
     by_level = graph.get("by_level") if isinstance(graph.get("by_level"), dict) else {}
@@ -123,6 +137,8 @@ def _summarize_variant(variant: str, report: Dict[str, Any], elapsed_s: float) -
 
     return {
         "prompt_variant": variant,
+        "requested_model": requested_model or "(default)",
+        "effective_model": str(metadata.get("ledger_model") or requested_model or "(default)"),
         "duration_seconds": round(elapsed_s, 2),
         "documents_read": int(metadata.get("documents_read") or 0),
         "batches_processed": int(metadata.get("batches_processed") or 0),
@@ -148,6 +164,8 @@ def _summarize_variant(variant: str, report: Dict[str, Any], elapsed_s: float) -
 
 def _print_table(rows: List[Dict[str, Any]]) -> None:
     headers = [
+        "status",
+        "model",
         "variant",
         "secs",
         "docs",
@@ -161,20 +179,22 @@ def _print_table(rows: List[Dict[str, Any]]) -> None:
         "promotions",
     ]
     print(" | ".join(headers))
-    print("-|-|-|-|-|-|-|-|-|-|-")
+    print("-|-|-|-|-|-|-|-|-|-|-|-|-")
     for row in rows:
         print(
-            f"{row['prompt_variant']} | "
-            f"{row['duration_seconds']} | "
-            f"{row['documents_read']} | "
-            f"{row['graph_total_nodes']} | "
-            f"{row['graph_macro_nodes']} | "
-            f"{row['graph_meso_nodes']} | "
-            f"{row['graph_micro_nodes']} | "
-            f"{row['graph_edges']} | "
-            f"{row['decision_log_count']} | "
-            f"{row['seed_questions_confirmed']} | "
-            f"{row['defrag_promotions_total']}"
+            f"{row.get('status', 'ok')} | "
+            f"{row.get('effective_model', row.get('requested_model', '(default)'))} | "
+            f"{row.get('prompt_variant', '')} | "
+            f"{row.get('duration_seconds', 0)} | "
+            f"{row.get('documents_read', 0)} | "
+            f"{row.get('graph_total_nodes', 0)} | "
+            f"{row.get('graph_macro_nodes', 0)} | "
+            f"{row.get('graph_meso_nodes', 0)} | "
+            f"{row.get('graph_micro_nodes', 0)} | "
+            f"{row.get('graph_edges', 0)} | "
+            f"{row.get('decision_log_count', 0)} | "
+            f"{row.get('seed_questions_confirmed', 0)} | "
+            f"{row.get('defrag_promotions_total', 0)}"
         )
 
 
@@ -184,7 +204,13 @@ def main() -> int:
     parser.add_argument("--documents", type=int, default=100)
     parser.add_argument("--strategy", default="balanced")
     parser.add_argument("--sort-order", default="archival")
-    parser.add_argument("--variants", default="v1,v2,v3")
+    parser.add_argument("--variants", default="v2,v3,v4")
+    parser.add_argument("--ledger-model", default="")
+    parser.add_argument(
+        "--models",
+        default="",
+        help="Comma-separated model list or 'auto' to pick from ollama list.",
+    )
     parser.add_argument("--timeout", type=int, default=7200)
     parser.add_argument("--out-dir", default="logs/prompt_variant_benchmarks")
     parser.add_argument("--brief-json", default="")
@@ -205,17 +231,76 @@ def main() -> int:
     endpoint = f"{args.base_url.rstrip('/')}/api/rag/explore_corpus"
     models = _capture_ollama_models()
 
-    for variant in variants:
-        payload = _variant_payload(args, variant, brief)
-        start = time.perf_counter()
-        print(f"[benchmark] running variant={variant} docs={args.documents}", flush=True)
-        try:
-            report = _post_json(endpoint, payload, timeout_s=args.timeout)
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"HTTP {exc.code} for variant={variant}: {detail}") from exc
-        elapsed = time.perf_counter() - start
-        results.append(_summarize_variant(variant, report, elapsed))
+    # Build model test set: explicit list wins, then single override, else default server config.
+    model_candidates: List[str] = []
+    if args.models.strip():
+        if args.models.strip().lower() == "auto":
+            # Filter out non-text and remote/cloud entries so A/B/C stays comparable.
+            filtered_models = []
+            for name in models:
+                lowered = name.lower()
+                if any(token in lowered for token in ("vl", "vision", "embedding", "ocr", "cloud")):
+                    continue
+                filtered_models.append(name)
+            preferred_families = ("qwen", "llama", "gemma", "mistral")
+            for family in preferred_families:
+                match = next((m for m in filtered_models if m.lower().startswith(family)), None)
+                if match and match not in model_candidates:
+                    model_candidates.append(match)
+            if not model_candidates:
+                model_candidates = filtered_models[:3] if filtered_models else models[:3]
+        else:
+            model_candidates = [item.strip() for item in args.models.split(",") if item.strip()]
+    elif args.ledger_model.strip():
+        model_candidates = [args.ledger_model.strip()]
+    else:
+        model_candidates = [""]
+
+    for model_name in model_candidates:
+        for variant in variants:
+            payload = _variant_payload(args, variant, brief, ledger_model=model_name)
+            start = time.perf_counter()
+            print(
+                f"[benchmark] running model={model_name or '(default)'} variant={variant} docs={args.documents}",
+                flush=True,
+            )
+            try:
+                report = _post_json(endpoint, payload, timeout_s=args.timeout)
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="replace")
+                elapsed = time.perf_counter() - start
+                print(
+                    f"[benchmark] error model={model_name or '(default)'} variant={variant}: HTTP {exc.code}",
+                    flush=True,
+                )
+                results.append({
+                    "status": "error",
+                    "prompt_variant": variant,
+                    "requested_model": model_name or "(default)",
+                    "effective_model": model_name or "(default)",
+                    "duration_seconds": round(elapsed, 2),
+                    "error": f"HTTP {exc.code}: {detail[:240]}",
+                })
+                continue
+            except Exception as exc:
+                elapsed = time.perf_counter() - start
+                print(
+                    f"[benchmark] error model={model_name or '(default)'} variant={variant}: {exc}",
+                    flush=True,
+                )
+                results.append({
+                    "status": "error",
+                    "prompt_variant": variant,
+                    "requested_model": model_name or "(default)",
+                    "effective_model": model_name or "(default)",
+                    "duration_seconds": round(elapsed, 2),
+                    "error": str(exc),
+                })
+                continue
+            elapsed = time.perf_counter() - start
+            summary = _summarize_variant(variant, model_name, report, elapsed)
+            summary["status"] = "ok"
+            results.append(summary)
 
     output = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
@@ -224,6 +309,7 @@ def main() -> int:
         "strategy": args.strategy,
         "sort_order": args.sort_order,
         "variants": variants,
+        "models_tested": [name or "(default)" for name in model_candidates],
         "ollama_models": models,
         "results": results,
     }
