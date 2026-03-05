@@ -1542,3 +1542,27 @@ Observed behavior:
 - Prompt/model matrix benchmark:
   - `python scripts/benchmark_adaptive_prompt_variants.py --documents 10 --variants v3,v4 --models qwen2.5:32b,gemma3:12b,llama3.1:8b --sort-order archival --timeout 600`
   - output saved to: `/Users/louishyman/coding/nosql/nosql_reader/logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260305_001605.json`
+
+## 2026-03-05 - Add historian-process prompt variant v5 and quality proxy metrics
+
+### Problem
+- Prompt variants improved structure, but they did not explicitly encode the historian workflow provided by domain guidance:
+  observation -> puzzle -> system-level explanation.
+- Benchmarks compared graph size/shape, but lacked even lightweight quality proxies for factoid vs analytical question output.
+
+### Solution
+- Added adaptive prompt variant `v5` in `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/adaptive_prompts.py` with:
+  - explicit process instructions (observation, puzzle, system),
+  - five historian question types (causal, institutional, social structure, change-over-time, experience/meaning),
+  - stronger rejection of factoid and vague pseudo-analytic prompts.
+- Extended prompt tests in `/Users/louishyman/coding/nosql/nosql_reader/app/tests/test_adaptive_prompts.py` to validate `v5` markers.
+- Added a framework reference doc: `/Users/louishyman/coding/nosql/nosql_reader/docs/historian_question_generation_framework.md`.
+- Extended benchmark reporting in `/Users/louishyman/coding/nosql/nosql_reader/scripts/benchmark_adaptive_prompt_variants.py` with quality proxies:
+  - `quality_analytic_ratio`,
+  - `quality_factoid_count`,
+  - `quality_vague_count`.
+- Updated benchmark defaults to include `v5` for new prompt sweeps.
+
+### Verification
+- `python -m py_compile app/historian_agent/adaptive_prompts.py scripts/benchmark_adaptive_prompt_variants.py app/tests/test_adaptive_prompts.py`
+- `PYTHONPATH=app pytest -q app/tests/test_adaptive_prompts.py app/tests/test_adaptive_question_graph.py app/tests/test_research_consultation.py` -> `14 passed`

@@ -50,3 +50,10 @@ def test_seed_prompt_variants_render_expected_placeholders() -> None:
 
 def test_v4_is_valid_prompt_variant() -> None:
     assert prompts_mod.normalize_prompt_variant("v4") == "v4"
+
+
+def test_v5_is_valid_prompt_variant() -> None:
+    assert prompts_mod.normalize_prompt_variant("v5") == "v5"
+    batch_prompt = prompts_mod.get_batch_analysis_prompt("v5")
+    assert "PROCESS (follow in order)" in batch_prompt
+    assert "HISTORIAN QUESTION TYPES" in batch_prompt

@@ -13,6 +13,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
+import re
 
 
 DEFAULT_BRIEF: Dict[str, Any] = {
@@ -135,6 +136,9 @@ def _summarize_variant(
         budget_skips += int(snap.get("llm_calls_skipped_budget") or 0)
         llm_calls += int(snap.get("llm_calls_this_interval") or 0)
 
+    top_questions = report.get("questions") if isinstance(report.get("questions"), list) else []
+    quality = _quality_metrics(top_questions)
+
     return {
         "prompt_variant": variant,
         "requested_model": requested_model or "(default)",
@@ -159,6 +163,10 @@ def _summarize_variant(
         "defrag_promotions_total": promotions,
         "llm_calls_total": llm_calls,
         "llm_calls_skipped_budget_total": budget_skips,
+        "quality_analytic_ratio": quality["analytic_ratio"],
+        "quality_factoid_count": quality["factoid_count"],
+        "quality_vague_count": quality["vague_count"],
+        "quality_questions_evaluated": quality["question_count"],
     }
 
 
@@ -177,9 +185,12 @@ def _print_table(rows: List[Dict[str, Any]]) -> None:
         "logs",
         "seed_ok",
         "promotions",
+        "analytic",
+        "factoid",
+        "vague",
     ]
     print(" | ".join(headers))
-    print("-|-|-|-|-|-|-|-|-|-|-|-|-")
+    print("-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-")
     for row in rows:
         print(
             f"{row.get('status', 'ok')} | "
@@ -194,8 +205,72 @@ def _print_table(rows: List[Dict[str, Any]]) -> None:
             f"{row.get('graph_edges', 0)} | "
             f"{row.get('decision_log_count', 0)} | "
             f"{row.get('seed_questions_confirmed', 0)} | "
-            f"{row.get('defrag_promotions_total', 0)}"
+            f"{row.get('defrag_promotions_total', 0)} | "
+            f"{row.get('quality_analytic_ratio', 0)} | "
+            f"{row.get('quality_factoid_count', 0)} | "
+            f"{row.get('quality_vague_count', 0)}"
         )
+
+
+def _quality_metrics(questions: List[Any]) -> Dict[str, Any]:
+    """
+    Lightweight historian-quality proxy from top-level synthesized questions.
+    Used for A/B comparisons, not as final truth.
+    """
+    if not isinstance(questions, list):
+        return {"question_count": 0, "analytic_ratio": 0.0, "factoid_count": 0, "vague_count": 0}
+
+    factoid_prefix = re.compile(r"^(when|who|what year|how many|where)\b", re.IGNORECASE)
+    vague_markers = (
+        "what impact",
+        "what role",
+        "what was life like",
+        "how important",
+        "what challenges",
+    )
+    mechanism_markers = (
+        "why",
+        "how",
+        "change",
+        "across",
+        "vary",
+        "institution",
+        "system",
+        "power",
+        "hierarch",
+        "incentive",
+    )
+
+    total = 0
+    factoid = 0
+    vague = 0
+    analytic = 0
+
+    for item in questions:
+        text = ""
+        if isinstance(item, dict):
+            text = str(item.get("question") or "").strip()
+        elif isinstance(item, str):
+            text = item.strip()
+        if not text:
+            continue
+        total += 1
+        lowered = text.lower()
+
+        if factoid_prefix.match(lowered):
+            factoid += 1
+        if any(marker in lowered for marker in vague_markers):
+            vague += 1
+        if any(marker in lowered for marker in mechanism_markers):
+            analytic += 1
+
+    ratio = round((analytic / total), 3) if total else 0.0
+    return {
+        "question_count": total,
+        "analytic_ratio": ratio,
+        "factoid_count": factoid,
+        "vague_count": vague,
+    }
 
 
 def main() -> int:
@@ -204,7 +279,7 @@ def main() -> int:
     parser.add_argument("--documents", type=int, default=100)
     parser.add_argument("--strategy", default="balanced")
     parser.add_argument("--sort-order", default="archival")
-    parser.add_argument("--variants", default="v2,v3,v4")
+    parser.add_argument("--variants", default="v3,v4,v5")
     parser.add_argument("--ledger-model", default="")
     parser.add_argument(
         "--models",
