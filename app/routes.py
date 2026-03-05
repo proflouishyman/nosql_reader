@@ -64,6 +64,7 @@ from network import init_app as init_network
 from network.config import NetworkConfig
 from network.network_utils import get_network_documents_for_viewer
 from log_stream import stream_generator, signal_done
+from config import APP_CONFIG
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -125,12 +126,15 @@ from historian_agent.adversarial_rag import AdversarialRAGHandler
 from historian_agent.iterative_adversarial_agent import build_agent_from_env
 from historian_agent.rag_query_handler import RAGQueryHandler
 from historian_agent.corpus_explorer import CorpusExplorer
+from historian_agent.incremental_explorer import IncrementalCorpusExplorer
+from historian_agent.research_consultation import build_reflection, normalize_brief
 
 # Global instances (initialized lazily)
 _rag_handler = None
 _adversarial_handler = None
 _tiered_agent = None
 _tier0_explorer = None
+_incremental_explorer = None
 _last_exploration_report = None
 _exploration_runs: Dict[str, Dict[str, Any]] = {}
 _exploration_runs_lock = threading.Lock()
@@ -164,6 +168,14 @@ def get_tier0_explorer():
     if _tier0_explorer is None:
         _tier0_explorer = CorpusExplorer()
     return _tier0_explorer
+
+
+def get_incremental_explorer():
+    """Lazy initialization of adaptive Tier 0 explorer."""
+    global _incremental_explorer
+    if _incremental_explorer is None:
+        _incremental_explorer = IncrementalCorpusExplorer()
+    return _incremental_explorer
 
 
 def _render(template: str, **kwargs):
@@ -524,6 +536,10 @@ def historian_agent_query_tier0():
         year_range = payload.get('year_range')
         save_notebook = payload.get('save_notebook')
         research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases so callers can bias Tier 0 toward historian-defined intersections.
+        research_brief = payload.get('research_brief')
+        sort_order = payload.get('sort_order')
+        prompt_variant = payload.get('prompt_variant')
+        mode = str(payload.get('mode') or APP_CONFIG.tier0.notebook_mode or 'legacy').strip().lower()
 
         if isinstance(year_range, list) and len(year_range) == 2:
             try:
@@ -533,13 +549,16 @@ def historian_agent_query_tier0():
         elif not isinstance(year_range, tuple):
             year_range = None
 
-        explorer = get_tier0_explorer()
+        explorer = get_incremental_explorer() if mode == 'adaptive' else get_tier0_explorer()
         report = explorer.explore(
             strategy=strategy,
             total_budget=total_budget,
             year_range=year_range,
             save_notebook=save_notebook,
             research_lens=research_lens,
+            sort_order=sort_order,
+            research_brief=research_brief,
+            prompt_variant=prompt_variant,
         )
 
         global _last_exploration_report
@@ -618,6 +637,10 @@ def explore_corpus_endpoint():
         year_range = payload.get('year_range')
         save_notebook = payload.get('save_notebook')
         research_lens = payload.get('research_lens', payload.get('focus_areas'))  # Added optional lens aliases for API clients that prepopulate historian interests.
+        research_brief = payload.get('research_brief')
+        sort_order = payload.get('sort_order')
+        prompt_variant = payload.get('prompt_variant')
+        mode = str(payload.get('mode') or APP_CONFIG.tier0.notebook_mode or 'legacy').strip().lower()
 
         if isinstance(year_range, list) and len(year_range) == 2:
             try:
@@ -627,13 +650,16 @@ def explore_corpus_endpoint():
         elif not isinstance(year_range, tuple):
             year_range = None
 
-        explorer = get_tier0_explorer()
+        explorer = get_incremental_explorer() if mode == 'adaptive' else get_tier0_explorer()
         report = explorer.explore(
             strategy=strategy,
             total_budget=total_budget,
             year_range=year_range,
             save_notebook=save_notebook,
             research_lens=research_lens,
+            sort_order=sort_order,
+            research_brief=research_brief,
+            prompt_variant=prompt_variant,
         )
 
         global _last_exploration_report
@@ -642,6 +668,32 @@ def explore_corpus_endpoint():
         return jsonify(report)
     finally:
         signal_done()  # Close any active frontend log stream for sync exploration.
+
+
+@app.route('/api/rag/research_consultation/reflect', methods=['POST'])
+def research_consultation_reflect_endpoint():
+    """Generate one-turn consultation reflection before adaptive reading starts."""
+    payload = request.get_json(silent=True) or {}
+    brief_payload = payload.get('research_brief', payload)
+    brief = normalize_brief(brief_payload)
+
+    if not brief.primary_lens.strip():
+        return jsonify({'error': 'primary_lens is required for consultation reflection.'}), 400
+
+    explorer = get_incremental_explorer()
+    reflection = build_reflection(
+        brief,
+        llm=explorer.llm,
+        prompt_variant=payload.get('prompt_variant'),
+    )
+    return jsonify({
+        'research_brief': brief.to_dict(),
+        'reflection': reflection.get('reflection', ''),
+        'recommended_sort_order': reflection.get('recommended_sort_order'),
+        'proposed_seeds': reflection.get('proposed_seeds', []),
+        'axes': reflection.get('axes', []),
+        'uncertainty': reflection.get('uncertainty', ''),
+    })
 
 
 @app.route('/api/rag/explore_corpus/start', methods=['POST'])
@@ -1134,6 +1186,10 @@ def _run_exploration_async(run_id: str, payload: Dict[str, Any]) -> None:
     year_range = payload.get('year_range')
     save_notebook = payload.get('save_notebook')
     research_lens = payload.get('research_lens', payload.get('focus_areas'))
+    research_brief = payload.get('research_brief')
+    sort_order = payload.get('sort_order')
+    prompt_variant = payload.get('prompt_variant')
+    mode = str(payload.get('mode') or APP_CONFIG.tier0.notebook_mode or 'legacy').strip().lower()
 
     if isinstance(year_range, list) and len(year_range) == 2:
         try:
@@ -1153,13 +1209,16 @@ def _run_exploration_async(run_id: str, payload: Dict[str, Any]) -> None:
         _append_run_event(run, '[runner] started exploration worker')
 
     try:
-        explorer = get_tier0_explorer()
+        explorer = get_incremental_explorer() if mode == 'adaptive' else get_tier0_explorer()
         report = explorer.explore(
             strategy=strategy,
             total_budget=total_budget,
             year_range=year_range,
             save_notebook=save_notebook,
             research_lens=research_lens,
+            sort_order=sort_order,
+            research_brief=research_brief,
+            prompt_variant=prompt_variant,
         )
         _last_exploration_report = report
         with _exploration_runs_lock:

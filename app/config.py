@@ -20,7 +20,7 @@ Usage:
 
 import os
 from dataclasses import dataclass, field
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -230,6 +230,35 @@ class Tier0Config:
     doc_cache_mode: str
     doc_cache_collection: str
     doc_cache_prompt_version: str
+    notebook_mode: str
+    seed_max_questions: int
+    seed_priority_boost: float
+    seed_decay_after_docs: int
+    seed_attach_margin: float
+    ledger_merge_interval: int
+    ledger_max_active: int
+    open_discovery_quota: int
+    ledger_expand_model: str
+    ledger_dedupe_threshold: float
+    ledger_merge_threshold: float
+    ledger_lateral_threshold: float
+    promote_micro_min_docs: int
+    promote_meso_min_children: int
+    tension_threshold: float
+    tension_smoothing: int
+    tension_surface_in_synthesis: bool
+    change_continuity_min_year_span: int
+    llm_budget_per_interval: int
+    llm_budget_enforce: bool
+    llm_light_timeout: int
+    llm_medium_timeout: int
+    llm_heavy_timeout: int
+    ann_enabled: bool
+    ann_index_type: str
+    adaptive_default_sort: str
+    adaptive_prompt_variant: str
+    sort_nulls: str
+    question_axes: List[str]
 
 
 @dataclass(frozen=True)
@@ -364,7 +393,7 @@ class ConfigLoader:
             # Fast local model for quick operations (multi-query generation, etc.)
             "fast": {
                 "provider": "ollama",
-                "model": _env("LLM_FAST_MODEL", "llama3.1:8b"),
+                "model": _env("LLM_FAST_MODEL", "gemma3:12b"),
                 "temperature": 0.3,
                 "timeout": 30.0,
             },
@@ -495,6 +524,39 @@ class ConfigLoader:
             doc_cache_mode=_env("TIER0_DOC_CACHE_MODE", "use"),
             doc_cache_collection=_env("TIER0_DOC_CACHE_COLLECTION", "tier0_doc_cache"),
             doc_cache_prompt_version=_env("TIER0_DOC_CACHE_PROMPT_VERSION", "v1"),
+            notebook_mode=_env("TIER0_NOTEBOOK_MODE", "legacy"),
+            seed_max_questions=_env_int("TIER0_SEED_MAX_QUESTIONS", 5),
+            seed_priority_boost=_env_float("TIER0_SEED_PRIORITY_BOOST", 0.6),
+            seed_decay_after_docs=_env_int("TIER0_SEED_DECAY_AFTER_DOCS", 20),
+            seed_attach_margin=_env_float("TIER0_SEED_ATTACH_MARGIN", 0.08),
+            ledger_merge_interval=_env_int("TIER0_LEDGER_MERGE_INTERVAL", 5),
+            ledger_max_active=_env_int("TIER0_LEDGER_MAX_ACTIVE", 15),
+            open_discovery_quota=_env_int("TIER0_OPEN_DISCOVERY_QUOTA", 3),
+            ledger_expand_model=_env("TIER0_LEDGER_EXPAND_MODEL", "qwen2.5:32b"),
+            ledger_dedupe_threshold=_env_float("TIER0_LEDGER_DEDUPE_THRESHOLD", 0.86),
+            ledger_merge_threshold=_env_float("TIER0_LEDGER_MERGE_THRESHOLD", 0.78),
+            ledger_lateral_threshold=_env_float("TIER0_LEDGER_LATERAL_THRESHOLD", 0.60),
+            promote_micro_min_docs=_env_int("TIER0_PROMOTE_MICRO_MIN_DOCS", 2),
+            promote_meso_min_children=_env_int("TIER0_PROMOTE_MESO_MIN_CHILDREN", 3),
+            tension_threshold=_env_float("TIER0_TENSION_THRESHOLD", 0.4),
+            tension_smoothing=_env_int("TIER0_TENSION_SMOOTHING", 3),
+            tension_surface_in_synthesis=_env_bool("TIER0_TENSION_SURFACE_IN_SYNTHESIS", True),
+            change_continuity_min_year_span=_env_int("TIER0_CHANGE_CONTINUITY_MIN_YEAR_SPAN", 10),
+            llm_budget_per_interval=_env_int("TIER0_LLM_BUDGET_PER_INTERVAL", 20),
+            llm_budget_enforce=_env_bool("TIER0_LLM_BUDGET_ENFORCE", True),
+            llm_light_timeout=_env_int("TIER0_LLM_LIGHT_TIMEOUT", 15),
+            llm_medium_timeout=_env_int("TIER0_LLM_MEDIUM_TIMEOUT", 30),
+            llm_heavy_timeout=_env_int("TIER0_LLM_HEAVY_TIMEOUT", 60),
+            ann_enabled=_env_bool("TIER0_ANN_ENABLED", False),
+            ann_index_type=_env("TIER0_ANN_INDEX_TYPE", "hnsw"),
+            adaptive_default_sort=_env("TIER0_ADAPTIVE_DEFAULT_SORT", "archival"),
+            adaptive_prompt_variant=_env("TIER0_ADAPTIVE_PROMPT_VARIANT", "v1"),
+            sort_nulls=_env("TIER0_SORT_NULLS", "last"),
+            question_axes=[
+                axis.strip()
+                for axis in _env("TIER0_QUESTION_AXES", "time,place,group,institution,cause,change").split(",")
+                if axis.strip()
+            ],
         )
         
         # --- Application Configuration ---

@@ -220,6 +220,9 @@ class CorpusExplorer:
         year_range: Optional[Tuple[int, int]] = None,
         save_notebook: Optional[bool] = None,
         research_lens: Optional[Any] = None,
+        sort_order: Optional[str] = None,
+        research_brief: Optional[Any] = None,
+        prompt_variant: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Execute systematic corpus exploration."""
         start_time = time.time()
@@ -228,13 +231,19 @@ class CorpusExplorer:
         strategy = strategy or config.exploration_strategy
         total_budget = total_budget or config.exploration_budget
         save_notebook = config.notebook_auto_save if save_notebook is None else save_notebook
+        # Preserve backward compatibility: legacy explorer can still accept structured brief payloads.
+        if research_brief is not None and research_lens is None:
+            if isinstance(research_brief, dict):
+                research_lens = research_brief.get("primary_lens") or research_brief.get("research_lens")
+            else:
+                research_lens = str(research_brief)
         self._research_lens = self._normalize_research_lens(research_lens)  # Added normalization to keep lens input predictable across API/UI variants.
 
         self.logger.log("start", f"strategy={strategy} budget={total_budget}")
         if self._research_lens:
             self.logger.log("lens", "; ".join(self._research_lens))
 
-        strata = self._build_strata(strategy, total_budget, year_range)
+        strata = self._build_strata(strategy, total_budget, year_range, sort_order=sort_order)
         self.logger.log("stratification", f"{len(strata)} batches")
 
         for idx, stratum in enumerate(strata):
@@ -272,6 +281,7 @@ class CorpusExplorer:
                 "duration_seconds": time.time() - start_time,
                 "timestamp": datetime.now().isoformat(),
                 "research_lens": list(self._research_lens),  # Added to make lens usage explicit in persisted run metadata.
+                "sort_order": sort_order,
                 "question_quality_gate": question_quality_gate,
             },
         }
@@ -351,6 +361,7 @@ class CorpusExplorer:
         strategy: str,
         total_budget: int,
         year_range: Optional[Tuple[int, int]],
+        sort_order: Optional[str] = None,
     ) -> List[Stratum]:
         if APP_CONFIG.tier0.full_corpus:
             return self.stratifier.full_corpus_stratification(total_budget=total_budget)
@@ -507,7 +518,7 @@ class CorpusExplorer:
         documents_json = self.reader.format_document_objects_for_llm(doc_objects)
         total_blocks = sum(len(doc.blocks) for doc in doc_objects)
 
-        prompt = BATCH_ANALYSIS_PROMPT.format(
+        prompt = self._batch_analysis_prompt_template().format(
             prior_knowledge=prior_knowledge,
             research_lens=self._format_research_lens_for_prompt(),
             documents_json=documents_json,
@@ -519,7 +530,7 @@ class CorpusExplorer:
         with Heartbeat(self.logger, "llm", heartbeat_detail, APP_CONFIG.tier0.heartbeat_seconds):
             response = self.llm.generate(
                 messages=[
-                    {"role": "system", "content": INDUCTIVE_SYSTEM_MESSAGE},
+                    {"role": "system", "content": self._batch_analysis_system_message()},
                     {"role": "user", "content": prompt},
                 ],
                 profile=APP_CONFIG.tier0.batch_profile,
@@ -568,6 +579,14 @@ class CorpusExplorer:
                     break
 
         return findings
+
+    def _batch_analysis_prompt_template(self) -> str:
+        """Return the batch-analysis prompt template (override in adaptive mode)."""
+        return BATCH_ANALYSIS_PROMPT
+
+    def _batch_analysis_system_message(self) -> str:
+        """Return the analysis system message (override in adaptive mode)."""
+        return INDUCTIVE_SYSTEM_MESSAGE
 
     def _needs_repair(self, findings: Dict[str, Any], doc_count: int) -> bool:
         if not APP_CONFIG.tier0.strict_closed_world:
@@ -1085,6 +1104,8 @@ def explore_corpus(
     total_budget: Optional[int] = None,
     year_range: Optional[Tuple[int, int]] = None,
     research_lens: Optional[Any] = None,
+    sort_order: Optional[str] = None,
+    research_brief: Optional[Any] = None,
 ) -> Dict[str, Any]:
     explorer = CorpusExplorer()
     return explorer.explore(
@@ -1093,4 +1114,6 @@ def explore_corpus(
         year_range=year_range,
         save_notebook=True,
         research_lens=research_lens,
+        sort_order=sort_order,
+        research_brief=research_brief,
     )

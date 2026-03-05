@@ -20,6 +20,7 @@ from datetime import datetime
 from collections import defaultdict
 
 from config import APP_CONFIG
+from historian_agent.question_graph import QuestionGraph
 
 # ============================================================================
 # Question quality filters (inductive questions only)
@@ -232,6 +233,7 @@ class ResearchNotebook:
         self.contradictions: List[Contradiction] = []
         self.group_indicators: Dict[str, GroupIndicator] = {}
         self.questions: List[ResearchQuestion] = []
+        self.graph: Optional[QuestionGraph] = None
         self.temporal_map: Dict[str, List[str]] = defaultdict(list)
         self.corpus_map = {
             "total_documents_read": 0,
@@ -273,13 +275,26 @@ class ResearchNotebook:
         for question_dict in filtered_questions:
             if not isinstance(question_dict, dict):
                 continue
-            question_dict["noticed_in_batch"] = batch_label
             question_text = question_dict.get("question", "")
             if not question_text:
                 continue
             if is_duplicate_question(question_text, self.questions):
                 continue
-            self.questions.append(ResearchQuestion(**question_dict))
+            # Keep ResearchQuestion construction contract stable even if prompts return
+            # additional diagnostic fields (for example evidence_blocks/axis_tags).
+            sanitized = {
+                "question": str(question_dict.get("question") or "").strip(),
+                "why_interesting": str(question_dict.get("why_interesting") or ""),
+                "evidence_needed": str(question_dict.get("evidence_needed") or ""),
+                "related_entities": (
+                    question_dict.get("related_entities")
+                    if isinstance(question_dict.get("related_entities"), list)
+                    else []
+                ),
+                "time_window": question_dict.get("time_window"),
+                "noticed_in_batch": batch_label,
+            }
+            self.questions.append(ResearchQuestion(**sanitized))
             added_questions += 1
 
         for year, events in findings.get("temporal_events", {}).items():
@@ -569,6 +584,7 @@ class ResearchNotebook:
             "contradictions": [asdict(c) for c in self.contradictions],
             "group_indicators": {k: asdict(v) for k, v in self.group_indicators.items()},
             "questions": [asdict(q) for q in self.questions],
+            "graph": self.graph.to_dict() if self.graph is not None else None,
             "temporal_map": dict(self.temporal_map),
             "corpus_map": dict(self.corpus_map),
             "created_at": self.created_at,
@@ -591,6 +607,12 @@ class ResearchNotebook:
         notebook.contradictions = [Contradiction(**c) for c in data.get("contradictions", [])]
         notebook.group_indicators = {k: GroupIndicator(**v) for k, v in data.get("group_indicators", {}).items()}
         notebook.questions = [ResearchQuestion(**q) for q in data.get("questions", [])]
+        graph_data = data.get("graph")
+        if isinstance(graph_data, dict):
+            try:
+                notebook.graph = QuestionGraph.from_dict(graph_data)
+            except Exception:
+                notebook.graph = None
         notebook.temporal_map = defaultdict(list, data.get("temporal_map", {}))
         notebook.corpus_map = data.get("corpus_map", notebook.corpus_map)
         notebook.created_at = data.get("created_at", notebook.created_at)
