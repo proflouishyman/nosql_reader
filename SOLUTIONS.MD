@@ -1592,3 +1592,21 @@ Observed behavior:
 - `python -m py_compile app/historian_agent/adaptive_prompts.py scripts/benchmark_adaptive_prompt_variants.py app/tests/test_adaptive_prompts.py`
 - `PYTHONPATH=app pytest -q app/tests/test_adaptive_prompts.py` -> `6 passed`
 - Relaunched iterative test runs focused on `v4` vs `v5` while keeping qwen3.5 watcher active.
+
+## 2026-03-05 - Benchmark serialization lock to prevent cross-run contamination
+
+### Problem
+- Concurrent benchmark processes (manual matrix + qwen watcher) hit the same adaptive endpoint simultaneously and produced mixed/invalid result tables.
+- This contaminated A/B/C comparisons and broke methodological consistency.
+
+### Solution
+- Added benchmark-level file locking in `/Users/louishyman/coding/nosql/nosql_reader/scripts/benchmark_adaptive_prompt_variants.py`:
+  - lock path flag: `--lock-file` (default `/tmp/nosql_adaptive_benchmark.lock`),
+  - blocking `fcntl.flock(..., LOCK_EX)` before any API calls,
+  - guaranteed unlock in `finally` block.
+- This serializes benchmark executions across terminal sessions/watchers and keeps runs comparable.
+
+### Verification
+- `python -m py_compile scripts/benchmark_adaptive_prompt_variants.py`
+- Clean serialized matrix run completed without model-cross contamination:
+  - `/Users/louishyman/coding/nosql/nosql_reader/logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260305_014914.json`

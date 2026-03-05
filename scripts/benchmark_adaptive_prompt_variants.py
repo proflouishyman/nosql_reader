@@ -8,6 +8,7 @@ import json
 import subprocess
 import sys
 import time
+import fcntl
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -289,6 +290,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=7200)
     parser.add_argument("--out-dir", default="logs/prompt_variant_benchmarks")
     parser.add_argument("--brief-json", default="")
+    parser.add_argument("--lock-file", default="/tmp/nosql_adaptive_benchmark.lock")
     args = parser.parse_args()
 
     variants = [item.strip().lower() for item in args.variants.split(",") if item.strip()]
@@ -302,101 +304,113 @@ def main() -> int:
             raise ValueError("--brief-json must decode to an object.")
         brief = parsed
 
-    results: List[Dict[str, Any]] = []
-    endpoint = f"{args.base_url.rstrip('/')}/api/rag/explore_corpus"
-    models = _capture_ollama_models()
+    # Serialize benchmark runs to avoid cross-run contamination against shared app state.
+    lock_path = Path(args.lock_file)
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_handle = lock_path.open("w", encoding="utf-8")
+    print(f"[benchmark] waiting for lock: {lock_path}", flush=True)
+    fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+    print(f"[benchmark] lock acquired: {lock_path}", flush=True)
 
-    # Build model test set: explicit list wins, then single override, else default server config.
-    model_candidates: List[str] = []
-    if args.models.strip():
-        if args.models.strip().lower() == "auto":
-            # Filter out non-text and remote/cloud entries so A/B/C stays comparable.
-            filtered_models = []
-            for name in models:
-                lowered = name.lower()
-                if any(token in lowered for token in ("vl", "vision", "embedding", "ocr", "cloud")):
-                    continue
-                filtered_models.append(name)
-            preferred_families = ("qwen", "llama", "gemma", "mistral")
-            for family in preferred_families:
-                match = next((m for m in filtered_models if m.lower().startswith(family)), None)
-                if match and match not in model_candidates:
-                    model_candidates.append(match)
-            if not model_candidates:
-                model_candidates = filtered_models[:3] if filtered_models else models[:3]
+    try:
+        results: List[Dict[str, Any]] = []
+        endpoint = f"{args.base_url.rstrip('/')}/api/rag/explore_corpus"
+        models = _capture_ollama_models()
+
+        # Build model test set: explicit list wins, then single override, else default server config.
+        model_candidates: List[str] = []
+        if args.models.strip():
+            if args.models.strip().lower() == "auto":
+                # Filter out non-text and remote/cloud entries so A/B/C stays comparable.
+                filtered_models = []
+                for name in models:
+                    lowered = name.lower()
+                    if any(token in lowered for token in ("vl", "vision", "embedding", "ocr", "cloud")):
+                        continue
+                    filtered_models.append(name)
+                preferred_families = ("qwen", "llama", "gemma", "mistral")
+                for family in preferred_families:
+                    match = next((m for m in filtered_models if m.lower().startswith(family)), None)
+                    if match and match not in model_candidates:
+                        model_candidates.append(match)
+                if not model_candidates:
+                    model_candidates = filtered_models[:3] if filtered_models else models[:3]
+            else:
+                model_candidates = [item.strip() for item in args.models.split(",") if item.strip()]
+        elif args.ledger_model.strip():
+            model_candidates = [args.ledger_model.strip()]
         else:
-            model_candidates = [item.strip() for item in args.models.split(",") if item.strip()]
-    elif args.ledger_model.strip():
-        model_candidates = [args.ledger_model.strip()]
-    else:
-        model_candidates = [""]
+            model_candidates = [""]
 
-    for model_name in model_candidates:
-        for variant in variants:
-            payload = _variant_payload(args, variant, brief, ledger_model=model_name)
-            start = time.perf_counter()
-            print(
-                f"[benchmark] running model={model_name or '(default)'} variant={variant} docs={args.documents}",
-                flush=True,
-            )
-            try:
-                report = _post_json(endpoint, payload, timeout_s=args.timeout)
-            except urllib.error.HTTPError as exc:
-                detail = exc.read().decode("utf-8", errors="replace")
-                elapsed = time.perf_counter() - start
+        for model_name in model_candidates:
+            for variant in variants:
+                payload = _variant_payload(args, variant, brief, ledger_model=model_name)
+                start = time.perf_counter()
                 print(
-                    f"[benchmark] error model={model_name or '(default)'} variant={variant}: HTTP {exc.code}",
+                    f"[benchmark] running model={model_name or '(default)'} variant={variant} docs={args.documents}",
                     flush=True,
                 )
-                results.append({
-                    "status": "error",
-                    "prompt_variant": variant,
-                    "requested_model": model_name or "(default)",
-                    "effective_model": model_name or "(default)",
-                    "duration_seconds": round(elapsed, 2),
-                    "error": f"HTTP {exc.code}: {detail[:240]}",
-                })
-                continue
-            except Exception as exc:
+                try:
+                    report = _post_json(endpoint, payload, timeout_s=args.timeout)
+                except urllib.error.HTTPError as exc:
+                    detail = exc.read().decode("utf-8", errors="replace")
+                    elapsed = time.perf_counter() - start
+                    print(
+                        f"[benchmark] error model={model_name or '(default)'} variant={variant}: HTTP {exc.code}",
+                        flush=True,
+                    )
+                    results.append({
+                        "status": "error",
+                        "prompt_variant": variant,
+                        "requested_model": model_name or "(default)",
+                        "effective_model": model_name or "(default)",
+                        "duration_seconds": round(elapsed, 2),
+                        "error": f"HTTP {exc.code}: {detail[:240]}",
+                    })
+                    continue
+                except Exception as exc:
+                    elapsed = time.perf_counter() - start
+                    print(
+                        f"[benchmark] error model={model_name or '(default)'} variant={variant}: {exc}",
+                        flush=True,
+                    )
+                    results.append({
+                        "status": "error",
+                        "prompt_variant": variant,
+                        "requested_model": model_name or "(default)",
+                        "effective_model": model_name or "(default)",
+                        "duration_seconds": round(elapsed, 2),
+                        "error": str(exc),
+                    })
+                    continue
                 elapsed = time.perf_counter() - start
-                print(
-                    f"[benchmark] error model={model_name or '(default)'} variant={variant}: {exc}",
-                    flush=True,
-                )
-                results.append({
-                    "status": "error",
-                    "prompt_variant": variant,
-                    "requested_model": model_name or "(default)",
-                    "effective_model": model_name or "(default)",
-                    "duration_seconds": round(elapsed, 2),
-                    "error": str(exc),
-                })
-                continue
-            elapsed = time.perf_counter() - start
-            summary = _summarize_variant(variant, model_name, report, elapsed)
-            summary["status"] = "ok"
-            results.append(summary)
+                summary = _summarize_variant(variant, model_name, report, elapsed)
+                summary["status"] = "ok"
+                results.append(summary)
 
-    output = {
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        "endpoint": endpoint,
-        "documents": args.documents,
-        "strategy": args.strategy,
-        "sort_order": args.sort_order,
-        "variants": variants,
-        "models_tested": [name or "(default)" for name in model_candidates],
-        "ollama_models": models,
-        "results": results,
-    }
+        output = {
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            "endpoint": endpoint,
+            "documents": args.documents,
+            "strategy": args.strategy,
+            "sort_order": args.sort_order,
+            "variants": variants,
+            "models_tested": [name or "(default)" for name in model_candidates],
+            "ollama_models": models,
+            "results": results,
+        }
 
-    out_dir = Path(args.out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"adaptive_prompt_benchmark_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
+        out_dir = Path(args.out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"adaptive_prompt_benchmark_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
 
-    _print_table(results)
-    print(f"\nSaved benchmark report: {out_path}", flush=True)
-    return 0
+        _print_table(results)
+        print(f"\nSaved benchmark report: {out_path}", flush=True)
+        return 0
+    finally:
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
+        lock_handle.close()
 
 
 if __name__ == "__main__":
