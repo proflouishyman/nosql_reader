@@ -1398,3 +1398,114 @@ Adjusted row-based dropdown semantics so selecting `missing` for `document_type`
 - `curl -sSI http://localhost:5001/static/vendor/fonts.css` returns `200`.
 - `curl -sSI http://localhost:5001/static/vendor/fonts/open-sans-400.ttf` returns `200`.
 - `curl -sSI http://localhost:5001/static/vendor/fonts/merriweather-700.ttf` returns `200`.
+
+## 2026-03-04 - Add adaptive consultation workflow + researcher-selected reading order (v1.1 addendum)
+
+### Problem
+Adaptive explorer needed two missing capabilities from the research consultation addendum:
+- Reading order had to be a researcher decision (`archival`, `chronological`, `record_type`, `person`, `balanced`) rather than an implicit strategy default.
+- Pre-reading consultation needed a structured, auditable `ResearchBrief` and a one-turn reflection before execution.
+
+Additionally, adaptive runs were starting with empty question graphs when seed extraction returned nothing.
+
+### Solution
+- Added `app/historian_agent/research_consultation.py`:
+  - `ResearchBrief` dataclass + normalization/compatibility helpers.
+  - Consultation reflection builder (`build_reflection`) returning summary, proposed seeds, and recommended sort order.
+  - Seed extraction with deterministic fallback (`extract_seed_questions`) so adaptive mode no longer starts with zero seeds.
+- Extended adaptive explorer (`app/historian_agent/incremental_explorer.py`):
+  - Accepts `research_brief` + `sort_order` inputs.
+  - Initializes graph axes from brief axes (run-scoped).
+  - Seeds from two passes:
+    - prior hypotheses (confidence 0.7)
+    - primary lens (confidence 0.5)
+  - Uses ordered stratification for adaptive mode and logs missing primary sort fields.
+  - Persists `research_brief`, `sort_order`, and missing-sort metrics in exploration metadata.
+- Added ordered stratification support (`app/historian_agent/stratification.py`):
+  - `build_ordered_strategy(...)` for adaptive traversal.
+  - Deterministic sorted reads with null handling controlled by `TIER0_SORT_NULLS` (`last|first|omit`).
+  - Tracks missing primary sort field counts.
+- Updated API routes (`app/routes.py`):
+  - Explorer endpoints accept and forward `research_brief` and `sort_order`.
+  - New endpoint: `POST /api/rag/research_consultation/reflect`.
+- Updated config (`app/config.py`):
+  - Added `TIER0_ADAPTIVE_DEFAULT_SORT` and `TIER0_SORT_NULLS`.
+- Updated UI (`app/templates/corpus_explorer.html`, `app/static/corpus_explorer.js`):
+  - Added adaptive consultation form fields (Q2–Q5), axis selection, and reading-order choices.
+  - Added reflection panel with Confirm/Edit flow before adaptive run launch.
+- Added docs:
+  - `docs/adaptive_explorer_addendum_v1_1.md`
+
+### Verification
+Code quality checks:
+- `python -m py_compile app/config.py app/routes.py app/historian_agent/corpus_explorer.py app/historian_agent/stratification.py app/historian_agent/incremental_explorer.py app/historian_agent/research_consultation.py`
+- `node --check app/static/corpus_explorer.js`
+
+Tests:
+- `PYTHONPATH=app pytest -q app/tests/test_adaptive_question_graph.py app/tests/test_research_consultation.py`
+- Result: `9 passed`
+
+Runtime validation (Docker app at `http://localhost:5001`):
+- Adaptive 10 (`archival` sort + confirmed `ResearchBrief`):
+  - docs=10, batches=1, questions_top=5, graph_nodes=5 (`seed` macros)
+- Adaptive 100 (`archival`):
+  - docs=100, batches=10, questions_top=5, graph_nodes=5, defrag_snapshots=3
+- Legacy 100 (control):
+  - docs=100, batches=26, questions_top=1
+- Adaptive 500 (`archival`):
+  - docs=500, batches=50, questions_top=5, graph_nodes=5, defrag_snapshots=11
+
+Observed runtime behavior:
+- Adaptive pipeline remained resilient under occasional 300s repair timeouts; runs continued and completed.
+- In this environment/model profile, extraction remained conservative (no emergent nodes/patterns), but v1.1 guarantees non-empty consultation-seeded graph initialization and preserves researcher-selected reading order contracts.
+
+## 2026-03-05 - Adaptive prompt variant framework + A/B/C benchmark harness
+
+### Problem
+- Adaptive exploration needed repeatable prompt experimentation to improve question graph quality, but prompts were hardcoded and not run-selectable.
+- A/B/C testing lacked a single reproducible benchmark script with graph-level metrics.
+- Prompt variants that returned richer question metadata (for example `evidence_blocks`) could break notebook integration because `ResearchQuestion` was constructed from raw question dicts with strict kwargs.
+
+### Solution
+- Added `app/historian_agent/adaptive_prompts.py` with centralized run-scoped prompt variants (`v1|v2|v3`) for:
+  - batch analysis + system message,
+  - why/how enforcement,
+  - promotion and change/continuity,
+  - seed extraction.
+- Added config/runtime plumbing:
+  - `TIER0_ADAPTIVE_PROMPT_VARIANT` in `app/config.py`.
+  - `prompt_variant` support in `IncrementalCorpusExplorer.explore(...)` and API routes (`app/routes.py`).
+  - Prompt variant persisted in `exploration_metadata.prompt_variant`.
+- Added adaptive prompt benchmark CLI:
+  - `scripts/benchmark_adaptive_prompt_variants.py`
+  - Runs variants against `/api/rag/explore_corpus` and writes comparable graph metrics under `logs/prompt_variant_benchmarks/`.
+- Added prompt plan doc:
+  - `docs/adaptive_prompt_variant_plan.md`
+- Added test coverage:
+  - `app/tests/test_adaptive_prompts.py`
+- Hardened notebook compatibility in `app/historian_agent/research_notebook.py`:
+  - sanitize question payload keys before `ResearchQuestion(...)` construction.
+  - prevents crashes when prompts include additional diagnostic keys.
+- Added direct question-evidence wiring in `app/historian_agent/incremental_explorer.py`:
+  - consumes `questions[].evidence_blocks` to add `EvidenceLink`s,
+  - optionally mirrors evidence to seed target on decompose-to-seed decisions.
+
+### Verification
+Code quality checks:
+- `python -m py_compile app/config.py app/routes.py app/historian_agent/adaptive_prompts.py app/historian_agent/corpus_explorer.py app/historian_agent/incremental_explorer.py app/historian_agent/relation_engine.py app/historian_agent/defrag_engine.py app/historian_agent/research_consultation.py app/historian_agent/research_notebook.py scripts/benchmark_adaptive_prompt_variants.py`
+
+Tests:
+- `PYTHONPATH=app pytest -q app/tests/test_adaptive_question_graph.py app/tests/test_research_consultation.py app/tests/test_adaptive_prompts.py`
+- Result: `12 passed`
+
+Benchmark runs (100 docs, adaptive, archival sort):
+- Initial A/B/C (`logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260304_204752.json`):
+  - `v1`: nodes=11, edges=17, logs=21, promotions=0
+  - `v2`: nodes=13, edges=5, logs=10, promotions=0
+  - `v3`: nodes=46, edges=34, logs=61, promotions=0
+- Post-fix focused `v3` validation (`logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260304_210622.json`):
+  - `v3`: nodes=50, edges=35, logs=60, promotions=0
+
+Observed behavior:
+- `v3` reliably increases graph activity and emergent micro-node generation.
+- Promotion bottleneck remains (meso/macro promotion still 0), indicating remaining work is now primarily in promotion/evidence aggregation thresholds rather than prompt output formatting.
