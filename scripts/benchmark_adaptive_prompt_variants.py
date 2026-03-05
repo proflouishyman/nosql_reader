@@ -110,6 +110,8 @@ def _variant_payload(
     if ledger_model:
         # Keep model override explicit per run so matrix experiments are reproducible.
         payload["ledger_model"] = ledger_model
+    if bool(args.demographic_orientation):
+        payload["include_demographic_orientation"] = True
     return payload
 
 
@@ -290,6 +292,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=7200)
     parser.add_argument("--out-dir", default="logs/prompt_variant_benchmarks")
     parser.add_argument("--brief-json", default="")
+    parser.add_argument("--demographic-orientation", action="store_true")
     parser.add_argument("--lock-file", default="/tmp/nosql_adaptive_benchmark.lock")
     args = parser.parse_args()
 
@@ -394,6 +397,7 @@ def main() -> int:
             "documents": args.documents,
             "strategy": args.strategy,
             "sort_order": args.sort_order,
+            "demographic_orientation": bool(args.demographic_orientation),
             "variants": variants,
             "models_tested": [name or "(default)" for name in model_candidates],
             "ollama_models": models,

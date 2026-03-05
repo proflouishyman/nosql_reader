@@ -1610,3 +1610,54 @@ Observed behavior:
 - `python -m py_compile scripts/benchmark_adaptive_prompt_variants.py`
 - Clean serialized matrix run completed without model-cross contamination:
   - `/Users/louishyman/coding/nosql/nosql_reader/logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260305_014914.json`
+
+## 2026-03-05 - Optional demographic orientation context for adaptive/legacy corpus exploration
+
+### Problem
+- The explorer had no explicit corpus-level demographic orientation, so early batch interpretation relied only on local document text and previously accumulated notes.
+- We needed a safe way to inject archive orientation context without treating demographics as direct evidence.
+- API and benchmark tooling did not support turning this behavior on/off per run, making A/B evaluation difficult.
+
+### Solution
+- Added `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/demographic_orientation.py`:
+  - reads `/app/data/demographics.db` in read-only mode,
+  - summarizes top demographics/occupations/divisions with defensive schema checks,
+  - returns `(summary_text, metadata)` for prompt injection and reporting.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/corpus_explorer.py`:
+  - new run-scoped fields for orientation text/meta,
+  - new `include_demographic_orientation` explore parameter,
+  - `_configure_demographic_orientation()` hook,
+  - prepends orientation in `_analyze_batch()` as **context-only** with explicit warning text,
+  - emits orientation metadata in `exploration_metadata`.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/incremental_explorer.py`:
+  - threaded `include_demographic_orientation` through adaptive run path,
+  - logs orientation enabled state,
+  - includes orientation metadata in adaptive report metadata.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py` to accept and forward `include_demographic_orientation` across explore entry points.
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/app/config.py` with:
+  - `TIER0_DEMOGRAPHIC_ORIENTATION_DEFAULT` (bool)
+  - `TIER0_DEMOGRAPHIC_ORIENTATION_TOP_N` (int)
+- Updated `/Users/louishyman/coding/nosql/nosql_reader/scripts/benchmark_adaptive_prompt_variants.py`:
+  - added `--demographic-orientation` switch,
+  - includes orientation flag in payload and report metadata.
+- Added tests in `/Users/louishyman/coding/nosql/nosql_reader/app/tests/test_demographic_orientation.py` for:
+  - successful summary generation from temporary sqlite DB,
+  - missing DB fallback behavior.
+
+### Verification
+- Syntax checks:
+  - `python -m py_compile app/historian_agent/incremental_explorer.py app/historian_agent/corpus_explorer.py app/historian_agent/demographic_orientation.py app/routes.py scripts/benchmark_adaptive_prompt_variants.py app/config.py`
+- Tests:
+  - `PYTHONPATH=app pytest -q app/tests/test_demographic_orientation.py app/tests/test_adaptive_prompts.py app/tests/test_adaptive_question_graph.py app/tests/test_research_consultation.py`
+  - Result: `17 passed`
+- 100-doc A/B (same model/prompt/sort, orientation OFF vs ON):
+  - OFF: `logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260305_102319.json`
+  - ON: `logs/prompt_variant_benchmarks/adaptive_prompt_benchmark_20260305_111028.json`
+  - Observed deltas (ON - OFF):
+    - `seed_questions_confirmed +1` (4 vs 3)
+    - `graph_edges +2` (30 vs 28)
+    - `decision_log_count +2` (33 vs 31)
+    - `graph_total_nodes -3` (14 vs 17)
+    - `duration_seconds +665.79s` (slower)
+  - Interpretation: orientation improved seed anchoring/connection density in this run, but reduced emergent node count and increased latency.
+

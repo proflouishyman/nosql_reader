@@ -24,6 +24,7 @@ from pathlib import Path
 from rag_base import DocumentStore, MongoDBConnection, debug_print, count_tokens
 from llm_abstraction import LLMClient
 from config import APP_CONFIG
+from historian_agent.demographic_orientation import build_demographic_orientation
 
 from historian_agent.research_notebook import ResearchNotebook
 from historian_agent.stratification import CorpusStratifier, StratumReader, Stratum
@@ -210,6 +211,8 @@ class CorpusExplorer:
         self.question_synthesizer = QuestionSynthesizer()
         self._last_question_batch = None
         self._research_lens: List[str] = []  # Added run-scoped lens so prompts can prioritize historian-defined interests.
+        self._demographic_orientation_text: str = ""
+        self._demographic_orientation_meta: Dict[str, Any] = {}
         self._doc_cache_indexed = False
         self._ensure_doc_cache_indexes()
 
@@ -224,6 +227,7 @@ class CorpusExplorer:
         research_brief: Optional[Any] = None,
         prompt_variant: Optional[str] = None,
         ledger_model: Optional[str] = None,
+        include_demographic_orientation: Optional[bool] = None,
     ) -> Dict[str, Any]:
         """Execute systematic corpus exploration."""
         start_time = time.time()
@@ -241,10 +245,13 @@ class CorpusExplorer:
         # Legacy explorer ignores ledger_model so endpoint payloads stay mode-compatible.
         _ = ledger_model
         self._research_lens = self._normalize_research_lens(research_lens)  # Added normalization to keep lens input predictable across API/UI variants.
+        self._configure_demographic_orientation(include_demographic_orientation)
 
         self.logger.log("start", f"strategy={strategy} budget={total_budget}")
         if self._research_lens:
             self.logger.log("lens", "; ".join(self._research_lens))
+        if self._demographic_orientation_meta.get("enabled"):
+            self.logger.log("orientation", "demographic orientation enabled")
 
         strata = self._build_strata(strategy, total_budget, year_range, sort_order=sort_order)
         self.logger.log("stratification", f"{len(strata)} batches")
@@ -286,6 +293,7 @@ class CorpusExplorer:
                 "research_lens": list(self._research_lens),  # Added to make lens usage explicit in persisted run metadata.
                 "sort_order": sort_order,
                 "question_quality_gate": question_quality_gate,
+                "demographic_orientation": self._demographic_orientation_meta,
             },
         }
 
@@ -400,6 +408,33 @@ class CorpusExplorer:
             seen.add(lowered)
             cleaned.append(candidate)
         return cleaned[:10]
+
+    def _configure_demographic_orientation(
+        self,
+        include_demographic_orientation: Optional[bool],
+    ) -> None:
+        """
+        Build optional demographic orientation text for prompt context.
+
+        This summary orients exploration but is explicitly treated as context-only.
+        """
+        enabled = (
+            APP_CONFIG.tier0.demographic_orientation_default
+            if include_demographic_orientation is None
+            else bool(include_demographic_orientation)
+        )
+        self._demographic_orientation_text = ""
+        self._demographic_orientation_meta = {"enabled": False, "reason": "disabled"}
+        if not enabled:
+            return
+
+        db_path = Path(__file__).resolve().parents[1] / "data" / "demographics.db"
+        summary, meta = build_demographic_orientation(
+            db_path=str(db_path),
+            top_n=APP_CONFIG.tier0.demographic_orientation_top_n,
+        )
+        self._demographic_orientation_text = summary
+        self._demographic_orientation_meta = dict(meta)
 
     def _format_research_lens_for_prompt(self) -> str:
         """Return lens priorities in prompt-ready bullet form."""
@@ -518,6 +553,13 @@ class CorpusExplorer:
 
     def _analyze_batch(self, doc_objects: List[Any]) -> Dict[str, Any]:
         prior_knowledge = self.notebook.format_for_llm_context()
+        if self._demographic_orientation_text:
+            prior_knowledge = (
+                "ARCHIVE DEMOGRAPHIC ORIENTATION (context-only; do not treat as direct evidence unless "
+                "supported by DOCUMENTS):\n"
+                f"{self._demographic_orientation_text}\n\n"
+                f"{prior_knowledge}"
+            )
         documents_json = self.reader.format_document_objects_for_llm(doc_objects)
         total_blocks = sum(len(doc.blocks) for doc in doc_objects)
 

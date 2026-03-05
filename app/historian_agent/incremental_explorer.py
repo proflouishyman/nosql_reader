@@ -78,6 +78,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
         research_brief: Optional[Any] = None,
         prompt_variant: Optional[str] = None,
         ledger_model: Optional[str] = None,
+        include_demographic_orientation: Optional[bool] = None,
     ) -> Dict[str, Any]:
         start_time = datetime.now()
 
@@ -106,6 +107,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                 "sort_order": sort_order,
             })
         self._research_lens = self._normalize_research_lens(self._research_brief.to_legacy_lens())
+        self._configure_demographic_orientation(include_demographic_orientation)
 
         self.notebook = type(self.notebook)()
         self.graph = self._initialize_graph(self._research_brief)
@@ -125,6 +127,8 @@ class IncrementalCorpusExplorer(CorpusExplorer):
         )
         if self._research_lens:
             self.logger.log("lens", "; ".join(self._research_lens))
+        if self._demographic_orientation_meta.get("enabled"):
+            self.logger.log("orientation", "demographic orientation enabled")
 
         strata = self._build_strata(
             strategy=strategy,
@@ -182,6 +186,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                 "prompt_variant": self._prompt_variant,
                 "ledger_model": self._ledger_model,
                 "missing_primary_sort_fields": missing_sort_fields,
+                "demographic_orientation": self._demographic_orientation_meta,
             },
         }
 

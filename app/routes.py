@@ -540,6 +540,7 @@ def historian_agent_query_tier0():
         sort_order = payload.get('sort_order')
         prompt_variant = payload.get('prompt_variant')
         ledger_model = payload.get('ledger_model')
+        include_demographic_orientation = payload.get('include_demographic_orientation')
         mode = str(payload.get('mode') or APP_CONFIG.tier0.notebook_mode or 'legacy').strip().lower()
 
         if isinstance(year_range, list) and len(year_range) == 2:
@@ -561,6 +562,7 @@ def historian_agent_query_tier0():
             research_brief=research_brief,
             prompt_variant=prompt_variant,
             ledger_model=ledger_model,
+            include_demographic_orientation=include_demographic_orientation,
         )
 
         global _last_exploration_report
@@ -643,6 +645,7 @@ def explore_corpus_endpoint():
         sort_order = payload.get('sort_order')
         prompt_variant = payload.get('prompt_variant')
         ledger_model = payload.get('ledger_model')
+        include_demographic_orientation = payload.get('include_demographic_orientation')
         mode = str(payload.get('mode') or APP_CONFIG.tier0.notebook_mode or 'legacy').strip().lower()
 
         if isinstance(year_range, list) and len(year_range) == 2:
@@ -664,6 +667,7 @@ def explore_corpus_endpoint():
             research_brief=research_brief,
             prompt_variant=prompt_variant,
             ledger_model=ledger_model,
+            include_demographic_orientation=include_demographic_orientation,
         )
 
         global _last_exploration_report
@@ -1194,6 +1198,7 @@ def _run_exploration_async(run_id: str, payload: Dict[str, Any]) -> None:
     sort_order = payload.get('sort_order')
     prompt_variant = payload.get('prompt_variant')
     ledger_model = payload.get('ledger_model')
+    include_demographic_orientation = payload.get('include_demographic_orientation')
     mode = str(payload.get('mode') or APP_CONFIG.tier0.notebook_mode or 'legacy').strip().lower()
 
     if isinstance(year_range, list) and len(year_range) == 2:
@@ -1225,6 +1230,7 @@ def _run_exploration_async(run_id: str, payload: Dict[str, Any]) -> None:
             research_brief=research_brief,
             prompt_variant=prompt_variant,
             ledger_model=ledger_model,
+            include_demographic_orientation=include_demographic_orientation,
         )
         _last_exploration_report = report
         with _exploration_runs_lock:

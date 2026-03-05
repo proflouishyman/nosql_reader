@@ -249,6 +249,7 @@ class Tier0Config:
     tension_surface_in_synthesis: bool
     change_continuity_min_year_span: int
     llm_budget_per_interval: int
+    llm_defrag_budget_per_interval: int
     llm_budget_enforce: bool
     llm_light_timeout: int
     llm_medium_timeout: int
@@ -258,6 +259,8 @@ class Tier0Config:
     adaptive_default_sort: str
     adaptive_prompt_variant: str
     sort_nulls: str
+    demographic_orientation_default: bool
+    demographic_orientation_top_n: int
     question_axes: List[str]
 
 
@@ -543,6 +546,7 @@ class ConfigLoader:
             tension_surface_in_synthesis=_env_bool("TIER0_TENSION_SURFACE_IN_SYNTHESIS", True),
             change_continuity_min_year_span=_env_int("TIER0_CHANGE_CONTINUITY_MIN_YEAR_SPAN", 10),
             llm_budget_per_interval=_env_int("TIER0_LLM_BUDGET_PER_INTERVAL", 20),
+            llm_defrag_budget_per_interval=_env_int("TIER0_LLM_DEFRAG_BUDGET_PER_INTERVAL", 10),
             llm_budget_enforce=_env_bool("TIER0_LLM_BUDGET_ENFORCE", True),
             llm_light_timeout=_env_int("TIER0_LLM_LIGHT_TIMEOUT", 15),
             llm_medium_timeout=_env_int("TIER0_LLM_MEDIUM_TIMEOUT", 30),
@@ -552,6 +556,8 @@ class ConfigLoader:
             adaptive_default_sort=_env("TIER0_ADAPTIVE_DEFAULT_SORT", "archival"),
             adaptive_prompt_variant=_env("TIER0_ADAPTIVE_PROMPT_VARIANT", "v1"),
             sort_nulls=_env("TIER0_SORT_NULLS", "last"),
+            demographic_orientation_default=_env_bool("TIER0_DEMOGRAPHIC_ORIENTATION_DEFAULT", False),
+            demographic_orientation_top_n=_env_int("TIER0_DEMOGRAPHIC_ORIENTATION_TOP_N", 5),
             question_axes=[
                 axis.strip()
                 for axis in _env("TIER0_QUESTION_AXES", "time,place,group,institution,cause,change").split(",")
