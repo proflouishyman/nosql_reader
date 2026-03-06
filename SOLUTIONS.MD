@@ -1661,3 +1661,37 @@ Observed behavior:
     - `duration_seconds +665.79s` (slower)
   - Interpretation: orientation improved seed anchoring/connection density in this run, but reduced emergent node count and increased latency.
 
+## 2026-03-06 - Corpus Explorer question-graph drill-down UI (macro -> meso -> micro -> documents)
+
+### Problem
+- The Corpus Explorer results page showed question lists and summary graph counts, but there was no interactive way to navigate from macro-level questions down to meso/micro questions and then inspect associated source documents.
+- Adaptive reports returned `question_graph.tree` as an empty list, so the frontend had no hierarchical data contract for a clean drill-down experience.
+
+### Solution
+- Extended adaptive graph export in `/Users/louishyman/coding/nosql/nosql_reader/app/historian_agent/incremental_explorer.py`:
+  - added `_build_graph_tree()` to construct a canonical-node hierarchy for UI navigation,
+  - uses document-overlap linkage to derive `macro -> meso -> micro` paths when explicit directed edges are sparse,
+  - hydrates document metadata via `DocumentStore.hydrate_parent_metadata(...)`,
+  - includes per-micro document rows with `doc_id`, `filename`, `block_ids`, and `evidence_types`,
+  - populates `question_graph.tree` in `_export_graph_summary()` while preserving existing summary fields.
+- Added a dedicated Question Graph Explorer section to `/Users/louishyman/coding/nosql/nosql_reader/app/templates/corpus_explorer.html`:
+  - three navigable columns (`Macro`, `Meso`, `Micro`),
+  - breadcrumb path display,
+  - associated document panel.
+- Wired frontend interaction in `/Users/louishyman/coding/nosql/nosql_reader/app/static/corpus_explorer.js`:
+  - `renderQuestionGraph(...)` stateful drill-down renderer,
+  - level selection and re-render behavior,
+  - document evidence panel for selected micro question,
+  - graceful hide/fallback when graph tree is absent.
+- Added styling for the new explorer in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`:
+  - clean multi-column layout on desktop,
+  - responsive collapse on smaller screens,
+  - selected-state affordances and compact evidence chips.
+
+### Verification
+- Syntax:
+  - `python -m compileall app/historian_agent/incremental_explorer.py`
+  - `node --check app/static/corpus_explorer.js`
+- Runtime payload validation (against saved adaptive 1000-doc run):
+  - `question_graph.tree` now populated,
+  - sample output confirmed `macro_entries=5`, with nested meso/micro items and micro document rows including block IDs.

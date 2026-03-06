@@ -17,17 +17,43 @@
     const exportMemoBtn = document.getElementById('ceExportMemo');
     const refreshNbBtn = document.getElementById('ceRefreshNotebooks');
     const runningLabel = document.getElementById('ceRunningLabel');
+    const adaptiveConsultation = document.getElementById('ceAdaptiveConsultation');
+    const reflectionPanel = document.getElementById('ceReflectionPanel');
+    const reflectionTextEl = document.getElementById('ceReflectionText');
+    const reflectionSeedsEl = document.getElementById('ceReflectionSeeds');
+    const reflectionUncertaintyEl = document.getElementById('ceReflectionUncertainty');
+    const reflectionConfirmBtn = document.getElementById('ceReflectionConfirm');
+    const reflectionEditBtn = document.getElementById('ceReflectionEdit');
+    const submitBtn = document.getElementById('ceSubmit');
+    const graphSection = document.getElementById('ceQuestionGraphSection');
+    const graphBreadcrumb = document.getElementById('ceGraphBreadcrumb');
+    const graphMacroList = document.getElementById('ceGraphMacroList');
+    const graphMesoList = document.getElementById('ceGraphMesoList');
+    const graphMicroList = document.getElementById('ceGraphMicroList');
+    const graphDocsPanel = document.getElementById('ceGraphDocsPanel');
 
     if (!formPanel || !runningPanel || !resultsPanel || !form) {
         return;
     }
 
-    // ── Strategy / scope card selection ────────────────────────────────
-    document.querySelectorAll('.ce-strategy-card').forEach((card) => {
+    // ── Strategy / sort card selection ─────────────────────────────────
+    document.querySelectorAll('#ceStrategyGrid .ce-strategy-card').forEach((card) => {
         card.addEventListener('click', () => {
-            document.querySelectorAll('.ce-strategy-card').forEach((node) => node.classList.remove('ce-strategy-card--selected'));
+            document.querySelectorAll('#ceStrategyGrid .ce-strategy-card')
+                .forEach((node) => node.classList.remove('ce-strategy-card--selected'));
             card.classList.add('ce-strategy-card--selected');
-            const input = card.querySelector('input');
+            const input = card.querySelector('input[name="strategy"]');
+            if (input) input.checked = true;
+            toggleAdaptiveConsultation();
+        });
+    });
+
+    document.querySelectorAll('#ceSortGrid .ce-sort-card').forEach((card) => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('#ceSortGrid .ce-sort-card')
+                .forEach((node) => node.classList.remove('ce-strategy-card--selected'));
+            card.classList.add('ce-strategy-card--selected');
+            const input = card.querySelector('input[name="sort_order"]');
             if (input) input.checked = true;
         });
     });
@@ -56,6 +82,39 @@
         resultsPanel.hidden = state !== 'results';
     }
     setState('form');
+
+    let pendingConsultation = null;
+    let pendingRunArgs = null;
+
+    function selectedStrategy() {
+        return document.querySelector('input[name="strategy"]:checked')?.value || 'balanced';
+    }
+
+    function selectedMode() {
+        return selectedStrategy() === 'attentive' ? 'adaptive' : 'legacy';
+    }
+
+    function clearReflection() {
+        pendingConsultation = null;
+        pendingRunArgs = null;
+        if (reflectionPanel) reflectionPanel.hidden = true;
+        if (reflectionTextEl) reflectionTextEl.textContent = '';
+        if (reflectionSeedsEl) reflectionSeedsEl.innerHTML = '';
+        if (reflectionUncertaintyEl) reflectionUncertaintyEl.textContent = '';
+    }
+
+    function toggleAdaptiveConsultation() {
+        const adaptive = selectedMode() === 'adaptive';
+        if (adaptiveConsultation) adaptiveConsultation.hidden = !adaptive;
+        if (submitBtn) {
+            submitBtn.textContent = adaptive ? 'Preview Consultation' : 'Begin Exploration';
+        }
+        if (!adaptive) {
+            clearReflection();
+        }
+    }
+
+    toggleAdaptiveConsultation();
 
     // ── Progress log ────────────────────────────────────────────────────
     function clearProgressLog() {
@@ -151,23 +210,70 @@
 
     // ── Form submission ─────────────────────────────────────────────────
     let activeReport = null;
+    function collectConsultationPayload() {
+        const lens = document.getElementById('ceResearchLens')?.value.trim() || '';
+        const priorHypotheses = document.getElementById('cePriorHypotheses')?.value.trim() || '';
+        const surpriseExpectations = document.getElementById('ceSurpriseExpectations')?.value.trim() || '';
+        const exclusions = document.getElementById('ceExclusions')?.value.trim() || '';
+        const sortOrder = document.querySelector('input[name="sort_order"]:checked')?.value || 'archival';
+        const checkedAxes = Array.from(document.querySelectorAll('input[name="axis"]:checked'))
+            .map((el) => el.value);
+        const customAxes = (document.getElementById('ceAxisCustom')?.value || '')
+            .split(',')
+            .map((part) => part.trim().toLowerCase())
+            .filter(Boolean);
+        const axes = Array.from(new Set([...checkedAxes, ...customAxes]));
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        return {
+            primary_lens: lens,
+            prior_hypotheses: priorHypotheses,
+            axes,
+            surprise_expectations: surpriseExpectations,
+            exclusions,
+            sort_order: sortOrder,
+            confirmed: false,
+        };
+    }
 
-        const strategy = document.querySelector('input[name="strategy"]:checked')?.value || 'balanced';
-        const budget = parseInt(document.querySelector('input[name="scope"]:checked')?.value || '500', 10);
-        const lens = document.getElementById('ceResearchLens')?.value.trim() || null;
-        const yearFrom = parseInt(document.getElementById('ceYearFrom')?.value || '', 10) || null;
-        const yearTo = parseInt(document.getElementById('ceYearTo')?.value || '', 10) || null;
+    async function previewConsultation(brief) {
+        const response = await fetch('/api/rag/research_consultation/reflect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ research_brief: brief }),
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+            throw new Error(payload.error || `HTTP ${response.status}`);
+        }
+        return payload;
+    }
+
+    async function runExploration(runArgs) {
+        const {
+            strategy,
+            effectiveStrategy,
+            mode,
+            budget,
+            lens,
+            yearFrom,
+            yearTo,
+            sortOrder,
+            brief,
+        } = runArgs;
 
         const payload = {
-            strategy,
+            strategy: effectiveStrategy,
             total_budget: budget,
             save_notebook: true,
+            mode,
         };
-        if (lens) payload.research_lens = lens;
         if (yearFrom && yearTo) payload.year_range = [yearFrom, yearTo];
+        if (mode === 'adaptive') {
+            payload.research_brief = brief;
+            payload.sort_order = sortOrder;
+        } else if (lens) {
+            payload.research_lens = lens;
+        }
 
         setState('running');
         clearProgressLog();
@@ -175,11 +281,11 @@
         startElapsed();
         if (runningLabel) runningLabel.textContent = 'Exploring corpus...';
 
-        logProgress(`Starting ${strategy} exploration - budget ${budget} documents`, 'primary');
+        logProgress(`Starting ${strategy} exploration (${mode}) - budget ${budget} documents`, 'primary');
         if (lens) logProgress(`Research lens: "${lens.substring(0, 80)}..."`, 'info');
+        if (sortOrder && mode === 'adaptive') logProgress(`Reading order: ${sortOrder}`, 'info');
         if (yearFrom && yearTo) logProgress(`Year range: ${yearFrom}-${yearTo}`, 'info');
 
-        // Open stream before fetch so early backend logs are not missed.
         const closeStream = openLogStream(null);
         const streamTimeout = setTimeout(() => {
             logProgress('Log stream timeout reached (10m); closing stream.', 'warning');
@@ -187,7 +293,6 @@
         }, 600000);
 
         const start = performance.now();
-
         try {
             const resp = await fetch('/api/rag/explore_corpus', {
                 method: 'POST',
@@ -195,7 +300,6 @@
                 body: JSON.stringify(payload),
             });
             const report = await resp.json();
-
             if (!resp.ok) {
                 throw new Error(report.error || `HTTP ${resp.status}`);
             }
@@ -207,7 +311,7 @@
                 'success'
             );
             activeReport = report;
-            window._ceLastReport = report; // Mirror current report for toolbar export actions.
+            window._ceLastReport = report;
             renderResults(report);
             setState('results');
             loadNotebooks();
@@ -216,7 +320,6 @@
             const backBtn = document.createElement('button');
             backBtn.textContent = '<- Back to form';
             backBtn.className = 'button button--secondary';
-            // Provide explicit tooltip guidance for recovery action on failed runs.
             backBtn.setAttribute('data-help', 'Return to the form to adjust options and retry exploration.');
             backBtn.style.marginTop = '1rem';
             backBtn.onclick = () => setState('form');
@@ -226,7 +329,87 @@
             closeStream();
             stopElapsed();
         }
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const strategy = selectedStrategy();
+        const budget = parseInt(document.querySelector('input[name="scope"]:checked')?.value || '500', 10);
+        const lens = document.getElementById('ceResearchLens')?.value.trim() || '';
+        const yearFrom = parseInt(document.getElementById('ceYearFrom')?.value || '', 10) || null;
+        const yearTo = parseInt(document.getElementById('ceYearTo')?.value || '', 10) || null;
+        const mode = selectedMode();
+        const effectiveStrategy = mode === 'adaptive' ? 'balanced' : strategy;
+        const sortOrder = document.querySelector('input[name="sort_order"]:checked')?.value || 'archival';
+
+        if (mode === 'adaptive') {
+            if (!lens) {
+                alert('Adaptive mode requires Q1: "What drew you to this collection?"');
+                return;
+            }
+            try {
+                const brief = collectConsultationPayload();
+                const reflection = await previewConsultation(brief);
+                pendingConsultation = reflection.research_brief || brief;
+                pendingRunArgs = {
+                    strategy,
+                    effectiveStrategy,
+                    mode,
+                    budget,
+                    lens,
+                    yearFrom,
+                    yearTo,
+                    sortOrder: pendingConsultation.sort_order || sortOrder,
+                    brief: pendingConsultation,
+                };
+
+                if (reflectionTextEl) reflectionTextEl.textContent = reflection.reflection || '';
+                if (reflectionUncertaintyEl) reflectionUncertaintyEl.textContent = reflection.uncertainty || '';
+                if (reflectionSeedsEl) {
+                    const seeds = reflection.proposed_seeds || [];
+                    reflectionSeedsEl.innerHTML = seeds.length
+                        ? `<ul>${seeds.map((seed) => `<li>${escHtml(seed.question || '')}</li>`).join('')}</ul>`
+                        : '<p>No seed questions proposed.</p>';
+                }
+                if (reflectionPanel) reflectionPanel.hidden = false;
+                if (submitBtn) submitBtn.disabled = true;
+            } catch (error) {
+                alert(error.message || 'Failed to generate consultation reflection.');
+            }
+            return;
+        }
+
+        await runExploration({
+            strategy,
+            effectiveStrategy,
+            mode,
+            budget,
+            lens,
+            yearFrom,
+            yearTo,
+            sortOrder: null,
+            brief: null,
+        });
     });
+
+    if (reflectionConfirmBtn) {
+        reflectionConfirmBtn.addEventListener('click', async () => {
+            if (!pendingRunArgs || !pendingConsultation) return;
+            pendingConsultation.confirmed = true;
+            const runArgs = Object.assign({}, pendingRunArgs, { brief: pendingConsultation });
+            if (submitBtn) submitBtn.disabled = false;
+            clearReflection();
+            await runExploration(runArgs);
+        });
+    }
+
+    if (reflectionEditBtn) {
+        reflectionEditBtn.addEventListener('click', () => {
+            if (submitBtn) submitBtn.disabled = false;
+            clearReflection();
+        });
+    }
 
     // ── Results rendering ───────────────────────────────────────────────
 
@@ -234,6 +417,7 @@
         renderOverview(report.corpus_map);
         renderGrandNarrative(report.question_synthesis);
         renderAgenda(report.question_synthesis, report.questions);
+        renderQuestionGraph(report.question_graph);
         renderGaps(report.question_synthesis?.gaps);
         renderContradictions(report.contradictions);
         renderPatterns(report.patterns);
@@ -333,6 +517,160 @@
                     </div>
                 </div>`;
         }
+    }
+
+    function renderQuestionGraph(questionGraph) {
+        if (!graphSection || !graphMacroList || !graphMesoList || !graphMicroList || !graphDocsPanel || !graphBreadcrumb) {
+            return;
+        }
+
+        const tree = Array.isArray(questionGraph?.tree) ? questionGraph.tree : [];
+        if (!tree.length) {
+            graphSection.hidden = true;
+            graphMacroList.innerHTML = '';
+            graphMesoList.innerHTML = '';
+            graphMicroList.innerHTML = '';
+            graphDocsPanel.innerHTML = '';
+            graphBreadcrumb.innerHTML = '';
+            return;
+        }
+
+        graphSection.hidden = false;
+        const selection = {
+            macroId: tree[0]?.node_id || null,
+            mesoId: tree[0]?.meso?.[0]?.node_id || null,
+            microId: tree[0]?.meso?.[0]?.micro?.[0]?.node_id || null,
+        };
+
+        // Render all three tiers from one state object so navigation remains consistent.
+        const refresh = () => {
+            const macro = tree.find((node) => node.node_id === selection.macroId) || tree[0];
+            if (!macro) return;
+            if (selection.macroId !== macro.node_id) selection.macroId = macro.node_id;
+
+            const mesoList = Array.isArray(macro.meso) ? macro.meso : [];
+            let meso = mesoList.find((node) => node.node_id === selection.mesoId) || mesoList[0] || null;
+            if (meso && selection.mesoId !== meso.node_id) selection.mesoId = meso.node_id;
+            if (!meso) selection.mesoId = null;
+
+            const microList = Array.isArray(meso?.micro) ? meso.micro : [];
+            let micro = microList.find((node) => node.node_id === selection.microId) || microList[0] || null;
+            if (micro && selection.microId !== micro.node_id) selection.microId = micro.node_id;
+            if (!micro) selection.microId = null;
+
+            graphMacroList.innerHTML = renderGraphLevelList(tree, selection.macroId, 'macro');
+            graphMesoList.innerHTML = renderGraphLevelList(mesoList, selection.mesoId, 'meso');
+            graphMicroList.innerHTML = renderGraphLevelList(microList, selection.microId, 'micro');
+
+            graphMacroList.querySelectorAll('.ce-qgraph-item').forEach((button) => {
+                button.addEventListener('click', () => {
+                    selection.macroId = button.dataset.nodeId || null;
+                    selection.mesoId = null;
+                    selection.microId = null;
+                    refresh();
+                });
+            });
+            graphMesoList.querySelectorAll('.ce-qgraph-item').forEach((button) => {
+                button.addEventListener('click', () => {
+                    selection.mesoId = button.dataset.nodeId || null;
+                    selection.microId = null;
+                    refresh();
+                });
+            });
+            graphMicroList.querySelectorAll('.ce-qgraph-item').forEach((button) => {
+                button.addEventListener('click', () => {
+                    selection.microId = button.dataset.nodeId || null;
+                    refresh();
+                });
+            });
+
+            const breadcrumbParts = [
+                `<span class="ce-tag">Macro</span> ${escHtml(macro.question_text || '—')}`,
+            ];
+            if (meso) {
+                breadcrumbParts.push(`<span class="ce-tag">Meso</span> ${escHtml(meso.question_text || '—')}`);
+            }
+            if (micro) {
+                breadcrumbParts.push(`<span class="ce-tag">Micro</span> ${escHtml(micro.question_text || '—')}`);
+            }
+            graphBreadcrumb.innerHTML = breadcrumbParts.join('<span class="ce-qgraph-breadcrumb__sep">→</span>');
+            graphDocsPanel.innerHTML = renderGraphDocsPanel(macro, meso, micro);
+        };
+
+        refresh();
+    }
+
+    function renderGraphLevelList(nodes, selectedId, levelLabel) {
+        if (!nodes?.length) {
+            return '<p class="ce-qgraph-empty">No linked questions at this level.</p>';
+        }
+        return nodes
+            .map((node) => {
+                const isActive = node.node_id === selectedId;
+                const directCount = node.direct_doc_count ?? 0;
+                const scopeCount = node.scope_doc_count ?? directCount;
+                const sharedMacro = node.shared_doc_count_with_macro;
+                const sharedTriple = node.shared_doc_count_with_macro_meso;
+                const overlapMeta = typeof sharedTriple === 'number'
+                    ? `${sharedTriple} shared`
+                    : (typeof sharedMacro === 'number' ? `${sharedMacro} shared` : null);
+                return `
+                    <button type="button"
+                        class="ce-qgraph-item${isActive ? ' ce-qgraph-item--active' : ''}"
+                        data-node-id="${escAttr(node.node_id || '')}">
+                        <span class="ce-qgraph-item__question">${escHtml(node.question_text || '')}</span>
+                        <span class="ce-qgraph-item__meta">
+                            <span class="ce-tag ce-tag--type">${escHtml((node.question_type || levelLabel || '').toString())}</span>
+                            <span class="ce-q-docs">direct ${directCount}</span>
+                            <span class="ce-q-docs">scope ${scopeCount}</span>
+                            ${overlapMeta ? `<span class="ce-q-docs">${overlapMeta}</span>` : ''}
+                        </span>
+                    </button>
+                `;
+            })
+            .join('');
+    }
+
+    function renderGraphDocsPanel(macro, meso, micro) {
+        if (!macro) {
+            return '<p class="ce-qgraph-empty">Question graph unavailable.</p>';
+        }
+
+        const macroCount = macro.scope_doc_count ?? macro.direct_doc_count ?? 0;
+        const mesoCount = meso ? (meso.scope_doc_count ?? meso.direct_doc_count ?? 0) : 0;
+        const microCount = micro ? (micro.direct_doc_count ?? 0) : 0;
+        const overlapCount = micro?.shared_doc_count_with_macro_meso ?? meso?.shared_doc_count_with_macro ?? 0;
+
+        const docs = Array.isArray(micro?.documents) ? micro.documents : [];
+        const docRows = docs.length
+            ? docs.map((doc) => `
+                <div class="ce-qgraph-doc-row">
+                    <div class="ce-qgraph-doc-row__header">
+                        <span class="ce-qgraph-doc-row__filename">${escHtml(doc.filename || doc.doc_id || 'Document')}</span>
+                        <span class="ce-q-docs">${escHtml(doc.doc_id || '')}</span>
+                    </div>
+                    <div class="ce-qgraph-doc-row__meta">
+                        ${(doc.block_ids || []).map((block) => `<code>${escHtml(block)}</code>`).join('')}
+                        ${(doc.evidence_types || []).map((kind) => `<span class="ce-tag">${escHtml(kind)}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('')
+            : '<p class="ce-qgraph-empty">Select a micro-question with evidence to see associated documents.</p>';
+
+        return `
+            <div class="ce-qgraph-docs__summary">
+                <h3>Associated Documents</h3>
+                <div class="ce-qgraph-docs__stats">
+                    <span class="ce-q-docs">macro scope ${macroCount}</span>
+                    <span class="ce-q-docs">meso scope ${mesoCount}</span>
+                    <span class="ce-q-docs">micro direct ${microCount}</span>
+                    <span class="ce-q-docs">shared ${overlapCount}</span>
+                </div>
+            </div>
+            <div class="ce-qgraph-docs__body">
+                ${docRows}
+            </div>
+        `;
     }
 
     function renderQuestionCard(q) {
@@ -580,6 +918,9 @@
     if (newExplBtn) newExplBtn.addEventListener('click', () => {
         stopElapsed();
         stopProgressPolling();
+        clearReflection();
+        toggleAdaptiveConsultation();
+        if (submitBtn) submitBtn.disabled = false;
         setState('form');
     });
     if (exportBtn) exportBtn.addEventListener('click', () => exportMarkdown(activeReport));

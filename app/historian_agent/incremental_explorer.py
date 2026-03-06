@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import uuid
+from collections import defaultdict
 from dataclasses import asdict
 from datetime import datetime
 from difflib import SequenceMatcher
@@ -787,6 +788,202 @@ class IncrementalCorpusExplorer(CorpusExplorer):
 
         return self.question_synthesizer.build_agenda(self.notebook, models)
 
+    def _build_graph_tree(self) -> List[Dict[str, Any]]:
+        """
+        Build a drill-down friendly macro -> meso -> micro view from canonical nodes.
+
+        The graph does not always contain explicit directed hierarchy edges across
+        levels, so this view uses document-overlap as the default linkage model.
+        """
+        if self.graph is None:
+            return []
+
+        # Keep only canonical nodes for UI navigation to avoid duplicate absorbed variants.
+        canonical_nodes: Dict[str, QuestionNode] = {
+            node_id: node
+            for node_id, node in self.graph.nodes.items()
+            if node.evidence_owner
+        }
+        if not canonical_nodes:
+            return []
+
+        outgoing: Dict[str, List[str]] = defaultdict(list)
+        explicit_edges = set()
+        for edge in self.graph.edges:
+            source = edge.source_id
+            target = edge.target_id
+            if source in canonical_nodes and target in canonical_nodes:
+                outgoing[source].append(target)
+                explicit_edges.add((source, target))
+
+        direct_docs: Dict[str, set] = defaultdict(set)
+        evidence_by_node_doc: Dict[str, Dict[str, List[EvidenceLink]]] = defaultdict(lambda: defaultdict(list))
+        for link in self.graph.evidence:
+            node_id = link.question_id
+            if node_id not in canonical_nodes:
+                continue
+            doc_id = str(link.doc_id or "").strip()
+            if not doc_id:
+                continue
+            direct_docs[node_id].add(doc_id)
+            evidence_by_node_doc[node_id][doc_id].append(link)
+
+        # Scope docs include direct docs plus descendants across canonical edges.
+        scope_docs: Dict[str, set] = {}
+        for node_id in canonical_nodes:
+            seen: set = set()
+            stack: List[str] = list(outgoing.get(node_id, []))
+            docs = set(direct_docs.get(node_id, set()))
+            while stack:
+                child_id = stack.pop()
+                if child_id in seen:
+                    continue
+                seen.add(child_id)
+                docs.update(direct_docs.get(child_id, set()))
+                stack.extend(outgoing.get(child_id, []))
+            scope_docs[node_id] = docs
+
+        macro_nodes = [node for node in canonical_nodes.values() if node.level == "macro"]
+        meso_nodes = [node for node in canonical_nodes.values() if node.level == "meso"]
+        micro_nodes = [node for node in canonical_nodes.values() if node.level == "micro"]
+
+        if not macro_nodes or not meso_nodes or not micro_nodes:
+            return []
+
+        # Preload document metadata once so document panels can show file names.
+        # This uses only docs that actually appear in graph evidence links.
+        all_doc_ids: set = set()
+        for node_id in canonical_nodes:
+            all_doc_ids.update(direct_docs.get(node_id, set()))
+        doc_meta: Dict[str, Dict[str, Any]] = {}
+        try:
+            # Ignore malformed ids so one bad value does not block metadata for all docs.
+            valid_doc_ids = [
+                doc_id
+                for doc_id in all_doc_ids
+                if len(doc_id) == 24 and all(ch in "0123456789abcdefABCDEF" for ch in doc_id)
+            ]
+            if valid_doc_ids:
+                doc_meta = self.doc_store.hydrate_parent_metadata(valid_doc_ids)
+        except Exception:
+            doc_meta = {}
+
+        def _node_payload(node: QuestionNode, node_id: str) -> Dict[str, Any]:
+            direct_count = len(direct_docs.get(node_id, set()))
+            scope_count = len(scope_docs.get(node_id, set()))
+            return {
+                "node_id": node_id,
+                "question_text": node.question_text,
+                "level": node.level,
+                "origin": node.origin,
+                "question_type": node.question_type,
+                "status": node.status,
+                "priority": round(float(node.priority), 3),
+                "direct_doc_count": direct_count,
+                "scope_doc_count": scope_count,
+                "sample_doc_ids": sorted(list(direct_docs.get(node_id, set())))[:8],
+            }
+
+        def _doc_rows_for_micro(micro_id: str, doc_ids: List[str]) -> List[Dict[str, Any]]:
+            rows: List[Dict[str, Any]] = []
+            for doc_id in doc_ids[:12]:
+                links = evidence_by_node_doc.get(micro_id, {}).get(doc_id, [])
+                blocks: List[str] = []
+                evidence_types: List[str] = []
+                for link in links:
+                    if link.block_id and link.block_id not in blocks:
+                        blocks.append(link.block_id)
+                    if link.evidence_type and link.evidence_type not in evidence_types:
+                        evidence_types.append(link.evidence_type)
+                meta = doc_meta.get(doc_id, {})
+                metadata = meta.get("metadata", {}) if isinstance(meta.get("metadata"), dict) else {}
+                rows.append(
+                    {
+                        "doc_id": doc_id,
+                        "filename": meta.get("filename") or metadata.get("filename") or "",
+                        "source_type": meta.get("source_type") or "",
+                        "block_ids": blocks[:4],
+                        "evidence_types": evidence_types,
+                    }
+                )
+            return rows
+
+        macro_entries: List[Dict[str, Any]] = []
+        macro_nodes_sorted = sorted(
+            macro_nodes,
+            key=lambda n: len(scope_docs.get(n.node_id, set()) or direct_docs.get(n.node_id, set())),
+            reverse=True,
+        )
+
+        for macro in macro_nodes_sorted[:8]:
+            macro_id = macro.node_id
+            macro_doc_set = set(scope_docs.get(macro_id, set()) or direct_docs.get(macro_id, set()))
+
+            meso_candidates: List[Tuple[int, float, QuestionNode, set]] = []
+            for meso in meso_nodes:
+                meso_id = meso.node_id
+                meso_doc_set = set(scope_docs.get(meso_id, set()) or direct_docs.get(meso_id, set()))
+                if not meso_doc_set:
+                    continue
+                shared_docs = macro_doc_set & meso_doc_set
+                if not shared_docs:
+                    continue
+                overlap_ratio = float(len(shared_docs)) / float(len(meso_doc_set))
+                meso_candidates.append((len(shared_docs), overlap_ratio, meso, shared_docs))
+
+            meso_candidates.sort(key=lambda item: (item[0], item[1]), reverse=True)
+            meso_entries: List[Dict[str, Any]] = []
+            for shared_count, overlap_ratio, meso, shared_macro_meso in meso_candidates[:12]:
+                meso_id = meso.node_id
+                meso_doc_set = set(scope_docs.get(meso_id, set()) or direct_docs.get(meso_id, set()))
+
+                micro_candidates: List[Tuple[int, float, QuestionNode, set]] = []
+                for micro in micro_nodes:
+                    micro_id = micro.node_id
+                    micro_doc_set = set(direct_docs.get(micro_id, set()))
+                    if not micro_doc_set:
+                        continue
+                    shared_triple = shared_macro_meso & micro_doc_set
+                    if not shared_triple:
+                        continue
+                    micro_ratio = float(len(shared_triple)) / float(len(micro_doc_set))
+                    micro_candidates.append((len(shared_triple), micro_ratio, micro, shared_triple))
+
+                micro_candidates.sort(key=lambda item: (item[0], item[1]), reverse=True)
+                micro_entries: List[Dict[str, Any]] = []
+                for triple_count, micro_ratio, micro, shared_triple in micro_candidates[:15]:
+                    micro_id = micro.node_id
+                    shared_doc_ids = sorted(list(shared_triple))
+                    micro_entries.append(
+                        {
+                            **_node_payload(micro, micro_id),
+                            "shared_doc_count_with_macro_meso": triple_count,
+                            "overlap_ratio_with_micro": round(micro_ratio, 3),
+                            "shared_doc_ids": shared_doc_ids[:12],
+                            "documents": _doc_rows_for_micro(micro_id, shared_doc_ids),
+                            "explicit_link_from_meso": (meso_id, micro_id) in explicit_edges,
+                        }
+                    )
+
+                meso_entries.append(
+                    {
+                        **_node_payload(meso, meso_id),
+                        "shared_doc_count_with_macro": shared_count,
+                        "overlap_ratio_with_meso": round(overlap_ratio, 3),
+                        "explicit_link_from_macro": (macro_id, meso_id) in explicit_edges,
+                        "micro": micro_entries,
+                    }
+                )
+
+            macro_entries.append(
+                {
+                    **_node_payload(macro, macro_id),
+                    "meso": meso_entries,
+                }
+            )
+
+        return macro_entries
+
     def _export_graph_summary(self) -> Dict[str, Any]:
         if self.graph is None:
             return {}
@@ -832,6 +1029,6 @@ class IncrementalCorpusExplorer(CorpusExplorer):
             "total_edges": len(self.graph.edges),
             "surprise_absences": surprise_absences,
             "defrag_snapshots": [asdict(snapshot) for snapshot in self.graph.defrag_snapshots],
-            "tree": [],
+            "tree": self._build_graph_tree(),
             "decision_log_count": len(self.graph.decision_log),
         }

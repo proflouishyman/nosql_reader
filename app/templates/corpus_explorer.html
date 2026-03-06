@@ -44,7 +44,7 @@
       <div class="ce-form__field">
         <label for="ceResearchLens">
           What drew you to this collection?
-          <span class="ce-form__hint">Optional — helps the AI orient toward your interests.</span>
+          <span class="ce-form__hint">Required for adaptive mode.</span>
         </label>
         <textarea id="ceResearchLens" name="research_lens" rows="3"
           placeholder="e.g. I'm studying labor conditions for immigrant workers on the B&O in the 1920s…" data-help="Describe your research lens to bias exploration themes and question generation."></textarea>
@@ -74,7 +74,75 @@
             <strong>Follow Document Types</strong>
             <span>Groups by document type. Best when you want to understand what the archive contains.</span>
           </label>
+          <label class="ce-strategy-card" data-value="attentive" data-help="Adaptive attentive reading mode that builds and defragments a question graph as documents are read.">
+            <input type="radio" name="strategy" value="attentive">
+            <strong>Attentive Reading (experimental)</strong>
+            <span>Adaptive mode that grows questions incrementally, links evidence, and periodically consolidates themes.</span>
+          </label>
         </div>
+      </div>
+
+      <!-- Adaptive consultation -->
+      <div class="ce-form__field" id="ceAdaptiveConsultation" hidden>
+        <label>Reading order (adaptive mode)</label>
+        <div class="ce-strategy-grid" id="ceSortGrid">
+          <label class="ce-strategy-card ce-sort-card ce-strategy-card--selected" data-value="archival" data-help="Archival order preserves institutional filing logic: box -> folder -> item.">
+            <input type="radio" name="sort_order" value="archival" checked>
+            <strong>Archival Order</strong>
+            <span>Best for replicating finding-aid traversal and institutional context.</span>
+          </label>
+          <label class="ce-strategy-card ce-sort-card" data-value="chronological" data-help="Chronological order prioritizes temporal change and continuity.">
+            <input type="radio" name="sort_order" value="chronological">
+            <strong>Chronological</strong>
+            <span>Best for periodization and change-over-time analysis.</span>
+          </label>
+          <label class="ce-strategy-card ce-sort-card" data-value="record_type" data-help="Record-type order groups similar forms before moving across genres.">
+            <input type="radio" name="sort_order" value="record_type">
+            <strong>By Record Type</strong>
+            <span>Best for understanding collection structure and genre effects.</span>
+          </label>
+          <label class="ce-strategy-card ce-sort-card" data-value="person" data-help="Person-folder order follows individual case trails across records.">
+            <input type="radio" name="sort_order" value="person">
+            <strong>By Person Folder</strong>
+            <span>Best for biographical/prosopographical analysis.</span>
+          </label>
+          <label class="ce-strategy-card ce-sort-card" data-value="balanced" data-help="Balanced order uses stratified sampling and does not preserve archival sequence.">
+            <input type="radio" name="sort_order" value="balanced">
+            <strong>Balanced Sample</strong>
+            <span>Best for broad orientation when no ordering hypothesis is set.</span>
+          </label>
+        </div>
+        <details style="margin-top:0.75rem;">
+          <summary>Tell us more (optional)</summary>
+          <div class="ce-form__field" style="margin-top:0.75rem;">
+            <label for="cePriorHypotheses">What do you already know or suspect?</label>
+            <textarea id="cePriorHypotheses" rows="3" placeholder="Prior hypotheses, secondary literature expectations, or hunches."></textarea>
+          </div>
+          <div class="ce-form__field">
+            <label>Which dimensions matter most?</label>
+            <div id="ceAxesOptions">
+              <label><input type="checkbox" name="axis" value="time" checked> Time / periodization</label>
+              <label><input type="checkbox" name="axis" value="place" checked> Place / geography</label>
+              <label><input type="checkbox" name="axis" value="occupation"> Occupation / job category</label>
+              <label><input type="checkbox" name="axis" value="ethnicity"> Ethnicity / national origin</label>
+              <label><input type="checkbox" name="axis" value="gender"> Gender</label>
+              <label><input type="checkbox" name="axis" value="unionization"> Unionization / labor organizing</label>
+              <label><input type="checkbox" name="axis" value="management"> Management / supervision</label>
+              <label><input type="checkbox" name="axis" value="legislation"> Legislation / policy</label>
+              <label><input type="checkbox" name="axis" value="wages"> Wages / compensation</label>
+              <label><input type="checkbox" name="axis" value="family"> Family / dependents</label>
+            </div>
+            <input type="text" id="ceAxisCustom" placeholder="Add custom axes (comma-separated)" style="margin-top:0.5rem;">
+          </div>
+          <div class="ce-form__field">
+            <label for="ceSurpriseExpectations">What would surprise you?</label>
+            <textarea id="ceSurpriseExpectations" rows="2" placeholder="What findings would challenge your expectations?"></textarea>
+          </div>
+          <div class="ce-form__field">
+            <label for="ceExclusions">What do you want to set aside for now?</label>
+            <textarea id="ceExclusions" rows="2" placeholder="Topics, people, or periods to suppress in this run."></textarea>
+          </div>
+        </details>
       </div>
 
       <!-- Scope -->
@@ -121,6 +189,17 @@
       <div class="ce-form__actions">
         <button type="submit" class="button" id="ceSubmit" data-help="Start a corpus exploration run with the selected strategy and scope.">Begin Exploration</button>
         <span class="ce-form__estimate" id="ceEstimate">~10–20 min for Standard scope</span>
+      </div>
+
+      <div class="agent-panel" id="ceReflectionPanel" hidden style="margin-top:1rem;">
+        <h3>Research Consultation Reflection</h3>
+        <p id="ceReflectionText"></p>
+        <div id="ceReflectionSeeds"></div>
+        <p><strong>Uncertainty:</strong> <span id="ceReflectionUncertainty"></span></p>
+        <div class="ce-form__actions">
+          <button type="button" class="button" id="ceReflectionConfirm">Confirm and Start Run</button>
+          <button type="button" class="button button--secondary" id="ceReflectionEdit">Edit Consultation</button>
+        </div>
       </div>
 
     </form>
@@ -188,6 +267,31 @@
         with the Historian Agent.
       </p>
       <div class="ce-themes" id="ceThemes"></div>
+    </div>
+
+    <!-- Question graph explorer -->
+    <div class="ce-section" id="ceQuestionGraphSection" hidden>
+      <h2 class="ce-section__title">Question Graph Explorer</h2>
+      <p class="ce-section__subtitle">
+        Move from macro to meso to micro questions, then inspect the source documents
+        and evidence blocks tied to the selected micro-question.
+      </p>
+      <div class="ce-qgraph-breadcrumb" id="ceGraphBreadcrumb"></div>
+      <div class="ce-qgraph-layout">
+        <div class="ce-qgraph-column">
+          <h3 class="ce-qgraph-column__title">Macro</h3>
+          <div class="ce-qgraph-list" id="ceGraphMacroList"></div>
+        </div>
+        <div class="ce-qgraph-column">
+          <h3 class="ce-qgraph-column__title">Meso</h3>
+          <div class="ce-qgraph-list" id="ceGraphMesoList"></div>
+        </div>
+        <div class="ce-qgraph-column">
+          <h3 class="ce-qgraph-column__title">Micro</h3>
+          <div class="ce-qgraph-list" id="ceGraphMicroList"></div>
+        </div>
+      </div>
+      <div class="ce-qgraph-docs" id="ceGraphDocsPanel"></div>
     </div>
 
     <!-- Evidence Gaps -->
