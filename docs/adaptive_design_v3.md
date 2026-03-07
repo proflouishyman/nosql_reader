@@ -3,6 +3,22 @@
 Date: 2026-03-05
 Status: Active implementation/testing
 Supersedes: `/Users/louishyman/coding/nosql/nosql_reader/docs/adaptive_prompt_variant_plan.md`
+Current implementation reference: `/Users/louishyman/coding/nosql/nosql_reader/docs/adaptive_explorer_current_logic_v5_3.md`
+
+## Implementation Note (2026-03-07)
+
+This v3 document captures the conceptual rewrite and planning intent.
+
+For the **implemented algorithms and current contracts**, use:
+
+1. `/Users/louishyman/coding/nosql/nosql_reader/docs/adaptive_explorer_current_logic_v5_3.md`
+
+Key now-implemented additions since this v3 plan:
+
+1. defrag hierarchy stabilization pass with cycle-safe inferred links,
+2. question-graph UI drill-down with block-level snippets,
+3. run comparison endpoint + compare UI panel,
+4. graph-aware benchmark rubric fields and composite score.
 
 ## 1. Synthesis of New Perspectives
 
