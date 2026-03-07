@@ -20,9 +20,14 @@
   <div class="ce-notebooks" id="ceNotebooks" data-help="Reload or open saved exploration snapshots with summary metadata.">
     <div class="ce-notebooks__header">
       <h2>Previous Explorations</h2>
-      <button type="button" class="button button--secondary button--sm" id="ceRefreshNotebooks" data-help="Refresh the saved exploration list from server-side notebook artifacts.">
-        Refresh
-      </button>
+      <div class="ce-notebooks__actions">
+        <button type="button" class="button button--secondary button--sm" id="ceCompareNotebooks" disabled data-help="Select two explorations, then compare node counts, macro themes, and shared coverage.">
+          Compare 2 Runs
+        </button>
+        <button type="button" class="button button--secondary button--sm" id="ceRefreshNotebooks" data-help="Refresh the saved exploration list from server-side notebook artifacts.">
+          Refresh
+        </button>
+      </div>
     </div>
     <div class="ce-notebooks__list" id="ceNotebookList">
       <p class="ce-notebooks__empty">No saved explorations found.</p>
@@ -243,6 +248,23 @@
       <button type="button" class="button button--secondary button--sm" id="ceExportMemo" data-help="Download the exploration results as a formatted research memo document.">
         Export as Memo
       </button>
+    </div>
+
+    <div class="ce-section" id="ceRunCompareSection" hidden>
+      <h2 class="ce-section__title">Run Comparison</h2>
+      <p class="ce-section__subtitle" id="ceRunCompareLabel"></p>
+      <div class="ce-compare-grid" id="ceRunCompareGrid"></div>
+      <div class="ce-compare-columns">
+        <div class="ce-compare-column">
+          <h3 class="ce-compare-column__title">Run A Macro Themes</h3>
+          <ul class="ce-compare-list" id="ceRunCompareThemesA"></ul>
+        </div>
+        <div class="ce-compare-column">
+          <h3 class="ce-compare-column__title">Run B Macro Themes</h3>
+          <ul class="ce-compare-list" id="ceRunCompareThemesB"></ul>
+        </div>
+      </div>
+      <div class="ce-compare-shared" id="ceRunCompareShared"></div>
     </div>
 
     <!-- Archive Overview -->

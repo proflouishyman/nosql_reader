@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from difflib import SequenceMatcher
 from typing import Dict, List, Optional, Literal, Set
 import uuid
 
@@ -380,6 +381,170 @@ def _check_change_continuity(
     )
 
 
+def _stabilize_hierarchy_links(
+    graph: QuestionGraph,
+    batch_label: str,
+) -> int:
+    """
+    Ensure canonical macro -> meso -> micro links exist for traceability.
+
+    The adaptive graph can accumulate rich evidence without consistently encoding
+    explicit parent-child links across levels. This pass adds one best-fit parent
+    for orphan meso/micro nodes using evidence overlap (with lexical fallback).
+    """
+    owners = [node for node in graph.nodes.values() if node.evidence_owner]
+    if not owners:
+        return 0
+
+    owner_ids = {node.node_id for node in owners}
+    nodes_by_id = {node.node_id: node for node in owners}
+
+    outgoing: Dict[str, Set[str]] = {nid: set() for nid in owner_ids}
+    incoming: Dict[str, Set[str]] = {nid: set() for nid in owner_ids}
+    for edge in graph.edges:
+        if edge.source_id in owner_ids and edge.target_id in owner_ids:
+            outgoing[edge.source_id].add(edge.target_id)
+            incoming[edge.target_id].add(edge.source_id)
+
+    direct_docs: Dict[str, Set[str]] = {nid: set() for nid in owner_ids}
+    for link in graph.evidence:
+        if link.question_id in owner_ids and link.doc_id:
+            direct_docs[link.question_id].add(str(link.doc_id))
+
+    scope_cache: Dict[str, Set[str]] = {}
+
+    def _scope_docs(node_id: str) -> Set[str]:
+        cached = scope_cache.get(node_id)
+        if cached is not None:
+            return cached
+        docs = set(direct_docs.get(node_id, set()))
+        stack = list(outgoing.get(node_id, set()))
+        seen: Set[str] = set()
+        while stack:
+            child_id = stack.pop()
+            if child_id in seen:
+                continue
+            seen.add(child_id)
+            docs.update(direct_docs.get(child_id, set()))
+            stack.extend(outgoing.get(child_id, set()))
+        scope_cache[node_id] = docs
+        return docs
+
+    def _creates_cycle(source_id: str, target_id: str) -> bool:
+        # Adding source->target creates cycle if source is already reachable from target.
+        stack = [target_id]
+        seen: Set[str] = set()
+        while stack:
+            current = stack.pop()
+            if current == source_id:
+                return True
+            if current in seen:
+                continue
+            seen.add(current)
+            stack.extend(outgoing.get(current, set()))
+        return False
+
+    def _add_hierarchy_edge(parent_id: str, child_id: str, confidence: float) -> None:
+        log = RelationDecisionLog(
+            log_id=str(uuid.uuid4()),
+            candidate_text=nodes_by_id[child_id].question_text,
+            matched_node_id=parent_id,
+            matched_node_text=nodes_by_id[parent_id].question_text,
+            similarity_score=confidence,
+            threshold_used=0.0,
+            action="hierarchy_link",
+            edge_type="decomposes_into",
+            expand_call_result=None,
+            seed_guard_fired=False,
+            budget_skipped=False,
+            batch_label=batch_label,
+            timestamp=datetime.now().isoformat(),
+        )
+        graph.add_decision_log(log)
+        graph.add_edge(QuestionEdge(
+            edge_id=str(uuid.uuid4()),
+            source_id=parent_id,
+            target_id=child_id,
+            relation="decomposes_into",
+            confidence=max(0.55, min(0.95, confidence)),
+            created_at_batch=batch_label,
+            decision_log_id=log.log_id,
+        ))
+        outgoing[parent_id].add(child_id)
+        incoming[child_id].add(parent_id)
+        scope_cache.clear()
+
+    macro_ids = [n.node_id for n in owners if n.level == "macro"]
+    meso_ids = [n.node_id for n in owners if n.level == "meso"]
+    micro_ids = [n.node_id for n in owners if n.level == "micro"]
+
+    links_added = 0
+
+    # Attach orphan meso nodes to best macro parent.
+    for meso_id in meso_ids:
+        if any(nodes_by_id[parent].level == "macro" for parent in incoming.get(meso_id, set())):
+            continue
+
+        meso_docs = _scope_docs(meso_id) or direct_docs.get(meso_id, set())
+        best: Optional[tuple] = None
+        for macro_id in macro_ids:
+            if macro_id == meso_id or _creates_cycle(macro_id, meso_id):
+                continue
+            macro_docs = _scope_docs(macro_id) or direct_docs.get(macro_id, set())
+            shared = len(macro_docs & meso_docs) if macro_docs and meso_docs else 0
+            overlap = (shared / len(meso_docs)) if meso_docs else 0.0
+            lexical = SequenceMatcher(
+                None,
+                (nodes_by_id[macro_id].question_text or "").lower(),
+                (nodes_by_id[meso_id].question_text or "").lower(),
+            ).ratio()
+            score = (shared, overlap, lexical)
+            if best is None or score > best[0]:
+                best = (score, macro_id)
+
+        if best is None:
+            continue
+        (shared, overlap, lexical), macro_id = best
+        if shared <= 0 and lexical < 0.55:
+            continue
+        confidence = float(max(overlap, lexical))
+        _add_hierarchy_edge(macro_id, meso_id, confidence)
+        links_added += 1
+
+    # Attach orphan micro nodes to best meso parent.
+    for micro_id in micro_ids:
+        if any(nodes_by_id[parent].level == "meso" for parent in incoming.get(micro_id, set())):
+            continue
+
+        micro_docs = direct_docs.get(micro_id, set())
+        best = None
+        for meso_id in meso_ids:
+            if meso_id == micro_id or _creates_cycle(meso_id, micro_id):
+                continue
+            meso_docs = _scope_docs(meso_id) or direct_docs.get(meso_id, set())
+            shared = len(meso_docs & micro_docs) if meso_docs and micro_docs else 0
+            overlap = (shared / len(micro_docs)) if micro_docs else 0.0
+            lexical = SequenceMatcher(
+                None,
+                (nodes_by_id[meso_id].question_text or "").lower(),
+                (nodes_by_id[micro_id].question_text or "").lower(),
+            ).ratio()
+            score = (shared, overlap, lexical)
+            if best is None or score > best[0]:
+                best = (score, meso_id)
+
+        if best is None:
+            continue
+        (shared, overlap, lexical), meso_id = best
+        if shared <= 0 and lexical < 0.50:
+            continue
+        confidence = float(max(overlap, lexical))
+        _add_hierarchy_edge(meso_id, micro_id, confidence)
+        links_added += 1
+
+    return links_added
+
+
 def defrag(
     graph: QuestionGraph,
     interval_index: int,
@@ -549,6 +714,8 @@ def defrag(
         promotions_performed += 1
         emergent_promoted += 1
 
+    # Enforce explicit canonical hierarchy links so macro -> meso -> micro is navigable.
+    _stabilize_hierarchy_links(graph, batch_label=label)
     _rebuild_threads(graph, batch_label=label)
 
     # Recompute thread active scores from root priorities.

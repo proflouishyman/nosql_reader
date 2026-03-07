@@ -16,6 +16,7 @@
     const exportBtn = document.getElementById('ceExportMarkdown');
     const exportMemoBtn = document.getElementById('ceExportMemo');
     const refreshNbBtn = document.getElementById('ceRefreshNotebooks');
+    const compareNbBtn = document.getElementById('ceCompareNotebooks');
     const runningLabel = document.getElementById('ceRunningLabel');
     const adaptiveConsultation = document.getElementById('ceAdaptiveConsultation');
     const reflectionPanel = document.getElementById('ceReflectionPanel');
@@ -31,6 +32,12 @@
     const graphMesoList = document.getElementById('ceGraphMesoList');
     const graphMicroList = document.getElementById('ceGraphMicroList');
     const graphDocsPanel = document.getElementById('ceGraphDocsPanel');
+    const compareSection = document.getElementById('ceRunCompareSection');
+    const compareLabel = document.getElementById('ceRunCompareLabel');
+    const compareGrid = document.getElementById('ceRunCompareGrid');
+    const compareThemesA = document.getElementById('ceRunCompareThemesA');
+    const compareThemesB = document.getElementById('ceRunCompareThemesB');
+    const compareShared = document.getElementById('ceRunCompareShared');
 
     if (!formPanel || !runningPanel || !resultsPanel || !form) {
         return;
@@ -85,6 +92,7 @@
 
     let pendingConsultation = null;
     let pendingRunArgs = null;
+    const selectedComparePaths = new Set();
 
     function selectedStrategy() {
         return document.querySelector('input[name="strategy"]:checked')?.value || 'balanced';
@@ -414,6 +422,7 @@
     // ── Results rendering ───────────────────────────────────────────────
 
     function renderResults(report) {
+        if (compareSection) compareSection.hidden = true;
         renderOverview(report.corpus_map);
         renderGrandNarrative(report.question_synthesis);
         renderAgenda(report.question_synthesis, report.questions);
@@ -644,16 +653,24 @@
         const docs = Array.isArray(micro?.documents) ? micro.documents : [];
         const docRows = docs.length
             ? docs.map((doc) => `
-                <div class="ce-qgraph-doc-row">
-                    <div class="ce-qgraph-doc-row__header">
+                <details class="ce-qgraph-doc-row">
+                    <summary class="ce-qgraph-doc-row__summary">
                         <span class="ce-qgraph-doc-row__filename">${escHtml(doc.filename || doc.doc_id || 'Document')}</span>
                         <span class="ce-q-docs">${escHtml(doc.doc_id || '')}</span>
-                    </div>
+                    </summary>
                     <div class="ce-qgraph-doc-row__meta">
                         ${(doc.block_ids || []).map((block) => `<code>${escHtml(block)}</code>`).join('')}
                         ${(doc.evidence_types || []).map((kind) => `<span class="ce-tag">${escHtml(kind)}</span>`).join('')}
                     </div>
-                </div>
+                    <div class="ce-qgraph-doc-row__blocks">
+                        ${(doc.block_details || []).map((item) => `
+                            <div class="ce-qgraph-block">
+                                <code>${escHtml(item.block_id || '')}</code>
+                                <p>${escHtml(item.snippet || '(No snippet available for this block)')}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </details>
             `).join('')
             : '<p class="ce-qgraph-empty">Select a micro-question with evidence to see associated documents.</p>';
 
@@ -833,6 +850,8 @@
 
     function renderNotebooks(notebooks) {
         if (!notebookList) return;
+        selectedComparePaths.clear();
+        updateCompareButtonState();
         if (!notebooks.length) {
             notebookList.innerHTML = '<p class="ce-notebooks__empty">No saved explorations found.</p>';
             return;
@@ -842,14 +861,37 @@
                 const kind = (nb.artifact_type || 'notebook').toLowerCase();
                 const helpText = buildNotebookHelpText(nb);
                 return `
-            <button class="ce-notebook-item" data-path="${escAttr(nb.path)}" data-help="${escAttr(helpText)}" title="${escAttr(helpText)}">
-                <span class="ce-notebook-item__name">${escHtml(nb.filename)}</span>
-                <span class="ce-notebook-item__meta">
-                    ${escHtml(nb.modified.slice(0, 16).replace('T', ' '))} · ${nb.size_kb} KB · ${escHtml(kind)}
-                </span>
-            </button>`;
+            <div class="ce-notebook-item-row">
+                <label class="ce-notebook-compare">
+                    <input type="checkbox" class="ce-notebook-compare__input" data-path="${escAttr(nb.path)}">
+                    <span>Compare</span>
+                </label>
+                <button class="ce-notebook-item" data-path="${escAttr(nb.path)}" data-help="${escAttr(helpText)}" title="${escAttr(helpText)}">
+                    <span class="ce-notebook-item__name">${escHtml(nb.filename)}</span>
+                    <span class="ce-notebook-item__meta">
+                        ${escHtml(nb.modified.slice(0, 16).replace('T', ' '))} · ${nb.size_kb} KB · ${escHtml(kind)}
+                    </span>
+                </button>
+            </div>`;
             })
             .join('');
+
+        notebookList.querySelectorAll('.ce-notebook-compare__input').forEach((input) => {
+            input.addEventListener('change', () => {
+                const path = input.dataset.path;
+                if (!path) return;
+                if (input.checked) {
+                    if (selectedComparePaths.size >= 2) {
+                        input.checked = false;
+                        return;
+                    }
+                    selectedComparePaths.add(path);
+                } else {
+                    selectedComparePaths.delete(path);
+                }
+                updateCompareButtonState();
+            });
+        });
 
         notebookList.querySelectorAll('.ce-notebook-item').forEach((btn) => {
             btn.addEventListener('click', async () => {
@@ -911,7 +953,72 @@
         });
     }
 
+    function updateCompareButtonState() {
+        if (!compareNbBtn) return;
+        compareNbBtn.disabled = selectedComparePaths.size !== 2;
+    }
+
+    function renderRunComparison(payload) {
+        if (!compareSection || !compareLabel || !compareGrid || !compareThemesA || !compareThemesB || !compareShared) {
+            return;
+        }
+        const left = payload?.run_a || {};
+        const right = payload?.run_b || {};
+        const diff = payload?.comparison || {};
+        const sharedCoverage = Number.isFinite(Number(diff.shared_doc_coverage_ratio))
+            ? Number(diff.shared_doc_coverage_ratio).toFixed(3)
+            : '0.000';
+
+        compareLabel.textContent = `${left.label || 'Run A'} vs ${right.label || 'Run B'}`;
+        compareGrid.innerHTML = `
+            <div class="ce-stat"><span class="ce-stat__value">${left.total_nodes ?? 0}</span><span class="ce-stat__label">Run A Nodes</span></div>
+            <div class="ce-stat"><span class="ce-stat__value">${right.total_nodes ?? 0}</span><span class="ce-stat__label">Run B Nodes</span></div>
+            <div class="ce-stat"><span class="ce-stat__value">${diff.node_delta ?? 0}</span><span class="ce-stat__label">Node Delta (B-A)</span></div>
+            <div class="ce-stat"><span class="ce-stat__value">${diff.shared_macro_theme_count ?? 0}</span><span class="ce-stat__label">Shared Macro Themes</span></div>
+            <div class="ce-stat"><span class="ce-stat__value">${diff.shared_macro_doc_count ?? 0}</span><span class="ce-stat__label">Shared Macro Docs</span></div>
+            <div class="ce-stat"><span class="ce-stat__value">${sharedCoverage}</span><span class="ce-stat__label">Shared Doc Coverage</span></div>
+        `;
+
+        compareThemesA.innerHTML = (left.macro_themes || []).slice(0, 10)
+            .map((text) => `<li>${escHtml(text)}</li>`)
+            .join('') || '<li>No macro themes found.</li>';
+        compareThemesB.innerHTML = (right.macro_themes || []).slice(0, 10)
+            .map((text) => `<li>${escHtml(text)}</li>`)
+            .join('') || '<li>No macro themes found.</li>';
+
+        const sharedThemes = (diff.shared_macro_themes || []).slice(0, 10);
+        compareShared.innerHTML = sharedThemes.length
+            ? `<p><strong>Shared themes:</strong> ${sharedThemes.map((t) => escHtml(t)).join(' | ')}</p>`
+            : '<p><strong>Shared themes:</strong> none</p>';
+        compareSection.hidden = false;
+    }
+
     if (refreshNbBtn) refreshNbBtn.addEventListener('click', loadNotebooks);
+    if (compareNbBtn) {
+        compareNbBtn.addEventListener('click', async () => {
+            if (selectedComparePaths.size !== 2) return;
+            const [pathA, pathB] = Array.from(selectedComparePaths);
+            try {
+                compareNbBtn.disabled = true;
+                const resp = await fetch('/api/rag/exploration_notebooks/compare', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path_a: pathA, path_b: pathB }),
+                });
+                const payload = await resp.json();
+                if (!resp.ok) {
+                    throw new Error(payload.error || `HTTP ${resp.status}`);
+                }
+                renderRunComparison(payload);
+                setState('results');
+                scrollToResults();
+            } catch (err) {
+                setNotebookNotice(`Compare failed: ${err.message || 'unknown error'}`, true);
+            } finally {
+                updateCompareButtonState();
+            }
+        });
+    }
 
     // ── Toolbar actions ─────────────────────────────────────────────────
 

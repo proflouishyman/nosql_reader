@@ -1695,3 +1695,36 @@ Observed behavior:
 - Runtime payload validation (against saved adaptive 1000-doc run):
   - `question_graph.tree` now populated,
   - sample output confirmed `macro_entries=5`, with nested meso/micro items and micro document rows including block IDs.
+
+## 2026-03-07 - Run comparison endpoint, compare UI completion, and graph-aware benchmark rubric
+
+### Problem
+- The frontend exposed a new "Compare 2 Runs" control, but there was no backend endpoint to compare two saved exploration artifacts, so the button path failed.
+- New compare UI elements lacked dedicated styling, which made notebook selection rows and compare results hard to scan.
+- Prompt/model benchmarking still relied mostly on wording heuristics and did not incorporate question-graph quality signals (traceability, duplicate micro rates, macro evidence coverage).
+
+### Solution
+- Added notebook compare backend in `/Users/louishyman/coding/nosql/nosql_reader/app/routes.py`:
+  - new endpoint: `POST /api/rag/exploration_notebooks/compare`,
+  - centralized safe-path resolver `_resolve_saved_notebook_path(...)` to keep compare input constrained to `NOTEBOOK_SAVE_DIR`,
+  - JSON loader guard `_load_saved_payload(...)`,
+  - compare feature extraction `_extract_report_compare_features(...)` from `question_graph.tree`,
+  - shared-theme detection with exact normalized match plus fuzzy fallback,
+  - shared macro-doc coverage metrics (`shared_macro_doc_count`, `shared_doc_coverage_ratio`) returned for UI.
+- Completed compare and notebook-row styling in `/Users/louishyman/coding/nosql/nosql_reader/app/static/style.css`:
+  - added `.ce-notebooks__actions`, `.ce-notebook-item-row`, `.ce-notebook-compare`,
+  - added compare panel classes `.ce-compare-grid`, `.ce-compare-columns`, `.ce-compare-column`, `.ce-compare-list`, `.ce-compare-shared`,
+  - added responsive collapse behavior for compare columns and notebook rows.
+- Refined compare rendering in `/Users/louishyman/coding/nosql/nosql_reader/app/static/corpus_explorer.js`:
+  - shared coverage ratio now formatted to fixed precision before display.
+- Upgraded benchmark rubric in `/Users/louishyman/coding/nosql/nosql_reader/scripts/benchmark_adaptive_prompt_variants.py`:
+  - consumes `question_graph.quality_metrics`,
+  - emits graph-quality fields (`quality_traceability_rate`, `quality_duplicate_micro_rate`, `quality_macro_zero_direct_evidence`, `quality_avg_docs_per_macro`),
+  - adds composite `quality_rubric_score` with structured `quality_rubric_breakdown`,
+  - extends CLI table output to include traceability/duplicate/rubric columns,
+  - accepts both `question` and `question_text` keys when scoring top-level questions.
+
+### Verification
+- `python -m py_compile app/routes.py app/historian_agent/defrag_engine.py app/historian_agent/incremental_explorer.py app/rag_base.py scripts/benchmark_adaptive_prompt_variants.py`
+- `node --check app/static/corpus_explorer.js`
+- `PYTHONPATH=app pytest -q app/tests/test_adaptive_question_graph.py app/tests/test_research_consultation.py app/tests/test_adaptive_prompts.py` -> `15 passed`

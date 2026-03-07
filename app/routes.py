@@ -37,6 +37,7 @@ import logging
 import time
 import glob
 import threading
+from difflib import SequenceMatcher
 from datetime import datetime, timedelta
 import random
 import csv
@@ -1009,6 +1010,212 @@ def list_exploration_notebooks():
         return jsonify({'notebooks': notebooks})
     except Exception as exc:
         return jsonify({'notebooks': [], 'error': str(exc)})
+
+
+def _resolve_saved_notebook_path(path: str, save_dir: str, prefer_report_for_notebook: bool = False) -> str:
+    """
+    Resolve and validate a saved notebook/report path under NOTEBOOK_SAVE_DIR.
+
+    This centralizes path validation for load/compare routes and prevents
+    traversal outside the configured notebook artifacts directory.
+    """
+    resolved_save_dir = os.path.realpath(save_dir)
+    resolved_path = os.path.realpath(path)
+    if not resolved_path:
+        raise ValueError('Path is required')
+    if not resolved_path.startswith(resolved_save_dir + os.sep) and resolved_path != resolved_save_dir:
+        raise ValueError('Invalid path')
+    if not os.path.isfile(resolved_path):
+        raise ValueError('Path not found')
+
+    if prefer_report_for_notebook and 'notebook' in os.path.basename(resolved_path).lower():
+        sibling_reports = sorted(
+            glob.glob(os.path.join(os.path.dirname(resolved_path), '*report*.json')),
+            key=lambda p: os.path.getmtime(p),
+            reverse=True,
+        )
+        if sibling_reports:
+            resolved_report = os.path.realpath(sibling_reports[0])
+            if (
+                resolved_report.startswith(resolved_save_dir + os.sep)
+                or resolved_report == resolved_save_dir
+            ):
+                return resolved_report
+    return resolved_path
+
+
+def _load_saved_payload(path: str) -> Dict[str, Any]:
+    """Load a saved report/notebook payload and enforce object shape."""
+    with open(path, 'r', encoding='utf-8') as handle:
+        payload = json.load(handle)
+    if not isinstance(payload, dict):
+        raise ValueError('Saved file must decode to a JSON object.')
+    return payload
+
+
+def _macro_theme_set(macro_themes: List[str]) -> Dict[str, str]:
+    """
+    Normalize macro question text for overlap matching while preserving originals.
+
+    Uses fuzzy fallback so punctuation/casing changes do not erase shared themes.
+    """
+    normalized: Dict[str, str] = {}
+    for theme in macro_themes:
+        if not isinstance(theme, str):
+            continue
+        clean = " ".join(theme.strip().lower().split())
+        if not clean:
+            continue
+        normalized.setdefault(clean, theme.strip())
+    return normalized
+
+
+def _extract_report_compare_features(payload: Dict[str, Any], label: str, path: str) -> Dict[str, Any]:
+    """Extract stable compare features from either full reports or notebook snapshots."""
+    graph = payload.get('question_graph') if isinstance(payload.get('question_graph'), dict) else {}
+    tree = graph.get('tree') if isinstance(graph.get('tree'), list) else []
+    by_level = graph.get('by_level') if isinstance(graph.get('by_level'), dict) else {}
+
+    # Prefer canonical graph totals; fallback to inferred counts for older artifacts.
+    total_nodes = int(graph.get('total_nodes') or 0)
+    macro_themes: List[str] = []
+    macro_doc_ids: set = set()
+
+    for macro in tree:
+        if not isinstance(macro, dict):
+            continue
+        question_text = str(macro.get('question_text') or '').strip()
+        if question_text:
+            macro_themes.append(question_text)
+        # Include macro-level samples when available.
+        for doc_id in macro.get('sample_doc_ids') or []:
+            if isinstance(doc_id, str) and doc_id.strip():
+                macro_doc_ids.add(doc_id.strip())
+        # Drill into evidence rows so compare coverage reflects real document links.
+        for meso in macro.get('meso') or []:
+            if not isinstance(meso, dict):
+                continue
+            for micro in meso.get('micro') or []:
+                if not isinstance(micro, dict):
+                    continue
+                for doc_id in micro.get('shared_doc_ids') or []:
+                    if isinstance(doc_id, str) and doc_id.strip():
+                        macro_doc_ids.add(doc_id.strip())
+                for doc_row in micro.get('documents') or []:
+                    if not isinstance(doc_row, dict):
+                        continue
+                    doc_id = str(doc_row.get('doc_id') or '').strip()
+                    if doc_id:
+                        macro_doc_ids.add(doc_id)
+
+    if not total_nodes:
+        # Fallback count for older reports that omit graph totals.
+        total_nodes = int(sum(v for v in by_level.values() if isinstance(v, (int, float))))
+
+    return {
+        'label': label,
+        'source_path': path,
+        'total_nodes': total_nodes,
+        'by_level': by_level,
+        'macro_themes': macro_themes,
+        'macro_theme_count': len(macro_themes),
+        'macro_doc_count': len(macro_doc_ids),
+        'macro_doc_ids': sorted(macro_doc_ids),
+    }
+
+
+@app.route('/api/rag/exploration_notebooks/compare', methods=['POST'])
+def compare_exploration_notebooks():
+    """Compare two saved exploration artifacts for quick run-level diagnostics."""
+    payload = request.get_json(silent=True) or {}
+    path_a = str(payload.get('path_a') or '').strip()
+    path_b = str(payload.get('path_b') or '').strip()
+    if not path_a or not path_b:
+        return jsonify({'error': 'Both path_a and path_b are required.'}), 400
+    if path_a == path_b:
+        return jsonify({'error': 'Choose two different runs to compare.'}), 400
+
+    save_dir = os.environ.get('NOTEBOOK_SAVE_DIR', '/app/logs/corpus_exploration')
+    try:
+        resolved_a = _resolve_saved_notebook_path(path_a, save_dir, prefer_report_for_notebook=True)
+        resolved_b = _resolve_saved_notebook_path(path_b, save_dir, prefer_report_for_notebook=True)
+    except ValueError as exc:
+        return jsonify({'error': str(exc)}), 400
+
+    try:
+        report_a = _load_saved_payload(resolved_a)
+        report_b = _load_saved_payload(resolved_b)
+    except Exception as exc:
+        return jsonify({'error': f'Failed to load compare artifacts: {exc}'}), 500
+
+    run_a = _extract_report_compare_features(
+        report_a,
+        label=os.path.basename(resolved_a),
+        path=resolved_a,
+    )
+    run_b = _extract_report_compare_features(
+        report_b,
+        label=os.path.basename(resolved_b),
+        path=resolved_b,
+    )
+
+    # Match macro themes with exact normalized text first, then fuzzy backup.
+    themes_a = _macro_theme_set(run_a.get('macro_themes', []))
+    themes_b = _macro_theme_set(run_b.get('macro_themes', []))
+    shared_themes: List[str] = []
+    used_b: set = set()
+    for norm_a, display_a in themes_a.items():
+        if norm_a in themes_b:
+            shared_themes.append(display_a)
+            used_b.add(norm_a)
+            continue
+        # Fuzzy fallback catches minor wording drift between otherwise similar runs.
+        best_match_norm = None
+        best_score = 0.0
+        for norm_b in themes_b.keys():
+            if norm_b in used_b:
+                continue
+            score = SequenceMatcher(None, norm_a, norm_b).ratio()
+            if score > best_score:
+                best_score = score
+                best_match_norm = norm_b
+        if best_match_norm and best_score >= 0.84:
+            shared_themes.append(display_a)
+            used_b.add(best_match_norm)
+
+    docs_a = set(run_a.get('macro_doc_ids') or [])
+    docs_b = set(run_b.get('macro_doc_ids') or [])
+    shared_docs = docs_a & docs_b
+    union_docs = docs_a | docs_b
+    shared_ratio = round((len(shared_docs) / len(union_docs)), 3) if union_docs else 0.0
+
+    return jsonify(
+        {
+            'run_a': {
+                'label': run_a['label'],
+                'source_path': run_a['source_path'],
+                'total_nodes': run_a['total_nodes'],
+                'by_level': run_a['by_level'],
+                'macro_themes': run_a['macro_themes'],
+                'macro_doc_count': run_a['macro_doc_count'],
+            },
+            'run_b': {
+                'label': run_b['label'],
+                'source_path': run_b['source_path'],
+                'total_nodes': run_b['total_nodes'],
+                'by_level': run_b['by_level'],
+                'macro_themes': run_b['macro_themes'],
+                'macro_doc_count': run_b['macro_doc_count'],
+            },
+            'comparison': {
+                'node_delta': int(run_b['total_nodes'] - run_a['total_nodes']),
+                'shared_macro_theme_count': len(shared_themes),
+                'shared_macro_themes': shared_themes,
+                'shared_macro_doc_count': len(shared_docs),
+                'shared_doc_coverage_ratio': shared_ratio,
+            },
+        }
+    )
 
 
 @app.route('/api/rag/exploration_notebooks/load', methods=['POST'])

@@ -13,7 +13,7 @@ Provides:
 import os
 import sys
 import time
-from typing import Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -419,6 +419,123 @@ class DocumentStore:
         )
         
         return full_text, sources_list, fetch_time
+
+    def fetch_block_snippets(
+        self,
+        block_ids: List[str],
+        max_chars: int = 320,
+    ) -> Dict[str, str]:
+        """
+        Resolve explorer block IDs (for example `doc_id::b0`) to short text snippets.
+
+        This powers question-graph evidence drill-down in the UI. The lookup strategy is:
+        1. Try chunk text by document + inferred block index.
+        2. Fallback to first chunk for the document.
+        3. Fallback to embedded OCR/content text from the parent document.
+        """
+        from bson import ObjectId
+
+        snippets: Dict[str, str] = {}
+        if not block_ids:
+            return snippets
+
+        # Parse block identifiers once to avoid repeated regex work.
+        parsed_items: List[Tuple[str, Optional[int], str]] = []
+        doc_ids: List[str] = []
+        for raw in block_ids:
+            block_id = str(raw or "").strip()
+            if not block_id:
+                continue
+            doc_id = block_id.split("::", 1)[0]
+            block_index: Optional[int] = None
+            if "::b" in block_id:
+                try:
+                    block_index = int(block_id.rsplit("::b", 1)[-1])
+                except ValueError:
+                    block_index = None
+            parsed_items.append((doc_id, block_index, block_id))
+            doc_ids.append(doc_id)
+
+        if not parsed_items:
+            return snippets
+
+        unique_doc_ids = sorted(set(doc_ids))
+
+        # Fetch chunk rows for all relevant docs in one pass.
+        chunk_rows = list(
+            self.chunks_coll.find(
+                {"document_id": {"$in": unique_doc_ids}},
+                {"document_id": 1, "chunk_index": 1, "text": 1, "ocr_text": 1},
+            ).sort([("document_id", 1), ("chunk_index", 1)])
+        )
+        chunks_by_doc: Dict[str, List[Dict[str, Any]]] = {}
+        for row in chunk_rows:
+            doc_id = str(row.get("document_id") or "")
+            if not doc_id:
+                continue
+            chunks_by_doc.setdefault(doc_id, []).append(row)
+
+        # Parent document fallback for docs missing chunk text.
+        object_ids = []
+        object_to_doc: Dict[ObjectId, str] = {}
+        for doc_id in unique_doc_ids:
+            try:
+                oid = ObjectId(doc_id)
+                object_ids.append(oid)
+                object_to_doc[oid] = doc_id
+            except Exception:
+                continue
+        parent_text_by_doc: Dict[str, str] = {}
+        if object_ids:
+            parent_rows = self.documents_coll.find(
+                {"_id": {"$in": object_ids}},
+                {"ocr_text": 1, "content": 1, "text": 1, "summary": 1},
+            )
+            for row in parent_rows:
+                oid = row.get("_id")
+                doc_id = object_to_doc.get(oid)
+                if not doc_id:
+                    continue
+                text = (
+                    row.get("ocr_text")
+                    or row.get("content")
+                    or row.get("text")
+                    or row.get("summary")
+                    or ""
+                )
+                parent_text_by_doc[doc_id] = str(text)
+
+        for doc_id, block_index, block_id in parsed_items:
+            if block_id in snippets:
+                continue
+
+            chunk_candidates = chunks_by_doc.get(doc_id) or []
+            snippet_text = ""
+            if chunk_candidates:
+                chosen = None
+                if block_index is not None:
+                    for row in chunk_candidates:
+                        if int(row.get("chunk_index") or 0) == block_index:
+                            chosen = row
+                            break
+                    if chosen is None and 0 <= block_index < len(chunk_candidates):
+                        chosen = chunk_candidates[block_index]
+                if chosen is None:
+                    chosen = chunk_candidates[0]
+                snippet_text = str(chosen.get("text") or chosen.get("ocr_text") or "")
+
+            if not snippet_text:
+                snippet_text = parent_text_by_doc.get(doc_id, "")
+
+            cleaned = " ".join(snippet_text.split())
+            if not cleaned:
+                snippets[block_id] = ""
+                continue
+            if len(cleaned) > max_chars:
+                cleaned = f"{cleaned[:max_chars].rstrip()}..."
+            snippets[block_id] = cleaned
+
+        return snippets
 
 
 # ============================================================================

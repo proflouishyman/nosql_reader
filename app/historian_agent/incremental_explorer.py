@@ -895,6 +895,14 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                         blocks.append(link.block_id)
                     if link.evidence_type and link.evidence_type not in evidence_types:
                         evidence_types.append(link.evidence_type)
+                block_snippets = self.doc_store.fetch_block_snippets(blocks[:4], max_chars=320) if blocks else {}
+                block_details = [
+                    {
+                        "block_id": block_id,
+                        "snippet": block_snippets.get(block_id, ""),
+                    }
+                    for block_id in blocks[:4]
+                ]
                 meta = doc_meta.get(doc_id, {})
                 metadata = meta.get("metadata", {}) if isinstance(meta.get("metadata"), dict) else {}
                 rows.append(
@@ -903,6 +911,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
                         "filename": meta.get("filename") or metadata.get("filename") or "",
                         "source_type": meta.get("source_type") or "",
                         "block_ids": blocks[:4],
+                        "block_details": block_details,
                         "evidence_types": evidence_types,
                     }
                 )
@@ -984,6 +993,66 @@ class IncrementalCorpusExplorer(CorpusExplorer):
 
         return macro_entries
 
+    def _compute_graph_quality_metrics(
+        self,
+        owner_nodes: List[QuestionNode],
+        tree: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """
+        Compute lightweight quality metrics for run-to-run comparison and benchmarking.
+        """
+        macro_nodes = [node for node in owner_nodes if node.level == "macro"]
+        micro_nodes = [node for node in owner_nodes if node.level == "micro"]
+
+        def _normalize_question(text: str) -> str:
+            return " ".join((text or "").strip().lower().split())
+
+        unique_micro = {
+            _normalize_question(node.question_text)
+            for node in micro_nodes
+            if _normalize_question(node.question_text)
+        }
+        duplicate_micro_rate = (
+            float(max(0, len(micro_nodes) - len(unique_micro))) / float(len(micro_nodes))
+            if micro_nodes else 0.0
+        )
+
+        macro_direct_counts = [
+            len(self.graph.get_evidence(node.node_id))
+            for node in macro_nodes
+        ] if self.graph else []
+        macro_with_zero_direct = sum(1 for count in macro_direct_counts if count == 0)
+        avg_docs_per_macro = (
+            float(sum(macro_direct_counts)) / float(len(macro_direct_counts))
+            if macro_direct_counts else 0.0
+        )
+
+        traceable_macros = 0
+        for macro in tree:
+            meso = macro.get("meso") or []
+            if not meso:
+                continue
+            has_trace = False
+            for mes in meso:
+                micro = mes.get("micro") or []
+                if any((item.get("direct_doc_count") or 0) > 0 for item in micro):
+                    has_trace = True
+                    break
+            if has_trace:
+                traceable_macros += 1
+
+        traceability_rate = (
+            float(traceable_macros) / float(len(tree))
+            if tree else 0.0
+        )
+
+        return {
+            "traceability_rate": round(traceability_rate, 3),
+            "duplicate_micro_rate": round(duplicate_micro_rate, 3),
+            "macro_with_zero_direct_evidence": int(macro_with_zero_direct),
+            "avg_docs_per_macro": round(avg_docs_per_macro, 2),
+        }
+
     def _export_graph_summary(self) -> Dict[str, Any]:
         if self.graph is None:
             return {}
@@ -1016,6 +1085,8 @@ class IncrementalCorpusExplorer(CorpusExplorer):
 
         change_nodes = [node for node in owner_nodes if node.question_type == "change_continuity"]
         surprise_absences = sum(1 for e in self.graph.evidence if e.evidence_type == "absence")
+        tree = self._build_graph_tree()
+        quality_metrics = self._compute_graph_quality_metrics(owner_nodes, tree)
 
         return {
             "total_nodes": len(owner_nodes),
@@ -1029,6 +1100,7 @@ class IncrementalCorpusExplorer(CorpusExplorer):
             "total_edges": len(self.graph.edges),
             "surprise_absences": surprise_absences,
             "defrag_snapshots": [asdict(snapshot) for snapshot in self.graph.defrag_snapshots],
-            "tree": self._build_graph_tree(),
+            "tree": tree,
+            "quality_metrics": quality_metrics,
             "decision_log_count": len(self.graph.decision_log),
         }

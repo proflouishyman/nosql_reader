@@ -123,6 +123,7 @@ def _summarize_variant(
 ) -> Dict[str, Any]:
     metadata = report.get("exploration_metadata") if isinstance(report.get("exploration_metadata"), dict) else {}
     graph = report.get("question_graph") if isinstance(report.get("question_graph"), dict) else {}
+    graph_quality = graph.get("quality_metrics") if isinstance(graph.get("quality_metrics"), dict) else {}
     by_level = graph.get("by_level") if isinstance(graph.get("by_level"), dict) else {}
     by_origin = graph.get("by_origin") if isinstance(graph.get("by_origin"), dict) else {}
     defrag = graph.get("defrag_snapshots") if isinstance(graph.get("defrag_snapshots"), list) else []
@@ -141,6 +142,7 @@ def _summarize_variant(
 
     top_questions = report.get("questions") if isinstance(report.get("questions"), list) else []
     quality = _quality_metrics(top_questions)
+    rubric = _rubric_score(quality, graph_quality)
 
     return {
         "prompt_variant": variant,
@@ -170,6 +172,12 @@ def _summarize_variant(
         "quality_factoid_count": quality["factoid_count"],
         "quality_vague_count": quality["vague_count"],
         "quality_questions_evaluated": quality["question_count"],
+        "quality_traceability_rate": float(graph_quality.get("traceability_rate") or 0.0),
+        "quality_duplicate_micro_rate": float(graph_quality.get("duplicate_micro_rate") or 0.0),
+        "quality_macro_zero_direct_evidence": int(graph_quality.get("macro_with_zero_direct_evidence") or 0),
+        "quality_avg_docs_per_macro": float(graph_quality.get("avg_docs_per_macro") or 0.0),
+        "quality_rubric_score": rubric["score"],
+        "quality_rubric_breakdown": rubric["breakdown"],
     }
 
 
@@ -189,11 +197,14 @@ def _print_table(rows: List[Dict[str, Any]]) -> None:
         "seed_ok",
         "promotions",
         "analytic",
+        "traceability",
+        "dup_micro",
+        "rubric",
         "factoid",
         "vague",
     ]
     print(" | ".join(headers))
-    print("-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-")
+    print("-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-")
     for row in rows:
         print(
             f"{row.get('status', 'ok')} | "
@@ -210,6 +221,9 @@ def _print_table(rows: List[Dict[str, Any]]) -> None:
             f"{row.get('seed_questions_confirmed', 0)} | "
             f"{row.get('defrag_promotions_total', 0)} | "
             f"{row.get('quality_analytic_ratio', 0)} | "
+            f"{row.get('quality_traceability_rate', 0)} | "
+            f"{row.get('quality_duplicate_micro_rate', 0)} | "
+            f"{row.get('quality_rubric_score', 0)} | "
             f"{row.get('quality_factoid_count', 0)} | "
             f"{row.get('quality_vague_count', 0)}"
         )
@@ -252,7 +266,7 @@ def _quality_metrics(questions: List[Any]) -> Dict[str, Any]:
     for item in questions:
         text = ""
         if isinstance(item, dict):
-            text = str(item.get("question") or "").strip()
+            text = str(item.get("question") or item.get("question_text") or "").strip()
         elif isinstance(item, str):
             text = item.strip()
         if not text:
@@ -274,6 +288,45 @@ def _quality_metrics(questions: List[Any]) -> Dict[str, Any]:
         "factoid_count": factoid,
         "vague_count": vague,
     }
+
+
+def _rubric_score(quality: Dict[str, Any], graph_quality: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Blend wording quality and graph-structure quality into one comparison score.
+
+    This is a benchmark heuristic, not ground truth. We weight traceability and
+    duplicate suppression heavily because they proxy historian-style aggregation.
+    """
+    analytic_ratio = float(quality.get("analytic_ratio") or 0.0)
+    factoid_count = int(quality.get("factoid_count") or 0)
+    vague_count = int(quality.get("vague_count") or 0)
+
+    traceability_rate = float(graph_quality.get("traceability_rate") or 0.0)
+    duplicate_micro_rate = float(graph_quality.get("duplicate_micro_rate") or 0.0)
+    macro_zero_direct = int(graph_quality.get("macro_with_zero_direct_evidence") or 0)
+    avg_docs_per_macro = float(graph_quality.get("avg_docs_per_macro") or 0.0)
+
+    docs_depth = min(max(avg_docs_per_macro / 3.0, 0.0), 1.0)
+    score = (
+        (analytic_ratio * 45.0)
+        + (traceability_rate * 30.0)
+        + ((1.0 - min(max(duplicate_micro_rate, 0.0), 1.0)) * 10.0)
+        + (docs_depth * 10.0)
+        - (factoid_count * 4.0)
+        - (vague_count * 3.0)
+        - (macro_zero_direct * 2.0)
+    )
+    clamped = int(max(0, min(100, round(score))))
+    breakdown = {
+        "analytic_ratio": round(analytic_ratio, 3),
+        "traceability_rate": round(traceability_rate, 3),
+        "duplicate_micro_rate": round(duplicate_micro_rate, 3),
+        "avg_docs_per_macro": round(avg_docs_per_macro, 3),
+        "factoid_count": factoid_count,
+        "vague_count": vague_count,
+        "macro_zero_direct_evidence": macro_zero_direct,
+    }
+    return {"score": clamped, "breakdown": breakdown}
 
 
 def main() -> int:
